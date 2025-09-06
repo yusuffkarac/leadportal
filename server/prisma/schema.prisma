@@ -13,3 +13,51 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(USER)
+  level        Level    @default(S1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  bids         Bid[]
+  leads        Lead[]   @relation("LeadOwner")
+}
+
+model Lead {
+  id           String    @id @default(cuid())
+  title        String
+  description  String
+  startPrice   Int
+  minIncrement Int
+  isActive     Boolean   @default(true)
+  endsAt       DateTime
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  owner        User      @relation("LeadOwner", fields: [ownerId], references: [id])
+  ownerId      String
+  bids         Bid[]
+}
+
+model Bid {
+  id        String   @id @default(cuid())
+  amount    Int
+  createdAt DateTime @default(now())
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  leadId    String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Level {
+  S1
+  S2
+  S3
+}
