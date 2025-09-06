@@ -20,6 +20,10 @@ function logout() {
   }
 }
 
+function goToHome() {
+  router.push('/')
+}
+
 const isAuthed = ref(false)
 const role = ref(null)
 
@@ -73,7 +77,7 @@ function closeMobileMenu() {
 <template>
   <div class="container">
     <div class="navbar">
-      <div class="brand">
+      <div class="brand" @click="goToHome">
         <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="40" height="40" />
         <span>LeadPortal</span>
       </div>
@@ -82,6 +86,8 @@ function closeMobileMenu() {
       <div class="nav-links desktop-nav">
         <RouterLink to="/">Anasayfa</RouterLink>
         <RouterLink to="/about">Hakkında</RouterLink>
+        <RouterLink to="/faq">FAQ</RouterLink>
+        <RouterLink v-if="isAuthed" to="/purchased-leads">Satın Aldıklarım</RouterLink>
         <RouterLink v-if="!isAuthed" to="/login">Giriş</RouterLink>
         <RouterLink v-if="isAuthed && role === 'ADMIN'" to="/admin/leads">Admin</RouterLink>
         <RouterLink v-if="isAuthed && role === 'ADMIN'" to="/admin/users/new">Kullanıcı Ekle</RouterLink>
@@ -115,6 +121,20 @@ function closeMobileMenu() {
     <!-- Mobile Menu -->
     <div class="mobile-menu" :class="{ 'mobile-menu-open': isMobileMenuOpen }">
       <div class="mobile-menu-content">
+        <!-- Mobile Menu Header -->
+        <div class="mobile-menu-header">
+          <div class="mobile-menu-brand">
+            <img alt="Vue logo" class="mobile-menu-logo" src="@/assets/logo.svg" width="32" height="32" />
+            <span class="mobile-menu-title">LeadPortal</span>
+          </div>
+          <button class="mobile-menu-close" @click="closeMobileMenu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        
         <RouterLink to="/" @click="closeMobileMenu" class="mobile-nav-link">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
@@ -130,6 +150,24 @@ function closeMobileMenu() {
             <line x1="12" y1="17" x2="12.01" y2="17"/>
           </svg>
           <span>Hakkında</span>
+        </RouterLink>
+        
+        <RouterLink to="/faq" @click="closeMobileMenu" class="mobile-nav-link">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <span>FAQ</span>
+        </RouterLink>
+        
+        <RouterLink v-if="isAuthed" to="/purchased-leads" @click="closeMobileMenu" class="mobile-nav-link">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+          <span>Satın Aldıklarım</span>
         </RouterLink>
         
         <RouterLink v-if="!isAuthed" to="/login" @click="closeMobileMenu" class="mobile-nav-link">

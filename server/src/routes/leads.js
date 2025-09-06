@@ -6,13 +6,84 @@ const createLeadSchema = z.object({
   description: z.string().min(1, 'Açıklama zorunlu'),
   startPrice: z.number().int().nonnegative(),
   minIncrement: z.number().int().positive(),
+  instantBuyPrice: z.number().int().positive().optional(),
   endsAt: z.string().min(1, 'Bitiş zamanı zorunlu').transform((v) => new Date(v))
 })
+
+// Süresi dolmuş lead'leri kontrol et ve en yüksek teklifi veren kişiye sat
+async function checkAndSellExpiredLeads(prisma, io) {
+  try {
+    const now = new Date()
+    
+    // Süresi dolmuş ve henüz satılmamış lead'leri bul
+    const expiredLeads = await prisma.lead.findMany({
+      where: {
+        isActive: true,
+        isSold: false,
+        endsAt: {
+          lte: now
+        }
+      },
+      include: {
+        bids: {
+          orderBy: { amount: 'desc' },
+          take: 1,
+          include: { user: true }
+        }
+      }
+    })
+
+    for (const lead of expiredLeads) {
+      if (lead.bids.length > 0) {
+        const highestBid = lead.bids[0]
+        
+        // Lead'i satış olarak işaretle
+        await prisma.lead.update({
+          where: { id: lead.id },
+          data: { 
+            isActive: false,
+            isSold: true
+          }
+        })
+
+        // LeadSale kaydı oluştur
+        await prisma.leadSale.create({
+          data: {
+            leadId: lead.id,
+            buyerId: highestBid.userId,
+            amount: highestBid.amount
+          }
+        })
+
+        // Socket ile bildirim gönder
+        io.emit('lead:sold', {
+          leadId: lead.id,
+          buyerId: highestBid.userId,
+          amount: highestBid.amount,
+          title: lead.title
+        })
+
+        console.log(`Lead sold: ${lead.title} to ${highestBid.user.email} for ${highestBid.amount}`)
+      } else {
+        // Teklif yoksa lead'i pasif yap
+        await prisma.lead.update({
+          where: { id: lead.id },
+          data: { isActive: false }
+        })
+      }
+    }
+  } catch (error) {
+    console.error('Error checking expired leads:', error)
+  }
+}
 
 export default function leadsRouter(prisma, io) {
   const router = Router()
 
   router.get('/', async (_req, res) => {
+    // Önce süresi dolmuş lead'leri kontrol et ve sat
+    await checkAndSellExpiredLeads(prisma, io)
+    
     const leads = await prisma.lead.findMany({
       where: { isActive: true },
       orderBy: { createdAt: 'desc' },
@@ -59,13 +130,14 @@ export default function leadsRouter(prisma, io) {
       const issues = parsed.error.issues.map((i) => ({ path: i.path.join('.'), message: i.message }))
       return res.status(400).json({ error: 'Validation failed', issues })
     }
-    const { title, description, startPrice, minIncrement, endsAt } = parsed.data
+    const { title, description, startPrice, minIncrement, instantBuyPrice, endsAt } = parsed.data
     const lead = await prisma.lead.create({
       data: {
         title,
         description,
         startPrice,
         minIncrement,
+        instantBuyPrice,
         endsAt,
         ownerId: req.user.id
       }
@@ -97,6 +169,73 @@ export default function leadsRouter(prisma, io) {
     await prisma.lead.delete({ where: { id: req.params.id } })
     io.to(`lead:${req.params.id}`).emit('lead:deleted', { leadId: req.params.id })
     res.json({ ok: true })
+  })
+
+  // Anında satın alma
+  router.post('/:id/instant-buy', async (req, res) => {
+    try {
+      const leadId = req.params.id
+      const userId = req.user.id
+
+      // Lead'i kontrol et
+      const lead = await prisma.lead.findUnique({
+        where: { id: leadId },
+        include: { bids: { orderBy: { amount: 'desc' }, take: 1 } }
+      })
+
+      if (!lead) {
+        return res.status(404).json({ error: 'Lead bulunamadı' })
+      }
+
+      if (!lead.isActive) {
+        return res.status(400).json({ error: 'Bu lead artık aktif değil' })
+      }
+
+      if (lead.isSold) {
+        return res.status(400).json({ error: 'Bu lead zaten satılmış' })
+      }
+
+      if (!lead.instantBuyPrice) {
+        return res.status(400).json({ error: 'Bu lead için anında satın alma fiyatı belirlenmemiş' })
+      }
+
+      // Lead'i satış olarak işaretle
+      await prisma.lead.update({
+        where: { id: leadId },
+        data: { 
+          isActive: false,
+          isSold: true
+        }
+      })
+
+      // LeadSale kaydı oluştur
+      const sale = await prisma.leadSale.create({
+        data: {
+          leadId: leadId,
+          buyerId: userId,
+          amount: lead.instantBuyPrice
+        }
+      })
+
+      // Socket ile bildirim gönder
+      io.emit('lead:sold', {
+        leadId: leadId,
+        buyerId: userId,
+        amount: lead.instantBuyPrice,
+        title: lead.title,
+        instantBuy: true
+      })
+
+      res.json({ 
+        success: true, 
+        message: 'Lead başarıyla satın alındı',
+        sale: sale
+      })
+
+    } catch (error) {
+      console.error('Error in instant buy:', error)
+      res.status(500).json({ error: 'Anında satın alma işlemi başarısız' })
+    }
   })
 
   return router

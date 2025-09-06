@@ -28,6 +28,7 @@ async function save() {
       description: lead.value.description,
       startPrice: lead.value.startPrice,
       minIncrement: lead.value.minIncrement,
+      instantBuyPrice: lead.value.instantBuyPrice,
       endsAt: lead.value.endsAt,
       isActive: lead.value.isActive
     }
@@ -59,6 +60,11 @@ onMounted(load)
             <label>Min Artış</label>
             <input class="input" type="number" v-model.number="lead.minIncrement" />
           </div>
+        </div>
+        <div class="stack">
+          <label>Anında Satın Alma Fiyatı (Opsiyonel)</label>
+          <input class="input" type="number" v-model.number="lead.instantBuyPrice" placeholder="Boş bırakılabilir" />
+          <small style="color: #6b7280; font-size: 0.875rem;">Bu fiyatı ödeyen kişi açık artırmayı beklemeden hemen satın alabilir</small>
         </div>
         <label>Bitiş</label>
         <input class="input" type="datetime-local" v-model="lead.endsAt" />

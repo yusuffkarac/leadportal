@@ -13,6 +13,7 @@ const newLead = ref({
   description: '',
   startPrice: '',
   minIncrement: '',
+  buyNowPrice: '',
   endsAt: ''
 })
 
@@ -22,6 +23,7 @@ const editLead = ref({
   description: '',
   startPrice: '',
   minIncrement: '',
+  buyNowPrice: '',
   endsAt: '',
   isActive: true
 })
@@ -56,6 +58,7 @@ function openNewLeadModal() {
     description: '',
     startPrice: '',
     minIncrement: '',
+    buyNowPrice: '',
     endsAt: ''
   }
   errorMessage.value = ''
@@ -76,6 +79,7 @@ function openEditLeadModal(lead) {
     description: lead.description || '',
     startPrice: lead.startPrice.toString(),
     minIncrement: lead.minIncrement.toString(),
+    buyNowPrice: lead.instantBuyPrice ? lead.instantBuyPrice.toString() : '',
     endsAt: lead.endsAt ? new Date(lead.endsAt).toISOString().slice(0, 16) : '',
     isActive: lead.isActive
   }
@@ -116,6 +120,7 @@ async function createLead() {
       ...newLead.value,
       startPrice: parseFloat(newLead.value.startPrice),
       minIncrement: parseFloat(newLead.value.minIncrement),
+      instantBuyPrice: newLead.value.buyNowPrice ? parseFloat(newLead.value.buyNowPrice) : null,
       endsAt: new Date(newLead.value.endsAt).toISOString()
     }
 
@@ -159,6 +164,7 @@ async function updateLead() {
       ...editLead.value,
       startPrice: parseFloat(editLead.value.startPrice),
       minIncrement: parseFloat(editLead.value.minIncrement),
+      instantBuyPrice: editLead.value.buyNowPrice ? parseFloat(editLead.value.buyNowPrice) : null,
       endsAt: new Date(editLead.value.endsAt).toISOString()
     }
 
@@ -255,6 +261,10 @@ onMounted(fetchMine)
             <div class="stat-value">+₺{{ lead.minIncrement }}</div>
             <div class="stat-label">Min Artış</div>
           </div>
+          <div v-if="lead.instantBuyPrice" class="stat-item buy-now">
+            <div class="stat-value">₺{{ lead.instantBuyPrice }}</div>
+            <div class="stat-label">Anında Satın Al</div>
+          </div>
         </div>
       </div>
     </div>
@@ -316,6 +326,19 @@ onMounted(fetchMine)
                 required
               />
             </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Anında Satın Alma Fiyatı (₺)</label>
+            <input 
+              v-model="newLead.buyNowPrice" 
+              type="number" 
+              class="form-input" 
+              placeholder="Opsiyonel - boş bırakabilirsiniz"
+              min="0"
+              step="0.01"
+            />
+            <small class="form-help">Bu fiyat belirlenirse, kullanıcılar bu fiyattan anında satın alabilir</small>
           </div>
           
           <div class="form-group">
@@ -395,6 +418,19 @@ onMounted(fetchMine)
                 required
               />
             </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Anında Satın Alma Fiyatı (₺)</label>
+            <input 
+              v-model="editLead.buyNowPrice" 
+              type="number" 
+              class="form-input" 
+              placeholder="Opsiyonel - boş bırakabilirsiniz"
+              min="0"
+              step="0.01"
+            />
+            <small class="form-help">Bu fiyat belirlenirse, kullanıcılar bu fiyattan anında satın alabilir</small>
           </div>
           
           <div class="form-group">

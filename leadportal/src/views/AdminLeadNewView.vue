@@ -6,6 +6,7 @@ const title = ref('')
 const description = ref('')
 const startPrice = ref('0')
 const minIncrement = ref('1')
+const instantBuyPrice = ref('')
 const endsAt = ref('')
 const error = ref('')
 const ok = ref('')
@@ -28,6 +29,7 @@ async function submit() {
       description: description.value,
       startPrice: Number(startPrice.value),
       minIncrement: Number(minIncrement.value),
+      instantBuyPrice: instantBuyPrice.value ? Number(instantBuyPrice.value) : undefined,
       endsAt: endsAt.value
     }, { headers: authHeaders() })
     ok.value = 'Lead oluşturuldu'
@@ -35,6 +37,7 @@ async function submit() {
     description.value = ''
     startPrice.value = '0'
     minIncrement.value = '1'
+    instantBuyPrice.value = ''
     endsAt.value = ''
   } catch (e) {
     const status = e?.response?.status
@@ -67,6 +70,11 @@ async function submit() {
       <div class="stack">
         <label>Min. Artış</label>
         <input class="input" v-model="minIncrement" type="number" />
+      </div>
+      <div class="stack">
+        <label>Anında Satın Alma Fiyatı (Opsiyonel)</label>
+        <input class="input" v-model="instantBuyPrice" type="number" placeholder="Boş bırakılabilir" />
+        <small style="color: #6b7280; font-size: 0.875rem;">Bu fiyatı ödeyen kişi açık artırmayı beklemeden hemen satın alabilir</small>
       </div>
       <div class="stack">
         <label>Bitiş Zamanı</label>

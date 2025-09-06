@@ -68,14 +68,16 @@ import authRouter from './routes/auth.js'
 import leadsRouter from './routes/leads.js'
 import bidsRouter from './routes/bids.js'
 import usersRouter from './routes/users.js'
+import leadSalesRouter from './routes/leadSales.js'
 
 app.use('/api/auth', authRouter(prisma))
 app.use('/api/leads', (req, res, next) => requireAuth(req, res, next), leadsRouter(prisma, io))
 app.use('/api/bids', (req, res, next) => requireAuth(req, res, next), bidsRouter(prisma, io))
 app.use('/api/users', (req, res, next) => requireAuth(req, res, next), usersRouter(prisma))
+app.use('/api/lead-sales', (req, res, next) => requireAuth(req, res, next), leadSalesRouter(prisma))
 
 const port = process.env.PORT || 4000
-server.listen(port, () => {
-  console.log(`Server listening on http://localhost:${port}`)
-})
+server.listen(port, '0.0.0.0', () => {
+  console.log(`Server listening on http://localhost:${port}`);
+});
 

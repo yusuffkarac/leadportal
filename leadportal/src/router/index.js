@@ -6,6 +6,8 @@ import AdminLeadsListView from '../views/AdminLeadsListView.vue'
 import AdminLeadEditView from '../views/AdminLeadEditView.vue'
 import AdminUserNewView from '../views/AdminUserNewView.vue'
 import AdminLeadNewView from '../views/AdminLeadNewView.vue'
+import FAQView from '../views/FAQView.vue'
+import PurchasedLeadsView from '../views/PurchasedLeadsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -67,6 +69,16 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue'),
+    },
+    {
+      path: '/faq',
+      name: 'faq',
+      component: FAQView,
+    },
+    {
+      path: '/purchased-leads',
+      name: 'purchased-leads',
+      component: PurchasedLeadsView,
     },
   ],
 })

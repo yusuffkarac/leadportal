@@ -3,16 +3,39 @@
     <div class="page-content">
       <!-- Hero Section -->
       <div class="about-hero">
-        <h1 class="hero-title">LeadPortal Hakkında</h1>
-        <p class="hero-description">
-          Almanya'nın önde gelen lead pazar yeri. Sigorta brokerleri için profesyonel açık artırma platformu.
-        </p>
+        <div class="hero-content">
+          <div class="hero-text">
+            <h1 class="hero-title">LeadPortal Hakkında</h1>
+            <p class="hero-description">
+              Almanya'nın önde gelen lead pazar yeri. Sigorta brokerleri için profesyonel açık artırma platformu.
+            </p>
+            <div class="hero-stats">
+              <div class="stat-item">
+                <span class="stat-number">500+</span>
+                <span class="stat-label">Aktif Broker</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number">10,000+</span>
+                <span class="stat-label">Başarılı Lead</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number">€2M+</span>
+                <span class="stat-label">Toplam Ciro</span>
+              </div>
+            </div>
+          </div>
+          <div class="hero-image">
+            <img src="/images/about-hero-team.jpg" alt="LeadPortal Team" />
+          </div>
+        </div>
       </div>
 
       <!-- Features Section -->
       <div class="features-section">
-        <h2 class="section-title">Neden LeadPortal?</h2>
-        <div class="features-grid">
+        <div class="features-background"></div>
+        <div class="features-content">
+          <h2 class="section-title">Neden LeadPortal?</h2>
+          <div class="features-grid">
           <div class="feature-card">
             <div class="feature-icon">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -54,13 +77,16 @@
               Maksimum güvenlik için değerlendirme sistemi ve tüm katılımcıların doğrulanması
             </p>
           </div>
+          </div>
         </div>
       </div>
 
       <!-- Stats Section -->
       <div class="stats-section">
-        <h2 class="section-title">Sayılara Güvenin</h2>
-        <div class="stats-grid">
+        <div class="stats-background"></div>
+        <div class="stats-content">
+          <h2 class="section-title">Sayılara Güvenin</h2>
+          <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-value">2,500+</div>
             <div class="stat-label">Aktif Broker</div>
@@ -77,13 +103,15 @@
             <div class="stat-value">₺2.1M</div>
             <div class="stat-label">Toplam Ciro</div>
           </div>
+          </div>
         </div>
       </div>
 
       <!-- How It Works Section -->
       <div class="how-it-works-section">
         <h2 class="section-title">Nasıl Çalışır?</h2>
-        <div class="steps-grid">
+        <div class="how-it-works-content">
+          <div class="steps-grid">
           <div class="step-card">
             <div class="step-number">1</div>
             <h3 class="step-title">Lead Oluştur</h3>
@@ -105,6 +133,10 @@
               Kazanan broker lead bilgilerini alır ve müşteri ile iletişime geçer
             </p>
           </div>
+          </div>
+          <div class="how-it-works-image">
+            <img src="/images/about-how-it-works.jpg" alt="How It Works" />
+          </div>
         </div>
       </div>
 
@@ -125,7 +157,7 @@
 
 <style scoped>
 .about-page {
-  min-height: 100vh;
+    min-height: 100vh;
   background: var(--bg);
 }
 
@@ -137,8 +169,18 @@
 
 /* Hero Section */
 .about-hero {
-  text-align: center;
   margin-bottom: 64px;
+}
+
+.hero-content {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.hero-text {
+  text-align: left;
 }
 
 .hero-title {
@@ -147,6 +189,55 @@
   color: var(--text);
   margin: 0 0 16px;
   line-height: 1.2;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  margin-top: 40px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #3b82f6;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.hero-image img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-content,
+  .how-it-works-content {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .hero-stats {
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .hero-text {
+    text-align: center;
+  }
 }
 
 .hero-description {
@@ -171,6 +262,33 @@
 /* Features Section */
 .features-section {
   margin-bottom: 80px;
+  position: relative;
+  padding: 80px 0;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.features-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('/images/about-features-background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.1;
+  z-index: 1;
+}
+
+.features-content {
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px;
+  border-radius: 16px;
+  margin: 0 20px;
 }
 
 .features-grid {
@@ -217,12 +335,34 @@
 
 /* Stats Section */
 .stats-section {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 48px 32px;
   margin-bottom: 80px;
-  box-shadow: var(--shadow);
+  position: relative;
+  padding: 80px 0;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.stats-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('/images/about-stats-background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.1;
+  z-index: 1;
+}
+
+.stats-content {
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px;
+  border-radius: 16px;
+  margin: 0 20px;
 }
 
 .stats-grid {
@@ -254,10 +394,24 @@
   margin-bottom: 80px;
 }
 
+.how-it-works-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
 .steps-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: 1fr;
   gap: 32px;
+}
+
+.how-it-works-image img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 12px;
 }
 
 .step-card {
@@ -326,7 +480,7 @@
 }
 
 .cta-buttons {
-  display: flex;
+    display: flex;
   gap: 16px;
   justify-content: center;
   flex-wrap: wrap;

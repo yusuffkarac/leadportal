@@ -28,6 +28,9 @@ export default defineConfig({
         ws: true,
         changeOrigin: true,
       }
-    }
+    },
+    host: true,
+    port: 5173,
+    strictPort: true
   }
 })

@@ -5,6 +5,9 @@ import { io } from 'socket.io-client'
 
 const leads = ref([])
 const socket = io('/', { path: '/socket.io' })
+const showInstantBuyModal = ref(false)
+const selectedLead = ref(null)
+const isProcessing = ref(false)
 
 // Zaman hesaplama fonksiyonu
 function formatTimeRemaining(endsAt) {
@@ -49,6 +52,63 @@ async function fetchLeads() {
 function authHeaders() {
   const token = localStorage.getItem('token')
   return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
+function shareLead(lead) {
+  const url = `${window.location.origin}/lead/${lead.id}`
+  const text = `${lead.title} - LeadPortal'da açık artırmaya çıkarıldı!`
+  
+  if (navigator.share) {
+    // Native share API (mobil cihazlarda)
+    navigator.share({
+      title: lead.title,
+      text: text,
+      url: url
+    }).catch(err => console.log('Paylaşım iptal edildi:', err))
+  } else {
+    // Fallback: URL'yi panoya kopyala
+    navigator.clipboard.writeText(url).then(() => {
+      alert('Lead linki panoya kopyalandı!')
+    }).catch(() => {
+      // Fallback: prompt ile göster
+      prompt('Lead linkini kopyalayın:', url)
+    })
+  }
+}
+
+function openInstantBuyModal(lead) {
+  if (!lead.instantBuyPrice) {
+    return
+  }
+  selectedLead.value = lead
+  showInstantBuyModal.value = true
+}
+
+function closeInstantBuyModal() {
+  showInstantBuyModal.value = false
+  selectedLead.value = null
+  isProcessing.value = false
+}
+
+async function confirmInstantBuy() {
+  if (!selectedLead.value) return
+  
+  isProcessing.value = true
+  
+  try {
+    const response = await axios.post(`/api/leads/${selectedLead.value.id}/instant-buy`, {}, { headers: authHeaders() })
+    
+    if (response.data.success) {
+      closeInstantBuyModal()
+      // Lead'leri yeniden yükle
+      await fetchLeads()
+    }
+  } catch (error) {
+    const errorData = error.response?.data
+    console.error('Anında satın alma hatası:', errorData?.error || 'Anında satın alma işlemi başarısız')
+  } finally {
+    isProcessing.value = false
+  }
 }
 
 onMounted(() => {
@@ -105,6 +165,10 @@ onMounted(() => {
               <span v-else>₺{{ lead.startPrice }}</span>
             </div>
             <div class="bid-label">Güncel Teklif</div>
+            <div v-if="lead.instantBuyPrice" class="instant-buy-price">
+              <div class="instant-amount">₺{{ lead.instantBuyPrice.toLocaleString() }}</div>
+              <div class="instant-label">Anında Satın Al</div>
+            </div>
           </div>
         </div>
         
@@ -134,17 +198,44 @@ onMounted(() => {
             </svg>
             <span class="detail-text">+₺{{ lead.minIncrement }}</span>
           </div>
+          <button class="share-btn-small" @click="shareLead(lead)" title="Paylaş">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"/>
+              <circle cx="6" cy="12" r="3"/>
+              <circle cx="18" cy="19" r="3"/>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+            </svg>
+          </button>
         </div>
         
         <div class="card-footer">
-          <router-link 
-            class="bid-btn" 
-            :class="{ 'bid-btn-disabled': lead.isExpired }"
-            :to="lead.isExpired ? '#' : `/lead/${lead.id}`"
-            @click="lead.isExpired && $event.preventDefault()"
-          >
-            {{ lead.isExpired ? 'Süresi Doldu' : 'Teklif Ver' }}
-          </router-link>
+          <div class="footer-buttons">
+            <button 
+              v-if="lead.instantBuyPrice && !lead.isExpired && lead.isActive"
+              class="instant-buy-btn-small"
+              @click="openInstantBuyModal(lead)"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 12l2 2 4-4"/>
+                <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"/>
+                <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"/>
+                <path d="M12 3v6"/>
+                <path d="M12 15v6"/>
+              </svg>
+              Anında Al
+            </button>
+
+            <router-link 
+              class="bid-btn" 
+              :class="{ 'bid-btn-disabled': lead.isExpired }"
+              :to="lead.isExpired ? '#' : `/lead/${lead.id}`"
+              @click="lead.isExpired && $event.preventDefault()"
+            >
+              {{ lead.isExpired ? 'Süresi Doldu' : 'Teklif Ver' }}
+            </router-link>
+            
+          </div>
         </div>
       </div>
     </div>
@@ -167,5 +258,280 @@ onMounted(() => {
         </div>
       </div>
     </section>
+
+    <!-- Instant Buy Modal -->
+    <div v-if="showInstantBuyModal" class="modal-backdrop" @click="closeInstantBuyModal">
+      <div class="modal" @click.stop>
+        <div class="modal-header">
+          <h3>Anında Satın Al</h3>
+          <button class="modal-close" @click="closeInstantBuyModal">×</button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="instant-buy-info">
+            <div class="lead-title">{{ selectedLead?.title }}</div>
+            <div class="price-display">
+              <div class="price-label">Anında Satın Alma Fiyatı</div>
+              <div class="price-amount">₺{{ selectedLead?.instantBuyPrice?.toLocaleString() }}</div>
+            </div>
+            <div class="confirmation-text">
+              Bu lead'i anında satın almak istediğinizden emin misiniz?
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn btn-secondary" @click="closeInstantBuyModal" :disabled="isProcessing">
+            İptal
+          </button>
+          <button class="btn btn-primary" @click="confirmInstantBuy" :disabled="isProcessing">
+            <span v-if="isProcessing">İşleniyor...</span>
+            <span v-else>Satın Al</span>
+          </button>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
+
+<style scoped>
+/* Anında Satın Alma Stilleri */
+.instant-buy-price {
+  margin-top: 6px;
+  padding: 4px 8px;
+  background: #10b981;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.instant-amount {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 1px;
+}
+
+.instant-label {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.footer-buttons {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+}
+
+.instant-buy-btn-small {
+  padding: 8px 12px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-decoration: none;
+}
+
+.instant-buy-btn-small:hover {
+  background: #059669;
+  transform: none;
+}
+
+.instant-buy-btn-small:active {
+  transform: translateY(0);
+}
+
+/* Modal Stilleri */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal {
+  background: white;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: #374151;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.instant-buy-info {
+  text-align: center;
+}
+
+.lead-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 16px;
+}
+
+.price-display {
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.price-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.price-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.confirmation-text {
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.modal-footer {
+  padding: 16px 24px 20px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-size: 0.875rem;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.btn-primary {
+  background: #10b981;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #059669;
+}
+
+@media (max-width: 768px) {
+  section {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+  
+  .page-content {
+    padding: 24px 12px !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  .auctions-grid {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+  
+  .auction-card {
+    margin: 0 !important;
+    padding: 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  .footer-buttons {
+    gap: 6px;
+  }
+  
+  .instant-buy-btn-small {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+  
+  .instant-buy-price {
+    padding: 3px 6px;
+  }
+  
+  .instant-amount {
+    font-size: 0.8rem;
+  }
+  
+  .instant-label {
+    font-size: 0.6rem;
+  }
+}
+</style>
