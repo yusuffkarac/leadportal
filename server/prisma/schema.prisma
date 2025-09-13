@@ -19,12 +19,13 @@ model User {
   email        String     @unique
   passwordHash String
   role         Role       @default(USER)
-  level        Level      @default(S1)
+  userTypeId   String?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   bids         Bid[]
   leads        Lead[]     @relation("LeadOwner")
   purchasedLeads LeadSale[] @relation("LeadBuyer")
+  userType     UserType?  @relation(fields: [userTypeId], references: [id])
 }
 
 model Lead {
@@ -66,13 +67,64 @@ model LeadSale {
   createdAt DateTime @default(now())
 }
 
+model Settings {
+  id                  String   @id @default("default")
+  leadIdFormat        String   @default("numeric")
+  customFormat        String   @default("L{YYYY}{MM}{DD}-{NUM}")
+  leadPrefix          String   @default("LEAD")
+  startingNumber      Int      @default(1)
+  numberType          String   @default("sequential")
+  defaultCurrency     String   @default("TRY")
+  defaultAuctionDays  Int      @default(7)
+  defaultMinIncrement Int      @default(10)
+  maintenanceMode     Boolean  @default(false)
+  maintenanceMessage  String   @default("Sistem bakımda. Lütfen daha sonra tekrar deneyin.")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model UserType {
+  id          String   @id
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  permissions UserTypePermission[]
+  users       User[]
+}
+
+model Page {
+  id          String   @id
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  permissions UserTypePermission[]
+}
+
+model UserTypePermission {
+  id         Int      @id @default(autoincrement())
+  userTypeId String
+  pageId     String
+  hasAccess  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  // Relations
+  userType   UserType @relation(fields: [userTypeId], references: [id], onDelete: Cascade)
+  page       Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  
+  @@unique([userTypeId, pageId])
+}
+
 enum Role {
   USER
   ADMIN
 }
 
-enum Level {
-  S1
-  S2
-  S3
-}

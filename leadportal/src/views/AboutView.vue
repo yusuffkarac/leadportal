@@ -100,7 +100,7 @@
             <div class="stat-label">Memnuniyet Oranı</div>
           </div>
           <div class="stat-card">
-            <div class="stat-value">₺2.1M</div>
+            <div class="stat-value">€2.1M</div>
             <div class="stat-label">Toplam Ciro</div>
           </div>
           </div>
@@ -168,9 +168,9 @@
 }
 
 /* Hero Section */
-.about-hero {
+/* .about-hero {
   margin-bottom: 64px;
-}
+} */
 
 .hero-content {
   display: grid;
@@ -205,7 +205,7 @@
   display: block;
   font-size: 2rem;
   font-weight: 700;
-  color: #3b82f6;
+  color: var(--text);
   margin-bottom: 8px;
 }
 

@@ -1,13 +1,15 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
-import axios from 'axios'
+import api from '@/utils/axios.js'
 import { io } from 'socket.io-client'
+import { formatPrice, getCurrencySymbol } from '@/utils/currency.js'
 
 const leads = ref([])
 const socket = io('/', { path: '/socket.io' })
 const showInstantBuyModal = ref(false)
 const selectedLead = ref(null)
 const isProcessing = ref(false)
+const settings = ref({ defaultCurrency: 'TRY' })
 
 // Zaman hesaplama fonksiyonu
 function formatTimeRemaining(endsAt) {
@@ -27,10 +29,18 @@ function formatTimeRemaining(endsAt) {
   }
 }
 
+// Ayarları yükle
+async function loadSettings() {
+  try {
+    const response = await api.get('/settings')
+    settings.value = response.data
+  } catch (error) {
+    console.error('Ayarlar yüklenemedi:', error)
+  }
+}
+
 async function fetchLeads() {
-  const { data } = await axios.get('/api/leads', {
-    headers: authHeaders()
-  })
+  const { data } = await api.get('/leads')
   // Lead'lerin aktif durumunu endsAt tarihine göre güncelle
   leads.value = data.map(lead => {
     const now = new Date()
@@ -111,8 +121,9 @@ async function confirmInstantBuy() {
   }
 }
 
-onMounted(() => {
-  fetchLeads()
+onMounted(async () => {
+  await loadSettings()
+  await fetchLeads()
   // Her yeni teklifte ilgili kartı anında güncelle
   socket.on('bid:new', ({ leadId, bid }) => {
     const idx = leads.value.findIndex(l => l.id === leadId)
@@ -138,6 +149,24 @@ onMounted(() => {
 
 <template>
   <section>
+    <!-- Hero Section - Lead yoksa üstte -->
+    <section v-if="!leads.length" class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          Almanya'nın önde gelen<br>
+          lead pazar yeri
+        </h1>
+        <p class="hero-description">
+          Sigorta brokerleri için profesyonel açık artırma platformu. Sağlık, evcil hayvan ve
+          araç sigortaları için yüksek kaliteli potansiyel müşterileri alıp satın.
+        </p>
+        <div class="hero-buttons">
+          <button class="btn btn-primary">Şimdi kaydolun</button>
+          <button class="btn btn-secondary">Canlı müzayedeleri izleyin</button>
+        </div>
+      </div>
+    </section>
+
     <div class="page-content">
       <div class="page-header">
         <h1>Aktif Açık Artırmalar</h1>
@@ -160,14 +189,18 @@ onMounted(() => {
             </span>
           </div>
           <div class="current-bid">
-            <div class="bid-amount">
-              <span v-if="lead.bids && lead.bids.length">₺{{ lead.bids[0].amount }}</span>
-              <span v-else>₺{{ lead.startPrice }}</span>
-            </div>
-            <div class="bid-label">Güncel Teklif</div>
-            <div v-if="lead.instantBuyPrice" class="instant-buy-price">
-              <div class="instant-amount">₺{{ lead.instantBuyPrice.toLocaleString() }}</div>
-              <div class="instant-label">Anında Satın Al</div>
+            <div class="price-container">
+              <div class="bid-info-container">
+                <div class="bid-amount">
+                  <span v-if="lead.bids && lead.bids.length">{{ formatPrice(lead.bids[0].amount, settings.defaultCurrency) }}</span>
+                  <span v-else>{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
+                </div>
+                <div class="bid-label">Güncel Teklif</div>
+              </div>
+              <div v-if="lead.instantBuyPrice" class="instant-buy-price">
+                <div class="instant-amount">{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</div>
+                <div class="instant-label">Anında Satın Al</div>
+              </div>
             </div>
           </div>
         </div>
@@ -196,7 +229,7 @@ onMounted(() => {
               <line x1="12" y1="1" x2="12" y2="23"/>
               <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
             </svg>
-            <span class="detail-text">+₺{{ lead.minIncrement }}</span>
+            <span class="detail-text">+{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement }}</span>
           </div>
           <button class="share-btn-small" @click="shareLead(lead)" title="Paylaş">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -211,6 +244,15 @@ onMounted(() => {
         
         <div class="card-footer">
           <div class="footer-buttons">
+            <router-link 
+              class="bid-btn" 
+              :class="{ 'bid-btn-disabled': lead.isExpired }"
+              :to="lead.isExpired ? '#' : `/lead/${lead.id}`"
+              @click="lead.isExpired && $event.preventDefault()"
+            >
+              {{ lead.isExpired ? 'Süresi Doldu' : 'Teklif Ver' }}
+            </router-link>
+            
             <button 
               v-if="lead.instantBuyPrice && !lead.isExpired && lead.isActive"
               class="instant-buy-btn-small"
@@ -225,24 +267,14 @@ onMounted(() => {
               </svg>
               Anında Al
             </button>
-
-            <router-link 
-              class="bid-btn" 
-              :class="{ 'bid-btn-disabled': lead.isExpired }"
-              :to="lead.isExpired ? '#' : `/lead/${lead.id}`"
-              @click="lead.isExpired && $event.preventDefault()"
-            >
-              {{ lead.isExpired ? 'Süresi Doldu' : 'Teklif Ver' }}
-            </router-link>
-            
           </div>
         </div>
       </div>
     </div>
     </div>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
+    <!-- Hero Section - Lead varsa altta -->
+    <section v-if="leads.length" class="hero-section">
       <div class="hero-content">
         <h1 class="hero-title">
           Almanya'nın önde gelen<br>
@@ -272,7 +304,7 @@ onMounted(() => {
             <div class="lead-title">{{ selectedLead?.title }}</div>
             <div class="price-display">
               <div class="price-label">Anında Satın Alma Fiyatı</div>
-              <div class="price-amount">₺{{ selectedLead?.instantBuyPrice?.toLocaleString() }}</div>
+              <div class="price-amount">{{ formatPrice(selectedLead?.instantBuyPrice, settings.defaultCurrency) }}</div>
             </div>
             <div class="confirmation-text">
               Bu lead'i anında satın almak istediğinizden emin misiniz?
@@ -295,36 +327,79 @@ onMounted(() => {
 </template>
 
 <style scoped>
+/* Fiyat Container - Yan Yana Düzen */
+.price-container {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+
+/* Güncel Teklif Container */
+.bid-info-container {
+  flex: 1;
+  padding: 3px 6px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 40px;
+}
+
+.bid-amount {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0px;
+  line-height: 1;
+}
+
+.bid-label {
+  font-size: 0.6rem;
+  color: #6b7280;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 /* Anında Satın Alma Stilleri */
 .instant-buy-price {
-  margin-top: 6px;
-  padding: 4px 8px;
+  flex: 1;
+  padding: 3px 6px;
   background: #10b981;
-  border-radius: 6px;
+  border-radius: 4px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 40px;
 }
 
 .instant-amount {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: white;
-  margin-bottom: 1px;
+  margin-bottom: 0px;
+  line-height: 1;
 }
 
 .instant-label {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   color: rgba(255, 255, 255, 0.9);
   font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .footer-buttons {
   display: flex;
   gap: 8px;
-  flex-direction: column;
+  flex-direction: row;
 }
 
 .instant-buy-btn-small {
-  padding: 8px 12px;
+  padding: 8px 16px;
   background: #10b981;
   color: white;
   border: none;
@@ -338,6 +413,7 @@ onMounted(() => {
   justify-content: center;
   gap: 4px;
   text-decoration: none;
+  min-width: 10rem;
 }
 
 .instant-buy-btn-small:hover {
@@ -518,20 +594,39 @@ onMounted(() => {
   }
   
   .instant-buy-btn-small {
-    padding: 6px 10px;
+    padding: 6px 12px;
     font-size: 0.75rem;
+    min-width: 90px;
+  }
+  
+  .price-container {
+    gap: 4px;
+  }
+  
+  .bid-info-container {
+    padding: 2px 4px;
+    min-height: 35px;
   }
   
   .instant-buy-price {
-    padding: 3px 6px;
+    padding: 2px 4px;
+    min-height: 35px;
+  }
+  
+  .bid-amount {
+    font-size: 0.75rem;
+  }
+  
+  .bid-label {
+    font-size: 0.55rem;
   }
   
   .instant-amount {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
   }
   
   .instant-label {
-    font-size: 0.6rem;
+    font-size: 0.55rem;
   }
 }
 </style>

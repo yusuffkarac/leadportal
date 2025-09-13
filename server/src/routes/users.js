@@ -6,7 +6,6 @@ const createSchema = z.object({
   email: z.string().email('Geçerli bir email adresi giriniz'),
   password: z.string().min(6, 'Şifre en az 6 karakter olmalıdır'),
   role: z.enum(['USER','ADMIN']).default('USER'),
-  level: z.enum(['S1','S2','S3']).default('S1')
 })
 
 export default function usersRouter(prisma) {
@@ -25,12 +24,12 @@ export default function usersRouter(prisma) {
       const errors = parsed.error?.errors?.map(e => e.message).join(', ') || 'Geçersiz veri'
       return res.status(400).json({ error: errors })
     }
-    const { email, password, role, level } = parsed.data
+    const { email, password, role } = parsed.data
     const exists = await prisma.user.findUnique({ where: { email } })
     if (exists) return res.status(409).json({ error: 'Email already exists' })
     const passwordHash = await bcrypt.hash(password, 10)
-    const user = await prisma.user.create({ data: { email, passwordHash, role, level } })
-    res.status(201).json({ id: user.id, email: user.email, role: user.role, level: user.level })
+    const user = await prisma.user.create({ data: { email, passwordHash, role } })
+    res.status(201).json({ id: user.id, email: user.email, role: user.role })
   })
 
   // Admin: reset user password

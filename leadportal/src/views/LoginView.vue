@@ -41,6 +41,9 @@ async function submit() {
     if (data?.user?.role) {
       storage.setItem('role', data.user.role)
     }
+    if (data?.user?.userTypeId) {
+      storage.setItem('userTypeId', data.user.userTypeId)
+    }
     window.dispatchEvent(new Event('auth-change'))
     router.push('/')
   } catch (e) {

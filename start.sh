@@ -54,6 +54,10 @@ if ! npm run prisma:push; then
     exit 1
 fi
 
+# 3.5 Prisma Studio'yu başlat
+echo -e "\n${BLUE}🔎 3.5 Prisma Studio başlatılıyor...${NC}"
+npx prisma studio --schema ./prisma/schema.prisma &
+
 # 4. Backend'i başlat (arka planda)
 echo -e "\n${BLUE}🖥️  4. Backend sunucusu başlatılıyor...${NC}"
 npm run dev &
@@ -83,10 +87,10 @@ echo -e "\n${BLUE}📋 Servis Bilgileri:${NC}"
 echo -e "  🗄️  PostgreSQL: http://localhost:5432"
 echo -e "  🖥️  Backend API: http://localhost:3000"
 echo -e "  🎨 Frontend: http://localhost:5173"
-echo -e "  🔧 Prisma Studio: npm run prisma:studio (server dizininde)"
+echo -e "  🔧 Prisma Studio: http://localhost:5555 (veya terminaldeki bağlantı linki)"
 
 echo -e "\n${YELLOW}💡 İpuçları:${NC}"
-echo -e "  • Prisma Studio'yu açmak için: cd server && npm run prisma:studio"
+echo -e "  • Prisma Studio'yu açmak için: cd server && npx prisma studio --schema ./prisma/schema.prisma"
 echo -e "  • Servisleri durdurmak için: Ctrl+C"
 echo -e "  • Docker'ı durdurmak için: cd server && docker-compose down"
 
@@ -97,6 +101,8 @@ cleanup() {
     echo -e "\n${YELLOW}🛑 Servisler durduruluyor...${NC}"
     kill $BACKEND_PID 2>/dev/null || true
     kill $FRONTEND_PID 2>/dev/null || true
+    # Prisma Studio'yu da kapat
+    pkill -f "prisma studio" 2>/dev/null || true
     cd server
     docker-compose down
     echo -e "${GREEN}✅ Tüm servisler durduruldu.${NC}"

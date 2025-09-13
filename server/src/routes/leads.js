@@ -6,7 +6,7 @@ const createLeadSchema = z.object({
   description: z.string().min(1, 'Açıklama zorunlu'),
   startPrice: z.number().int().nonnegative(),
   minIncrement: z.number().int().positive(),
-  instantBuyPrice: z.number().int().positive().optional(),
+  instantBuyPrice: z.number().int().positive().nullable().optional(),
   endsAt: z.string().min(1, 'Bitiş zamanı zorunlu').transform((v) => new Date(v))
 })
 
@@ -131,12 +131,73 @@ export default function leadsRouter(prisma, io) {
       return res.status(400).json({ error: 'Validation failed', issues })
     }
     const { title, description, startPrice, minIncrement, instantBuyPrice, endsAt } = parsed.data
+    
+    // Ayarlardan ID formatını ve varsayılan değerleri al
+    let settings = await prisma.settings.findUnique({
+      where: { id: 'default' }
+    })
+    if (!settings) {
+      settings = {
+        leadIdFormat: 'numeric',
+        customFormat: 'L{YYYY}{MM}{DD}-{NUM}',
+        leadPrefix: 'LEAD',
+        startingNumber: 1,
+        numberType: 'sequential',
+        defaultMinIncrement: 10
+      }
+    }
+
+    // Varsayılan değerleri kullan (eğer gönderilmemişse)
+    const finalMinIncrement = minIncrement || settings.defaultMinIncrement
+
+    // Mevcut lead sayısını al
+    const leadCount = await prisma.lead.count()
+    
+    // Yeni ID oluştur
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    
+    let num
+    if (settings.numberType === 'random') {
+      // Rastgele sayı (1000-9999 arası)
+      num = Math.floor(Math.random() * 9000) + 1000
+    } else {
+      // Sıralı sayı
+      num = settings.startingNumber + leadCount
+    }
+    
+    let customId
+    switch (settings.leadIdFormat) {
+      case 'numeric':
+        customId = num.toString()
+        break
+      case 'prefixed-numeric':
+        customId = `${settings.leadPrefix}-${num}`
+        break
+      case 'date-numeric':
+        customId = `${year}${month}${day}-${num}`
+        break
+      case 'custom':
+        customId = settings.customFormat
+          .replace('{YYYY}', year)
+          .replace('{MM}', month)
+          .replace('{DD}', day)
+          .replace('{NUM}', num)
+          .replace('{PREFIX}', settings.leadPrefix)
+        break
+      default:
+        customId = num.toString()
+    }
+
     const lead = await prisma.lead.create({
       data: {
+        id: customId, // Özel ID kullan
         title,
         description,
         startPrice,
-        minIncrement,
+        minIncrement: finalMinIncrement, // Varsayılan değeri kullan
         instantBuyPrice,
         endsAt,
         ownerId: req.user.id

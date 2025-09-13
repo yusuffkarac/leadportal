@@ -10,6 +10,7 @@ import cors from 'cors'
 import { Server as SocketIOServer } from 'socket.io'
 import jwt from 'jsonwebtoken'
 import { PrismaClient } from '../generated/prisma/index.js'
+import { checkMaintenanceMode } from './middleware/maintenance.js'
 
 const app = express()
 const server = http.createServer(app)
@@ -24,6 +25,9 @@ const prisma = new PrismaClient()
 
 app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }))
 app.use(express.json())
+
+// Bakım modu kontrolü (tüm API rotalarından önce)
+app.use('/api', checkMaintenanceMode)
 
 // Health
 app.get('/health', (_req, res) => res.json({ ok: true }))
@@ -69,12 +73,18 @@ import leadsRouter from './routes/leads.js'
 import bidsRouter from './routes/bids.js'
 import usersRouter from './routes/users.js'
 import leadSalesRouter from './routes/leadSales.js'
+import settingsRouter from './routes/settings.js'
+import userTypesRouter from './routes/userTypes.js'
+import pagesRouter from './routes/pages.js'
 
 app.use('/api/auth', authRouter(prisma))
 app.use('/api/leads', (req, res, next) => requireAuth(req, res, next), leadsRouter(prisma, io))
 app.use('/api/bids', (req, res, next) => requireAuth(req, res, next), bidsRouter(prisma, io))
 app.use('/api/users', (req, res, next) => requireAuth(req, res, next), usersRouter(prisma))
 app.use('/api/lead-sales', (req, res, next) => requireAuth(req, res, next), leadSalesRouter(prisma))
+app.use('/api/settings', settingsRouter)
+app.use('/api/user-types', userTypesRouter(prisma))
+app.use('/api/pages', pagesRouter(prisma))
 
 const port = process.env.PORT || 4000
 server.listen(port, '0.0.0.0', () => {

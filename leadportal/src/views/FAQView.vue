@@ -372,7 +372,7 @@ function scrollToCategory(categoryId) {
   display: block;
   font-size: 2rem;
   font-weight: 700;
-  color: #3b82f6;
+  color: var(--text);
   margin-bottom: 8px;
 }
 
@@ -447,7 +447,7 @@ function scrollToCategory(categoryId) {
 
 .category-card:hover {
   transform: translateY(-4px);
-  border-color: #3b82f6;
+  border-color: var(--text);
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
@@ -460,7 +460,7 @@ function scrollToCategory(categoryId) {
   align-items: center;
   justify-content: center;
   margin: 0 auto 20px;
-  color: #3b82f6;
+  color: var(--text);
 }
 
 .category-card h4 {
@@ -517,7 +517,7 @@ function scrollToCategory(categoryId) {
 }
 
 .faq-question:hover {
-  color: #3b82f6;
+  color: var(--text);
 }
 
 .faq-question h4 {
@@ -600,7 +600,7 @@ function scrollToCategory(categoryId) {
 }
 
 .contact-method svg {
-  color: #3b82f6;
+  color: var(--text);
 }
 
 .contact-image img {

@@ -37,6 +37,40 @@ router.get('/purchased', async (req, res) => {
   }
 });
 
+// Admin: Tüm satışları getir
+router.get('/admin/all', async (req, res) => {
+  try {
+    if (req.user?.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+    
+    const sales = await prisma.leadSale.findMany({
+      include: {
+        buyer: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
+        lead: {
+          select: {
+            id: true,
+            title: true
+          }
+        }
+      },
+      orderBy: {
+        soldAt: 'desc'
+      }
+    });
+
+    res.json(sales);
+  } catch (error) {
+    console.error('Error fetching all sales:', error);
+    res.status(500).json({ error: 'Failed to fetch sales' });
+  }
+});
+
 // Lead satış detayını getir
 router.get('/:saleId', async (req, res) => {
   try {

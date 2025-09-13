@@ -20,9 +20,9 @@ export default function authRouter(prisma) {
     const existing = await prisma.user.findUnique({ where: { email } })
     if (existing) return res.status(409).json({ error: 'Email already in use' })
     const passwordHash = await bcrypt.hash(password, 10)
-    const user = await prisma.user.create({ data: { email, passwordHash, role: 'USER', level: 'S1' } })
-    const token = jwt.sign({ id: user.id, email: user.email, role: user.role, level: user.level }, process.env.JWT_SECRET, { expiresIn: '7d' })
-    res.json({ token, user: { id: user.id, email: user.email, role: user.role, level: user.level } })
+    const user = await prisma.user.create({ data: { email, passwordHash, role: 'USER' } })
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' })
+    res.json({ token, user: { id: user.id, email: user.email, role: user.role } })
   })
 
   router.post('/login', async (req, res) => {
@@ -33,8 +33,16 @@ export default function authRouter(prisma) {
     if (!user) return res.status(401).json({ error: 'Invalid credentials' })
     const ok = await bcrypt.compare(password, user.passwordHash)
     if (!ok) return res.status(401).json({ error: 'Invalid credentials' })
-    const token = jwt.sign({ id: user.id, email: user.email, role: user.role, level: user.level }, process.env.JWT_SECRET, { expiresIn: '7d' })
-    res.json({ token, user: { id: user.id, email: user.email, role: user.role, level: user.level } })
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' })
+    res.json({ 
+      token, 
+      user: { 
+        id: user.id, 
+        email: user.email, 
+        role: user.role, 
+        userTypeId: user.userTypeId
+      } 
+    })
   })
 
   return router

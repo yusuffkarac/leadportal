@@ -54,7 +54,7 @@ function goHome() {
         <span class="code">403</span>
         <h2>Erişim reddedildi</h2>
       </div>
-      <p class="desc">Bu sayfaya yalnızca ADMIN rolüne sahip kullanıcılar erişebilir.</p>
+      <p class="desc">Bu sayfaya erişim yetkiniz bulunmuyor. Lütfen yetkili bir kullanıcı tipi ile giriş yapın.</p>
       <div class="progress" role="progressbar" :aria-valuenow="seconds" :aria-valuemin="0" :aria-valuemax="total">
         <div class="bar" :style="{ width: percent }"></div>
       </div>

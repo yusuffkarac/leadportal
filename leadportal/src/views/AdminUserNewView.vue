@@ -5,13 +5,11 @@ import axios from 'axios'
 const email = ref('')
 const password = ref('')
 const modalRole = ref('USER')
-const modalLevel = ref('S1')
 const ok = ref('')
 const err = ref('')
 const users = ref([])
 const query = ref('')
 const filterRole = ref('')
-const filterLevel = ref('')
 const sortKey = ref('createdAt')
 const sortDir = ref('desc')
 
@@ -22,7 +20,6 @@ const filteredUsers = computed(() => {
     list = list.filter(u => u.email.toLowerCase().includes(q))
   }
   if (filterRole.value) list = list.filter(u => u.role === filterRole.value)
-  if (filterLevel.value) list = list.filter(u => u.level === filterLevel.value)
   list.sort((a,b) => {
     const dir = sortDir.value === 'asc' ? 1 : -1
     if (sortKey.value === 'email') return a.email.localeCompare(b.email) * dir
@@ -63,12 +60,11 @@ async function submit() {
   }
   
   try {
-    await axios.post('/api/users', { email: email.value, password: password.value, role: modalRole.value, level: modalLevel.value }, { headers: authHeaders() })
+    await axios.post('/api/users', { email: email.value, password: password.value, role: modalRole.value }, { headers: authHeaders() })
     ok.value = 'Kullanıcı oluşturuldu'
     email.value = ''
     password.value = ''
     modalRole.value = 'USER'
-    modalLevel.value = 'S1'
     showNewUser.value = false
     loadUsers()
   } catch (e) {
@@ -99,7 +95,6 @@ function openNewUser() {
   err.value = ''
   query.value = ''
   filterRole.value = ''
-  filterLevel.value = ''
 }
 
 
@@ -108,7 +103,6 @@ function closeNewUser() {
   email.value = ''
   password.value = ''
   modalRole.value = 'USER'
-  modalLevel.value = 'S1'
   ok.value = ''
   err.value = ''
 }
@@ -220,14 +214,6 @@ onMounted(loadUsers)
           </select>
         </div>
         <div class="filter-group">
-          <select class="filter-select" v-model="filterLevel">
-            <option value="">Tüm Seviyeler</option>
-            <option value="S1">S1</option>
-            <option value="S2">S2</option>
-            <option value="S3">S3</option>
-          </select>
-        </div>
-        <div class="filter-group">
           <select class="filter-select" v-model="sortKey">
             <option value="createdAt">Tarihe Göre</option>
             <option value="email">Email'e Göre</option>
@@ -254,7 +240,6 @@ onMounted(loadUsers)
             <div class="user-email">{{ u.email }}</div>
             <div class="user-meta">
               <span class="user-role">{{ u.role }}</span>
-              <span class="user-level">{{ u.level }}</span>
             </div>
           </div>
           <div class="user-actions">
@@ -287,12 +272,6 @@ onMounted(loadUsers)
           <select class="input" v-model="modalRole">
             <option value="USER">USER</option>
             <option value="ADMIN">ADMIN</option>
-          </select>
-          <label>Seviye</label>
-          <select class="input" v-model="modalLevel">
-            <option value="S1">S1</option>
-            <option value="S2">S2</option>
-            <option value="S3">S3</option>
           </select>
           <div class="row" style="justify-content:flex-end; gap:8px; margin-top:16px">
             <button type="button" class="btn" @click="closeNewUser">İptal</button>

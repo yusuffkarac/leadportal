@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { io } from 'socket.io-client'
+import { formatPrice, getCurrencySymbol } from '@/utils/currency.js'
 
 const route = useRoute()
 const leadId = route.params.id
@@ -12,11 +13,22 @@ const errorMessage = ref('')
 const isSubmitting = ref(false)
 const showInstantBuyModal = ref(false)
 const isProcessingInstantBuy = ref(false)
+const settings = ref({ defaultCurrency: 'TRY' })
 const socket = io('/', {
   path: '/socket.io',
   transports: ['websocket'],
   auth: { token: localStorage.getItem('token') }
 })
+
+// Ayarları yükle
+async function loadSettings() {
+  try {
+    const response = await axios.get('/api/settings', { headers: authHeaders() })
+    settings.value = response.data
+  } catch (error) {
+    console.error('Ayarlar yüklenemedi:', error)
+  }
+}
 
 async function loadLead() {
   const { data } = await axios.get(`/api/leads/${leadId}`, { headers: authHeaders() })
@@ -124,7 +136,9 @@ async function placeBid() {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await loadSettings()
+  await loadLead()
   socket.emit('join-lead', leadId)
   socket.on('bid:new', (payload) => {
     if (payload.leadId !== leadId) return
@@ -152,7 +166,7 @@ onUnmounted(() => {
     <div class="page-content">
       <!-- Hero Section -->
       <div class="lead-hero">
-        <div class="lead-header">
+        <div class="lead-info-section">
           <div class="lead-title-section">
             <div class="lead-status">
               <span class="status-indicator" :class="lead.isActive ? 'active' : 'inactive'"></span>
@@ -164,7 +178,7 @@ onUnmounted(() => {
           
           <div class="lead-stats-section">
             <div class="current-bid-card">
-              <div class="bid-amount">₺{{ lead.bids?.[0]?.amount || lead.startPrice }}</div>
+              <div class="bid-amount">{{ formatPrice(lead.bids?.[0]?.amount || lead.startPrice, settings.defaultCurrency) }}</div>
               <div class="bid-label">Güncel Teklif</div>
             </div>
             
@@ -175,7 +189,7 @@ onUnmounted(() => {
                 <div class="stat-label">Teklif</div>
               </div>
               <div class="stat-card">
-                <div class="stat-value">₺{{ lead.minIncrement }}</div>
+                <div class="stat-value">{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement }}</div>
                 <div class="stat-label">Min Artış</div>
               </div>
             </div>
@@ -189,49 +203,12 @@ onUnmounted(() => {
               </svg>
               <span>Paylaş</span>
             </button>
-            
           </div>
         </div>
       </div>
 
-      <!-- Main Content -->
-      <div class="content-grid">
-        <!-- Bids Section -->
-        <div class="bids-panel">
-          <div class="panel-header">
-            <h2>Teklif Geçmişi</h2>
-            <span class="bid-count">{{ lead.bids?.length || 0 }} teklif</span>
-          </div>
-          
-          <div v-if="!lead.bids?.length" class="empty-state">
-            <div class="empty-icon">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M9 11H5a2 2 0 0 0-2 2v3c0 1.1.9 2 2 2h4m0-7v7m0-7l3-3m-3 3l-3-3m8 3h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2m0-7v7m0-7l3-3m-3 3l-3-3"/>
-              </svg>
-            </div>
-            <h3>Henüz teklif yok</h3>
-            <p>İlk teklifi siz verin ve bu artırmayı başlatın!</p>
-          </div>
-          
-          <div v-else class="bids-timeline">
-            <div class="bid-card" v-for="(bid, index) in lead.bids" :key="bid.id" :class="{ 'top-bid': index === 0 }">
-              <div class="bid-rank">
-                <span class="rank-number">{{ index + 1 }}</span>
-                <span class="rank-label">.</span>
-              </div>
-              <div class="bid-info">
-                <div class="bid-amount">₺{{ bid.amount }}</div>
-                <div class="bid-user">{{ bid.user?.email || 'Anonim' }}</div>
-              </div>
-              <div class="bid-time">
-                <div class="time-text">{{ new Date(bid.createdAt).toLocaleDateString('tr-TR') }}</div>
-                <div class="time-detail">{{ new Date(bid.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bid Form Panel -->
+      <!-- Bid Form Section -->
+      <div class="bid-form-section">
         <div class="bid-form-panel">
           <div class="form-header">
             <h2>Teklif Ver</h2>
@@ -242,7 +219,7 @@ onUnmounted(() => {
             <div class="input-group">
               <label class="input-label">Teklif Miktarı</label>
               <div class="amount-input">
-                <span class="currency">₺</span>
+                <span class="currency">{{ getCurrencySymbol(settings.defaultCurrency) }}</span>
                 <input 
                   type="number" 
                   v-model="amount" 
@@ -252,7 +229,7 @@ onUnmounted(() => {
                 />
               </div>
               <div class="input-info">
-                <span class="min-bid">Minimum: ₺{{ (lead.bids?.[0]?.amount ?? lead.startPrice) + lead.minIncrement }}</span>
+                <span class="min-bid">Minimum: {{ getCurrencySymbol(settings.defaultCurrency) }}{{ (lead.bids?.[0]?.amount ?? lead.startPrice) + lead.minIncrement }}</span>
               </div>
             </div>
             
@@ -265,28 +242,28 @@ onUnmounted(() => {
                   @click="setQuickBid(1)"
                   :disabled="!lead.isActive"
                 >
-                  +₺{{ lead.minIncrement }}
+                  +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement }}
                 </button>
                 <button 
                   class="quick-bid-btn" 
                   @click="setQuickBid(2)"
                   :disabled="!lead.isActive"
                 >
-                  +₺{{ lead.minIncrement * 2 }}
+                  +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement * 2 }}
                 </button>
                 <button 
                   class="quick-bid-btn" 
                   @click="setQuickBid(5)"
                   :disabled="!lead.isActive"
                 >
-                  +₺{{ lead.minIncrement * 5 }}
+                  +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement * 5 }}
                 </button>
                 <button 
                   class="quick-bid-btn" 
                   @click="setQuickBid(10)"
                   :disabled="!lead.isActive"
                 >
-                  +₺{{ lead.minIncrement * 10 }}
+                  +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement * 10 }}
                 </button>
               </div>
             </div>
@@ -319,7 +296,7 @@ onUnmounted(() => {
                   <path d="M12 15v6"/>
                 </svg>
                 <span>Anında Satın Al</span>
-                <span class="instant-price">₺{{ lead.instantBuyPrice.toLocaleString() }}</span>
+                <span class="instant-price">{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</span>
               </button>
             </div>
             
@@ -330,6 +307,43 @@ onUnmounted(() => {
                 <line x1="12" y1="16" x2="12.01" y2="16"/>
               </svg>
               {{ errorMessage }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bids Section -->
+      <div class="bids-section">
+        <div class="bids-panel">
+          <div class="panel-header">
+            <h2>Teklif Geçmişi</h2>
+            <span class="bid-count">{{ lead.bids?.length || 0 }} teklif</span>
+          </div>
+          
+          <div v-if="!lead.bids?.length" class="empty-state">
+            <div class="empty-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M9 11H5a2 2 0 0 0-2 2v3c0 1.1.9 2 2 2h4m0-7v7m0-7l3-3m-3 3l-3-3m8 3h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2m0-7v7m0-7l3-3m-3 3l-3-3"/>
+              </svg>
+            </div>
+            <h3>Henüz teklif yok</h3>
+            <p>İlk teklifi siz verin ve bu artırmayı başlatın!</p>
+          </div>
+          
+          <div v-else class="bids-timeline">
+            <div class="bid-card" v-for="(bid, index) in lead.bids" :key="bid.id" :class="{ 'top-bid': index === 0 }">
+              <div class="bid-rank">
+                <span class="rank-number">{{ index + 1 }}</span>
+                <span class="rank-label">.</span>
+              </div>
+              <div class="bid-info">
+                <div class="bid-amount">{{ formatPrice(bid.amount, settings.defaultCurrency) }}</div>
+                <div class="bid-user">{{ bid.user?.email || 'Anonim' }}</div>
+              </div>
+              <div class="bid-time">
+                <div class="time-text">{{ new Date(bid.createdAt).toLocaleDateString('tr-TR') }}</div>
+                <div class="time-detail">{{ new Date(bid.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) }}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -355,7 +369,7 @@ onUnmounted(() => {
           <div class="lead-title">{{ lead?.title }}</div>
           <div class="price-display">
             <div class="price-label">Anında Satın Alma Fiyatı</div>
-            <div class="price-amount">₺{{ lead?.instantBuyPrice?.toLocaleString() }}</div>
+            <div class="price-amount">{{ formatPrice(lead?.instantBuyPrice, settings.defaultCurrency) }}</div>
           </div>
           <div class="confirmation-text">
             Bu lead'i anında satın almak istediğinizden emin misiniz?
@@ -377,6 +391,57 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* Page Layout */
+.page-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 32px;
+  align-items: start;
+}
+
+/* Bids Section */
+.bids-section {
+  grid-column: 1 / -1;
+  margin-top: 32px;
+}
+
+.bids-panel {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+}
+
+/* Hero Section */
+.lead-hero {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  height: -webkit-fill-available;
+  margin-bottom: 0px;
+}
+
+.lead-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+
+.bid-form-panel {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+}
+
 .bid-buttons {
   display: flex;
   flex-direction: column;
@@ -386,7 +451,7 @@ onUnmounted(() => {
 .submit-bid-btn {
   width: 100%;
   padding: 16px 24px;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, var(--#3b82f6) 0%, #1d4ed8 100%);
   color: white;
   border: none;
   border-radius: 12px;
@@ -426,7 +491,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  flex-direction: column;
+  flex-direction: row;
 }
 
 .instant-buy-btn:hover:not(:disabled) {
