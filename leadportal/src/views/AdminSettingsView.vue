@@ -3,7 +3,6 @@
     <div class="page-content">
       <div class="page-header">
         <h1>Uygulama Ayarları</h1>
-        <p class="page-subtitle">Sistem genelinde kullanılan ayarları yönetin</p>
       </div>
 
       <!-- Settings Sections -->
@@ -174,6 +173,19 @@
                 </div>
               </div>
             </div>
+            <div class="save-section" style="justify-content:flex-end;">
+              <button class="btn btn-primary" @click="saveLeadIdSettings" :disabled="savingLeadId">
+                <svg v-if="savingLeadId" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                </svg>
+                <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                  <polyline points="17,21 17,13 7,13 7,21"/>
+                  <polyline points="7,3 7,8 15,8"/>
+                </svg>
+                {{ savingLeadId ? 'Kaydediliyor...' : 'Lead ID Ayarlarını Kaydet' }}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -256,7 +268,33 @@
                 Bu mesaj bakım modu sırasında kullanıcılara gösterilir
               </small>
             </div>
+            <div class="save-section" style="justify-content:flex-end;">
+              <button class="btn btn-primary" @click="saveGeneralSettings" :disabled="savingGeneral">
+                <svg v-if="savingGeneral" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                </svg>
+                <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                  <polyline points="17,21 17,13 7,13 7,21"/>
+                  <polyline points="7,3 7,8 15,8"/>
+                </svg>
+                {{ savingGeneral ? 'Kaydediliyor...' : 'Genel Ayarları Kaydet' }}
+              </button>
+            </div>
           </div>
+        </div>
+        <div class="save-section" style="justify-content:flex-end;">
+          <button class="btn btn-primary" @click="saveCompanySettings" :disabled="savingCompany">
+            <svg v-if="savingCompany" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12a9 9 0 11-6.219-8.56"/>
+            </svg>
+            <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+              <polyline points="17,21 17,13 7,13 7,21"/>
+              <polyline points="7,3 7,8 15,8"/>
+            </svg>
+            {{ savingCompany ? 'Kaydediliyor...' : 'Şirket Bilgilerini Kaydet' }}
+          </button>
         </div>
       </div>
 
@@ -297,12 +335,23 @@ const settings = ref({
   defaultAuctionDays: 7,
   defaultMinIncrement: 10,
   maintenanceMode: false,
-  maintenanceMessage: 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.'
+  maintenanceMessage: 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.',
+  companyName: 'LeadPortal',
+  companyLogoUrl: ''
 })
 
 const saving = ref(false)
 const message = ref('')
 const messageType = ref('')
+const savingCompany = ref(false)
+const savingLeadId = ref(false)
+const savingGeneral = ref(false)
+
+// Local UI state for logo controls
+const logoUrlInput = ref('')
+const logoFileName = ref('')
+const logoUploadedViaFile = ref(false)
+const lastLogoUrlBeforeFile = ref('')
 
 function authHeaders() {
   const token = localStorage.getItem('token')
@@ -349,6 +398,24 @@ async function loadSettings() {
     if (response.data) {
       settings.value = { ...settings.value, ...response.data }
     }
+    try {
+      const lsName = localStorage.getItem('companyName')
+      const lsLogo = localStorage.getItem('companyLogoUrl')
+      if (lsName) settings.value.companyName = lsName
+      if (lsLogo) settings.value.companyLogoUrl = lsLogo
+    } catch {}
+    // Initialize logo UI state
+    if (typeof settings.value.companyLogoUrl === 'string' && settings.value.companyLogoUrl.startsWith('data:')) {
+      logoUrlInput.value = ''
+      logoUploadedViaFile.value = true
+      logoFileName.value = 'Yüklendi (data URL)'
+      lastLogoUrlBeforeFile.value = ''
+    } else {
+      logoUrlInput.value = settings.value.companyLogoUrl || ''
+      logoUploadedViaFile.value = false
+      logoFileName.value = ''
+      lastLogoUrlBeforeFile.value = settings.value.companyLogoUrl || ''
+    }
   } catch (error) {
     console.error('Ayarlar yüklenemedi:', error)
   }
@@ -356,6 +423,35 @@ async function loadSettings() {
 
 async function updateSettings() {
   // Real-time preview update
+}
+
+function onLogoUrlInput() {
+  settings.value.companyLogoUrl = logoUrlInput.value
+  logoUploadedViaFile.value = false
+}
+
+function onLogoFileChange(e) {
+  const file = e.target.files && e.target.files[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = () => {
+    // remember previous URL value to restore on cancel
+    lastLogoUrlBeforeFile.value = settings.value.companyLogoUrl || ''
+    settings.value.companyLogoUrl = reader.result
+    logoUrlInput.value = '' // hide base64 from text field
+    logoUploadedViaFile.value = true
+    logoFileName.value = file.name
+  }
+  reader.readAsDataURL(file)
+}
+
+function clearLogoFile() {
+  settings.value.companyLogoUrl = lastLogoUrlBeforeFile.value || ''
+  logoUrlInput.value = lastLogoUrlBeforeFile.value || ''
+  logoUploadedViaFile.value = false
+  logoFileName.value = ''
+  const input = document.getElementById('logo-file')
+  if (input) input.value = ''
 }
 
 async function saveSettings() {
@@ -367,6 +463,11 @@ async function saveSettings() {
     
     message.value = 'Ayarlar başarıyla kaydedildi!'
     messageType.value = 'success'
+    try {
+      localStorage.setItem('companyName', settings.value.companyName || '')
+      localStorage.setItem('companyLogoUrl', settings.value.companyLogoUrl || '')
+      window.dispatchEvent(new Event('settings-change'))
+    } catch {}
     
     setTimeout(() => {
       message.value = ''
@@ -377,6 +478,56 @@ async function saveSettings() {
     messageType.value = 'error'
   } finally {
     saving.value = false
+  }
+}
+
+async function saveCompanySettings() {
+  try {
+    savingCompany.value = true
+    message.value = ''
+    await api.post('/settings', settings.value)
+    message.value = 'Firma ayarları kaydedildi!'
+    messageType.value = 'success'
+    try {
+      localStorage.setItem('companyName', settings.value.companyName || '')
+      localStorage.setItem('companyLogoUrl', settings.value.companyLogoUrl || '')
+      window.dispatchEvent(new Event('settings-change'))
+    } catch {}
+  } catch (error) {
+    message.value = error.response?.data?.message || 'Firma ayarları kaydedilemedi'
+    messageType.value = 'error'
+  } finally {
+    savingCompany.value = false
+  }
+}
+
+async function saveLeadIdSettings() {
+  try {
+    savingLeadId.value = true
+    message.value = ''
+    await api.post('/settings', settings.value)
+    message.value = 'Lead ID ayarları kaydedildi!'
+    messageType.value = 'success'
+  } catch (error) {
+    message.value = error.response?.data?.message || 'Lead ID ayarları kaydedilemedi'
+    messageType.value = 'error'
+  } finally {
+    savingLeadId.value = false
+  }
+}
+
+async function saveGeneralSettings() {
+  try {
+    savingGeneral.value = true
+    message.value = ''
+    await api.post('/settings', settings.value)
+    message.value = 'Genel ayarlar kaydedildi!'
+    messageType.value = 'success'
+  } catch (error) {
+    message.value = error.response?.data?.message || 'Genel ayarlar kaydedilemedi'
+    messageType.value = 'error'
+  } finally {
+    savingGeneral.value = false
   }
 }
 
@@ -692,6 +843,69 @@ input:checked + .toggle-slider:before {
   font-size: 0.75rem;
   color: var(--primary);
   margin-top: 4px;
+}
+
+.upload-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #111827;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.file-name {
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.file-name.muted {
+  color: #9ca3af;
+}
+
+.upload-cancel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-cancel-btn:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
 }
 
 .save-section {

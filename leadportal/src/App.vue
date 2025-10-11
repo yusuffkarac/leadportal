@@ -3,6 +3,7 @@ import { RouterLink, RouterView, useRouter } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { checkPageAccess } from './utils/permissions.js'
+import defaultLogo from '@/assets/images/logo.png'
 
 const router = useRouter()
 
@@ -42,6 +43,22 @@ const isAuthed = ref(false)
 const role = ref(null)
 const userType = ref(null)
 const pagePermissions = ref({})
+
+// Branding
+const companyName = ref('LeadPortal')
+const companyLogoUrl = ref('')
+const footerPhone = ref('+90 (212) 123 45 67')
+const footerEmail = ref('info@leadportal.com')
+const footerNote = ref('')
+function loadBranding() {
+  try {
+    companyName.value = localStorage.getItem('companyName') || 'LeadPortal'
+    companyLogoUrl.value = localStorage.getItem('companyLogoUrl') || ''
+    footerPhone.value = localStorage.getItem('footerPhone') || '+90 (212) 123 45 67'
+    footerEmail.value = localStorage.getItem('footerEmail') || 'info@leadportal.com'
+    footerNote.value = localStorage.getItem('footerNote') || ''
+  } catch {}
+}
 
 // Sayfa yetkilendirmelerini kontrol et
 const canAccessAbout = computed(() => {
@@ -89,7 +106,9 @@ let hideTimer = null
 
 onMounted(() => {
   updateAuth()
+  loadBranding()
   window.addEventListener('auth-change', onAuthChange)
+  window.addEventListener('settings-change', loadBranding)
   router.beforeEach((to, from, next) => {
     navToken++
     isNavigating.value = true
@@ -108,6 +127,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('auth-change', onAuthChange)
+  window.removeEventListener('settings-change', loadBranding)
 })
 
 const isNavigating = ref(false)
@@ -135,8 +155,8 @@ function closeAdminDropdown() {
   <div class="container">
     <div class="navbar">
       <div class="brand" @click="goToHome">
-        <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="40" height="40" />
-        <span>LeadPortal</span>
+        <img alt="Logo" class="logo" :src="companyLogoUrl || defaultLogo" width="40"/>
+        <span>{{ companyName }}</span>
       </div>
       
       <!-- Desktop Navigation -->
@@ -174,6 +194,13 @@ function closeAdminDropdown() {
                 <line x1="22" y1="11" x2="16" y2="11"/>
               </svg>
               Kullanıcı Ekle
+            </RouterLink>
+            <RouterLink to="/admin/company-settings" class="menu-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="14" rx="2"/>
+                <path d="M7 21h10"/>
+              </svg>
+              Firma Ayarları
             </RouterLink>
             <RouterLink to="/admin/settings" class="menu-item">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -226,8 +253,8 @@ function closeAdminDropdown() {
         <!-- Mobile Menu Header -->
         <div class="mobile-menu-header">
           <div class="mobile-menu-brand">
-            <img alt="Vue logo" class="mobile-menu-logo" src="@/assets/logo.svg" width="32" height="32" />
-            <span class="mobile-menu-title">LeadPortal</span>
+            <img alt="Logo" class="mobile-menu-logo" :src="companyLogoUrl || defaultLogo" width="32" height="32" />
+            <span class="mobile-menu-title">{{ companyName }}</span>
           </div>
           <button class="mobile-menu-close" @click="closeMobileMenu">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -338,7 +365,7 @@ function closeAdminDropdown() {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
               </svg>
-              <span>LeadPortal</span>
+              <span>{{ companyName }}</span>
             </div>
             <p class="footer-description">
               Almanya'nın önde gelen lead pazar yeri. Profesyonel açık artırmalar ve lead yönetimi platformu.
@@ -348,14 +375,14 @@ function closeAdminDropdown() {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                 </svg>
-                <span>+90 (212) 123 45 67</span>
+                <span>{{ footerPhone }}</span>
               </div>
               <div class="contact-item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                   <polyline points="22,6 12,13 2,6"/>
                 </svg>
-                <span>info@leadportal.com</span>
+                <span>{{ footerEmail }}</span>
               </div>
             </div>
           </div>
@@ -396,7 +423,7 @@ function closeAdminDropdown() {
 
       <div class="footer-bottom">
         <div class="footer-bottom-content">
-          <p>© 2024 LeadPortal. Tüm hakları saklıdır.</p>
+          <p>{{ footerNote || `© 2024 ${companyName}. Tüm hakları saklıdır.` }}</p>
           <p>Kayıtlı: İstanbul Ticaret Sicil No: 12345</p>
         </div>
       </div>

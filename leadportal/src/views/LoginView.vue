@@ -1,7 +1,8 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import defaultLogo from '@/assets/images/logo.png'
 
 const router = useRouter()
 const email = ref('')
@@ -12,6 +13,16 @@ const showPassword = ref(false)
 const remember = ref(true)
 const emailError = ref('')
 const passwordError = ref('')
+
+// Branding
+const companyName = ref('LeadPortal')
+const companyLogoUrl = ref('')
+function loadBranding() {
+  try {
+    companyName.value = localStorage.getItem('companyName') || 'LeadPortal'
+    companyLogoUrl.value = localStorage.getItem('companyLogoUrl') || ''
+  } catch {}
+}
 
 function validate() {
   emailError.value = ''
@@ -53,15 +64,24 @@ async function submit() {
     loading.value = false
   }
 }
+
+onMounted(() => {
+  loadBranding()
+  window.addEventListener('settings-change', loadBranding)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('settings-change', loadBranding)
+})
 </script>
 
 <template>
   <div class="auth-wrap">
     <div class="auth-card">
       <div class="brand">
-        <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="36" height="36" />
+        <img alt="Logo" class="logo" :src="companyLogoUrl || defaultLogo" width="36" height="36" />
         <div class="brand-text">
-          <h1>LeadPortal</h1>
+          <h1>{{ companyName }}</h1>
           <p>Hesabınıza güvenle giriş yapın</p>
         </div>
       </div>

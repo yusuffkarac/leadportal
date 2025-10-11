@@ -9,6 +9,7 @@ import AdminLeadNewView from '../views/AdminLeadNewView.vue'
 import FAQView from '../views/FAQView.vue'
 import PurchasedLeadsView from '../views/PurchasedLeadsView.vue'
 import AdminSettingsView from '../views/AdminSettingsView.vue'
+import AdminCompanySettingsView from '../views/AdminCompanySettingsView.vue'
 import AdminUserTypesView from '../views/AdminUserTypesView.vue'
 
 const router = createRouter({
@@ -86,6 +87,12 @@ const router = createRouter({
       path: '/admin/settings',
       name: 'admin-settings',
       component: AdminSettingsView,
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin/company-settings',
+      name: 'admin-company-settings',
+      component: AdminCompanySettingsView,
       meta: { requiresAdmin: true },
     },
     {

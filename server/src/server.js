@@ -24,7 +24,8 @@ const io = new SocketIOServer(server, {
 const prisma = new PrismaClient()
 
 app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }))
-app.use(express.json())
+app.use(express.json({ limit: process.env.JSON_LIMIT || '20mb' }))
+app.use(express.urlencoded({ extended: true, limit: process.env.URLENCODED_LIMIT || '20mb' }))
 
 // Bakım modu kontrolü (tüm API rotalarından önce)
 app.use('/api', checkMaintenanceMode)
