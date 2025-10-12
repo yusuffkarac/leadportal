@@ -1,5 +1,5 @@
 import express from 'express'
-import { PrismaClient } from '../../generated/prisma/index.js'
+import { PrismaClient } from '@prisma/client'
 
 const router = express.Router()
 const prisma = new PrismaClient()
@@ -20,7 +20,7 @@ const requireAdmin = async (req, res, next) => {
       where: { id: decoded.id } // JWT'de 'id' field'ı var, 'userId' değil
     })
 
-    if (!user || user.role !== 'ADMIN') {
+    if (!user || (user.userTypeId !== 'ADMIN' && user.userTypeId !== 'SUPERADMIN')) {
       return res.status(403).json({ message: 'Admin yetkisi gerekli' })
     }
 
@@ -54,7 +54,14 @@ router.get('/', requireAdmin, async (req, res) => {
           defaultAuctionDays: 7,
           defaultMinIncrement: 10,
           maintenanceMode: false,
-          maintenanceMessage: 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.'
+          maintenanceMessage: 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.',
+          smtpHost: '',
+          smtpPort: 465,
+          smtpUser: '',
+          smtpPass: '',
+          smtpFromName: 'LeadPortal',
+          smtpUseTLS: false,
+          smtpUseSSL: true
         }
       })
     }
@@ -79,7 +86,14 @@ router.post('/', requireAdmin, async (req, res) => {
       defaultAuctionDays,
       defaultMinIncrement,
       maintenanceMode,
-      maintenanceMessage
+      maintenanceMessage,
+      smtpHost,
+      smtpPort,
+      smtpUser,
+      smtpPass,
+      smtpFromName,
+      smtpUseTLS,
+      smtpUseSSL
     } = req.body
 
     // Validation
@@ -108,7 +122,14 @@ router.post('/', requireAdmin, async (req, res) => {
         defaultAuctionDays: defaultAuctionDays || 7,
         defaultMinIncrement: defaultMinIncrement || 10,
         maintenanceMode: maintenanceMode !== undefined ? maintenanceMode : false,
-        maintenanceMessage: maintenanceMessage || 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.'
+        maintenanceMessage: maintenanceMessage || 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.',
+        smtpHost: smtpHost ?? '',
+        smtpPort: smtpPort ?? 465,
+        smtpUser: smtpUser ?? '',
+        smtpPass: smtpPass ?? '',
+        smtpFromName: smtpFromName ?? 'LeadPortal',
+        smtpUseTLS: smtpUseTLS ?? false,
+        smtpUseSSL: smtpUseSSL ?? true
       },
       create: {
         id: 'default',
@@ -121,7 +142,14 @@ router.post('/', requireAdmin, async (req, res) => {
         defaultAuctionDays: defaultAuctionDays || 7,
         defaultMinIncrement: defaultMinIncrement || 10,
         maintenanceMode: maintenanceMode !== undefined ? maintenanceMode : false,
-        maintenanceMessage: maintenanceMessage || 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.'
+        maintenanceMessage: maintenanceMessage || 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.',
+        smtpHost: smtpHost ?? '',
+        smtpPort: smtpPort ?? 465,
+        smtpUser: smtpUser ?? '',
+        smtpPass: smtpPass ?? '',
+        smtpFromName: smtpFromName ?? 'LeadPortal',
+        smtpUseTLS: smtpUseTLS ?? false,
+        smtpUseSSL: smtpUseSSL ?? true
       }
     })
 

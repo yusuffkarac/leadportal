@@ -4,13 +4,15 @@
 export async function checkPageAccess(pagePath) {
   try {
     const token = localStorage.getItem('token') || sessionStorage.getItem('token')
-    const userType = localStorage.getItem('userType') || sessionStorage.getItem('userType')
+    const userTypeId = localStorage.getItem('userTypeId') || sessionStorage.getItem('userTypeId')
     
-    if (!token || !userType || userType === 'ADMIN') {
+    if (!token || !userTypeId || userTypeId === 'ADMIN' || userTypeId === 'SUPERADMIN') {
       return true // Admin'ler her yere erişebilir
     }
 
-    const response = await fetch(`/api/user-types/check/${userType}${pagePath}`, {
+    // API'ye route parametresi olarak gönder
+    const route = pagePath.startsWith('/') ? pagePath.slice(1) : pagePath
+    const response = await fetch(`/api/user-types/check/${userTypeId}?route=${encodeURIComponent(route)}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -30,8 +32,8 @@ export async function checkPageAccess(pagePath) {
 
 // Kullanıcının admin olup olmadığını kontrol et
 export function isAdmin() {
-  const role = localStorage.getItem('role') || sessionStorage.getItem('role')
-  return role === 'ADMIN'
+  const userTypeId = localStorage.getItem('userTypeId') || sessionStorage.getItem('userTypeId')
+  return userTypeId === 'ADMIN' || userTypeId === 'SUPERADMIN'
 }
 
 // Kullanıcının giriş yapıp yapmadığını kontrol et
@@ -42,5 +44,15 @@ export function isAuthenticated() {
 
 // Kullanıcı tipini al
 export function getUserType() {
-  return localStorage.getItem('userType') || sessionStorage.getItem('userType')
+  const userTypeStr = localStorage.getItem('userType') || sessionStorage.getItem('userType')
+  try {
+    return userTypeStr ? JSON.parse(userTypeStr) : null
+  } catch (e) {
+    return null
+  }
+}
+
+// Kullanıcı tipi ID'sini al
+export function getUserTypeId() {
+  return localStorage.getItem('userTypeId') || sessionStorage.getItem('userTypeId')
 }

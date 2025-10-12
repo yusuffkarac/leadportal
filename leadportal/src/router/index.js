@@ -11,10 +11,10 @@ import PurchasedLeadsView from '../views/PurchasedLeadsView.vue'
 import AdminSettingsView from '../views/AdminSettingsView.vue'
 import AdminCompanySettingsView from '../views/AdminCompanySettingsView.vue'
 import AdminUserTypesView from '../views/AdminUserTypesView.vue'
+import AdminFAQView from '../views/AdminFAQView.vue'
+import AdminAboutView from '../views/AdminAboutView.vue'
 
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
+export const appRoutes = [
     {
       path: '/',
       name: 'home',
@@ -101,103 +101,104 @@ const router = createRouter({
       component: AdminUserTypesView,
       meta: { requiresAdmin: true },
     },
-  ],
+    {
+      path: '/admin/faq',
+      name: 'admin-faq',
+      component: AdminFAQView,
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin/about',
+      name: 'admin-about',
+      component: AdminAboutView,
+      meta: { requiresAdmin: true },
+    },
+]
+
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: appRoutes,
 })
 
-// Global guard: Admin sayfalarina sadece ADMIN rolunde kullanici erisebilir
+// Global guard: Kullanıcı tipi yetkilendirme kontrolü
 router.beforeEach(async (to, from, next) => {
   console.log(`Router guard: navigating to ${to.path}`)
   
-  // Admin kontrolü
-  if (to.matched.some(r => r.meta && r.meta.requiresAdmin)) {
-    try {
-      const role = typeof window !== 'undefined' ? window.localStorage.getItem('role') : null
-      console.log('Admin check - role:', role)
-      if (role !== 'ADMIN') {
-        console.log('Admin access denied, redirecting to forbidden')
-        next({ name: 'forbidden' })
-        return
-      }
-    } catch (e) {
-      console.log('Admin check error, redirecting to forbidden')
-      next({ name: 'forbidden' })
-      return
-    }
-  }
-
-  // Kullanıcı tipi yetkilendirme kontrolü
   try {
     const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
-    const role = typeof window !== 'undefined' ? window.localStorage.getItem('role') : null
     const userTypeId = typeof window !== 'undefined' ? window.localStorage.getItem('userTypeId') : null
     
-    console.log('Permission check - token:', !!token, 'role:', role, 'userTypeId:', userTypeId, 'path:', to.path)
+    console.log('Permission check - token:', !!token, 'userTypeId:', userTypeId, 'path:', to.path)
     
-    // ADMIN rolü her sayfaya erişebilir
-    if (role === 'ADMIN') {
-      console.log('Admin user - allowing access to:', to.path)
+    // Login ve forbidden sayfalarına herkes erişebilir
+    if (to.path === '/forbidden' || to.path === '/login') {
+      console.log('Allowing access to:', to.path)
       next()
       return
     }
     
-    // USER rolü için yetkilendirme kontrolü
-    if (token && role === 'USER') {
-      // Forbidden ve login sayfalarına herkes erişebilir
-      if (to.path === '/forbidden' || to.path === '/login') {
-        console.log('Allowing access to:', to.path)
-        next()
-        return
-      }
-      
-      // userTypeId yoksa erişim engelle
-      if (!userTypeId) {
-        console.log('No userTypeId - blocking access to:', to.path)
-        next({ name: 'forbidden' })
-        return
-      }
-      
-      // userTypeId varsa API kontrolü
-      try {
-        const response = await fetch(`/api/user-types/check/${userTypeId}?route=${encodeURIComponent(to.path.slice(1))}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        })
-        
-        if (response.ok) {
-          const data = await response.json()
-          if (!data.hasAccess) {
-            console.log('API permission denied for:', to.path)
-            next({ name: 'forbidden' })
-            return
-          }
-        } else {
-          console.log('API check failed - blocking access to:', to.path)
-          next({ name: 'forbidden' })
-          return
-        }
-      } catch (apiError) {
-        console.error('API permission check error:', apiError)
-        console.log('API error - blocking access to:', to.path)
-        next({ name: 'forbidden' })
-        return
-      }
-    } else if (token && !role) {
-      console.log('Token exists but no role found')
+    // Token yoksa login'e yönlendir
+    if (!token) {
+      console.log('No token - redirecting to login')
+      next({ name: 'login' })
+      return
     }
-  } catch (error) {
-    console.error('Permission check error:', error)
-    // Hata durumunda güvenlik için erişimi engelle
-    const role = typeof window !== 'undefined' ? window.localStorage.getItem('role') : null
-    if (role !== 'ADMIN' && to.path !== '/forbidden' && to.path !== '/login') {
-      console.log('Error fallback - blocking access to:', to.path)
+    
+    // userTypeId yoksa erişim engelle
+    if (!userTypeId) {
+      console.log('No userTypeId - blocking access to:', to.path)
       next({ name: 'forbidden' })
       return
     }
+    
+    // Admin sayfaları için özel kontrol
+    if (to.matched.some(r => r.meta && r.meta.requiresAdmin)) {
+      // SUPERADMIN ve ADMIN tipleri admin sayfalarına erişebilir
+      if (userTypeId === 'SUPERADMIN' || userTypeId === 'ADMIN') {
+        console.log('Admin user - allowing access to:', to.path)
+        next()
+        return
+      } else {
+        console.log('Admin access denied, redirecting to forbidden')
+        next({ name: 'forbidden' })
+        return
+      }
+    }
+    
+    // Diğer sayfalar için API kontrolü
+    try {
+      const response = await fetch(`/api/user-types/check/${userTypeId}?route=${encodeURIComponent(to.path.slice(1))}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        if (!data.hasAccess) {
+          console.log('API permission denied for:', to.path)
+          next({ name: 'forbidden' })
+          return
+        }
+      } else {
+        console.log('API check failed - blocking access to:', to.path)
+        next({ name: 'forbidden' })
+        return
+      }
+    } catch (apiError) {
+      console.error('API permission check error:', apiError)
+      console.log('API error - blocking access to:', to.path)
+      next({ name: 'forbidden' })
+      return
+    }
+    
+    console.log('Router guard: allowing access to', to.path)
+    next()
+  } catch (error) {
+    console.error('Permission check error:', error)
+    console.log('Error fallback - redirecting to login')
+    next({ name: 'login' })
   }
-
-  console.log('Router guard: allowing access to', to.path)
-  next()
 })
 
 export default router

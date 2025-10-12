@@ -14,10 +14,10 @@ export const requireAdmin = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
-      select: { role: true }
+      select: { userTypeId: true }
     })
 
-    if (!user || user.role !== 'ADMIN') {
+    if (!user || (user.userTypeId !== 'ADMIN' && user.userTypeId !== 'SUPERADMIN')) {
       return res.status(403).json({ message: 'Admin yetkisi gerekli' })
     }
 

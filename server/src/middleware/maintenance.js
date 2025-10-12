@@ -19,9 +19,9 @@ export async function checkMaintenanceMode(req, res, next) {
         const decoded = jwt.default.verify(token, process.env.JWT_SECRET)
         const user = await prisma.user.findUnique({
           where: { id: decoded.id },
-          select: { role: true }
+          select: { userTypeId: true }
         })
-        isAdmin = user?.role === 'ADMIN'
+        isAdmin = user?.userTypeId === 'ADMIN' || user?.userTypeId === 'SUPERADMIN'
       } catch (error) {
         // Token geçersizse normal kullanıcı olarak devam et
       }

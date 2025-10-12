@@ -5,60 +5,45 @@ import { requireAdmin } from '../middleware/auth.js'
 export default (prisma) => {
   const router = Router()
 
-  // Get all pages
-  router.get('/', requireAdmin, async (req, res) => {
+  // Statik sayfa listesi
+  const STATIC_PAGES = [
+    { id: '/', name: 'Ana Sayfa' },
+    { id: '/about', name: 'Hakkında' },
+    { id: '/faq', name: 'SSS' },
+    { id: '/purchased-leads', name: 'Satın Aldıklarım' },
+    { id: '/lead/:id', name: 'Lead Detayı' },
+    // Admin
+    { id: '/admin/leads', name: 'Lead Yönetimi' },
+    { id: '/admin/leads/new', name: 'Yeni Lead' },
+    { id: '/admin/leads/:id', name: 'Lead Düzenle' },
+    { id: '/admin/users/new', name: 'Kullanıcı Ekle' },
+    { id: '/admin/settings', name: 'Ayarlar' },
+    { id: '/admin/company-settings', name: 'Firma Ayarları' },
+    { id: '/admin/user-types', name: 'Kullanıcı Tipleri' },
+    { id: '/admin/faq', name: 'FAQ Yönetimi' },
+    { id: '/admin/about', name: 'Hakkında Yönetimi' },
+  ]
+
+  // Get all pages (statik listeyi DB'ye yazar ve döner)
+  router.get('/', requireAdmin, async (_req, res) => {
     try {
-      const pages = await prisma.page.findMany({
-        where: { isActive: true },
-        orderBy: { name: 'asc' }
-      })
-      res.json(pages)
+      // Upsert statik sayfalar
+      for (const p of STATIC_PAGES) {
+        await prisma.page.upsert({
+          where: { id: p.id },
+          update: { name: p.name, description: null, isActive: true },
+          create: { id: p.id, name: p.name, description: null, isActive: true }
+        })
+      }
+      const pages = await prisma.page.findMany({ where: { isActive: true }, orderBy: { name: 'asc' } })
+      return res.json(pages)
     } catch (error) {
       console.error('Error fetching pages:', error)
       res.status(500).json({ message: 'Sayfalar alınamadı' })
     }
   })
-
-  // Sync pages from frontend routes
-  router.post('/sync', requireAdmin, async (req, res) => {
-    try {
-      const { routes } = req.body
-      
-      if (!routes || !Array.isArray(routes)) {
-        return res.status(400).json({ message: 'Geçersiz route verisi' })
-      }
-
-      const syncedPages = []
-      
-      for (const route of routes) {
-        const page = await prisma.page.upsert({
-          where: { id: route.path },
-          update: { 
-            name: route.name,
-            description: route.description || null,
-            isActive: true
-          },
-          create: {
-            id: route.path,
-            name: route.name,
-            description: route.description || null,
-            isActive: true
-          }
-        })
-        syncedPages.push(page)
-      }
-
-      res.json({ 
-        message: 'Sayfalar başarıyla senkronize edildi',
-        pages: syncedPages
-      })
-    } catch (error) {
-      console.error('Error syncing pages:', error)
-      res.status(500).json({ message: 'Sayfa senkronizasyonu başarısız' })
-    }
-  })
-
-  // Create new page
+  
+  // Create new page (isteğe bağlı: manuel ekleme desteği)
   router.post('/', requireAdmin, async (req, res) => {
     try {
       const { id, name, description } = req.body

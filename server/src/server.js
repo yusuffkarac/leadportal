@@ -9,7 +9,7 @@ import http from 'http'
 import cors from 'cors'
 import { Server as SocketIOServer } from 'socket.io'
 import jwt from 'jsonwebtoken'
-import { PrismaClient } from '../generated/prisma/index.js'
+import { PrismaClient } from '@prisma/client'
 import { checkMaintenanceMode } from './middleware/maintenance.js'
 
 const app = express()
@@ -64,7 +64,7 @@ function requireAuth(req, res, next) {
 }
 
 function requireAdmin(req, res, next) {
-  if (req.user?.role !== 'ADMIN') return res.status(403).json({ error: 'Forbidden' })
+  if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') return res.status(403).json({ error: 'Forbidden' })
   next()
 }
 
@@ -77,6 +77,8 @@ import leadSalesRouter from './routes/leadSales.js'
 import settingsRouter from './routes/settings.js'
 import userTypesRouter from './routes/userTypes.js'
 import pagesRouter from './routes/pages.js'
+import faqRouter from './routes/faq.js'
+import aboutRouter from './routes/about.js'
 
 app.use('/api/auth', authRouter(prisma))
 app.use('/api/leads', (req, res, next) => requireAuth(req, res, next), leadsRouter(prisma, io))
@@ -86,6 +88,8 @@ app.use('/api/lead-sales', (req, res, next) => requireAuth(req, res, next), lead
 app.use('/api/settings', settingsRouter)
 app.use('/api/user-types', userTypesRouter(prisma))
 app.use('/api/pages', pagesRouter(prisma))
+app.use('/api/faq', faqRouter(prisma))
+app.use('/api/about', aboutRouter(prisma))
 
 const port = process.env.PORT || 4000
 server.listen(port, '0.0.0.0', () => {

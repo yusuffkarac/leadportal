@@ -6,6 +6,15 @@
           <h1>Kullanıcı Tipleri</h1>
           <p class="page-subtitle">Kullanıcı tiplerini yönetin ve yetkilendirmeleri ayarlayın</p>
         </div>
+        <div class="page-header-actions" v-if="activeTab === 'types'">
+          <button class="btn btn-secondary" @click="showAddTypeModal = true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Yeni Tip Ekle
+          </button>
+        </div>
       </div>
 
       <!-- Message -->
@@ -40,22 +49,7 @@
           <div v-if="activeTab === 'types'" class="tab-panel">
             <div class="section-header">
               <h2>Kullanıcı Tipleri</h2>
-              <div class="header-actions">
-                <button class="btn btn-outline" @click="syncPages()">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M23 4v6h-6"/>
-                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-                  </svg>
-                  Sayfaları Senkronize Et
-                </button>
-                <button class="btn btn-secondary" @click="showAddTypeModal = true">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="5" x2="12" y2="19"/>
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                  </svg>
-                  Yeni Tip Ekle
-                </button>
-              </div>
+            
             </div>
 
             <div class="user-types-grid">
@@ -103,32 +97,6 @@
           <div v-if="activeTab === 'permissions'" class="tab-panel">
             <div class="section-header">
               <h2>Sayfa Yetkilendirmeleri</h2>
-              <div class="header-actions">
-                <button class="btn btn-outline" @click="selectAllPermissions()">
-                  Tümünü Seç
-                </button>
-                <button class="btn btn-outline" @click="clearAllPermissions()">
-                  Tümünü Temizle
-                </button>
-                <button 
-                  class="btn btn-primary" 
-                  @click="savePermissions()"
-                  :disabled="saving"
-                >
-                  <svg v-if="saving" class="spinner" width="16" height="16" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25"/>
-                    <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="4" fill="none">
-                      <animateTransform attributeName="transform" type="rotate" dur="1s" values="0 12 12;360 12 12" repeatCount="indefinite"/>
-                    </path>
-                  </svg>
-                  <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                    <polyline points="17,21 17,13 7,13 7,21"/>
-                    <polyline points="7,3 7,8 15,8"/>
-                  </svg>
-                  {{ saving ? 'Kaydediliyor...' : 'Yetkilendirmeleri Kaydet' }}
-                </button>
-              </div>
             </div>
 
             <div class="permissions-container">
@@ -138,8 +106,36 @@
                 class="permission-group"
               >
                 <div class="group-header">
-                  <h3>{{ userType.name }}</h3>
-                  <span class="permission-count">{{ getPermissionCount(userType.id) }} yetki</span>
+                  <div class="group-title">
+                    <h3>{{ userType.name }}</h3>
+                    <span class="permission-count">{{ getPermissionCount(userType.id) }} yetki</span>
+                  </div>
+                  <div class="group-actions">
+                    <button class="btn btn-outline btn-sm" @click="selectAllPermissionsForType(userType.id)">
+                      Tümünü Seç
+                    </button>
+                    <button class="btn btn-outline btn-sm" @click="clearAllPermissionsForType(userType.id)">
+                      Tümünü Temizle
+                    </button>
+                    <button 
+                      class="btn btn-primary btn-sm" 
+                      @click="savePermissionsForType(userType.id)"
+                      :disabled="saving"
+                    >
+                      <svg v-if="saving" class="spinner" width="14" height="14" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25"/>
+                        <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="4" fill="none">
+                          <animateTransform attributeName="transform" type="rotate" dur="1s" values="0 12 12;360 12 12" repeatCount="indefinite"/>
+                        </path>
+                      </svg>
+                      <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                        <polyline points="17,21 17,13 7,13 7,21"/>
+                        <polyline points="7,3 7,8 15,8"/>
+                      </svg>
+                      {{ saving ? 'Kaydediliyor...' : 'Kaydet' }}
+                    </button>
+                  </div>
                 </div>
                 
                 <div class="permission-list">
@@ -389,36 +385,7 @@ const loadData = async () => {
   }
 }
 
-// Sync pages from frontend routes
-const syncPages = async () => {
-  try {
-    const routes = [
-      { path: '/', name: 'Ana Sayfa' },
-      { path: '/about', name: 'Hakkında' },
-      { path: '/faq', name: 'SSS' },
-      { path: '/purchased', name: 'Satın Aldıklarım' },
-      { path: '/admin', name: 'Admin Panel' },
-      { path: '/admin/leads', name: 'Lead Yönetimi' },
-      { path: '/admin/users', name: 'Kullanıcı Yönetimi' },
-      { path: '/admin/settings', name: 'Ayarlar' },
-      { path: '/admin/user-types', name: 'Kullanıcı Tipleri' }
-    ]
-
-    await api.post('/pages/sync', 
-      { routes },
-      { headers: authHeaders() }
-    )
-    
-    // Reload pages
-    const pagesResponse = await api.get('/pages', { headers: authHeaders() })
-    pages.value = pagesResponse.data || []
-    
-    showMessage('Sayfalar başarıyla senkronize edildi', 'success')
-  } catch (error) {
-    console.error('Error syncing pages:', error)
-    showMessage('Sayfa senkronizasyonu başarısız', 'error')
-  }
-}
+// Not: Senkronizasyon işlevi kaldırıldı; sayfalar backend'de statik tutuluyor.
 
 // Get user count for a user type
 const getUserCount = (userTypeId) => {
@@ -460,6 +427,40 @@ const clearAllPermissions = () => {
       updatePermission(userType.id, page.id, false)
     })
   })
+}
+
+// Select all permissions for a specific user type
+const selectAllPermissionsForType = (userTypeId) => {
+  pages.value.forEach(page => {
+    updatePermission(userTypeId, page.id, true)
+  })
+}
+
+// Clear all permissions for a specific user type
+const clearAllPermissionsForType = (userTypeId) => {
+  pages.value.forEach(page => {
+    updatePermission(userTypeId, page.id, false)
+  })
+}
+
+// Save permissions for a specific user type
+const savePermissionsForType = async (userTypeId) => {
+  saving.value = true
+  try {
+    const userTypePermissions = {}
+    userTypePermissions[userTypeId] = permissions.value[userTypeId] || {}
+    
+    await api.post('/user-types/permissions', 
+      { permissions: userTypePermissions },
+      { headers: authHeaders() }
+    )
+    showMessage(`${userTypes.value.find(ut => ut.id === userTypeId)?.name} yetkilendirmeleri başarıyla kaydedildi`, 'success')
+  } catch (error) {
+    console.error('Error saving permissions:', error)
+    showMessage('Yetkilendirmeler kaydedilirken hata oluştu', 'error')
+  } finally {
+    saving.value = false
+  }
 }
 
 // Edit user type
@@ -607,6 +608,19 @@ onMounted(() => {
   margin-bottom: 2rem;
 }
 
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .header-content h1 {
   font-size: 2rem;
   font-weight: 700;
@@ -714,6 +728,11 @@ onMounted(() => {
   font-size: 0.875rem;
 }
 
+.btn-sm {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+}
+
 .btn-primary {
   background: var(--text);
   color: white;
@@ -729,12 +748,12 @@ onMounted(() => {
 }
 
 .btn-secondary {
-  background: var(--primary);
+  background: #3b82f6;
   color: white;
 }
 
 .btn-secondary:hover {
-  background: #4b5563;
+  background: #2563eb;
 }
 
 .btn-outline {
@@ -853,11 +872,23 @@ onMounted(() => {
   margin-bottom: 1.5rem;
 }
 
-.group-header h3 {
+.group-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.group-title h3 {
   font-size: 1.25rem;
   font-weight: 600;
   color: #1e293b;
   margin: 0;
+}
+
+.group-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .permission-count {

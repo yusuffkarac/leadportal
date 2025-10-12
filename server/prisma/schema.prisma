@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,56 +8,71 @@ datasource db {
 }
 
 model User {
-  id           String     @id @default(cuid())
-  email        String     @unique
-  passwordHash String
-  role         Role       @default(USER)
-  userTypeId   String?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  bids         Bid[]
-  leads        Lead[]     @relation("LeadOwner")
-  purchasedLeads LeadSale[] @relation("LeadBuyer")
-  userType     UserType?  @relation(fields: [userTypeId], references: [id])
+  id             String      @id @default(cuid())
+  email          String      @unique
+  passwordHash   String
+  userTypeId     String
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  firstName      String?
+  lastName       String?
+  username       String?     @unique
+  bids           Bid[]
+  leads          Lead[]      @relation("LeadOwner")
+  purchasedLeads LeadSale[]  @relation("LeadBuyer")
+  watching       LeadWatch[]
+  userType       UserType    @relation(fields: [userTypeId], references: [id])
 }
 
 model Lead {
-  id              String    @id @default(cuid())
+  id              String      @id @default(cuid())
   title           String
   description     String
   startPrice      Int
   minIncrement    Int
   instantBuyPrice Int?
-  isActive        Boolean   @default(true)
-  isSold          Boolean   @default(false)
+  isActive        Boolean     @default(true)
+  isSold          Boolean     @default(false)
   endsAt          DateTime
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  owner           User      @relation("LeadOwner", fields: [ownerId], references: [id])
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
   ownerId         String
   bids            Bid[]
+  owner           User        @relation("LeadOwner", fields: [ownerId], references: [id])
   sale            LeadSale?
+  watchers        LeadWatch[]
 }
 
 model Bid {
   id        String   @id @default(cuid())
   amount    Int
   createdAt DateTime @default(now())
-  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
   leadId    String
-  user      User     @relation(fields: [userId], references: [id])
   userId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model LeadWatch {
+  id        String   @id @default(cuid())
+  leadId    String
+  userId    String
+  createdAt DateTime @default(now())
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([leadId, userId])
 }
 
 model LeadSale {
   id        String   @id @default(cuid())
-  lead      Lead     @relation(fields: [leadId], references: [id])
   leadId    String   @unique
-  buyer     User     @relation("LeadBuyer", fields: [buyerId], references: [id])
   buyerId   String
   amount    Int
   soldAt    DateTime @default(now())
   createdAt DateTime @default(now())
+  buyer     User     @relation("LeadBuyer", fields: [buyerId], references: [id])
+  lead      Lead     @relation(fields: [leadId], references: [id])
 }
 
 model Settings {
@@ -78,32 +87,35 @@ model Settings {
   defaultMinIncrement Int      @default(10)
   maintenanceMode     Boolean  @default(false)
   maintenanceMessage  String   @default("Sistem bakımda. Lütfen daha sonra tekrar deneyin.")
+  smtpHost            String   @default("")
+  smtpPort            Int      @default(465)
+  smtpUser            String   @default("")
+  smtpPass            String   @default("")
+  smtpFromName        String   @default("LeadPortal")
+  smtpUseTLS          Boolean  @default(false)
+  smtpUseSSL          Boolean  @default(true)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }
 
 model UserType {
-  id          String   @id
+  id          String               @id
   name        String
   description String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  // Relations
-  permissions UserTypePermission[]
+  isActive    Boolean              @default(true)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
   users       User[]
+  permissions UserTypePermission[]
 }
 
 model Page {
-  id          String   @id
+  id          String               @id
   name        String
   description String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  // Relations
+  isActive    Boolean              @default(true)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
   permissions UserTypePermission[]
 }
 
@@ -114,16 +126,33 @@ model UserTypePermission {
   hasAccess  Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  
-  // Relations
-  userType   UserType @relation(fields: [userTypeId], references: [id], onDelete: Cascade)
   page       Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
-  
+  userType   UserType @relation(fields: [userTypeId], references: [id], onDelete: Cascade)
+
   @@unique([userTypeId, pageId])
 }
 
-enum Role {
-  USER
-  ADMIN
+model FAQ {
+  id          String   @id @default(cuid())
+  question    String
+  answer      String
+  category    String
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
+model About {
+  id          String   @id @default(cuid())
+  section     String   // hero, mission, team, stats, etc.
+  title       String?
+  subtitle    String?
+  content     String?
+  imageUrl    String?
+  data        Json?    // For flexible data like stats, team members
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

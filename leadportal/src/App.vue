@@ -13,15 +13,18 @@ function logout() {
       // LocalStorage ve sessionStorage'ı temizle
       window.localStorage.removeItem('token')
       window.localStorage.removeItem('role')
+      window.localStorage.removeItem('userType')
       window.localStorage.removeItem('userTypeId')
       window.sessionStorage.removeItem('token')
       window.sessionStorage.removeItem('role')
+      window.sessionStorage.removeItem('userType')
       window.sessionStorage.removeItem('userTypeId')
       
       // State'i sıfırla
       isAuthed.value = false
       role.value = null
       userType.value = null
+      userTypeId.value = null
       pagePermissions.value = {}
       
       // Ana sayfaya yönlendir
@@ -42,6 +45,7 @@ function goToHome() {
 const isAuthed = ref(false)
 const role = ref(null)
 const userType = ref(null)
+const userTypeId = ref(null)
 const pagePermissions = ref({})
 
 // Branding
@@ -57,7 +61,41 @@ function loadBranding() {
     footerPhone.value = localStorage.getItem('footerPhone') || '+90 (212) 123 45 67'
     footerEmail.value = localStorage.getItem('footerEmail') || 'info@leadportal.com'
     footerNote.value = localStorage.getItem('footerNote') || ''
+    
+    // Favicon'u localStorage'dan veya sessionStorage'dan yükle
+    const savedFavicon = localStorage.getItem('faviconUrl') || sessionStorage.getItem('faviconUrl')
+    if (savedFavicon) {
+      updateFavicon(savedFavicon)
+    }
   } catch {}
+}
+
+function updateFavicon(url) {
+  if (!url) return
+  
+  try {
+    // Tüm favicon linklerini temizle
+    const existingLinks = document.querySelectorAll("link[rel*='icon']")
+    existingLinks.forEach(link => link.remove())
+    
+    // Yeni favicon linki oluştur
+    const link = document.createElement('link')
+    link.rel = 'icon'
+    link.type = 'image/png'
+    link.href = url
+    link.setAttribute('data-dynamic', 'true')
+    
+    // Cache busting için timestamp ekle (sadece normal URL'ler için)
+    if (!url.includes('?') && !url.startsWith('data:') && !url.startsWith('blob:')) {
+      link.href += '?v=' + Date.now()
+    }
+    
+    // Head'e ekle
+    document.getElementsByTagName('head')[0].appendChild(link)
+    
+  } catch (error) {
+    console.error('Favicon güncellenirken hata:', error)
+  }
 }
 
 // Sayfa yetkilendirmelerini kontrol et
@@ -78,10 +116,18 @@ async function updateAuth() {
   const storage = window.sessionStorage.getItem('token') ? window.sessionStorage : window.localStorage
   isAuthed.value = !!storage.getItem('token')
   role.value = storage.getItem('role') || null
-  userType.value = storage.getItem('userTypeId') || null
+  userTypeId.value = storage.getItem('userTypeId') || null
+  
+  // userType bilgisini parse et
+  try {
+    const userTypeStr = storage.getItem('userType')
+    userType.value = userTypeStr ? JSON.parse(userTypeStr) : null
+  } catch (e) {
+    userType.value = null
+  }
   
   // Sayfa yetkilendirmelerini yükle
-  if (isAuthed.value && role.value === 'USER' && userType.value) {
+  if (isAuthed.value && userTypeId.value && userTypeId.value !== 'SUPERADMIN') {
     try {
       const pages = ['/about', '/faq', '/purchased-leads']
       const permissions = {}
@@ -168,7 +214,7 @@ function closeAdminDropdown() {
         <RouterLink v-if="!isAuthed" to="/login">Giriş</RouterLink>
         
         <!-- Admin Dropdown -->
-        <div v-if="isAuthed && role === 'ADMIN'" class="admin-dropdown" @mouseenter="openAdminDropdown" @mouseleave="closeAdminDropdown">
+        <div v-if="isAuthed && (userTypeId === 'ADMIN' || userTypeId === 'SUPERADMIN')" class="admin-dropdown" @mouseenter="openAdminDropdown" @mouseleave="closeAdminDropdown">
           <button class="admin-trigger">
             Admin
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -217,6 +263,22 @@ function closeAdminDropdown() {
                 <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
               </svg>
               Kullanıcı Tipleri
+            </RouterLink>
+            <RouterLink to="/admin/faq" class="menu-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              FAQ Yönetimi
+            </RouterLink>
+            <RouterLink to="/admin/about" class="menu-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12"/>
+                <path d="M16 6a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/>
+              </svg>
+              Hakkında Yönetimi
             </RouterLink>
           </div>
         </div>
@@ -309,7 +371,7 @@ function closeAdminDropdown() {
         </RouterLink>
         
         <!-- Admin Section -->
-        <div v-if="isAuthed && role === 'ADMIN'" class="mobile-admin-section">
+        <div v-if="isAuthed && (userTypeId === 'ADMIN' || userTypeId === 'SUPERADMIN')" class="mobile-admin-section">
           <div class="mobile-admin-label">Admin</div>
           
           <RouterLink to="/admin/leads" @click="closeMobileMenu" class="mobile-nav-link">
@@ -329,12 +391,48 @@ function closeAdminDropdown() {
             <span>Kullanıcı Ekle</span>
           </RouterLink>
           
+          <RouterLink to="/admin/company-settings" @click="closeMobileMenu" class="mobile-nav-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="14" rx="2"/>
+              <path d="M7 21h10"/>
+            </svg>
+            <span>Firma Ayarları</span>
+          </RouterLink>
+          
           <RouterLink to="/admin/settings" @click="closeMobileMenu" class="mobile-nav-link">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3"/>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
             </svg>
             <span>Ayarlar</span>
+          </RouterLink>
+          
+          <RouterLink to="/admin/user-types" @click="closeMobileMenu" class="mobile-nav-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <span>Kullanıcı Tipleri</span>
+          </RouterLink>
+          
+          <RouterLink to="/admin/faq" @click="closeMobileMenu" class="mobile-nav-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <span>FAQ Yönetimi</span>
+          </RouterLink>
+          
+          <RouterLink to="/admin/about" @click="closeMobileMenu" class="mobile-nav-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12"/>
+              <path d="M16 6a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/>
+            </svg>
+            <span>Hakkında Yönetimi</span>
           </RouterLink>
         </div>
         

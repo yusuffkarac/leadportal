@@ -40,7 +40,7 @@ router.get('/purchased', async (req, res) => {
 // Admin: Tüm satışları getir
 router.get('/admin/all', async (req, res) => {
   try {
-    if (req.user?.role !== 'ADMIN') {
+    if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') {
       return res.status(403).json({ error: 'Forbidden' });
     }
     

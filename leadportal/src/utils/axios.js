@@ -36,8 +36,10 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token')
       sessionStorage.removeItem('token')
-      localStorage.removeItem('role')
-      sessionStorage.removeItem('role')
+      localStorage.removeItem('userType')
+      sessionStorage.removeItem('userType')
+      localStorage.removeItem('userTypeId')
+      sessionStorage.removeItem('userTypeId')
       window.dispatchEvent(new Event('auth-change'))
       
       // Login sayfasına yönlendir (eğer zaten login sayfasında değilse)

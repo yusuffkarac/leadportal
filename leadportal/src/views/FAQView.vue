@@ -3,7 +3,6 @@
     <div class="page-content">
       <div class="page-header">
         <h1>Sıkça Sorulan Sorular</h1>
-        <p class="page-subtitle">LeadPortal hakkında merak ettiğiniz her şey</p>
       </div>
 
       <!-- Hero Section -->
@@ -88,10 +87,16 @@
 
       <!-- FAQ Sections -->
       <section class="faq-sections">
+        <!-- Loading State -->
+        <div v-if="loading" class="loading-section">
+          <div class="loading-spinner"></div>
+          <p>FAQ'lar yükleniyor...</p>
+        </div>
+        
         <!-- General Questions -->
-        <div id="general" class="faq-section">
+        <div v-else-if="generalFAQs.length > 0" id="general" class="faq-section">
           <h3>Genel Sorular</h3>
-          <div class="faq-item" v-for="(faq, index) in generalFAQs" :key="index">
+          <div class="faq-item" v-for="(faq, index) in generalFAQs" :key="faq.id">
             <div class="faq-question" @click="toggleFAQ(index, 'general')">
               <h4>{{ faq.question }}</h4>
               <svg class="faq-icon" :class="{ 'rotated': faq.open }" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -105,9 +110,9 @@
         </div>
 
         <!-- Bidding Questions -->
-        <div id="bidding" class="faq-section">
+        <div v-if="biddingFAQs.length > 0" id="bidding" class="faq-section">
           <h3>Teklif Verme</h3>
-          <div class="faq-item" v-for="(faq, index) in biddingFAQs" :key="index">
+          <div class="faq-item" v-for="(faq, index) in biddingFAQs" :key="faq.id">
             <div class="faq-question" @click="toggleFAQ(index, 'bidding')">
               <h4>{{ faq.question }}</h4>
               <svg class="faq-icon" :class="{ 'rotated': faq.open }" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -121,9 +126,9 @@
         </div>
 
         <!-- Account Questions -->
-        <div id="account" class="faq-section">
+        <div v-if="accountFAQs.length > 0" id="account" class="faq-section">
           <h3>Hesap Yönetimi</h3>
-          <div class="faq-item" v-for="(faq, index) in accountFAQs" :key="index">
+          <div class="faq-item" v-for="(faq, index) in accountFAQs" :key="faq.id">
             <div class="faq-question" @click="toggleFAQ(index, 'account')">
               <h4>{{ faq.question }}</h4>
               <svg class="faq-icon" :class="{ 'rotated': faq.open }" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -137,9 +142,9 @@
         </div>
 
         <!-- Payment Questions -->
-        <div id="payment" class="faq-section">
+        <div v-if="paymentFAQs.length > 0" id="payment" class="faq-section">
           <h3>Ödeme</h3>
-          <div class="faq-item" v-for="(faq, index) in paymentFAQs" :key="index">
+          <div class="faq-item" v-for="(faq, index) in paymentFAQs" :key="faq.id">
             <div class="faq-question" @click="toggleFAQ(index, 'payment')">
               <h4>{{ faq.question }}</h4>
               <svg class="faq-icon" :class="{ 'rotated': faq.open }" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -185,100 +190,39 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import axios from '@/utils/axios'
 
 // FAQ Data
-const generalFAQs = ref([
-  {
-    question: "LeadPortal nedir?",
-    answer: "LeadPortal, potansiyel müşteri yönetimi ve açık artırma platformudur. İşletmeler burada potansiyel müşterilerini açık artırma yöntemiyle satabilir ve alıcılar da rekabetçi fiyatlarla kaliteli lead'ler satın alabilir.",
-    open: false
-  },
-  {
-    question: "Platform nasıl çalışır?",
-    answer: "Satıcılar potansiyel müşteri bilgilerini platforma yükler, alıcılar bu lead'ler için teklif verir. En yüksek teklifi veren alıcı, lead bilgilerine erişim hakkı kazanır.",
-    open: false
-  },
-  {
-    question: "Platform ücretsiz mi?",
-    answer: "Temel özellikler ücretsizdir. Premium özellikler ve gelişmiş analitikler için ücretli planlarımız bulunmaktadır.",
-    open: false
-  },
-  {
-    question: "Hangi sektörlerde hizmet veriyorsunuz?",
-    answer: "Emlak, finans, e-ticaret, sağlık, eğitim ve daha birçok sektörde hizmet vermekteyiz. Platformumuz tüm sektörlere uygun esnek yapıya sahiptir.",
-    open: false
-  }
-])
+const generalFAQs = ref([])
+const biddingFAQs = ref([])
+const accountFAQs = ref([])
+const paymentFAQs = ref([])
+const loading = ref(false)
 
-const biddingFAQs = ref([
-  {
-    question: "Nasıl teklif verebilirim?",
-    answer: "Üye olduktan sonra istediğiniz lead için 'Teklif Ver' butonuna tıklayarak teklifinizi girebilirsiniz. Minimum teklif miktarı her lead için belirtilmiştir.",
-    open: false
-  },
-  {
-    question: "Teklif verme süresi ne kadar?",
-    answer: "Her açık artırmanın belirli bir süresi vardır. Bu süre lead detay sayfasında görüntülenir. Süre dolduğunda en yüksek teklifi veren kazanır.",
-    open: false
-  },
-  {
-    question: "Teklifimi geri çekebilir miyim?",
-    answer: "Evet, açık artırma süresi dolmadan önce teklifinizi geri çekebilirsiniz. Ancak bu işlem için belirli koşullar geçerlidir.",
-    open: false
-  },
-  {
-    question: "Minimum teklif artışı nedir?",
-    answer: "Her lead için minimum teklif artışı belirlenmiştir. Bu miktar lead detay sayfasında 'Min. Artış' olarak gösterilir.",
-    open: false
+// Load FAQs from API
+async function loadFAQs() {
+  try {
+    loading.value = true
+    const response = await axios.get('faq')
+    const faqData = response.data
+    
+    // Assign FAQs to categories and add open property
+    generalFAQs.value = (faqData.general || []).map(faq => ({ ...faq, open: false }))
+    biddingFAQs.value = (faqData.bidding || []).map(faq => ({ ...faq, open: false }))
+    accountFAQs.value = (faqData.account || []).map(faq => ({ ...faq, open: false }))
+    paymentFAQs.value = (faqData.payment || []).map(faq => ({ ...faq, open: false }))
+  } catch (error) {
+    console.error('FAQ\'lar yüklenemedi:', error)
+    // Fallback to empty arrays if API fails
+    generalFAQs.value = []
+    biddingFAQs.value = []
+    accountFAQs.value = []
+    paymentFAQs.value = []
+  } finally {
+    loading.value = false
   }
-])
-
-const accountFAQs = ref([
-  {
-    question: "Hesabımı nasıl oluştururum?",
-    answer: "Ana sayfadaki 'Kayıt Ol' butonuna tıklayarak e-posta adresiniz ve şifrenizle hesap oluşturabilirsiniz. E-posta doğrulaması gereklidir.",
-    open: false
-  },
-  {
-    question: "Şifremi unuttum, ne yapmalıyım?",
-    answer: "Giriş sayfasında 'Şifremi Unuttum' linkine tıklayarak e-posta adresinize şifre sıfırlama bağlantısı gönderebilirsiniz.",
-    open: false
-  },
-  {
-    question: "Hesap bilgilerimi nasıl güncelleyebilirim?",
-    answer: "Hesap ayarları sayfasından kişisel bilgilerinizi, iletişim bilgilerinizi ve güvenlik ayarlarınızı güncelleyebilirsiniz.",
-    open: false
-  },
-  {
-    question: "Hesabımı nasıl silebilirim?",
-    answer: "Hesap ayarları sayfasından hesap silme işlemini başlatabilirsiniz. Bu işlem geri alınamaz ve tüm verileriniz silinir.",
-    open: false
-  }
-])
-
-const paymentFAQs = ref([
-  {
-    question: "Hangi ödeme yöntemlerini kabul ediyorsunuz?",
-    answer: "Kredi kartı, banka kartı, havale/EFT ve dijital cüzdan ödemelerini kabul ediyoruz. Tüm ödemeler güvenli SSL şifreleme ile korunur.",
-    open: false
-  },
-  {
-    question: "Ödeme ne zaman alınır?",
-    answer: "Kazandığınız bir açık artırmada ödeme hemen alınır. Ödeme işlemi tamamlandıktan sonra lead bilgilerine erişim sağlanır.",
-    open: false
-  },
-  {
-    question: "İade politikası nedir?",
-    answer: "Lead bilgileri teslim edildikten sonra iade yapılmaz. Ancak teknik sorunlar durumunda 24 saat içinde iade işlemi gerçekleştirilir.",
-    open: false
-  },
-  {
-    question: "Fatura alabilir miyim?",
-    answer: "Evet, tüm ödemeler için fatura alabilirsiniz. Fatura bilgilerinizi hesap ayarlarından güncelleyebilirsiniz.",
-    open: false
-  }
-])
+}
 
 // Methods
 function toggleFAQ(index, category) {
@@ -302,6 +246,11 @@ function scrollToCategory(categoryId) {
     element.scrollIntoView({ behavior: 'smooth' })
   }
 }
+
+// Load FAQs on component mount
+onMounted(() => {
+  loadFAQs()
+})
 </script>
 
 <style scoped>
@@ -478,6 +427,35 @@ function scrollToCategory(categoryId) {
 /* FAQ Sections */
 .faq-sections {
   margin-bottom: 60px;
+}
+
+.loading-section {
+  text-align: center;
+  padding: 80px 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid var(--text);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-section p {
+  color: var(--primary);
+  font-size: 1.125rem;
+  margin: 0;
 }
 
 .faq-section {

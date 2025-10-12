@@ -49,11 +49,9 @@ async function submit() {
     const { data } = await axios.post('/api/auth/login', { email: email.value, password: password.value })
     const storage = remember.value ? window.localStorage : window.sessionStorage
     storage.setItem('token', data.token)
-    if (data?.user?.role) {
-      storage.setItem('role', data.user.role)
-    }
-    if (data?.user?.userTypeId) {
-      storage.setItem('userTypeId', data.user.userTypeId)
+    if (data?.user?.userType) {
+      storage.setItem('userType', JSON.stringify(data.user.userType))
+      storage.setItem('userTypeId', data.user.userType.id)
     }
     window.dispatchEvent(new Event('auth-change'))
     router.push('/')

@@ -20,6 +20,23 @@ const socket = io('/', {
   auth: { token: localStorage.getItem('token') }
 })
 
+// Watch (çan) durumu
+const watching = ref(false)
+
+async function loadWatching() {
+  try {
+    const res = await axios.get(`/api/leads/${leadId}/watch`, { headers: authHeaders() })
+    watching.value = !!res.data?.watching
+  } catch {}
+}
+
+async function toggleWatch() {
+  try {
+    const res = await axios.post(`/api/leads/${leadId}/watch`, {}, { headers: authHeaders() })
+    watching.value = !!res.data?.watching
+  } catch {}
+}
+
 // Ayarları yükle
 async function loadSettings() {
   try {
@@ -139,6 +156,7 @@ async function placeBid() {
 onMounted(async () => {
   await loadSettings()
   await loadLead()
+  await loadWatching()
   socket.emit('join-lead', leadId)
   socket.on('bid:new', (payload) => {
     if (payload.leadId !== leadId) return
@@ -174,6 +192,18 @@ onUnmounted(() => {
             </div>
             <h1 class="lead-title">{{ lead.title }}</h1>
             <p class="lead-description">{{ lead.description || 'Açıklama bulunmuyor' }}</p>
+            <button class="watch-btn" :class="{ active: watching }" @click="toggleWatch" title="Teklif bildirimlerini {{ watching ? 'kapat' : 'aç' }}">
+              <svg v-if="!watching" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 17h5l-1.405-1.405C18.21 14.79 18 13.918 18 13V8a6 6 0 10-12 0v5c0 .918-.21 1.79-.595 2.595L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+              </svg>
+              <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13.73 21a2 2 0 01-3.46 0"/>
+                <path d="M18.63 13A17.89 17.89 0 0018 8"/>
+                <path d="M6.26 6.26A6 6 0 0018 8v5l1.5 1.5"/>
+                <path d="M2 2l20 20"/>
+              </svg>
+              <span>{{ watching ? 'Bildirim Açık' : 'Bildirim Kapalı' }}</span>
+            </button>
           </div>
           
           <div class="lead-stats-section">
@@ -440,6 +470,26 @@ onUnmounted(() => {
   padding: 24px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   border: 1px solid #e5e7eb;
+}
+
+/* Watch button */
+.watch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.watch-btn.active {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1e40af;
 }
 
 .bid-buttons {

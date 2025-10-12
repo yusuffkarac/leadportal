@@ -3,7 +3,6 @@
     <div class="page-content">
       <div class="page-header">
         <h1>Satın Aldığım Lead'ler</h1>
-        <p class="page-subtitle">Açık artırmalardan satın aldığınız lead'lerin listesi</p>
       </div>
 
       <!-- Stats Section -->

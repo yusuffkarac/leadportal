@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import axios from 'axios'
 import { getCurrencySymbol, formatPrice } from '@/utils/currency.js'
 
@@ -48,7 +48,9 @@ const filters = ref({
   search: ''
 })
 
-const showFilters = ref(true)
+// Mobil cihazlarda filtreler kapalı başlasın
+const isMobile = ref(window.innerWidth <= 768)
+const showFilters = ref(!isMobile.value)
 
 function authHeaders() {
   const token = localStorage.getItem('token')
@@ -323,9 +325,34 @@ const filteredLeads = computed(() => {
   return result
 })
 
+let resizeHandler = null
+
 onMounted(async () => {
   await loadSettings()
   await fetchMine()
+  
+  // Ekran boyutu değişikliklerini dinle
+  resizeHandler = () => {
+    const wasMobile = isMobile.value
+    isMobile.value = window.innerWidth <= 768
+    
+    // Mobil'den desktop'a geçişte filtreleri aç
+    if (wasMobile && !isMobile.value) {
+      showFilters.value = true
+    }
+    // Desktop'tan mobile'a geçişte filtreleri kapat
+    else if (!wasMobile && isMobile.value) {
+      showFilters.value = false
+    }
+  }
+  
+  window.addEventListener('resize', resizeHandler)
+})
+
+onUnmounted(() => {
+  if (resizeHandler) {
+    window.removeEventListener('resize', resizeHandler)
+  }
 })
 </script>
 
@@ -355,9 +382,10 @@ onMounted(async () => {
       </div>
     
     <!-- Filtreler -->
-    <div v-if="showFilters" class="filters-panel">
-      <div class="filters-content">
-        <div class="filter-group">
+    <transition name="filters-slide">
+      <div v-if="showFilters" class="filters-panel">
+        <div class="filters-content">
+          <div class="filter-group">
           <label>Arama</label>
           <input 
             v-model="filters.search" 
@@ -417,8 +445,9 @@ onMounted(async () => {
           <button class="btn btn-outline" @click="clearFilters">Temizle</button>
           <button class="btn btn-primary" @click="applyFilters">Uygula</button>
         </div>
+        </div>
       </div>
-    </div>
+    </transition>
 
     <!-- Sonuç sayısı -->
     <div v-if="leads.length" class="results-info">
@@ -1129,6 +1158,23 @@ onMounted(async () => {
   margin: 0;
 }
 
+/* Filtre animasyonları */
+.filters-slide-enter-active,
+.filters-slide-leave-active {
+  transition: all 0.3s ease;
+  transform-origin: top;
+}
+
+.filters-slide-enter-from {
+  opacity: 0;
+  transform: translateY(-20px) scaleY(0.8);
+}
+
+.filters-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-10px) scaleY(0.9);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .page-content {
@@ -1225,38 +1271,60 @@ onMounted(async () => {
     flex-direction: column;
     gap: 16px;
     max-width: 100%;
+    align-items: stretch;
   }
   
   .filter-group {
-    min-width: auto;
-    max-width: none;
+    min-width: 150px;
+    max-width: 100%;
+    width: 100%;
+    flex: 1 0 100%;
+  }
+
+  .price-range span,
+  .date-range span {
+    display: none;
+  }
+
+  .filter-group + .filter-group {
+    margin-top: 16px;
   }
   
   .filter-actions {
     flex-basis: auto;
     justify-content: center;
     margin-top: 12px;
+    width: 100%;
   }
   
   .filter-actions .btn {
     min-width: 100px;
     flex: 1;
+    width: 100%;
   }
   
   .price-range,
   .date-range {
     flex-direction: column;
     gap: 8px;
+    width: 100%;
   }
   
   .price-range input,
   .date-range input {
     max-width: none;
+    width: 100%;
   }
   
   .price-range span,
   .date-range span {
     display: none;
+  }
+
+  .filter-input,
+  .filter-select {
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .results-info {

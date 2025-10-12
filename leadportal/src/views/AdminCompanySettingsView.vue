@@ -57,9 +57,50 @@
             </div>
 
             <div class="field" v-if="companyLogoUrl">
-              <label>Önizleme</label>
+              <label>Logo Önizleme</label>
               <div class="preview">
                 <img :src="companyLogoUrl" alt="Logo Preview" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Favicon URL</label>
+              <input
+                v-model="faviconUrlInput"
+                type="text"
+                class="input"
+                :disabled="faviconUploadedViaFile"
+                placeholder="https://.../favicon.ico"
+              >
+              <small class="help">Boş bırakılırsa varsayılan favicon kullanılır</small>
+            </div>
+
+            <div class="field">
+              <label>Favicon Yükle</label>
+              <div class="upload">
+                <input id="favicon-file" class="file" type="file" accept="image/*,.ico" @change="onFaviconFileChange">
+                <label for="favicon-file" class="btn btn-outline">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14"/>
+                  </svg>
+                  Favicon Seç
+                </label>
+                <span class="file-name" v-if="faviconFileName">{{ faviconFileName }}</span>
+                <span class="file-name muted" v-else>Seçilmedi</span>
+                <button v-if="faviconUploadedViaFile" type="button" class="btn btn-danger" @click="clearFaviconFile">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                  Kaldır
+                </button>
+              </div>
+            </div>
+
+            <div class="field" v-if="faviconUrl || faviconUrlInput">
+              <label>Favicon Önizleme</label>
+              <div class="preview favicon-preview">
+                <img :src="faviconUrlInput || faviconUrl" alt="Favicon Preview" />
               </div>
             </div>
           </div>
@@ -118,6 +159,12 @@ const companyLogoUrl = ref('')
 const logoUrlInput = ref('')
 const logoFileName = ref('')
 const logoUploadedViaFile = ref(false)
+
+const faviconUrl = ref('')
+const faviconUrlInput = ref('')
+const faviconFileName = ref('')
+const faviconUploadedViaFile = ref(false)
+
 const savingBranding = ref(false)
 
 const footerPhone = ref('')
@@ -135,6 +182,12 @@ function loadFromStorage() {
     logoUrlInput.value = companyLogoUrl.value && !companyLogoUrl.value.startsWith('data:') ? companyLogoUrl.value : ''
     logoUploadedViaFile.value = !!(companyLogoUrl.value && companyLogoUrl.value.startsWith('data:'))
     logoFileName.value = logoUploadedViaFile.value ? 'Yüklendi (data URL)' : ''
+
+    // Favicon'u localStorage'dan veya sessionStorage'dan yükle
+    faviconUrl.value = localStorage.getItem('faviconUrl') || sessionStorage.getItem('faviconUrl') || ''
+    faviconUrlInput.value = faviconUrl.value && !faviconUrl.value.startsWith('data:') ? faviconUrl.value : ''
+    faviconUploadedViaFile.value = !!(faviconUrl.value && faviconUrl.value.startsWith('data:'))
+    faviconFileName.value = faviconUploadedViaFile.value ? 'Yüklendi (sıkıştırılmış)' : ''
 
     footerPhone.value = localStorage.getItem('footerPhone') || ''
     footerEmail.value = localStorage.getItem('footerEmail') || ''
@@ -164,19 +217,168 @@ function clearLogoFile() {
   if (input) input.value = ''
 }
 
+function onFaviconFileChange(e) {
+  const file = e.target.files && e.target.files[0]
+  if (!file) return
+  
+  // Resmi canvas ile küçült ve sıkıştır
+  const reader = new FileReader()
+  reader.onload = () => {
+    const img = new Image()
+    img.onload = () => {
+      // 32x32 boyutunda sıkıştırılmış favicon oluştur
+      const canvas = document.createElement('canvas')
+      canvas.width = 32
+      canvas.height = 32
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0, 32, 32)
+      
+      // Düşük kalitede PNG olarak kaydet (boyutu küçültmek için)
+      const compressedDataUrl = canvas.toDataURL('image/png', 0.8)
+      
+      faviconUrl.value = compressedDataUrl
+      faviconUrlInput.value = ''
+      faviconUploadedViaFile.value = true
+      faviconFileName.value = file.name
+    }
+    img.src = reader.result
+  }
+  reader.readAsDataURL(file)
+}
+
+function clearFaviconFile() {
+  faviconUrl.value = ''
+  faviconUrlInput.value = ''
+  faviconUploadedViaFile.value = false
+  faviconFileName.value = ''
+  const input = document.getElementById('favicon-file')
+  if (input) input.value = ''
+}
+
+
+function updateFavicon(url) {
+  if (!url) return
+  
+  try {
+    // Eğer data URL ise, canvas ile 16x16 ve 32x32 boyutlarında favicon oluştur
+    if (url.startsWith('data:')) {
+      createFaviconFromDataUrl(url)
+      return
+    }
+    
+    // Normal URL için direkt favicon güncelle
+    setFaviconLink(url)
+    
+  } catch (error) {
+    console.error('Favicon güncellenirken hata:', error)
+  }
+}
+
+function createFaviconFromDataUrl(dataUrl) {
+  const img = new Image()
+  img.onload = () => {
+    // 32x32 favicon oluştur (tek boyut yeterli)
+    const canvas = document.createElement('canvas')
+    canvas.width = 32
+    canvas.height = 32
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(img, 0, 0, 32, 32)
+    
+    // Canvas'ı data URL'e dönüştür
+    const faviconUrl = canvas.toDataURL('image/png')
+    
+    // Favicon linkini güncelle
+    setFaviconLink(faviconUrl)
+  }
+  img.src = dataUrl
+}
+
+function setFaviconLink(url, sizes = null) {
+  // Tüm favicon linklerini temizle
+  const existingLinks = document.querySelectorAll("link[rel*='icon']")
+  existingLinks.forEach(link => link.remove())
+  
+  // Yeni favicon linki oluştur
+  const link = document.createElement('link')
+  link.rel = 'icon'
+  link.type = 'image/png'
+  link.href = url
+  link.setAttribute('data-dynamic', 'true')
+  
+  if (sizes) {
+    link.sizes = sizes
+  }
+  
+  // Cache busting için timestamp ekle (sadece normal URL'ler için)
+  if (!url.includes('?') && !url.startsWith('data:') && !url.startsWith('blob:')) {
+    link.href += '?v=' + Date.now()
+  }
+  
+  // Head'e ekle
+  document.getElementsByTagName('head')[0].appendChild(link)
+}
+
 async function saveBranding() {
   try {
     savingBranding.value = true
     message.value = ''
+    
     // Persist locally for immediate UX; backend schema may not yet support these fields
     localStorage.setItem('companyName', companyName.value || '')
     localStorage.setItem('companyLogoUrl', (logoUrlInput.value || companyLogoUrl.value) || '')
+    
+    // Favicon kaydet ve güncelle
+    const finalFaviconUrl = faviconUrlInput.value || faviconUrl.value
+    
+    // localStorage boyut kontrolü ile kaydet
+    try {
+      if (finalFaviconUrl) {
+        // Data URL boyutunu kontrol et (localStorage limiti ~5MB)
+        const sizeInBytes = new Blob([finalFaviconUrl]).size
+        const sizeInMB = sizeInBytes / (1024 * 1024)
+        
+        if (sizeInMB > 2) {
+          throw new Error('Favicon çok büyük, lütfen daha küçük bir resim seçin')
+        }
+        
+        localStorage.setItem('faviconUrl', finalFaviconUrl)
+        
+        // Favicon'u hemen güncelle
+        updateFavicon(finalFaviconUrl)
+      } else {
+        localStorage.removeItem('faviconUrl')
+      }
+    } catch (error) {
+      if (error.name === 'QuotaExceededError' || error.message.includes('quota')) {
+        // localStorage dolu, favicon'u sessionStorage'a kaydet
+        try {
+          sessionStorage.setItem('faviconUrl', finalFaviconUrl || '')
+          message.value = 'Favicon kaydedildi (geçici olarak). Tarayıcı depolama alanı dolu.'
+          messageType.value = 'success'
+        } catch (sessionError) {
+          message.value = 'Favicon çok büyük. Lütfen daha küçük bir resim seçin.'
+          messageType.value = 'error'
+          return
+        }
+      } else {
+        message.value = error.message || 'Favicon kaydedilemedi'
+        messageType.value = 'error'
+        return
+      }
+      
+      // Yine de favicon'u güncelle
+      if (finalFaviconUrl) {
+        updateFavicon(finalFaviconUrl)
+      }
+    }
+    
     window.dispatchEvent(new Event('settings-change'))
     message.value = 'Marka ayarları kaydedildi!'
     messageType.value = 'success'
   } catch (e) {
     message.value = 'Marka ayarları kaydedilemedi'
     messageType.value = 'error'
+    console.error('Branding save error:', e)
   } finally {
     savingBranding.value = false
   }
@@ -200,7 +402,15 @@ async function saveFooter() {
   }
 }
 
-onMounted(loadFromStorage)
+onMounted(() => {
+  loadFromStorage()
+  
+  // Sayfa yüklendiğinde mevcut favicon'u uygula
+  const savedFavicon = localStorage.getItem('faviconUrl') || sessionStorage.getItem('faviconUrl')
+  if (savedFavicon) {
+    updateFavicon(savedFavicon)
+  }
+})
 </script>
 
 <style scoped>
@@ -237,6 +447,7 @@ onMounted(loadFromStorage)
 /* Preview */
 .preview { padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; }
 .preview img { height: 56px; object-fit: contain; display: block; }
+.favicon-preview img { height: 32px; width: 32px; }
 
 /* Buttons */
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: 1px solid transparent; background: transparent; color: #111827; transition: all .2s ease; }

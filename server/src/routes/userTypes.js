@@ -170,10 +170,16 @@ export default (prisma) => {
       const { userType } = req.params
       const route = req.query.route || ''
       
-      // Route'u doğru formata çevir
+      // SUPERADMIN her yere erişebilir
+      if (userType === 'SUPERADMIN') {
+        return res.json({ hasAccess: true })
+      }
+      
+      // İstenen path'i normalize et
       const pageId = route ? `/${route}` : '/'
 
-      const permission = await prisma.userTypePermission.findUnique({
+      // 1) Önce birebir eşleşme kontrolü
+      const exact = await prisma.userTypePermission.findUnique({
         where: {
           userTypeId_pageId: {
             userTypeId: userType,
@@ -181,9 +187,30 @@ export default (prisma) => {
           }
         }
       })
+      if (exact?.hasAccess) {
+        return res.json({ hasAccess: true })
+      }
 
-      const hasAccess = permission?.hasAccess || false
-      res.json({ hasAccess })
+      // 2) Dinamik route kalıpları için (örn: /lead/:id, /x/*) desen eşleştirme
+      const allPermissions = await prisma.userTypePermission.findMany({
+        where: { userTypeId: userType, hasAccess: true },
+        select: { pageId: true, hasAccess: true }
+      })
+
+      const hasWildcardAccess = allPermissions.some((perm) => {
+        // ":param" bölümlerini tek segmentlik wildcard'a çevir, yıldızı serbest eşleşmeye çevir
+        const pattern = '^' + perm.pageId
+          .replace(/\//g, '\\/')
+          .replace(/:[^/]+/g, '[^/]+')
+          .replace(/\*/g, '.*') + '$'
+        try {
+          return new RegExp(pattern).test(pageId)
+        } catch {
+          return false
+        }
+      })
+
+      return res.json({ hasAccess: !!hasWildcardAccess })
     } catch (error) {
       console.error('Permission check error:', error)
       res.status(500).json({ message: 'Yetki kontrolü yapılamadı' })

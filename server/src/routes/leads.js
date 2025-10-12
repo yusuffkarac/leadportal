@@ -94,7 +94,7 @@ export default function leadsRouter(prisma, io) {
 
   // Admin: own leads list with bids (MUST be before '/:id')
   router.get('/admin/mine/list', async (req, res) => {
-    if (req.user?.role !== 'ADMIN') return res.status(403).json({ error: 'Forbidden' })
+    if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') return res.status(403).json({ error: 'Forbidden' })
     const leads = await prisma.lead.findMany({
       where: { ownerId: req.user.id },
       orderBy: { createdAt: 'desc' },
@@ -105,7 +105,7 @@ export default function leadsRouter(prisma, io) {
 
   // Admin: all leads with owner and bids
   router.get('/admin/list', async (req, res) => {
-    if (req.user?.role !== 'ADMIN') return res.status(403).json({ error: 'Forbidden' })
+    if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') return res.status(403).json({ error: 'Forbidden' })
     const leads = await prisma.lead.findMany({
       orderBy: { createdAt: 'desc' },
       include: { owner: true, bids: { orderBy: { createdAt: 'desc' }, include: { user: true } } }
@@ -122,9 +122,28 @@ export default function leadsRouter(prisma, io) {
     res.json(lead)
   })
 
+  // Watch: list current watchers for the lead (current user)
+  router.get('/:id/watch', async (req, res) => {
+    if (!req.user) return res.status(401).json({ error: 'Unauthorized' })
+    const exists = await prisma.leadWatch.findUnique({ where: { leadId_userId: { leadId: req.params.id, userId: req.user.id } } })
+    res.json({ watching: !!exists })
+  })
+
+  // Watch: toggle on/off for current user
+  router.post('/:id/watch', async (req, res) => {
+    if (!req.user) return res.status(401).json({ error: 'Unauthorized' })
+    const exists = await prisma.leadWatch.findUnique({ where: { leadId_userId: { leadId: req.params.id, userId: req.user.id } } })
+    if (exists) {
+      await prisma.leadWatch.delete({ where: { leadId_userId: { leadId: req.params.id, userId: req.user.id } } })
+      return res.json({ watching: false })
+    }
+    await prisma.leadWatch.create({ data: { leadId: req.params.id, userId: req.user.id } })
+    res.json({ watching: true })
+  })
+
   // Admin create
   router.post('/', async (req, res) => {
-    if (req.user?.role !== 'ADMIN') return res.status(403).json({ error: 'Forbidden' })
+    if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') return res.status(403).json({ error: 'Forbidden' })
     const parsed = createLeadSchema.safeParse(req.body)
     if (!parsed.success) {
       const issues = parsed.error.issues.map((i) => ({ path: i.path.join('.'), message: i.message }))
@@ -208,7 +227,7 @@ export default function leadsRouter(prisma, io) {
 
   // Admin update
   router.put('/:id', async (req, res) => {
-    if (req.user?.role !== 'ADMIN') return res.status(403).json({ error: 'Forbidden' })
+    if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') return res.status(403).json({ error: 'Forbidden' })
     const schema = createLeadSchema.partial().extend({ isActive: z.boolean().optional() })
     const parsed = schema.safeParse(req.body)
     if (!parsed.success) {
@@ -226,7 +245,7 @@ export default function leadsRouter(prisma, io) {
 
   // Admin delete (cascade bids)
   router.delete('/:id', async (req, res) => {
-    if (req.user?.role !== 'ADMIN') return res.status(403).json({ error: 'Forbidden' })
+    if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') return res.status(403).json({ error: 'Forbidden' })
     await prisma.lead.delete({ where: { id: req.params.id } })
     io.to(`lead:${req.params.id}`).emit('lead:deleted', { leadId: req.params.id })
     res.json({ ok: true })

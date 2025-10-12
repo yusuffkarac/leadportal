@@ -7,6 +7,50 @@
 
       <!-- Settings Sections -->
       <div class="settings-sections">
+        <!-- SMTP Settings -->
+        <div class="settings-section">
+          <div class="section-header">
+            <h2>SMTP Ayarları</h2>
+            <p>Uygulamanın e-posta gönderebilmesi için sunucu bilgileri</p>
+          </div>
+          <div class="settings-content">
+            <div class="setting-group">
+              <label class="setting-label">SMTP Sunucu</label>
+              <input v-model="settings.smtpHost" type="text" placeholder="smtp.example.com" />
+            </div>
+            <div class="setting-group">
+              <label class="setting-label">Port</label>
+              <input v-model.number="settings.smtpPort" type="number" min="1" />
+            </div>
+            <div class="setting-group">
+              <label class="setting-label">Kullanıcı Adı</label>
+              <input v-model="settings.smtpUser" type="text" placeholder="user@example.com" />
+            </div>
+            <div class="setting-group">
+              <label class="setting-label">Parola</label>
+              <input v-model="settings.smtpPass" type="password" />
+            </div>
+            <div class="setting-group">
+              <label class="setting-label">Gönderen Adı</label>
+              <input v-model="settings.smtpFromName" type="text" placeholder="LeadPortal" />
+            </div>
+            <div class="setting-group">
+              <div class="toggle-container">
+                <label class="setting-label">TLS kullan</label>
+                <input type="checkbox" v-model="settings.smtpUseTLS" />
+              </div>
+            </div>
+            <div class="setting-group">
+              <div class="toggle-container">
+                <label class="setting-label">SSL kullan</label>
+                <input type="checkbox" v-model="settings.smtpUseSSL" />
+              </div>
+            </div>
+            <div>
+              <button class="btn btn-primary" @click="saveGeneralSettings" :disabled="savingGeneral">Kaydet</button>
+            </div>
+          </div>
+        </div>
         <!-- Lead ID Format Settings -->
         <div class="settings-section">
           <div class="section-header">
@@ -337,7 +381,14 @@ const settings = ref({
   maintenanceMode: false,
   maintenanceMessage: 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.',
   companyName: 'LeadPortal',
-  companyLogoUrl: ''
+  companyLogoUrl: '',
+  smtpHost: '',
+  smtpPort: 465,
+  smtpUser: '',
+  smtpPass: '',
+  smtpFromName: 'LeadPortal',
+  smtpUseTLS: false,
+  smtpUseSSL: true
 })
 
 const saving = ref(false)
@@ -599,6 +650,54 @@ onMounted(loadSettings)
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+/* Generic form controls for settings page */
+.settings-section input[type="text"],
+.settings-section input[type="number"],
+.settings-section input[type="password"],
+.settings-section input[type="email"],
+.settings-section select,
+.settings-section textarea {
+  width: 100%;
+  appearance: none;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #111827;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.settings-section input[type="text"]:focus,
+.settings-section input[type="number"]:focus,
+.settings-section input[type="password"]:focus,
+.settings-section input[type="email"]:focus,
+.settings-section select:focus,
+.settings-section textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.settings-section .toggle-container input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+.settings-section .btn.btn-primary {
+  padding: 10px 16px;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.settings-section .btn.btn-primary:disabled {
+  opacity: .7;
+  cursor: not-allowed;
 }
 
 .setting-group {
