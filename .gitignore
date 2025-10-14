@@ -100,7 +100,7 @@ tmp/
 temp/
 
 # Prisma
-prisma/generated/
+
 
 # Vite
 .vite/
