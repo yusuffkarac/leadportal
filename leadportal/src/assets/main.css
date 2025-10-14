@@ -576,7 +576,7 @@ a,
   font-weight: 700;
   color: #374151;
   line-height: 1;
-  margin-bottom: 2px;
+
 }
 
 .bid-label {
@@ -779,7 +779,7 @@ a,
   font-size: 1.75rem;
   font-weight: 700;
   line-height: 1;
-  margin-bottom: 4px;
+
   color: var(--text);
 }
 
@@ -939,7 +939,7 @@ a,
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--text);
-  margin-bottom: 2px;
+
 }
 
 .bid-user {
@@ -1714,6 +1714,34 @@ label { font-size: 12px; color: var(--muted); }
   margin: 0;
 }
 
+.footer-social {
+  max-width: 1200px;
+  margin: 16px auto 0;
+  padding: 0 24px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.social-link:hover {
+  background: #374151;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
   .navbar {
@@ -2141,3 +2169,18 @@ label { font-size: 12px; color: var(--muted); }
     gap: 6px;
   }
 }
+
+/* Custom Icons */
+.icon-fastbuy {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;  
+  background-image: url('data:image/svg+xml,<%3Fxml version="1.0" encoding="utf-8"%3F><!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools --><svg version="1.1" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" xml:space="preserve"><style type="text/css">.st0{fill:white;stroke:white;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}.st1{fill:none;stroke:white;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:3;}.st2{fill:none;stroke:white;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:10;}.st3{fill:none;}</style><line class="st0" x1="6" y1="17" x2="16" y2="17"/><line class="st0" x1="3" y1="14" x2="13" y2="14"/><path class="st0" d="M29,8l-2,11L9.4,21.8C8.6,21.9,8,22.6,8,23.4v0C8,24.3,8.7,25,9.6,25H27"/><path class="st0" d="M5,4L5,4c2.3,0,3.8,2.4,2.8,4.5L7,10"/><line class="st0" x1="3" y1="4" x2="5" y2="4"/><line class="st0" x1="7" y1="10" x2="28" y2="10"/><circle class="st0" cx="11" cy="27" r="2"/><circle class="st0" cx="24" cy="27" r="2"/><rect x="-504" class="st3" width="536" height="680"/></svg>')
+
+
+}
+

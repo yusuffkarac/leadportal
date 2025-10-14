@@ -8,6 +8,7 @@ const leadId = route.params.id
 const lead = ref(null)
 const ok = ref('')
 const err = ref('')
+const insuranceTypes = ref([])
 
 function authHeaders() {
   const token = localStorage.getItem('token')
@@ -19,6 +20,16 @@ async function load() {
   lead.value = data
 }
 
+async function loadInsuranceTypes() {
+  try {
+    const { data } = await axios.get('/api/settings', { headers: authHeaders() })
+    insuranceTypes.value = data.insuranceTypes || ['Hayvan', 'Araba', 'Sağlık']
+  } catch (e) {
+    console.error('Sigorta türleri yüklenemedi:', e)
+    insuranceTypes.value = ['Hayvan', 'Araba', 'Sağlık'] // Fallback
+  }
+}
+
 async function save() {
   ok.value = ''
   err.value = ''
@@ -26,9 +37,11 @@ async function save() {
     const payload = {
       title: lead.value.title,
       description: lead.value.description,
+      privateDetails: lead.value.privateDetails || undefined,
       startPrice: lead.value.startPrice,
       minIncrement: lead.value.minIncrement,
       instantBuyPrice: lead.value.instantBuyPrice,
+      insuranceType: lead.value.insuranceType || undefined,
       endsAt: lead.value.endsAt,
       isActive: lead.value.isActive
     }
@@ -39,7 +52,10 @@ async function save() {
   }
 }
 
-onMounted(load)
+onMounted(() => {
+  load()
+  loadInsuranceTypes()
+})
 </script>
 
 <template>
@@ -51,6 +67,8 @@ onMounted(load)
         <input class="input" v-model="lead.title" />
         <label>Açıklama</label>
         <textarea class="input" v-model="lead.description" rows="4" />
+        <label>Lead Detayları (Sadece Satın Alan Görür)</label>
+        <textarea class="input" v-model="lead.privateDetails" rows="6" placeholder="Satın alan kişinin göreceği detay bilgileri girin" />
         <div class="row">
           <div class="stack" style="flex:1">
             <label>Başlangıç</label>
@@ -65,6 +83,13 @@ onMounted(load)
           <label>Anında Satın Alma Fiyatı (Opsiyonel)</label>
           <input class="input" type="number" v-model.number="lead.instantBuyPrice" placeholder="Boş bırakılabilir" />
           <small style="color: var(--primary); font-size: 0.875rem;">Bu fiyatı ödeyen kişi açık artırmayı beklemeden hemen satın alabilir</small>
+        </div>
+        <div class="stack">
+          <label>Sigorta Türü (Opsiyonel)</label>
+          <select class="input" v-model="lead.insuranceType">
+            <option value="">Sigorta türü seçin</option>
+            <option v-for="type in insuranceTypes" :key="type" :value="type">{{ type }}</option>
+          </select>
         </div>
         <label>Bitiş</label>
         <input class="input" type="datetime-local" v-model="lead.endsAt" />
@@ -88,7 +113,7 @@ onMounted(load)
             <strong>{{ b.amount }}</strong>
             <span class="muted">{{ new Date(b.createdAt).toLocaleString() }}</span>
           </div>
-          <div class="muted">{{ b.user?.email }}</div>
+          <div class="muted">{{ b.user?.email || 'Anonim' }}</div>
         </div>
       </div>
     </div>

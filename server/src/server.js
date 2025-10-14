@@ -27,6 +27,9 @@ app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }))
 app.use(express.json({ limit: process.env.JSON_LIMIT || '20mb' }))
 app.use(express.urlencoded({ extended: true, limit: process.env.URLENCODED_LIMIT || '20mb' }))
 
+// Static dosya servisi - profil fotoğrafları için
+app.use('/uploads', express.static(join(__dirname, '../uploads')))
+
 // Bakım modu kontrolü (tüm API rotalarından önce)
 app.use('/api', checkMaintenanceMode)
 
@@ -79,6 +82,8 @@ import userTypesRouter from './routes/userTypes.js'
 import pagesRouter from './routes/pages.js'
 import faqRouter from './routes/faq.js'
 import aboutRouter from './routes/about.js'
+import designSettingsRouter from './routes/designSettings.js'
+import emailSmsSettingsRouter from './routes/emailSmsSettings.js'
 
 app.use('/api/auth', authRouter(prisma))
 app.use('/api/leads', (req, res, next) => requireAuth(req, res, next), leadsRouter(prisma, io))
@@ -90,6 +95,8 @@ app.use('/api/user-types', userTypesRouter(prisma))
 app.use('/api/pages', pagesRouter(prisma))
 app.use('/api/faq', faqRouter(prisma))
 app.use('/api/about', aboutRouter(prisma))
+app.use('/api/settings/design', designSettingsRouter(prisma))
+app.use('/api/email-sms-settings', emailSmsSettingsRouter)
 
 const port = process.env.PORT || 4000
 server.listen(port, '0.0.0.0', () => {

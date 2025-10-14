@@ -1,12 +1,45 @@
 import { Router } from 'express'
 import { z } from 'zod'
 
+// User bilgilerini anonim hale getir (kendi teklifi değilse)
+function anonymizeUser(user, currentUserId = null) {
+  if (!user) return null
+  
+  // Eğer bu kullanıcının kendi teklifi ise gerçek bilgileri döndür
+  if (currentUserId && user.id === currentUserId) {
+    return user
+  }
+  
+  // Başkalarının teklifleri için anonim bilgiler
+  return {
+    id: user.id,
+    email: '*** ***',
+    firstName: '***',
+    lastName: '***',
+    username: '***',
+    userTypeId: user.userTypeId,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt
+  }
+}
+
+// Bids array'ini anonim hale getir
+function anonymizeBids(bids, currentUserId = null) {
+  if (!bids) return []
+  return bids.map(bid => ({
+    ...bid,
+    user: anonymizeUser(bid.user, currentUserId)
+  }))
+}
+
 const createLeadSchema = z.object({
   title: z.string().min(1, 'Başlık zorunlu'),
   description: z.string().min(1, 'Açıklama zorunlu'),
+  privateDetails: z.string().max(20000).optional().nullable(),
   startPrice: z.number().int().nonnegative(),
   minIncrement: z.number().int().positive(),
   instantBuyPrice: z.number().int().positive().nullable().optional(),
+  insuranceType: z.string().optional().nullable(),
   endsAt: z.string().min(1, 'Bitiş zamanı zorunlu').transform((v) => new Date(v))
 })
 
@@ -80,16 +113,28 @@ async function checkAndSellExpiredLeads(prisma, io) {
 export default function leadsRouter(prisma, io) {
   const router = Router()
 
-  router.get('/', async (_req, res) => {
+  router.get('/', async (req, res) => {
     // Önce süresi dolmuş lead'leri kontrol et ve sat
     await checkAndSellExpiredLeads(prisma, io)
     
     const leads = await prisma.lead.findMany({
       where: { isActive: true },
       orderBy: { createdAt: 'desc' },
-      include: { bids: { orderBy: { createdAt: 'desc' }, take: 1 } }
+      include: { bids: { orderBy: { createdAt: 'desc' }, take: 1, include: { user: true } } }
     })
-    res.json(leads)
+    
+    // Bids'leri anonim hale getir (kendi teklifleri hariç)
+    const anonymizedLeads = leads.map(lead => {
+      const { privateDetails, ...rest } = lead
+      return {
+        ...rest,
+        // Aktif listede özel detay asla görünmez
+        privateDetails: null,
+        bids: anonymizeBids(lead.bids, req.user?.id)
+      }
+    })
+    
+    res.json(anonymizedLeads)
   })
 
   // Admin: own leads list with bids (MUST be before '/:id')
@@ -100,7 +145,14 @@ export default function leadsRouter(prisma, io) {
       orderBy: { createdAt: 'desc' },
       include: { bids: { orderBy: { createdAt: 'desc' }, include: { user: true } } }
     })
-    res.json(leads)
+    
+    // Bids'leri anonim hale getir (kendi teklifleri hariç)
+    const anonymizedLeads = leads.map(lead => ({
+      ...lead,
+      bids: anonymizeBids(lead.bids, req.user?.id)
+    }))
+    
+    res.json(anonymizedLeads)
   })
 
   // Admin: all leads with owner and bids
@@ -110,16 +162,38 @@ export default function leadsRouter(prisma, io) {
       orderBy: { createdAt: 'desc' },
       include: { owner: true, bids: { orderBy: { createdAt: 'desc' }, include: { user: true } } }
     })
-    res.json(leads)
+    
+    // Bids'leri anonim hale getir (kendi teklifleri hariç)
+    const anonymizedLeads = leads.map(lead => ({
+      ...lead,
+      bids: anonymizeBids(lead.bids, req.user?.id)
+    }))
+    
+    res.json(anonymizedLeads)
   })
 
   router.get('/:id', async (req, res) => {
     const lead = await prisma.lead.findUnique({
       where: { id: req.params.id },
-      include: { bids: { orderBy: { createdAt: 'desc' }, include: { user: true } } }
+      include: { 
+        bids: { orderBy: { createdAt: 'desc' }, include: { user: true } },
+        sale: { select: { buyerId: true } }
+      }
     })
     if (!lead) return res.status(404).json({ error: 'Not found' })
-    res.json(lead)
+    
+    // Bids'leri anonim hale getir (kendi teklifleri hariç)
+    const isBuyer = !!(lead.sale && req.user?.id && lead.sale.buyerId === req.user.id)
+    const isOwner = !!(req.user?.id && lead.ownerId && req.user.id === lead.ownerId)
+    const isAdmin = req.user?.userTypeId === 'ADMIN' || req.user?.userTypeId === 'SUPERADMIN'
+    const anonymizedLead = {
+      ...lead,
+      // Özel detay sadece satın alan, sahip veya admin görür
+      privateDetails: isBuyer || isOwner || isAdmin ? lead.privateDetails : null,
+      bids: anonymizeBids(lead.bids, req.user?.id)
+    }
+    
+    res.json(anonymizedLead)
   })
 
   // Watch: list current watchers for the lead (current user)
@@ -149,7 +223,7 @@ export default function leadsRouter(prisma, io) {
       const issues = parsed.error.issues.map((i) => ({ path: i.path.join('.'), message: i.message }))
       return res.status(400).json({ error: 'Validation failed', issues })
     }
-    const { title, description, startPrice, minIncrement, instantBuyPrice, endsAt } = parsed.data
+    const { title, description, privateDetails, startPrice, minIncrement, instantBuyPrice, insuranceType, endsAt } = parsed.data
     
     // Ayarlardan ID formatını ve varsayılan değerleri al
     let settings = await prisma.settings.findUnique({
@@ -215,9 +289,11 @@ export default function leadsRouter(prisma, io) {
         id: customId, // Özel ID kullan
         title,
         description,
+        privateDetails: privateDetails || null,
         startPrice,
         minIncrement: finalMinIncrement, // Varsayılan değeri kullan
         instantBuyPrice,
+        insuranceType: insuranceType || null,
         endsAt,
         ownerId: req.user.id
       }

@@ -9,10 +9,12 @@ import AdminLeadNewView from '../views/AdminLeadNewView.vue'
 import FAQView from '../views/FAQView.vue'
 import PurchasedLeadsView from '../views/PurchasedLeadsView.vue'
 import AdminSettingsView from '../views/AdminSettingsView.vue'
-import AdminCompanySettingsView from '../views/AdminCompanySettingsView.vue'
 import AdminUserTypesView from '../views/AdminUserTypesView.vue'
 import AdminFAQView from '../views/AdminFAQView.vue'
 import AdminAboutView from '../views/AdminAboutView.vue'
+import AdminDesignSettingsView from '../views/AdminDesignSettingsView.vue'
+import AdminEmailSMSSettingsView from '../views/AdminEmailSMSSettingsView.vue'
+import ProfileView from '../views/ProfileView.vue'
 
 export const appRoutes = [
     {
@@ -90,12 +92,6 @@ export const appRoutes = [
       meta: { requiresAdmin: true },
     },
     {
-      path: '/admin/company-settings',
-      name: 'admin-company-settings',
-      component: AdminCompanySettingsView,
-      meta: { requiresAdmin: true },
-    },
-    {
       path: '/admin/user-types',
       name: 'admin-user-types',
       component: AdminUserTypesView,
@@ -112,6 +108,23 @@ export const appRoutes = [
       name: 'admin-about',
       component: AdminAboutView,
       meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin/design-settings',
+      name: 'admin-design-settings',
+      component: AdminDesignSettingsView,
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin/email-sms-settings',
+      name: 'admin-email-sms-settings',
+      component: AdminEmailSMSSettingsView,
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: ProfileView,
     },
 ]
 

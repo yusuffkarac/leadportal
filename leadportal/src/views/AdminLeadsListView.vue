@@ -14,9 +14,11 @@ const settings = ref({ defaultCurrency: 'TRY' })
 const newLead = ref({
   title: '',
   description: '',
+  privateDetails: '',
   startPrice: '',
   minIncrement: '',
   buyNowPrice: '',
+  insuranceType: '',
   endsAt: ''
 })
 
@@ -24,15 +26,18 @@ const newLead = ref({
 const editLead = ref({
   title: '',
   description: '',
+  privateDetails: '',
   startPrice: '',
   minIncrement: '',
   buyNowPrice: '',
+  insuranceType: '',
   endsAt: '',
   isActive: true
 })
 
 const errorMessage = ref('')
 const successMessage = ref('')
+const insuranceTypes = ref([])
 
 // Filtreleme
 const filters = ref({
@@ -61,8 +66,10 @@ async function loadSettings() {
   try {
     const response = await axios.get('/api/settings', { headers: authHeaders() })
     settings.value = response.data
+    insuranceTypes.value = response.data.insuranceTypes || ['Hayvan', 'Araba', 'Sağlık']
   } catch (error) {
     console.error('Ayarlar yüklenemedi:', error)
+    insuranceTypes.value = ['Hayvan', 'Araba', 'Sağlık'] // Fallback
   }
 }
 
@@ -106,6 +113,7 @@ async function openNewLeadModal() {
     newLead.value = {
       title: '',
       description: '',
+      privateDetails: '',
       startPrice: '',
       minIncrement: settings.defaultMinIncrement || 10,
       buyNowPrice: '',
@@ -120,6 +128,7 @@ async function openNewLeadModal() {
     newLead.value = {
       title: '',
       description: '',
+      privateDetails: '',
       startPrice: '',
       minIncrement: 10,
       buyNowPrice: '',
@@ -143,6 +152,7 @@ function openEditLeadModal(lead) {
   editLead.value = {
     title: lead.title,
     description: lead.description || '',
+    privateDetails: lead.privateDetails || '',
     startPrice: lead.startPrice.toString(),
     minIncrement: lead.minIncrement.toString(),
     buyNowPrice: lead.instantBuyPrice ? lead.instantBuyPrice.toString() : '',
@@ -184,9 +194,11 @@ async function createLead() {
 
     const leadData = {
       ...newLead.value,
+      privateDetails: newLead.value.privateDetails || undefined,
       startPrice: parseFloat(newLead.value.startPrice),
       minIncrement: parseFloat(newLead.value.minIncrement),
       instantBuyPrice: newLead.value.buyNowPrice ? parseFloat(newLead.value.buyNowPrice) : null,
+      insuranceType: newLead.value.insuranceType || undefined,
       endsAt: new Date(newLead.value.endsAt).toISOString()
     }
 
@@ -228,9 +240,11 @@ async function updateLead() {
 
     const leadData = {
       ...editLead.value,
+      privateDetails: editLead.value.privateDetails || undefined,
       startPrice: parseFloat(editLead.value.startPrice),
       minIncrement: parseFloat(editLead.value.minIncrement),
       instantBuyPrice: editLead.value.buyNowPrice ? parseFloat(editLead.value.buyNowPrice) : null,
+      insuranceType: editLead.value.insuranceType || undefined,
       endsAt: new Date(editLead.value.endsAt).toISOString()
     }
 
@@ -499,6 +513,10 @@ onUnmounted(() => {
               <span class="meta-label">Başlangıç:</span>
               <span class="meta-value">{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
             </div>
+            <div v-if="lead.insuranceType" class="meta-item">
+              <span class="meta-label">Sigorta:</span>
+              <span class="meta-value">{{ lead.insuranceType }}</span>
+            </div>
             <div class="meta-item">
               <span class="meta-label">Teklif:</span>
               <span class="meta-value">{{ lead.bids?.length || 0 }}</span>
@@ -591,6 +609,17 @@ onUnmounted(() => {
               rows="3"
             ></textarea>
           </div>
+
+          <div class="form-group">
+            <label>Lead Detayları (Sadece Satın Alan Görür)</label>
+            <textarea 
+              v-model="newLead.privateDetails" 
+              class="form-textarea" 
+              placeholder="Satın alan kişinin göreceği detay bilgileri girin"
+              rows="6"
+            ></textarea>
+            <small class="form-help">Bu alan sadece leadi satın alan kişi, lead sahibi ve adminler tarafından görülebilir.</small>
+          </div>
           
           <div class="form-row">
             <div class="form-group">
@@ -631,6 +660,14 @@ onUnmounted(() => {
               step="0.01"
             />
             <small class="form-help">Bu fiyat belirlenirse, kullanıcılar bu fiyattan anında satın alabilir</small>
+          </div>
+          
+          <div class="form-group">
+            <label>Sigorta Türü</label>
+            <select v-model="newLead.insuranceType" class="form-input">
+              <option value="">Sigorta türü seçin</option>
+              <option v-for="type in insuranceTypes" :key="type" :value="type">{{ type }}</option>
+            </select>
           </div>
           
           <div class="form-group">
@@ -683,6 +720,17 @@ onUnmounted(() => {
               rows="3"
             ></textarea>
           </div>
+
+          <div class="form-group">
+            <label>Lead Detayları (Sadece Satın Alan Görür)</label>
+            <textarea 
+              v-model="editLead.privateDetails" 
+              class="form-textarea" 
+              placeholder="Satın alan kişinin göreceği detay bilgileri girin"
+              rows="6"
+            ></textarea>
+            <small class="form-help">Bu alan sadece leadi satın alan kişi, lead sahibi ve adminler tarafından görülebilir.</small>
+          </div>
           
           <div class="form-row">
             <div class="form-group">
@@ -723,6 +771,14 @@ onUnmounted(() => {
               step="0.01"
             />
             <small class="form-help">Bu fiyat belirlenirse, kullanıcılar bu fiyattan anında satın alabilir</small>
+          </div>
+          
+          <div class="form-group">
+            <label>Sigorta Türü</label>
+            <select v-model="editLead.insuranceType" class="form-input">
+              <option value="">Sigorta türü seçin</option>
+              <option v-for="type in insuranceTypes" :key="type" :value="type">{{ type }}</option>
+            </select>
           </div>
           
           <div class="form-group">
@@ -972,13 +1028,13 @@ onUnmounted(() => {
 .bid-rank {
   color: var(--primary);
   font-weight: 500;
-  min-width: 12px;
+  min-width: 15px;
 }
 
 .bid-amount {
   color: #059669;
   font-weight: 600;
-  min-width: 60px;
+  min-width: 80px;
   font-size: 12px;
 }
 

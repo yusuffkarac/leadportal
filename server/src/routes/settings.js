@@ -53,6 +53,7 @@ router.get('/', requireAdmin, async (req, res) => {
           defaultCurrency: 'TRY',
           defaultAuctionDays: 7,
           defaultMinIncrement: 10,
+          insuranceTypes: ["Hayvan", "Araba", "Sağlık"],
           maintenanceMode: false,
           maintenanceMessage: 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.',
           smtpHost: '',
@@ -66,6 +67,11 @@ router.get('/', requireAdmin, async (req, res) => {
       })
     }
 
+    // Eğer insuranceTypes alanı yoksa default değer ekle
+    if (!settings.insuranceTypes) {
+      settings.insuranceTypes = ["Hayvan", "Araba", "Sağlık"]
+    }
+    
     res.json(settings)
   } catch (error) {
     console.error('Settings get error:', error)
@@ -85,6 +91,7 @@ router.post('/', requireAdmin, async (req, res) => {
       defaultCurrency,
       defaultAuctionDays,
       defaultMinIncrement,
+      insuranceTypes,
       maintenanceMode,
       maintenanceMessage,
       smtpHost,
@@ -109,6 +116,11 @@ router.post('/', requireAdmin, async (req, res) => {
       return res.status(400).json({ message: 'Başlangıç numarası 1\'den küçük olamaz' })
     }
 
+    // Sigorta türleri validasyonu
+    if (insuranceTypes && !Array.isArray(insuranceTypes)) {
+      return res.status(400).json({ message: 'Sigorta türleri bir dizi olmalıdır' })
+    }
+
     // Settings'i database'e kaydet
     const settings = await prisma.settings.upsert({
       where: { id: 'default' },
@@ -121,6 +133,7 @@ router.post('/', requireAdmin, async (req, res) => {
         defaultCurrency: defaultCurrency || 'TRY',
         defaultAuctionDays: defaultAuctionDays || 7,
         defaultMinIncrement: defaultMinIncrement || 10,
+        insuranceTypes: insuranceTypes || ["Hayvan", "Araba", "Sağlık"],
         maintenanceMode: maintenanceMode !== undefined ? maintenanceMode : false,
         maintenanceMessage: maintenanceMessage || 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.',
         smtpHost: smtpHost ?? '',
@@ -141,6 +154,7 @@ router.post('/', requireAdmin, async (req, res) => {
         defaultCurrency: defaultCurrency || 'TRY',
         defaultAuctionDays: defaultAuctionDays || 7,
         defaultMinIncrement: defaultMinIncrement || 10,
+        insuranceTypes: insuranceTypes || ["Hayvan", "Araba", "Sağlık"],
         maintenanceMode: maintenanceMode !== undefined ? maintenanceMode : false,
         maintenanceMessage: maintenanceMessage || 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.',
         smtpHost: smtpHost ?? '',
@@ -157,6 +171,110 @@ router.post('/', requireAdmin, async (req, res) => {
   } catch (error) {
     console.error('Settings update error:', error)
     res.status(500).json({ message: 'Ayarlar kaydedilemedi' })
+  }
+})
+
+// Get branding settings (public - no auth required)
+router.get('/branding', async (req, res) => {
+  try {
+    let settings = await prisma.settings.findUnique({
+      where: { id: 'default' },
+      select: {
+        companyName: true,
+        companyLogoUrl: true,
+        faviconUrl: true,
+        footerPhone: true,
+        footerEmail: true,
+        footerNote: true,
+        footerDescription: true,
+        tradeRegisterNumber: true,
+        servicesLinks: true,
+        supportLinks: true,
+        legalLinks: true,
+        socialMedia: true
+      }
+    })
+    
+    if (!settings) {
+      // Return default branding
+      settings = {
+        companyName: 'LeadPortal',
+        companyLogoUrl: '',
+        faviconUrl: '',
+        footerPhone: '+90 (212) 123 45 67',
+        footerEmail: 'info@leadportal.com',
+        footerNote: '',
+        footerDescription: 'Almanya\'nın önde gelen lead pazar yeri. Profesyonel açık artırmalar ve lead yönetimi platformu.',
+        tradeRegisterNumber: 'İstanbul Ticaret Sicil No: 12345',
+        servicesLinks: null,
+        supportLinks: null,
+        legalLinks: null,
+        socialMedia: null
+      }
+    }
+
+    res.json(settings)
+  } catch (error) {
+    console.error('Branding get error:', error)
+    res.status(500).json({ message: 'Branding ayarları alınamadı' })
+  }
+})
+
+// Update branding settings
+router.post('/branding', requireAdmin, async (req, res) => {
+  try {
+    const {
+      companyName,
+      companyLogoUrl,
+      faviconUrl,
+      footerPhone,
+      footerEmail,
+      footerNote,
+      footerDescription,
+      tradeRegisterNumber,
+      servicesLinks,
+      supportLinks,
+      legalLinks,
+      socialMedia
+    } = req.body
+
+    const settings = await prisma.settings.upsert({
+      where: { id: 'default' },
+      update: {
+        companyName: companyName || 'LeadPortal',
+        companyLogoUrl: companyLogoUrl || '',
+        faviconUrl: faviconUrl || '',
+        footerPhone: footerPhone || '+90 (212) 123 45 67',
+        footerEmail: footerEmail || 'info@leadportal.com',
+        footerNote: footerNote || '',
+        footerDescription: footerDescription || 'Almanya\'nın önde gelen lead pazar yeri. Profesyonel açık artırmalar ve lead yönetimi platformu.',
+        tradeRegisterNumber: tradeRegisterNumber || 'İstanbul Ticaret Sicil No: 12345',
+        servicesLinks: servicesLinks || null,
+        supportLinks: supportLinks || null,
+        legalLinks: legalLinks || null,
+        socialMedia: socialMedia || null
+      },
+      create: {
+        id: 'default',
+        companyName: companyName || 'LeadPortal',
+        companyLogoUrl: companyLogoUrl || '',
+        faviconUrl: faviconUrl || '',
+        footerPhone: footerPhone || '+90 (212) 123 45 67',
+        footerEmail: footerEmail || 'info@leadportal.com',
+        footerNote: footerNote || '',
+        footerDescription: footerDescription || 'Almanya\'nın önde gelen lead pazar yeri. Profesyonel açık artırmalar ve lead yönetimi platformu.',
+        tradeRegisterNumber: tradeRegisterNumber || 'İstanbul Ticaret Sicil No: 12345',
+        servicesLinks: servicesLinks || null,
+        supportLinks: supportLinks || null,
+        legalLinks: legalLinks || null,
+        socialMedia: socialMedia || null
+      }
+    })
+
+    res.json({ message: 'Branding ayarları başarıyla kaydedildi', settings })
+  } catch (error) {
+    console.error('Branding update error:', error)
+    res.status(500).json({ message: 'Branding ayarları kaydedilemedi' })
   }
 })
 

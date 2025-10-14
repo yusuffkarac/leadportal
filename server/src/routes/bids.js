@@ -1,7 +1,29 @@
 import { Router } from 'express'
 import { z } from 'zod'
 import { sendAppEmail } from '../utils/mailer.js'
-import { bidReceivedTemplate, outbidTemplate } from '../utils/emailTemplates.js'
+import { renderEmailTemplate } from '../utils/emailTemplateRenderer.js'
+
+// User bilgilerini anonim hale getir (kendi teklifi değilse)
+function anonymizeUser(user, currentUserId = null) {
+  if (!user) return null
+  
+  // Eğer bu kullanıcının kendi teklifi ise gerçek bilgileri döndür
+  if (currentUserId && user.id === currentUserId) {
+    return user
+  }
+  
+  // Başkalarının teklifleri için anonim bilgiler
+  return {
+    id: user.id,
+    email: '*** ***',
+    firstName: '***',
+    lastName: '***',
+    username: '***',
+    userTypeId: user.userTypeId,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt
+  }
+}
 
 const bidSchema = z.object({
   leadId: z.string().min(1),
@@ -28,14 +50,34 @@ export default function bidsRouter(prisma, io) {
     const previousTopBid = lead.bids[0] || null
     const bid = await prisma.bid.create({ data: { amount, leadId, userId: req.user.id }, include: { user: true } })
 
-    io.to(`lead:${leadId}`).emit('bid:new', { leadId, bid })
+    // Socket için anonim bid oluştur (tüm kullanıcılar için anonim)
+    const anonymizedBid = {
+      ...bid,
+      user: anonymizeUser(bid.user)
+    }
+
+    io.to(`lead:${leadId}`).emit('bid:new', { leadId, bid: anonymizedBid })
 
     // E-posta: Teklif verene bilgilendirme gönder
     try {
       const user = await prisma.user.findUnique({ where: { id: req.user.id } })
       if (user?.email) {
+        const settings = await prisma.settings.findUnique({ where: { id: 'default' } })
+        const companyName = settings?.companyName || 'LeadPortal'
         const leadUrl = process.env.APP_ORIGIN ? `${process.env.APP_ORIGIN}/lead/${leadId}` : ''
-        const { subject, html, text } = bidReceivedTemplate({ companyName: 'LeadPortal', leadTitle: lead.title, amount, currency: 'TL', leadUrl })
+        
+        const { subject, html, text } = await renderEmailTemplate('bidReceived', {
+          companyName,
+          leadTitle: lead.title,
+          amount,
+          currency: 'TL',
+          leadUrl,
+          year: new Date().getFullYear(),
+          userName: user.username || user.firstName || user.email.split('@')[0],
+          userEmail: user.email,
+          newAmount: amount
+        })
+        
         await sendAppEmail({ to: user.email, subject, text, html })
       }
     } catch (e) {
@@ -47,8 +89,22 @@ export default function bidsRouter(prisma, io) {
       if (previousTopBid && previousTopBid.userId !== req.user.id) {
         const outbidUser = await prisma.user.findUnique({ where: { id: previousTopBid.userId } })
         if (outbidUser?.email) {
+          const settings = await prisma.settings.findUnique({ where: { id: 'default' } })
+          const companyName = settings?.companyName || 'LeadPortal'
           const leadUrl = process.env.APP_ORIGIN ? `${process.env.APP_ORIGIN}/lead/${leadId}` : ''
-          const { subject, html, text } = outbidTemplate({ companyName: 'LeadPortal', leadTitle: lead.title, newAmount: amount, currency: 'TL', leadUrl })
+          
+          const { subject, html, text } = await renderEmailTemplate('outbid', {
+            companyName,
+            leadTitle: lead.title,
+            amount: previousTopBid.amount,
+            newAmount: amount,
+            currency: 'TL',
+            leadUrl,
+            year: new Date().getFullYear(),
+            userName: outbidUser.username || outbidUser.firstName || outbidUser.email.split('@')[0],
+            userEmail: outbidUser.email
+          })
+          
           await sendAppEmail({ to: outbidUser.email, subject, text, html })
         }
       }
@@ -59,13 +115,28 @@ export default function bidsRouter(prisma, io) {
     // Watchers: bu lead'i izleyen herkese bildirim
     try {
       const watchers = await prisma.leadWatch.findMany({ where: { leadId }, include: { user: true } })
+      const settings = await prisma.settings.findUnique({ where: { id: 'default' } })
+      const companyName = settings?.companyName || 'LeadPortal'
       const leadUrl = process.env.APP_ORIGIN ? `${process.env.APP_ORIGIN}/lead/${leadId}` : ''
+      
       await Promise.all(
         watchers
           .filter(w => w.userId !== req.user.id) // kendisine iki mail gitmesin
           .map(async (w) => {
             if (!w.user?.email) return
-            const { subject, html, text } = outbidTemplate({ companyName: 'LeadPortal', leadTitle: lead.title, newAmount: amount, currency: 'TL', leadUrl })
+            
+            const { subject, html, text } = await renderEmailTemplate('outbid', {
+              companyName,
+              leadTitle: lead.title,
+              amount: previousTopBid?.amount || lead.startPrice,
+              newAmount: amount,
+              currency: 'TL',
+              leadUrl,
+              year: new Date().getFullYear(),
+              userName: w.user.username || w.user.firstName || w.user.email.split('@')[0],
+              userEmail: w.user.email
+            })
+            
             await sendAppEmail({ to: w.user.email, subject, text, html })
           })
       )
@@ -73,7 +144,13 @@ export default function bidsRouter(prisma, io) {
       console.error('Watcher email send error:', e.message)
     }
 
-    res.status(201).json(bid)
+    // Response için kendi teklifini gören kullanıcı için gerçek bilgiler
+    const responseBid = {
+      ...bid,
+      user: anonymizeUser(bid.user, req.user.id)
+    }
+    
+    res.status(201).json(responseBid)
   })
 
   return router

@@ -1,0 +1,617 @@
+<template>
+  <div class="profile-page">
+    <div class="profile-container">
+      <div class="profile-header">
+        <h1>Profil Ayarları</h1>
+        <p>Kişisel bilgilerinizi ve hesap ayarlarınızı yönetin</p>
+      </div>
+
+      <div class="profile-content">
+        <!-- Profil Fotoğrafı Bölümü -->
+        <div class="profile-section">
+          <div class="section-header">
+            <h2>Profil Fotoğrafı</h2>
+          </div>
+          <div class="profile-photo-section">
+            <div class="current-photo">
+              <img 
+                v-if="user.profileImage" 
+                :src="user.profileImage" 
+                :alt="displayName"
+                class="profile-photo"
+              />
+              <div v-else class="photo-placeholder">
+                {{ initials }}
+              </div>
+            </div>
+            <div class="photo-actions">
+              <input 
+                type="file" 
+                ref="fileInput" 
+                @change="handleFileSelect" 
+                accept="image/*" 
+                style="display: none"
+              />
+              <button class="btn btn-secondary" @click="$refs.fileInput.click()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+                  <circle cx="12" cy="13" r="3"/>
+                </svg>
+                Fotoğraf Değiştir
+              </button>
+              <button 
+                v-if="user.profileImage" 
+                class="btn btn-danger" 
+                @click="removePhoto"
+                :disabled="isLoading"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3,6 5,6 21,6"/>
+                  <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"/>
+                </svg>
+                Kaldır
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kişisel Bilgiler -->
+        <div class="profile-section">
+          <div class="section-header">
+            <h2>Kişisel Bilgiler</h2>
+          </div>
+          <form @submit.prevent="updateProfile" class="profile-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="firstName">Ad</label>
+                <input 
+                  type="text" 
+                  id="firstName" 
+                  v-model="form.firstName" 
+                  class="form-input"
+                  placeholder="Adınızı girin"
+                />
+              </div>
+              <div class="form-group">
+                <label for="lastName">Soyad</label>
+                <input 
+                  type="text" 
+                  id="lastName" 
+                  v-model="form.lastName" 
+                  class="form-input"
+                  placeholder="Soyadınızı girin"
+                />
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="username">Kullanıcı Adı</label>
+              <input 
+                type="text" 
+                id="username" 
+                v-model="form.username" 
+                class="form-input"
+                placeholder="Kullanıcı adınızı girin"
+              />
+            </div>
+            
+            <div class="form-group">
+              <label for="email">E-posta</label>
+              <input 
+                type="email" 
+                id="email" 
+                v-model="form.email" 
+                class="form-input"
+                placeholder="E-posta adresinizi girin"
+                required
+              />
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" :disabled="isLoading">
+                <span v-if="isLoading">Kaydediliyor...</span>
+                <span v-else>Bilgileri Güncelle</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Şifre Değiştirme -->
+        <div class="profile-section">
+          <div class="section-header">
+            <h2>Şifre Değiştir</h2>
+          </div>
+          <form @submit.prevent="changePassword" class="profile-form">
+            <div class="form-group">
+              <label for="currentPassword">Mevcut Şifre</label>
+              <input 
+                type="password" 
+                id="currentPassword" 
+                v-model="passwordForm.currentPassword" 
+                class="form-input"
+                placeholder="Mevcut şifrenizi girin"
+                required
+              />
+            </div>
+            
+            <div class="form-group">
+              <label for="newPassword">Yeni Şifre</label>
+              <input 
+                type="password" 
+                id="newPassword" 
+                v-model="passwordForm.newPassword" 
+                class="form-input"
+                placeholder="Yeni şifrenizi girin"
+                required
+                minlength="6"
+              />
+            </div>
+            
+            <div class="form-group">
+              <label for="confirmPassword">Yeni Şifre Tekrar</label>
+              <input 
+                type="password" 
+                id="confirmPassword" 
+                v-model="passwordForm.confirmPassword" 
+                class="form-input"
+                placeholder="Yeni şifrenizi tekrar girin"
+                required
+                minlength="6"
+              />
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" :disabled="isPasswordLoading">
+                <span v-if="isPasswordLoading">Güncelleniyor...</span>
+                <span v-else>Şifreyi Değiştir</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Hesap Bilgileri -->
+        <div class="profile-section">
+          <div class="section-header">
+            <h2>Hesap Bilgileri</h2>
+          </div>
+          <div class="account-info">
+            <div class="info-item">
+              <label>Kullanıcı Tipi</label>
+              <span class="info-value">{{ userType?.name || 'Kullanıcı' }}</span>
+            </div>
+            <div class="info-item">
+              <label>Kayıt Tarihi</label>
+              <span class="info-value">{{ formatDate(user.createdAt) }}</span>
+            </div>
+            <div class="info-item">
+              <label>Son Güncelleme</label>
+              <span class="info-value">{{ formatDate(user.updatedAt) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import api from '@/utils/axios.js'
+import { useAlert } from '../composables/useAlert'
+
+const router = useRouter()
+const { success, error, warning } = useAlert()
+
+const user = ref({})
+const userType = ref({})
+const isLoading = ref(false)
+const isPasswordLoading = ref(false)
+
+const form = reactive({
+  firstName: '',
+  lastName: '',
+  username: '',
+  email: ''
+})
+
+const passwordForm = reactive({
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: ''
+})
+
+const displayName = computed(() => {
+  if (user.value?.firstName && user.value?.lastName) {
+    return `${user.value.firstName} ${user.value.lastName}`
+  }
+  if (user.value?.firstName) {
+    return user.value.firstName
+  }
+  if (user.value?.username) {
+    return user.value.username
+  }
+  return user.value?.email || 'Kullanıcı'
+})
+
+const initials = computed(() => {
+  const name = displayName.value
+  const words = name.split(' ')
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase()
+  }
+  return name[0]?.toUpperCase() || 'U'
+})
+
+async function loadUserProfile() {
+  try {
+    const response = await api.get('/auth/profile')
+    user.value = response.data.user
+    userType.value = response.data.userType
+    
+    // Form verilerini doldur
+    form.firstName = user.value.firstName || ''
+    form.lastName = user.value.lastName || ''
+    form.username = user.value.username || ''
+    form.email = user.value.email || ''
+  } catch (err) {
+    console.error('Profil yüklenemedi:', err)
+    error('Profil bilgileri yüklenemedi')
+  }
+}
+
+async function updateProfile() {
+  isLoading.value = true
+  try {
+    await api.put('/auth/profile', form)
+    await loadUserProfile()
+    success('Profil başarıyla güncellendi')
+  } catch (err) {
+    console.error('Profil güncellenemedi:', err)
+    error('Profil güncellenirken hata oluştu')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+async function changePassword() {
+  if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+    error('Yeni şifreler eşleşmiyor')
+    return
+  }
+  
+  if (passwordForm.newPassword.length < 6) {
+    error('Yeni şifre en az 6 karakter olmalıdır')
+    return
+  }
+  
+  isPasswordLoading.value = true
+  try {
+    await api.put('/auth/change-password', {
+      currentPassword: passwordForm.currentPassword,
+      newPassword: passwordForm.newPassword
+    })
+    
+    // Formu temizle
+    passwordForm.currentPassword = ''
+    passwordForm.newPassword = ''
+    passwordForm.confirmPassword = ''
+    
+    success('Şifre başarıyla değiştirildi')
+  } catch (err) {
+    console.error('Şifre değiştirilemedi:', err)
+    error('Şifre değiştirilirken hata oluştu')
+  } finally {
+    isPasswordLoading.value = false
+  }
+}
+
+async function handleFileSelect(event) {
+  const file = event.target.files[0]
+  if (!file) return
+  
+  // Dosya boyutu kontrolü (5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    warning('Dosya boyutu 5MB\'dan küçük olmalıdır')
+    return
+  }
+  
+  // Dosya tipi kontrolü
+  if (!file.type.startsWith('image/')) {
+    error('Lütfen geçerli bir resim dosyası seçin')
+    return
+  }
+  
+  const formData = new FormData()
+  formData.append('profileImage', file)
+  
+  try {
+    const response = await api.post('/auth/upload-profile-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    
+    user.value.profileImage = response.data.profileImageUrl
+    success('Profil fotoğrafı başarıyla güncellendi')
+  } catch (err) {
+    console.error('Fotoğraf yüklenemedi:', err)
+    error('Fotoğraf yüklenirken hata oluştu')
+  }
+}
+
+async function removePhoto() {
+  if (!confirm('Profil fotoğrafını kaldırmak istediğinizden emin misiniz?')) {
+    return
+  }
+  
+  try {
+    await api.delete('/auth/profile-image')
+    user.value.profileImage = null
+    success('Profil fotoğrafı kaldırıldı')
+  } catch (err) {
+    console.error('Fotoğraf kaldırılamadı:', err)
+    error('Fotoğraf kaldırılırken hata oluştu')
+  }
+}
+
+function formatDate(dateString) {
+  if (!dateString) return '-'
+  const date = new Date(dateString)
+  return date.toLocaleDateString('tr-TR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
+
+onMounted(() => {
+  loadUserProfile()
+})
+</script>
+
+<style scoped>
+.profile-page {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 2rem 0;
+}
+
+.profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.profile-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.profile-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.profile-header p {
+  font-size: 1.125rem;
+  color: #6b7280;
+}
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.profile-section {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.section-header {
+  margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.profile-photo-section {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.current-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.profile-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.photo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.form-input {
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.account-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.info-item label {
+  font-weight: 500;
+  color: #374151;
+}
+
+.info-value {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 0 0.5rem;
+  }
+  
+  .profile-header h1 {
+    font-size: 2rem;
+  }
+  
+  .profile-section {
+    padding: 1.5rem;
+  }
+  
+  .profile-photo-section {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .current-photo {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .photo-actions {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+</style>

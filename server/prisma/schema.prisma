@@ -17,6 +17,7 @@ model User {
   firstName      String?
   lastName       String?
   username       String?     @unique
+  profileImage   String?     // Profil fotoğrafı URL'i
   bids           Bid[]
   leads          Lead[]      @relation("LeadOwner")
   purchasedLeads LeadSale[]  @relation("LeadBuyer")
@@ -28,9 +29,11 @@ model Lead {
   id              String      @id @default(cuid())
   title           String
   description     String
+  privateDetails  String?     @db.Text
   startPrice      Int
   minIncrement    Int
   instantBuyPrice Int?
+  insuranceType   String?     // Sigorta türü
   isActive        Boolean     @default(true)
   isSold          Boolean     @default(false)
   endsAt          DateTime
@@ -85,6 +88,7 @@ model Settings {
   defaultCurrency     String   @default("TRY")
   defaultAuctionDays  Int      @default(7)
   defaultMinIncrement Int      @default(10)
+  insuranceTypes      Json     @default("[\"Hayvan\", \"Araba\", \"Sağlık\"]") // Sigorta türleri listesi
   maintenanceMode     Boolean  @default(false)
   maintenanceMessage  String   @default("Sistem bakımda. Lütfen daha sonra tekrar deneyin.")
   smtpHost            String   @default("")
@@ -94,6 +98,23 @@ model Settings {
   smtpFromName        String   @default("LeadPortal")
   smtpUseTLS          Boolean  @default(false)
   smtpUseSSL          Boolean  @default(true)
+  
+  // Branding
+  companyName         String   @default("LeadPortal")
+  companyLogoUrl      String   @default("")
+  faviconUrl          String   @default("")
+  
+  // Footer
+  footerPhone         String   @default("+90 (212) 123 45 67")
+  footerEmail         String   @default("info@leadportal.com")
+  footerNote          String   @default("")
+  footerDescription   String   @default("Almanya'nın önde gelen lead pazar yeri. Profesyonel açık artırmalar ve lead yönetimi platformu.")
+  tradeRegisterNumber String   @default("İstanbul Ticaret Sicil No: 12345")
+  servicesLinks       Json?    // Array of {text, url}
+  supportLinks        Json?    // Array of {text, url}
+  legalLinks          Json?    // Array of {text, url}
+  socialMedia         Json?    // {facebook, twitter, linkedin, instagram}
+  
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }
@@ -153,6 +174,39 @@ model About {
   data        Json?    // For flexible data like stats, team members
   isActive    Boolean  @default(true)
   sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model DesignSettings {
+  id        String   @id @default("default")
+  colors    Json     // Color palette as JSON
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EmailTemplate {
+  id          String   @id @default(cuid())
+  type        String   @unique // bidReceived, outbid, leadWon, leadExpired, welcome, passwordReset, etc.
+  name        String   // Kullanıcı dostu isim
+  description String?  // Template açıklaması
+  subject     String   // Email konusu
+  htmlContent String   @db.Text // HTML email içeriği
+  textContent String?  @db.Text // Plain text email içeriği
+  isActive    Boolean  @default(true)
+  variables   Json?    // Kullanılabilir değişkenler listesi: {leadTitle, amount, currency, leadUrl, etc.}
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SMSTemplate {
+  id          String   @id @default(cuid())
+  type        String   @unique // bidReceived, outbid, leadWon, etc.
+  name        String   // Kullanıcı dostu isim
+  description String?  // Template açıklaması
+  content     String   @db.Text // SMS içeriği
+  isActive    Boolean  @default(true)
+  variables   Json?    // Kullanılabilir değişkenler listesi
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

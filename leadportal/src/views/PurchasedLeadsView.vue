@@ -158,6 +158,12 @@
             </div>
           </div>
 
+          <!-- Özel detaylar: satın alınmış leadlerde backend görünürlüğü sağlıyor -->
+          <div v-if="sale.lead.privateDetails" class="private-details">
+            <div class="private-title">Satın Alanlara Özel Detaylar</div>
+            <pre class="private-content">{{ sale.lead.privateDetails }}</pre>
+          </div>
+
           <div class="lead-actions">
             <button class="btn btn-primary" @click="viewLeadDetails(sale.lead.id)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -918,6 +924,25 @@ onMounted(async () => {
   display: flex;
   gap: 8px;
   margin-left: auto;
+}
+
+.private-details {
+  margin-top: 16px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  padding: 12px;
+}
+.private-title {
+  font-weight: 600;
+  color: #9a3412;
+  margin-bottom: 8px;
+}
+.private-content {
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.875rem;
+  color: #7c2d12;
 }
 
 .btn {

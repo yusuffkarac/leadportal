@@ -1,6 +1,9 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
+import { useAlert } from '../composables/useAlert'
+
+const { success, error } = useAlert()
 
 const email = ref('')
 const password = ref('')
@@ -37,191 +40,131 @@ function authHeaders() {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
-async function submit() {
+async function submitModal() {
   ok.value = ''
   err.value = ''
   
   // Frontend validation
   if (!email.value.trim()) {
-    err.value = 'Email adresi gerekli'
+    error('Email adresi gerekli')
     return
   }
   
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(email.value)) {
-    err.value = 'Geçerli bir email adresi giriniz'
+    error('Geçerli bir email adresi giriniz')
     return
   }
   
-  if (!password.value.trim()) {
-    err.value = 'Şifre gerekli'
+  if (modalMode.value === 'create' && !password.value.trim()) {
+    error('Şifre gerekli')
     return
   }
   
-  if (password.value.length < 6) {
-    err.value = 'Şifre en az 6 karakter olmalıdır'
+  if (modalMode.value === 'create' && password.value.length < 6) {
+    error('Şifre en az 6 karakter olmalıdır')
+    return
+  }
+  
+  if (password.value && !modalPassValid.value.ok) {
+    error('Şifre kurallara uygun değil')
     return
   }
   
   if (!modalUserTypeId.value) {
-    err.value = 'Kullanıcı tipi seçilmelidir'
+    error('Kullanıcı tipi seçilmelidir')
     return
   }
   
   try {
     const userData = { 
-      email: email.value, 
-      password: password.value,
+      email: email.value,
       firstName: firstName.value || null,
       lastName: lastName.value || null,
       username: username.value || null,
       userTypeId: modalUserTypeId.value
     }
-    await axios.post('/api/users', userData, { headers: authHeaders() })
-    ok.value = 'Kullanıcı oluşturuldu'
-    email.value = ''
-    password.value = ''
-    firstName.value = ''
-    lastName.value = ''
-    username.value = ''
-    modalUserTypeId.value = ''
-    showNewUser.value = false
+    
+    if (modalMode.value === 'create') {
+      userData.password = password.value
+      await axios.post('/api/users', userData, { headers: authHeaders() })
+      success('Kullanıcı başarıyla oluşturuldu')
+    } else {
+      // Edit mode
+      if (password.value) {
+        await axios.put(`/api/users/${editUserId.value}/password`, { password: password.value }, { headers: authHeaders() })
+      }
+      await axios.put(`/api/users/${editUserId.value}`, userData, { headers: authHeaders() })
+      success('Kullanıcı başarıyla güncellendi')
+    }
+    
+    closeModal()
     loadUsers()
   } catch (e) {
     const status = e?.response?.status
     const serverError = e?.response?.data?.error
     
     if (serverError) {
-      err.value = serverError
+      error(serverError)
     } else if (status === 409) {
-      err.value = 'Bu email adresi zaten kullanılıyor'
+      error('Bu email adresi zaten kullanılıyor')
     } else if (status === 403) {
-      err.value = 'Bu işlem için yetkiniz yok'
+      error('Bu işlem için yetkiniz yok')
     } else if (status === 400) {
-      err.value = 'Girilen bilgilerde hata var'
+      error('Girilen bilgilerde hata var')
+    } else if (status === 404) {
+      error('Kullanıcı bulunamadı')
     } else if (status === 500) {
-      err.value = 'Sunucu hatası oluştu'
+      error('Sunucu hatası oluştu')
     } else if (status === 0 || !status) {
-      err.value = 'Sunucuya bağlanılamıyor'
+      error('Sunucuya bağlanılamıyor')
     } else {
-      err.value = 'Beklenmeyen bir hata oluştu'
+      error('Beklenmeyen bir hata oluştu')
     }
   }
 }
 
 function openNewUser() {
-  showNewUser.value = true
-  ok.value = ''
-  err.value = ''
-  query.value = ''
-  filterUserType.value = ''
-}
-
-
-function closeNewUser() {
-  showNewUser.value = false
+  modalMode.value = 'create'
+  showModal.value = true
   email.value = ''
   password.value = ''
   firstName.value = ''
   lastName.value = ''
   username.value = ''
   modalUserTypeId.value = ''
+  editUserId.value = null
   ok.value = ''
   err.value = ''
+  query.value = ''
+  filterUserType.value = ''
 }
 
 function openEditUser(user) {
-  showEditUser.value = true
+  modalMode.value = 'edit'
+  showModal.value = true
   editUserId.value = user.id
-  editEmail.value = user.email
-  editFirstName.value = user.firstName || ''
-  editLastName.value = user.lastName || ''
-  editUsername.value = user.username || ''
-  editUserTypeId.value = user.userType?.id || ''
-  editPassword.value = ''
+  email.value = user.email
+  firstName.value = user.firstName || ''
+  lastName.value = user.lastName || ''
+  username.value = user.username || ''
+  modalUserTypeId.value = user.userType?.id || ''
+  password.value = ''
   ok.value = ''
   err.value = ''
 }
 
-function closeEditUser() {
-  showEditUser.value = false
+function closeModal() {
+  showModal.value = false
+  email.value = ''
+  password.value = ''
+  firstName.value = ''
+  lastName.value = ''
+  username.value = ''
+  modalUserTypeId.value = ''
   editUserId.value = null
-  editEmail.value = ''
-  editFirstName.value = ''
-  editLastName.value = ''
-  editUsername.value = ''
-  editUserTypeId.value = ''
-  editPassword.value = ''
   ok.value = ''
   err.value = ''
-}
-
-async function submitEdit() {
-  ok.value = ''
-  err.value = ''
-  
-  // Frontend validation
-  if (!editEmail.value.trim()) {
-    err.value = 'Email adresi gerekli'
-    return
-  }
-  
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(editEmail.value)) {
-    err.value = 'Geçerli bir email adresi giriniz'
-    return
-  }
-  
-  if (!editUserTypeId.value) {
-    err.value = 'Kullanıcı tipi seçilmelidir'
-    return
-  }
-  
-  if (editPassword.value && !editPassValid.value.ok) {
-    err.value = 'Şifre kurallara uygun değil'
-    return
-  }
-  
-  try {
-    const userData = { 
-      email: editEmail.value,
-      firstName: editFirstName.value || null,
-      lastName: editLastName.value || null,
-      username: editUsername.value || null,
-      userTypeId: editUserTypeId.value
-    }
-    
-    // Şifre varsa güncelle
-    if (editPassword.value) {
-      await axios.put(`/api/users/${editUserId.value}/password`, { password: editPassword.value }, { headers: authHeaders() })
-    }
-    
-    await axios.put(`/api/users/${editUserId.value}`, userData, { headers: authHeaders() })
-    ok.value = 'Kullanıcı güncellendi'
-    closeEditUser()
-    loadUsers()
-  } catch (e) {
-    const status = e?.response?.status
-    const serverError = e?.response?.data?.error
-    
-    if (serverError) {
-      err.value = serverError
-    } else if (status === 409) {
-      err.value = 'Bu email adresi zaten kullanılıyor'
-    } else if (status === 403) {
-      err.value = 'Bu işlem için yetkiniz yok'
-    } else if (status === 400) {
-      err.value = 'Girilen bilgilerde hata var'
-    } else if (status === 404) {
-      err.value = 'Kullanıcı bulunamadı'
-    } else if (status === 500) {
-      err.value = 'Sunucu hatası oluştu'
-    } else if (status === 0 || !status) {
-      err.value = 'Sunucuya bağlanılamıyor'
-    } else {
-      err.value = 'Beklenmeyen bir hata oluştu'
-    }
-  }
 }
 
 async function loadUsers() {
@@ -245,15 +188,9 @@ async function loadUserTypes() {
 const showReset = ref(false)
 const resetUserId = ref(null)
 const resetPass = ref('')
-const showNewUser = ref(false)
-const showEditUser = ref(false)
+const showModal = ref(false)
+const modalMode = ref('create') // 'create' or 'edit'
 const editUserId = ref(null)
-const editEmail = ref('')
-const editFirstName = ref('')
-const editLastName = ref('')
-const editUsername = ref('')
-const editUserTypeId = ref('')
-const editPassword = ref('')
 const passValid = computed(() => {
   const p = resetPass.value
   const long = p.length >= 8
@@ -263,9 +200,10 @@ const passValid = computed(() => {
   return { long, hasNum, hasUpper, hasLower, ok: long && hasNum && hasUpper && hasLower }
 })
 
-const editPassValid = computed(() => {
-  const p = editPassword.value
-  if (!p) return { long: true, hasNum: true, hasUpper: true, hasLower: true, ok: true } // Şifre opsiyonel
+const modalPassValid = computed(() => {
+  const p = password.value
+  if (modalMode.value === 'edit' && !p) return { long: true, hasNum: true, hasUpper: true, hasLower: true, ok: true } // Edit modda şifre opsiyonel
+  if (!p) return { long: false, hasNum: false, hasUpper: false, hasLower: false, ok: false }
   const long = p.length >= 8
   const hasNum = /\d/.test(p)
   const hasUpper = /[A-Z]/.test(p)
@@ -283,39 +221,37 @@ async function confirmReset() {
   
   // Frontend validation
   if (!resetPass.value.trim()) {
-    err.value = 'Şifre gerekli'
+    error('Şifre gerekli')
     return
   }
   
   if (!passValid.value.ok) {
-    err.value = 'Şifre kurallara uygun değil'
+    error('Şifre kurallara uygun değil')
     return
   }
   
   try {
     await axios.put(`/api/users/${resetUserId.value}/password`, { password: resetPass.value }, { headers: authHeaders() })
     showReset.value = false
-    // Başarı mesajı göstermek için
-    ok.value = 'Şifre başarıyla sıfırlandı'
-    setTimeout(() => ok.value = '', 3000)
+    success('Şifre başarıyla sıfırlandı')
   } catch (e) {
     const status = e?.response?.status
     const serverError = e?.response?.data?.error
     
     if (serverError) {
-      err.value = serverError
+      error(serverError)
     } else if (status === 403) {
-      err.value = 'Bu işlem için yetkiniz yok'
+      error('Bu işlem için yetkiniz yok')
     } else if (status === 400) {
-      err.value = 'Şifre formatı hatalı'
+      error('Şifre formatı hatalı')
     } else if (status === 404) {
-      err.value = 'Kullanıcı bulunamadı'
+      error('Kullanıcı bulunamadı')
     } else if (status === 500) {
-      err.value = 'Sunucu hatası oluştu'
+      error('Sunucu hatası oluştu')
     } else if (status === 0 || !status) {
-      err.value = 'Sunucuya bağlanılamıyor'
+      error('Sunucuya bağlanılamıyor')
     } else {
-      err.value = 'Şifre sıfırlanamadı'
+      error('Şifre sıfırlanamadı')
     }
   }
 }
@@ -460,68 +396,43 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Yeni Kullanıcı Modal -->
-    <div v-if="showNewUser" class="modal-backdrop">
-      <div class="modal">
-        <h3>Yeni Kullanıcı</h3>
-        <div v-if="ok" style="color:#16a34a; margin-top:8px">{{ ok }}</div>
-        <div v-if="err" style="color:#ef4444; margin-top:8px">{{ err }}</div>
-        <form @submit.prevent="submit" class="stack" style="margin-top:10px">
-          <label>Ad</label>
-          <input class="input" v-model="firstName" type="text" autocomplete="given-name" />
-          <label>Soyad</label>
-          <input class="input" v-model="lastName" type="text" autocomplete="family-name" />
-          <label>Kullanıcı Adı</label>
-          <input class="input" v-model="username" type="text" autocomplete="username" />
-          <label>Email *</label>
-          <input class="input" v-model="email" type="email" required autocomplete="email" />
-          <label>Şifre *</label>
-          <input class="input" v-model="password" type="password" required autocomplete="new-password" />
-          <label>Kullanıcı Tipi *</label>
-          <select class="input" v-model="modalUserTypeId" required>
-            <option value="">Kullanıcı Tipi Seçin</option>
-            <option v-for="userType in userTypes" :key="userType.id" :value="userType.id">
-              {{ userType.name }}
-            </option>
-          </select>
-          <div class="row" style="justify-content:flex-end; gap:8px; margin-top:16px">
-            <button type="button" class="btn" @click="closeNewUser">İptal</button>
-            <button type="submit" class="btn">Oluştur</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Kullanıcı Düzenleme Modal -->
-    <div v-if="showEditUser" class="modal-backdrop">
+    <!-- Kullanıcı Modal -->
+    <div v-if="showModal" class="modal-backdrop">
       <div class="modal edit-modal">
-        <h3>Kullanıcı Düzenle</h3>
+        <h3>{{ modalMode === 'create' ? 'Kullanıcı Ekle' : 'Kullanıcı Düzenle' }}</h3>
         <div v-if="ok" style="color:#16a34a; margin-top:8px">{{ ok }}</div>
         <div v-if="err" style="color:#ef4444; margin-top:8px">{{ err }}</div>
-        <form @submit.prevent="submitEdit" style="margin-top:20px">
-          <div class="form-grid">
-            <div class="form-column">
+        <form @submit.prevent="submitModal" style="margin-top:20px">
+          <div class="form-container">
+            <!-- Ad - Soyad -->
+            <div class="form-row">
               <div class="form-group">
                 <label>Ad</label>
-                <input class="input" v-model="editFirstName" type="text" autocomplete="given-name" />
+                <input class="input" v-model="firstName" type="text" autocomplete="given-name" />
               </div>
               <div class="form-group">
                 <label>Soyad</label>
-                <input class="input" v-model="editLastName" type="text" autocomplete="family-name" />
-              </div>
-              <div class="form-group">
-                <label>Kullanıcı Adı</label>
-                <input class="input" v-model="editUsername" type="text" autocomplete="username" />
+                <input class="input" v-model="lastName" type="text" autocomplete="family-name" />
               </div>
             </div>
-            <div class="form-column">
+            
+            <!-- Kullanıcı Adı - Email -->
+            <div class="form-row">
               <div class="form-group">
-                <label>Email *</label>
-                <input class="input" v-model="editEmail" type="email" required autocomplete="email" />
+                <label>Kullanıcı Adı</label>
+                <input class="input" v-model="username" type="text" autocomplete="username" />
               </div>
               <div class="form-group">
+                <label>Email *</label>
+                <input class="input" v-model="email" type="email" required autocomplete="email" />
+              </div>
+            </div>
+            
+            <!-- Kullanıcı Tipi - Şifre -->
+            <div class="form-row">
+              <div class="form-group">
                 <label>Kullanıcı Tipi *</label>
-                <select class="input" v-model="editUserTypeId" required>
+                <select class="input" v-model="modalUserTypeId" required>
                   <option value="">Kullanıcı Tipi Seçin</option>
                   <option v-for="userType in userTypes" :key="userType.id" :value="userType.id">
                     {{ userType.name }}
@@ -529,23 +440,35 @@ onMounted(() => {
                 </select>
               </div>
               <div class="form-group">
-                <label>Yeni Şifre <span class="muted">(boş bırakılırsa değişmez)</span></label>
-                <input class="input" v-model="editPassword" type="password" autocomplete="new-password" placeholder="Şifre değiştirmek için doldurun" />
-                <div v-if="editPassword" class="password-rules">
-                  <div class="row" style="flex-wrap:wrap; gap:6px; margin-top:8px">
-                    <span class="badge" :style="{color: editPassValid.long? '#16a34a':'#ef4444'}">En az 8 karakter</span>
-                    <span class="badge" :style="{color: editPassValid.hasNum? '#16a34a':'#ef4444'}">Rakam</span>
-                    <span class="badge" :style="{color: editPassValid.hasUpper? '#16a34a':'#ef4444'}">Büyük harf</span>
-                    <span class="badge" :style="{color: editPassValid.hasLower? '#16a34a':'#ef4444'}">Küçük harf</span>
-                  </div>
-                </div>
+                <label>
+                  {{ modalMode === 'create' ? 'Şifre *' : 'Yeni Şifre' }}
+                  <span v-if="modalMode === 'edit'" class="muted">(boş bırakılırsa değişmez)</span>
+                </label>
+                <input 
+                  class="input" 
+                  v-model="password" 
+                  type="password" 
+                  :required="modalMode === 'create'" 
+                  autocomplete="new-password" 
+                  :placeholder="modalMode === 'edit' ? 'Şifre değiştirmek için doldurun' : ''"
+                />
+              </div>
+            </div>
+            
+            <!-- Şifre Kuralları -->
+            <div v-if="password" class="password-rules">
+              <div class="row" style="flex-wrap:wrap; gap:6px; margin-top:8px">
+                <span class="badge" :style="{color: modalPassValid.long? '#16a34a':'#ef4444'}">En az 8 karakter</span>
+                <span class="badge" :style="{color: modalPassValid.hasNum? '#16a34a':'#ef4444'}">Rakam</span>
+                <span class="badge" :style="{color: modalPassValid.hasUpper? '#16a34a':'#ef4444'}">Büyük harf</span>
+                <span class="badge" :style="{color: modalPassValid.hasLower? '#16a34a':'#ef4444'}">Küçük harf</span>
               </div>
             </div>
           </div>
           
           <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" @click="closeEditUser">İptal</button>
-            <button type="submit" class="btn btn-primary">Güncelle</button>
+            <button type="button" class="btn btn-secondary" @click="closeModal">İptal</button>
+            <button type="submit" class="btn btn-primary">{{ modalMode === 'create' ? 'Oluştur' : 'Güncelle' }}</button>
           </div>
         </form>
       </div>
@@ -966,16 +889,16 @@ onMounted(() => {
   font-weight: 500;
 }
 
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
   margin-bottom: 1.5rem;
 }
 
-.form-column {
-  display: flex;
-  flex-direction: column;
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
 
@@ -1119,7 +1042,7 @@ onMounted(() => {
     font-size: 0.75rem;
   }
   
-  .form-grid {
+  .form-row {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
@@ -1152,7 +1075,7 @@ onMounted(() => {
     flex-direction: column;
   }
   
-  .edit-modal .form-grid {
+  .edit-modal .form-container {
     flex: 1;
   }
   

@@ -192,14 +192,17 @@ onUnmounted(() => {
             </div>
             <h1 class="lead-title">{{ lead.title }}</h1>
             <p class="lead-description">{{ lead.description || 'Açıklama bulunmuyor' }}</p>
+            <div v-if="lead.insuranceType" class="insurance-type-badge">
+              <span class="insurance-label">Sigorta Türü:</span>
+              <span class="insurance-value">{{ lead.insuranceType }}</span>
+            </div>
             <button class="watch-btn" :class="{ active: watching }" @click="toggleWatch" title="Teklif bildirimlerini {{ watching ? 'kapat' : 'aç' }}">
               <svg v-if="!watching" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M15 17h5l-1.405-1.405C18.21 14.79 18 13.918 18 13V8a6 6 0 10-12 0v5c0 .918-.21 1.79-.595 2.595L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
               </svg>
               <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M13.73 21a2 2 0 01-3.46 0"/>
-                <path d="M18.63 13A17.89 17.89 0 0018 8"/>
-                <path d="M6.26 6.26A6 6 0 0018 8v5l1.5 1.5"/>
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
                 <path d="M2 2l20 20"/>
               </svg>
               <span>{{ watching ? 'Bildirim Açık' : 'Bildirim Kapalı' }}</span>
@@ -222,6 +225,11 @@ onUnmounted(() => {
                 <div class="stat-value">{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement }}</div>
                 <div class="stat-label">Min Artış</div>
               </div>
+            </div>
+            <!-- Özel Detaylar: sadece satın alan/sahip/admin görür; backend null döndürürse gizli kalır -->
+            <div v-if="lead.privateDetails" class="private-details">
+              <div class="private-title">Satın Alanlara Özel Detaylar</div>
+              <pre class="private-content">{{ lead.privateDetails }}</pre>
             </div>
             <button class="share-btn-large" @click="shareLead" title="Paylaş">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -318,13 +326,7 @@ onUnmounted(() => {
                 @click="openInstantBuyModal" 
                 :disabled="isSubmitting"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M9 12l2 2 4-4"/>
-                  <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"/>
-                  <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"/>
-                  <path d="M12 3v6"/>
-                  <path d="M12 15v6"/>
-                </svg>
+              <svg class="icon-fastbuy" width="16" height="16" viewBox="0 0 24 24"></svg>
                 <span>Anında Satın Al</span>
                 <span class="instant-price">{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</span>
               </button>
@@ -432,6 +434,21 @@ onUnmounted(() => {
   align-items: start;
 }
 
+@media (max-width: 1024px) {
+  .page-content {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-content {
+    padding: 12px;
+    gap: 16px;
+  }
+}
+
 /* Bids Section */
 .bids-section {
   grid-column: 1 / -1;
@@ -446,6 +463,17 @@ onUnmounted(() => {
   border: 1px solid #e5e7eb;
 }
 
+@media (max-width: 768px) {
+  .bids-section {
+    margin-top: 16px;
+  }
+  
+  .bids-panel {
+    padding: 16px;
+    border-radius: 12px;
+  }
+}
+
 /* Hero Section */
 .lead-hero {
   background: white;
@@ -457,10 +485,40 @@ onUnmounted(() => {
   margin-bottom: 0px;
 }
 
+.private-details {
+  margin-top: 12px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  padding: 12px;
+}
+.private-title {
+  font-weight: 600;
+  color: #9a3412;
+  margin-bottom: 8px;
+}
+.private-content {
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.875rem;
+  color: #7c2d12;
+}
+
 .lead-info-section {
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .lead-hero {
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  .lead-info-section {
+    gap: 16px;
+  }
 }
 
 
@@ -470,6 +528,18 @@ onUnmounted(() => {
   padding: 24px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   border: 1px solid #e5e7eb;
+  height: 100%;
+}
+
+.bid-form-section{
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .bid-form-panel {
+    padding: 16px;
+    border-radius: 12px;
+  }
 }
 
 /* Watch button */
@@ -558,7 +628,9 @@ onUnmounted(() => {
 .instant-price {
   font-size: 1.1rem;
   font-weight: 600;
-  margin-top: 2px;
+}
+.icon-fastbuy{
+  margin-bottom: 0.2rem;
 }
 
 /* Responsive */
@@ -574,6 +646,119 @@ onUnmounted(() => {
   
   .instant-price {
     font-size: 1rem;
+  }
+  
+  /* Typography adjustments for mobile */
+  .lead-title {
+    font-size: 1.5rem !important;
+    line-height: 1.3 !important;
+  }
+  
+  .lead-description {
+    font-size: 0.9rem !important;
+    line-height: 1.4 !important;
+  }
+  
+  .insurance-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+  
+  .insurance-label {
+    font-weight: 600;
+  }
+  
+  .insurance-value {
+    background: var(--primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+  }
+  
+  .current-bid-card .bid-amount {
+    font-size: 1.75rem !important;
+  }
+  
+  .stats-row {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  
+  .stat-card {
+    flex: 1 !important;
+    min-width: calc(50% - 4px) !important;
+  }
+  
+  .quick-bid-buttons {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+  
+  .quick-bid-btn {
+    padding: 8px 12px !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .submit-bid-btn {
+    padding: 14px 20px !important;
+    font-size: 1rem !important;
+  }
+  
+  .amount-input input {
+    font-size: 1.1rem !important;
+    padding: 12px !important;
+  }
+  
+  .watch-btn {
+    padding: 6px 10px !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .watch-btn span {
+    display: none !important;
+  }
+  
+  .share-btn-large {
+    padding: 8px 12px !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .share-btn-large span {
+    display: none !important;
+  }
+  
+  .bid-card {
+    padding: 12px !important;
+  }
+  
+  .bid-card .bid-amount {
+    font-size: 1.1rem !important;
+  }
+  
+  .bid-card .bid-user {
+    font-size: 0.8rem !important;
+  }
+  
+  .form-header h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  .form-header p {
+    font-size: 0.85rem !important;
+  }
+  
+  .panel-header h2 {
+    font-size: 1.25rem !important;
   }
 }
 
@@ -710,6 +895,92 @@ onUnmounted(() => {
 
 .btn-primary:hover:not(:disabled) {
   background: #059669;
+}
+
+/* Mobile Modal Optimizations */
+@media (max-width: 768px) {
+  .modal-backdrop {
+    padding: 12px;
+  }
+  
+  .modal {
+    border-radius: 8px;
+    max-width: 100%;
+  }
+  
+  .modal-header {
+    padding: 16px 20px 12px;
+  }
+  
+  .modal-header h3 {
+    font-size: 1.125rem;
+  }
+  
+  .modal-body {
+    padding: 20px;
+  }
+  
+  .lead-title {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+  
+  .price-display {
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .price-amount {
+    font-size: 1.25rem;
+  }
+  
+  .confirmation-text {
+    font-size: 0.8rem;
+  }
+  
+  .modal-footer {
+    padding: 12px 20px 16px;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .btn {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .page-content {
+    padding: 8px;
+    gap: 12px;
+  }
+  
+  .lead-hero,
+  .bid-form-panel,
+  .bids-panel {
+    padding: 12px;
+    border-radius: 8px;
+  }
+  
+  .quick-bid-buttons {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .stats-row {
+    flex-direction: column !important;
+  }
+  
+  .stat-card {
+    min-width: 100% !important;
+  }
+  
+  .modal {
+    margin: 8px;
+    max-width: calc(100vw - 16px);
+  }
 }
 </style>
 

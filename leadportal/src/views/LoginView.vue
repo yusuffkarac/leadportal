@@ -5,13 +5,13 @@ import { useRouter } from 'vue-router'
 import defaultLogo from '@/assets/images/logo.png'
 
 const router = useRouter()
-const email = ref('')
+const emailOrUsername = ref('')
 const password = ref('')
 const error = ref('')
 const loading = ref(false)
 const showPassword = ref(false)
 const remember = ref(true)
-const emailError = ref('')
+const emailOrUsernameError = ref('')
 const passwordError = ref('')
 
 // Branding
@@ -25,20 +25,18 @@ function loadBranding() {
 }
 
 function validate() {
-  emailError.value = ''
+  emailOrUsernameError.value = ''
   passwordError.value = ''
-  const emailVal = email.value.trim()
+  const emailOrUsernameVal = emailOrUsername.value.trim()
   const pwdVal = password.value
-  const emailOk = /.+@.+\..+/.test(emailVal)
-  if (!emailVal) emailError.value = 'Email zorunlu'
-  else if (!emailOk) emailError.value = 'Geçerli bir email girin'
+  if (!emailOrUsernameVal) emailOrUsernameError.value = 'Email veya kullanıcı adı zorunlu'
   if (!pwdVal) passwordError.value = 'Şifre zorunlu'
   else if (pwdVal.length < 6) passwordError.value = 'En az 6 karakter olmalı'
-  return !emailError.value && !passwordError.value
+  return !emailOrUsernameError.value && !passwordError.value
 }
 
 const canSubmit = computed(() => {
-  return !loading.value && email.value && password.value && !emailError.value && !passwordError.value
+  return !loading.value && emailOrUsername.value && password.value && !emailOrUsernameError.value && !passwordError.value
 })
 
 async function submit() {
@@ -46,7 +44,7 @@ async function submit() {
   if (!validate()) return
   try {
     loading.value = true
-    const { data } = await axios.post('/api/auth/login', { email: email.value, password: password.value })
+    const { data } = await axios.post('/api/auth/login', { emailOrUsername: emailOrUsername.value, password: password.value })
     const storage = remember.value ? window.localStorage : window.sessionStorage
     storage.setItem('token', data.token)
     if (data?.user?.userType) {
@@ -91,13 +89,14 @@ onUnmounted(() => {
 
       <form class="form" @submit.prevent="submit">
         <label class="field">
-          <span class="label">Email</span>
+          <span class="label">Email veya Kullanıcı Adı</span>
           <div class="control">
             <span class="icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5L4 8V6l8 5 8-5v2Z"/></svg>
+              <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
             </span>
-            <input class="input" v-model="email" type="email" placeholder="ornek@site.com" autocomplete="email" required />
+            <input class="input" v-model="emailOrUsername" type="text" placeholder="ornek@site.com veya kullaniciadi" autocomplete="username" required />
           </div>
+          <div v-if="emailOrUsernameError" class="field-error">{{ emailOrUsernameError }}</div>
         </label>
 
         <label class="field">
