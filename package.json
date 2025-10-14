@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "multer": "^2.0.2",
     "pdfmake": "^0.2.20"
   },
   "devDependencies": {

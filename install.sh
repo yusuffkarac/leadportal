@@ -78,7 +78,7 @@ DATABASE_URL="file:./dev.db"
 JWT_SECRET="your-super-secret-jwt-key-change-this-in-production"
 
 # Server
-PORT=3000
+PORT=4000
 NODE_ENV=development
 
 # CORS

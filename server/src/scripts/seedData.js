@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../generated/prisma/index.js'
+import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
@@ -15,14 +15,20 @@ async function seedData() {
       { id: 'USER', name: 'User', description: 'Standart kullanıcı' }
     ]
 
+    console.log('Creating user types...')
     for (const userType of userTypes) {
-      await prisma.userType.upsert({
+      const result = await prisma.userType.upsert({
         where: { id: userType.id },
         update: userType,
         create: userType
       })
+      console.log(`Created/Updated user type: ${result.id}`)
     }
-    console.log('✅ User types created')
+    
+    // Verify user types were created
+    const createdUserTypes = await prisma.userType.findMany()
+    console.log(`✅ User types created: ${createdUserTypes.length} types found`)
+    console.log('User types:', createdUserTypes.map(ut => ut.id))
 
     // 2. Create default pages
     const pages = [
@@ -98,23 +104,33 @@ async function seedData() {
       { email: 'user@gmail.com', password: 'user123', userTypeId: 'USER', role: 'USER' }
     ]
 
+    console.log('Creating default users...')
     for (const userData of defaultUsers) {
+      // Verify user type exists before creating user
+      const userType = await prisma.userType.findUnique({
+        where: { id: userData.userTypeId }
+      })
+      
+      if (!userType) {
+        console.error(`❌ UserType ${userData.userTypeId} not found for user ${userData.email}`)
+        continue
+      }
+      
       const hashedPassword = await bcrypt.hash(userData.password, 10)
       
-      await prisma.user.upsert({
+      const result = await prisma.user.upsert({
         where: { email: userData.email },
         update: {
           passwordHash: hashedPassword,
-          userTypeId: userData.userTypeId,
-          role: userData.role
+          userTypeId: userData.userTypeId
         },
         create: {
           email: userData.email,
           passwordHash: hashedPassword,
-          userTypeId: userData.userTypeId,
-          role: userData.role
+          userTypeId: userData.userTypeId
         }
       })
+      console.log(`Created/Updated user: ${result.email} with type: ${result.userTypeId}`)
     }
     console.log('✅ Default users created')
 
