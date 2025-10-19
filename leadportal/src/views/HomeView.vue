@@ -1,17 +1,27 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { Icon } from '@iconify/vue'
 import api from '@/utils/axios.js'
 import { io } from 'socket.io-client'
 import { formatPrice, getCurrencySymbol } from '@/utils/currency.js'
 
 const leads = ref([])
+const allLeads = ref([]) // Tüm lead'ler
 const socket = io('/', { path: '/socket.io' })
 const showInstantBuyModal = ref(false)
 const selectedLead = ref(null)
 const isProcessing = ref(false)
-const settings = ref({ defaultCurrency: 'TRY' })
+const settings = ref({ defaultCurrency: 'TRY', insuranceTypes: [] })
 const quickBidAmounts = ref({})
 const isSubmittingBid = ref({})
+
+// Filtre state'leri
+const filters = ref({
+  insuranceType: '',
+  minPrice: null,
+  maxPrice: null
+})
+const showFilters = ref(false)
 
 // Zaman hesaplama fonksiyonu
 function formatTimeRemaining(endsAt) {
@@ -47,15 +57,113 @@ async function loadSettings() {
   try {
     const response = await api.get('/settings')
     settings.value = response.data
+    if (!settings.value.insuranceTypes) {
+      settings.value.insuranceTypes = [
+        { name: 'Hayvan', icon: 'mdi:paw' },
+        { name: 'Araba', icon: 'mdi:car' },
+        { name: 'Sağlık', icon: 'mdi:heart' }
+      ]
+    } else if (Array.isArray(settings.value.insuranceTypes) && settings.value.insuranceTypes.length > 0) {
+      // Eski format compatibility kontrolü
+      const firstItem = settings.value.insuranceTypes[0]
+      if (typeof firstItem === 'string') {
+        // String array formatında, yeni formata çevir
+        const defaultIcons = {
+          'Hayvan': 'mdi:paw',
+          'Araba': 'mdi:car',
+          'Sağlık': 'mdi:heart'
+        }
+        settings.value.insuranceTypes = settings.value.insuranceTypes.map(name => ({
+          name: name,
+          icon: defaultIcons[name] || 'mdi:file'
+        }))
+      }
+    }
   } catch (error) {
     console.error('Ayarlar yüklenemedi:', error)
+    settings.value.insuranceTypes = [
+      { name: 'Hayvan', icon: 'mdi:paw' },
+      { name: 'Araba', icon: 'mdi:car' },
+      { name: 'Sağlık', icon: 'mdi:heart' }
+    ]
   }
+}
+
+// Lead tipi için icon getir (Iconify id)
+function getInsuranceTypeIcon(typeName) {
+  if (!typeName) return 'mdi:file'
+  const typeObj = settings.value.insuranceTypes.find(t => (typeof t === 'object' ? t.name : t) === typeName)
+  const icon = typeof typeObj === 'object' ? typeObj?.icon : null
+  if (icon && icon.includes(':')) return icon
+  if (icon && !icon.includes(':')) return `mdi:${icon}`
+  return 'mdi:file'
+}
+
+// Filtreleri localStorage'a kaydet
+function saveFilters() {
+  localStorage.setItem('leadFilters', JSON.stringify(filters.value))
+}
+
+// Filtreleri localStorage'dan yükle
+function loadFilters() {
+  const saved = localStorage.getItem('leadFilters')
+  if (saved) {
+    try {
+      filters.value = JSON.parse(saved)
+    } catch (e) {
+      console.error('Filtre yükleme hatası:', e)
+    }
+  }
+}
+
+// Filtreleri uygula
+function applyFilters() {
+  let filtered = [...allLeads.value]
+  
+  // Insurance type filtresi
+  if (filters.value.insuranceType) {
+    filtered = filtered.filter(lead => lead.insuranceType === filters.value.insuranceType)
+  }
+  
+  // Fiyat aralığı filtresi
+  if (filters.value.minPrice !== null && filters.value.minPrice !== '') {
+    filtered = filtered.filter(lead => {
+      const currentPrice = lead.bids && lead.bids.length ? lead.bids[0].amount : lead.startPrice
+      return currentPrice >= Number(filters.value.minPrice)
+    })
+  }
+  
+  if (filters.value.maxPrice !== null && filters.value.maxPrice !== '') {
+    filtered = filtered.filter(lead => {
+      const currentPrice = lead.bids && lead.bids.length ? lead.bids[0].amount : lead.startPrice
+      return currentPrice <= Number(filters.value.maxPrice)
+    })
+  }
+  
+  leads.value = filtered
+  saveFilters()
+}
+
+// Insurance type listesi (name'leri döndür)
+const insuranceTypeNames = computed(() => {
+  return settings.value.insuranceTypes.map(t => typeof t === 'string' ? t : t.name)
+})
+
+// Filtreleri temizle
+function clearFilters() {
+  filters.value = {
+    insuranceType: '',
+    minPrice: null,
+    maxPrice: null
+  }
+  leads.value = [...allLeads.value]
+  saveFilters()
 }
 
 async function fetchLeads() {
   const { data } = await api.get('/leads')
   // Lead'lerin aktif durumunu endsAt tarihine göre güncelle
-  leads.value = data.map(lead => {
+  allLeads.value = data.map(lead => {
     const now = new Date()
     const endDate = new Date(lead.endsAt)
     const isExpired = endDate < now
@@ -66,8 +174,10 @@ async function fetchLeads() {
       isExpired: isExpired // Geçmiş lead'leri işaretle
     }
   })
+  // Filtreleri uygula
+  applyFilters()
   // Tüm listelenen lead odalarına katıl, canlı güncellemeleri al
-  for (const l of leads.value) {
+  for (const l of allLeads.value) {
     socket.emit('join-lead', l.id)
   }
 }
@@ -177,15 +287,17 @@ function setQuickBidAmount(lead, amount) {
 }
 
 onMounted(async () => {
+  loadFilters() // Filtreleri yükle
   await loadSettings()
   await fetchLeads()
   // Her yeni teklifte ilgili kartı anında güncelle
   socket.on('bid:new', ({ leadId, bid }) => {
-    const idx = leads.value.findIndex(l => l.id === leadId)
+    const idx = allLeads.value.findIndex(l => l.id === leadId)
     if (idx !== -1) {
-      const current = leads.value[idx]
+      const current = allLeads.value[idx]
       const existing = current.bids || []
-      leads.value[idx] = { ...current, bids: [bid, ...existing] }
+      allLeads.value[idx] = { ...current, bids: [bid, ...existing] }
+      applyFilters() // Filtreleri tekrar uygula
     }
   })
   
@@ -193,6 +305,7 @@ onMounted(async () => {
   const timeInterval = setInterval(() => {
     // Vue reactivity için leads array'ini güncelle
     leads.value = [...leads.value]
+    allLeads.value = [...allLeads.value]
   }, 60000)
   
   onUnmounted(() => {
@@ -225,7 +338,59 @@ onMounted(async () => {
     <div class="page-content">
       <div class="page-header">
         <h1>Aktif Açık Artırmalar</h1>
-        <!-- <p class="page-subtitle">Canlı teklifler ve açık artırmalar</p> -->
+        <button class="filter-toggle-btn" @click="showFilters = !showFilters">
+          <i class="fas fa-filter"></i>
+          Filtrele
+          <span v-if="filters.insuranceType || filters.minPrice || filters.maxPrice" class="filter-badge">●</span>
+        </button>
+      </div>
+      
+      <!-- Filtre Paneli -->
+      <div v-if="showFilters" class="filters-panel">
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label class="filter-label">Lead Tipi</label>
+            <select v-model="filters.insuranceType" @change="applyFilters" class="filter-select">
+              <option value="">Tümü</option>
+              <option v-for="typeName in insuranceTypeNames" :key="typeName" :value="typeName">
+                {{ typeName }}
+              </option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label class="filter-label">Min Fiyat ({{ getCurrencySymbol(settings.defaultCurrency) }})</label>
+            <input 
+              type="number" 
+              v-model.number="filters.minPrice" 
+              @input="applyFilters"
+              placeholder="Minimum"
+              class="filter-input"
+            />
+          </div>
+          
+          <div class="filter-group">
+            <label class="filter-label">Max Fiyat ({{ getCurrencySymbol(settings.defaultCurrency) }})</label>
+            <input 
+              type="number" 
+              v-model.number="filters.maxPrice" 
+              @input="applyFilters"
+              placeholder="Maximum"
+              class="filter-input"
+            />
+          </div>
+          
+          <div class="filter-group">
+            <button class="clear-filters-btn" @click="clearFilters">
+              <i class="fas fa-times"></i>
+              Filtreleri Temizle
+            </button>
+          </div>
+        </div>
+        
+        <div class="filter-info">
+          {{ leads.length }} lead gösteriliyor {{ allLeads.length !== leads.length ? `(${allLeads.length} toplam)` : '' }}
+        </div>
       </div>
       
       <div v-if="!leads.length" class="empty-state">
@@ -238,7 +403,10 @@ onMounted(async () => {
       <div class="auction-card" v-for="lead in leads" :key="lead.id" @click="navigateToLead(lead)">
         <div class="card-header">
           <div class="card-title">
-            <h3>{{ lead.title }}</h3>
+            <div class="title-with-icon">
+              <Icon v-if="lead.insuranceType" :icon="getInsuranceTypeIcon(lead.insuranceType)" class="insurance-iconify" width="18" height="18" />
+              <h3>{{ lead.title }}</h3>
+            </div>
             <span class="status-badge" :class="lead.isExpired ? 'expired' : 'active'">
               {{ lead.isExpired ? 'Geçmiş' : 'Aktif' }}
             </span>
@@ -427,6 +595,139 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+/* Sayfa Header - Filtre Buton */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.filter-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.filter-toggle-btn:hover {
+  background: #f9fafb;
+  border-color: var(--primary);
+}
+
+.filter-badge {
+  color: #ef4444;
+  font-size: 1.2rem;
+  line-height: 1;
+  margin-left: -4px;
+}
+
+/* Filtre Paneli */
+.filters-panel {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.filter-select,
+.filter-input {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #1f2937;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.filter-select:focus,
+.filter-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.clear-filters-btn {
+  padding: 8px 16px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  margin-top: auto;
+}
+
+.clear-filters-btn:hover {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+.filter-info {
+  font-size: 0.875rem;
+  color: var(--primary);
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Lead Tipi Icon */
+.title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.title-with-icon h3{
+  margin: 0;
+}
+
+.insurance-icon {
+  font-size: 1.1rem;
+  color: var(--primary);
+  opacity: 0.8;
+}
+
 /* Fiyat Container - Yan Yana Düzen */
 .price-container {
   display: flex;
@@ -473,7 +774,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 40px;
+  min-height: 50px;
 }
 
 .instant-amount {
@@ -693,6 +994,25 @@ onMounted(async () => {
     box-sizing: border-box !important;
   }
   
+  .page-header {
+    margin-bottom: 16px;
+  }
+  
+  .filter-toggle-btn {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
+  
+  .filters-panel {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .filters-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
   .auctions-grid {
     margin: 0 !important;
     padding: 0 !important;
@@ -704,6 +1024,10 @@ onMounted(async () => {
     padding: 16px !important;
     width: 100% !important;
     box-sizing: border-box !important;
+  }
+  
+  .insurance-icon {
+    font-size: 1rem;
   }
   
   .footer-buttons {

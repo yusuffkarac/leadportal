@@ -1,6 +1,57 @@
 import { Router } from 'express'
 import { z } from 'zod'
 
+// Lead tipi yetkilendirmesini kontrol eden helper fonksiyon
+async function filterLeadsByPermission(prisma, leads, userId, userTypeId) {
+  // SUPERADMIN her şeyi görebilir
+  if (userTypeId === 'SUPERADMIN') {
+    return leads
+  }
+
+  // Kullanıcının TÜM özel izinlerini al (hem true hem false)
+  const userPermissions = await prisma.userLeadTypePermission.findMany({
+    where: { userId }
+  })
+  
+  // Kullanıcı tipinin TÜM izinlerini al (hem true hem false)
+  const userTypePermissions = await prisma.leadTypePermission.findMany({
+    where: { userTypeId }
+  })
+
+  // Kullanıcı özel izinlerini map'e dönüştür
+  const userPermissionMap = {}
+  userPermissions.forEach(p => {
+    userPermissionMap[p.leadType] = p.hasAccess
+  })
+  
+  // User type izinlerini map'e dönüştür
+  const userTypePermissionMap = {}
+  userTypePermissions.forEach(p => {
+    userTypePermissionMap[p.leadType] = p.hasAccess
+  })
+
+  // Lead'leri filtrele
+  return leads.filter(lead => {
+    // insuranceType yoksa veya null ise, göster (default lead)
+    if (!lead.insuranceType) return true
+    
+    const leadType = lead.insuranceType
+    
+    // 1. Önce kullanıcı özel iznini kontrol et (varsa override eder)
+    if (userPermissionMap.hasOwnProperty(leadType)) {
+      return userPermissionMap[leadType]
+    }
+    
+    // 2. Kullanıcı özel izin yoksa, user type iznini kontrol et
+    if (userTypePermissionMap.hasOwnProperty(leadType)) {
+      return userTypePermissionMap[leadType]
+    }
+    
+    // 3. Hiçbir izin tanımı yoksa, default olarak göster
+    return true
+  })
+}
+
 // User bilgilerini anonim hale getir (kendi teklifi değilse)
 function anonymizeUser(user, currentUserId = null) {
   if (!user) return null
@@ -123,8 +174,16 @@ export default function leadsRouter(prisma, io) {
       include: { bids: { orderBy: { createdAt: 'desc' }, take: 1, include: { user: true } } }
     })
     
+    // Lead tipi yetkilendirmesine göre filtrele
+    const filteredLeads = await filterLeadsByPermission(
+      prisma, 
+      leads, 
+      req.user?.id, 
+      req.user?.userTypeId
+    )
+    
     // Bids'leri anonim hale getir (kendi teklifleri hariç)
-    const anonymizedLeads = leads.map(lead => {
+    const anonymizedLeads = filteredLeads.map(lead => {
       const { privateDetails, ...rest } = lead
       return {
         ...rest,
@@ -146,8 +205,16 @@ export default function leadsRouter(prisma, io) {
       include: { bids: { orderBy: { createdAt: 'desc' }, include: { user: true } } }
     })
     
+    // Lead tipi yetkilendirmesine göre filtrele (admin de göremeyebilir)
+    const filteredLeads = await filterLeadsByPermission(
+      prisma, 
+      leads, 
+      req.user?.id, 
+      req.user?.userTypeId
+    )
+    
     // Bids'leri anonim hale getir (kendi teklifleri hariç)
-    const anonymizedLeads = leads.map(lead => ({
+    const anonymizedLeads = filteredLeads.map(lead => ({
       ...lead,
       bids: anonymizeBids(lead.bids, req.user?.id)
     }))

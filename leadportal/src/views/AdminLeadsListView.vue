@@ -66,10 +66,34 @@ async function loadSettings() {
   try {
     const response = await axios.get('/api/settings', { headers: authHeaders() })
     settings.value = response.data
-    insuranceTypes.value = response.data.insuranceTypes || ['Hayvan', 'Araba', 'Sağlık']
+    insuranceTypes.value = response.data.insuranceTypes || [
+      { name: 'Hayvan', icon: 'fa-paw' },
+      { name: 'Araba', icon: 'fa-car' },
+      { name: 'Sağlık', icon: 'fa-heart-pulse' }
+    ]
+    
+    // Eski format compatibility kontrolü
+    if (insuranceTypes.value && Array.isArray(insuranceTypes.value) && insuranceTypes.value.length > 0) {
+      const firstItem = insuranceTypes.value[0]
+      if (typeof firstItem === 'string') {
+        const defaultIcons = {
+          'Hayvan': 'fa-paw',
+          'Araba': 'fa-car',
+          'Sağlık': 'fa-heart-pulse'
+        }
+        insuranceTypes.value = insuranceTypes.value.map(name => ({
+          name: name,
+          icon: defaultIcons[name] || 'fa-file-alt'
+        }))
+      }
+    }
   } catch (error) {
     console.error('Ayarlar yüklenemedi:', error)
-    insuranceTypes.value = ['Hayvan', 'Araba', 'Sağlık'] // Fallback
+    insuranceTypes.value = [
+      { name: 'Hayvan', icon: 'fa-paw' },
+      { name: 'Araba', icon: 'fa-car' },
+      { name: 'Sağlık', icon: 'fa-heart-pulse' }
+    ] // Fallback
   }
 }
 
@@ -666,7 +690,7 @@ onUnmounted(() => {
             <label>Sigorta Türü</label>
             <select v-model="newLead.insuranceType" class="form-input">
               <option value="">Sigorta türü seçin</option>
-              <option v-for="type in insuranceTypes" :key="type" :value="type">{{ type }}</option>
+              <option v-for="type in insuranceTypes" :key="type.name" :value="type.name">{{ type.name }}</option>
             </select>
           </div>
           
@@ -777,7 +801,7 @@ onUnmounted(() => {
             <label>Sigorta Türü</label>
             <select v-model="editLead.insuranceType" class="form-input">
               <option value="">Sigorta türü seçin</option>
-              <option v-for="type in insuranceTypes" :key="type" :value="type">{{ type }}</option>
+              <option v-for="type in insuranceTypes" :key="type.name" :value="type.name">{{ type.name }}</option>
             </select>
           </div>
           

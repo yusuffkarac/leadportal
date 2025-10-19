@@ -53,7 +53,11 @@ router.get('/', requireAdmin, async (req, res) => {
           defaultCurrency: 'TRY',
           defaultAuctionDays: 7,
           defaultMinIncrement: 10,
-          insuranceTypes: ["Hayvan", "Araba", "Sağlık"],
+          insuranceTypes: [
+            { name: "Hayvan", icon: "fa-paw" },
+            { name: "Araba", icon: "fa-car" },
+            { name: "Sağlık", icon: "fa-heart-pulse" }
+          ],
           maintenanceMode: false,
           maintenanceMessage: 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.',
           smtpHost: '',
@@ -69,7 +73,53 @@ router.get('/', requireAdmin, async (req, res) => {
 
     // Eğer insuranceTypes alanı yoksa default değer ekle
     if (!settings.insuranceTypes) {
-      settings.insuranceTypes = ["Hayvan", "Araba", "Sağlık"]
+      settings.insuranceTypes = [
+        { name: "Hayvan", icon: "fa-paw" },
+        { name: "Araba", icon: "fa-car" },
+        { name: "Sağlık", icon: "fa-heart-pulse" }
+      ]
+    } else if (Array.isArray(settings.insuranceTypes) && settings.insuranceTypes.length > 0) {
+      // Eski format compatibility: string array'i object array'e dönüştür
+      const firstItem = settings.insuranceTypes[0]
+      
+      if (typeof firstItem === 'string') {
+        // String array formatında, yeni formata çevir
+        const defaultIcons = {
+          'Hayvan': 'fa-paw',
+          'Araba': 'fa-car',
+          'Sağlık': 'fa-heart-pulse'
+        }
+        
+        settings.insuranceTypes = settings.insuranceTypes.map(name => ({
+          name: name,
+          icon: defaultIcons[name] || 'fa-file-alt'
+        }))
+        
+        // Veritabanını da güncelle
+        await prisma.settings.update({
+          where: { id: 'default' },
+          data: { insuranceTypes: settings.insuranceTypes }
+        })
+      } else if (firstItem && typeof firstItem === 'object') {
+        // Zaten object ama kontrol et
+        const needsFix = settings.insuranceTypes.some(type => 
+          !type.name || !type.icon || type.name.includes('fa-') || type.name.length < 2
+        )
+        
+        if (needsFix) {
+          // Bozuk veri, default'a dön
+          settings.insuranceTypes = [
+            { name: "Hayvan", icon: "fa-paw" },
+            { name: "Araba", icon: "fa-car" },
+            { name: "Sağlık", icon: "fa-heart-pulse" }
+          ]
+          
+          await prisma.settings.update({
+            where: { id: 'default' },
+            data: { insuranceTypes: settings.insuranceTypes }
+          })
+        }
+      }
     }
     
     res.json(settings)

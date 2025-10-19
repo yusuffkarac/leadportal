@@ -388,6 +388,7 @@
 
                 <div class="setting-group">
                   <label class="setting-label">Başlangıç Numarası</label>
+                  
                   <input 
                     v-model.number="settings.startingNumber" 
                     type="number" 
@@ -395,6 +396,7 @@
                     min="1"
                     @input="updateSettings"
                   >
+                  
                   <small class="form-help">Yeni lead'ler bu numaradan başlayacak</small>
                 </div>
 
@@ -427,8 +429,32 @@
                 <div class="setting-group">
                   <label class="setting-label">Mevcut Sigorta Türleri</label>
                   <div class="insurance-types-list">
-                    <div v-for="(type, index) in settings.insuranceTypes" :key="index" class="insurance-type-item">
-                      <input v-model="settings.insuranceTypes[index]" type="text" class="insurance-type-input" />
+                    <div v-for="(type, index) in settings.insuranceTypes" :key="index" class="insurance-type-item-with-icon">
+                      <div class="icon-preview">
+                        <Icon :icon="(type && type.icon) ? type.icon : 'mdi:file'" width="20" height="20" />
+                      </div>
+                      <input 
+                        v-model="settings.insuranceTypes[index].name" 
+                        type="text" 
+                        class="insurance-type-input" 
+                        placeholder="Tür Adı"
+                      />
+                      <div class="icon-picker">
+                        <button type="button" class="icon-picker-trigger" @click="toggleIconPicker(index)">
+                          <Icon :icon="settings.insuranceTypes[index].icon || 'mdi:file'" width="18" height="18" />
+                          <span>{{ settings.insuranceTypes[index].icon || 'İkon seçin' }}</span>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                          </svg>
+                        </button>
+                      </div>
+                      <Teleport to="body">
+                        <div v-if="iconPickerOpenIndex === index" class="icon-picker-modal-overlay" @click="closeIconPicker">
+                          <div class="icon-picker-modal-content" @click.stop>
+                            <IconifyPicker v-model="settings.insuranceTypes[index].icon" @close="closeIconPicker" />
+                          </div>
+                        </div>
+                      </Teleport>
                       <button @click="removeInsuranceType(index)" class="btn-remove" type="button">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                           <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -549,8 +575,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, h } from 'vue'
+import { ref, computed, onMounted, h } from 'vue'
 import api from '@/utils/axios.js'
+import { Icon } from '@iconify/vue'
+import IconifyPicker from '@/components/IconifyPicker.vue'
+import { useAlert } from '@/composables/useAlert.js'
+
+const { success, error } = useAlert()
 
 
 // Tab icons as render functions
@@ -616,7 +647,11 @@ const settings = ref({
   defaultCurrency: 'TRY',
   defaultAuctionDays: 7,
   defaultMinIncrement: 10,
-  insuranceTypes: ['Hayvan', 'Araba', 'Sağlık'],
+  insuranceTypes: [
+    { name: 'Hayvan', icon: 'mdi:paw' },
+    { name: 'Araba', icon: 'mdi:car' },
+    { name: 'Sağlık', icon: 'mdi:heart' }
+  ],
   maintenanceMode: false,
   maintenanceMessage: 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.',
   smtpHost: '',
@@ -627,6 +662,19 @@ const settings = ref({
   smtpUseTLS: false,
   smtpUseSSL: true
 })
+
+// Iconify tabanlı picker kontrol durumu
+const iconPickerOpenIndex = ref(null)
+
+function toggleIconPicker(index) {
+  iconPickerOpenIndex.value = iconPickerOpenIndex.value === index ? null : index
+}
+
+function closeIconPicker() {
+  iconPickerOpenIndex.value = null
+}
+
+// Seçim IconifyPicker üzerinden yapılır
 
 const savingGeneral = ref(false)
 const savingLeadId = ref(false)
@@ -673,6 +721,50 @@ async function loadSettings() {
     const response = await api.get('/settings')
     if (response.data) {
       settings.value = { ...settings.value, ...response.data }
+      
+      // Eski format compatibility kontrolü (Iconify şemasına çevir)
+      if (settings.value.insuranceTypes && Array.isArray(settings.value.insuranceTypes)) {
+        const firstItem = settings.value.insuranceTypes[0]
+        
+        if (typeof firstItem === 'string') {
+          // String array formatında, yeni (Iconify) formata çevir
+          const defaultIcons = {
+            'Hayvan': 'mdi:paw',
+            'Araba': 'mdi:car',
+            'Sağlık': 'mdi:heart'
+          }
+          settings.value.insuranceTypes = settings.value.insuranceTypes.map(name => ({
+            name: name,
+            icon: defaultIcons[name] || 'mdi:file'
+          }))
+        } else if (firstItem && typeof firstItem === 'object') {
+          // Object: eksik/yanlış alanları tamamla (FA -> Iconify dönüşüm)
+          const faToMdi = {
+            'fa-paw': 'mdi:paw',
+            'fa-car': 'mdi:car',
+            'fa-heart': 'mdi:heart',
+            'fa-file': 'mdi:file',
+            'fa-file-alt': 'mdi:file',
+            'fa-briefcase': 'mdi:briefcase',
+            'fa-home': 'mdi:home',
+            'fa-user': 'mdi:account'
+          }
+          settings.value.insuranceTypes = settings.value.insuranceTypes.map(type => {
+            const n = (type.name || '').trim()
+            let icon = (type.icon || '').trim()
+            if (icon.includes(':')) {
+              // already iconify
+            } else if (/^fa[- ]/i.test(icon)) {
+              icon = faToMdi[icon] || ''
+            } else if (icon) {
+              icon = `mdi:${icon}`
+            } else {
+              icon = 'mdi:file'
+            }
+            return { name: n, icon }
+          })
+        }
+      }
     }
   } catch (error) {
     console.error('Ayarlar yüklenemedi:', error)
@@ -824,7 +916,9 @@ async function saveBranding() {
       const sizeInMB = sizeInBytes / (1024 * 1024)
       
       if (sizeInMB > 2) {
-        message.value = 'Favicon çok büyük, lütfen daha küçük bir resim seçin (max 2MB)'
+        const errorMsg = 'Favicon çok büyük, lütfen daha küçük bir resim seçin (max 2MB)'
+        error(errorMsg)
+        message.value = errorMsg
         messageType.value = 'error'
         return
       }
@@ -846,10 +940,13 @@ async function saveBranding() {
     }
     
     window.dispatchEvent(new Event('settings-change'))
+    success('Marka ayarları başarıyla kaydedildi!')
     message.value = 'Marka ayarları kaydedildi!'
     messageType.value = 'success'
   } catch (e) {
-    message.value = 'Marka ayarları kaydedilemedi'
+    const errorMsg = 'Marka ayarları kaydedilemedi'
+    error(errorMsg)
+    message.value = errorMsg
     messageType.value = 'error'
     console.error('Branding save error:', e)
   } finally {
@@ -880,10 +977,13 @@ async function saveFooter() {
     }
     
     window.dispatchEvent(new Event('settings-change'))
+    success('Footer ayarları başarıyla kaydedildi!')
     message.value = 'Footer ayarları kaydedildi!'
     messageType.value = 'success'
   } catch (e) {
-    message.value = 'Footer ayarları kaydedilemedi'
+    const errorMsg = 'Footer ayarları kaydedilemedi'
+    error(errorMsg)
+    message.value = errorMsg
     messageType.value = 'error'
     console.error('Footer save error:', e)
   } finally {
@@ -921,10 +1021,13 @@ async function saveGeneralSettings() {
     savingGeneral.value = true
     message.value = ''
     await api.post('/settings', settings.value)
+    success('Genel ayarlar başarıyla kaydedildi!')
     message.value = 'Genel ayarlar kaydedildi!'
     messageType.value = 'success'
-  } catch (error) {
-    message.value = error.response?.data?.message || 'Genel ayarlar kaydedilemedi'
+  } catch (err) {
+    const errorMsg = err.response?.data?.message || 'Genel ayarlar kaydedilemedi'
+    error(errorMsg)
+    message.value = errorMsg
     messageType.value = 'error'
   } finally {
     savingGeneral.value = false
@@ -936,10 +1039,13 @@ async function saveLeadIdSettings() {
     savingLeadId.value = true
     message.value = ''
     await api.post('/settings', settings.value)
+    success('Lead ID ayarları başarıyla kaydedildi!')
     message.value = 'Lead ID ayarları kaydedildi!'
     messageType.value = 'success'
-  } catch (error) {
-    message.value = error.response?.data?.message || 'Lead ID ayarları kaydedilemedi'
+  } catch (err) {
+    const errorMsg = err.response?.data?.message || 'Lead ID ayarları kaydedilemedi'
+    error(errorMsg)
+    message.value = errorMsg
     messageType.value = 'error'
   } finally {
     savingLeadId.value = false
@@ -947,7 +1053,7 @@ async function saveLeadIdSettings() {
 }
 
 function addInsuranceType() {
-  settings.value.insuranceTypes.push('')
+  settings.value.insuranceTypes.push({ name: '', icon: 'fa-file-alt' })
 }
 
 function removeInsuranceType(index) {
@@ -961,19 +1067,34 @@ async function saveInsuranceTypes() {
     savingInsuranceTypes.value = true
     message.value = ''
     
-    const filteredTypes = settings.value.insuranceTypes.filter(type => type.trim() !== '')
+    // Validate: her type'ın name'i olmalı
+    const filteredTypes = settings.value.insuranceTypes.filter(type => 
+      type && typeof type === 'object' && type.name && type.name.trim() !== ''
+    )
+    
     if (filteredTypes.length === 0) {
+      error('En az bir sigorta türü olmalıdır')
       message.value = 'En az bir sigorta türü olmalıdır'
       messageType.value = 'error'
       return
     }
     
+    // Her type için icon yoksa default icon ekle (Iconify)
+    filteredTypes.forEach(type => {
+      if (!type.icon || type.icon.trim() === '') {
+        type.icon = 'mdi:file'
+      }
+    })
+    
     settings.value.insuranceTypes = filteredTypes
     await api.post('/settings', settings.value)
+    success('Sigorta türleri başarıyla kaydedildi!')
     message.value = 'Sigorta türleri kaydedildi!'
     messageType.value = 'success'
-  } catch (error) {
-    message.value = error.response?.data?.message || 'Sigorta türleri kaydedilemedi'
+  } catch (err) {
+    const errorMessage = err.response?.data?.message || 'Sigorta türleri kaydedilemedi'
+    error(errorMessage)
+    message.value = errorMessage
     messageType.value = 'error'
   } finally {
     savingInsuranceTypes.value = false
@@ -1210,13 +1331,51 @@ input:checked + .toggle-slider:before { transform: translateX(26px); }
 
 .insurance-types-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
 .insurance-type-item { display: flex; align-items: center; gap: 12px; }
-.insurance-type-input { flex: 1; padding: 10px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 0.875rem; transition: border-color 0.2s ease; }
+.insurance-type-item-with-icon { display: grid; grid-template-columns: 40px 1fr 200px 36px; align-items: center; gap: 12px; }
+.icon-preview { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #f3f4f6; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1.2rem; color: var(--primary); flex-shrink: 0; }
+.icon-select { padding: 10px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 0.875rem; transition: border-color 0.2s ease; min-width: 150px; background: white; }
+.icon-select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+.insurance-type-input { padding: 10px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 0.875rem; transition: border-color 0.2s ease; width: 100%; }
 .insurance-type-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-.btn-remove { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
+.btn-remove { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; flex-shrink: 0; }
 .btn-remove:hover { background: #fee2e2; border-color: #fca5a5; }
 .setting-actions { display: flex; justify-content: flex-end; }
 .save-section { display: flex; justify-content: center; margin-top: 20px; }
 
+/* Icon Picker */
+.icon-picker { position: relative; width: 200px; }
+.icon-picker-trigger { display: inline-flex; align-items: center; gap: 8px; padding: 10px 12px; border: 2px solid #e5e7eb; border-radius: 8px; background: #fff; cursor: pointer; width: 100%; overflow: hidden; transition: all 0.2s ease; }
+.icon-picker-trigger:hover { border-color: #3b82f6; background: #f8fafc; }
+.icon-picker-trigger span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; }
+
+/* Icon Picker Modal */
+.icon-picker-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+.icon-picker-modal-content {
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow: auto;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 /* Responsive */
 @media (max-width: 1024px) {
@@ -1230,5 +1389,8 @@ input:checked + .toggle-slider:before { transform: translateX(26px); }
   .tab { padding: 12px 16px; font-size: 0.875rem; }
   .settings-section { padding: 20px; }
   .link-item { grid-template-columns: 1fr; }
+  .insurance-type-item-with-icon { grid-template-columns: 40px 1fr 36px; }
+  .icon-picker { width: 100%; grid-column: 1 / -1; }
+  .icon-picker-modal-overlay { padding: 10px; }
 }
 </style>

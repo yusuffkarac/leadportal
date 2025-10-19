@@ -399,6 +399,13 @@ function closeAdminDropdown() {
               </svg>
               Kullanıcı Tipleri
             </RouterLink>
+            <RouterLink to="/admin/lead-type-permissions" class="menu-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="M9 12l2 2 4-4"/>
+              </svg>
+              Lead Tipi Yetkileri
+            </RouterLink>
             <RouterLink to="/admin/faq" class="menu-item">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"/>
@@ -562,6 +569,14 @@ function closeAdminDropdown() {
               <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             </svg>
             <span>Kullanıcı Tipleri</span>
+          </RouterLink>
+          
+          <RouterLink to="/admin/lead-type-permissions" @click="closeMobileMenu" class="mobile-nav-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+            <span>Lead Tipi Yetkileri</span>
           </RouterLink>
           
           <RouterLink to="/admin/faq" @click="closeMobileMenu" class="mobile-nav-link">

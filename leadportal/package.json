@@ -16,6 +16,8 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.1.0",
+    "@iconify/vue": "^5.0.0",
     "axios": "^1.11.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.2",

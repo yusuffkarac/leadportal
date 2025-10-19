@@ -22,10 +22,34 @@ function authHeaders() {
 async function loadInsuranceTypes() {
   try {
     const { data } = await axios.get('/api/settings', { headers: authHeaders() })
-    insuranceTypes.value = data.insuranceTypes || ['Hayvan', 'Araba', 'Sağlık']
+    insuranceTypes.value = data.insuranceTypes || [
+      { name: 'Hayvan', icon: 'fa-paw' },
+      { name: 'Araba', icon: 'fa-car' },
+      { name: 'Sağlık', icon: 'fa-heart-pulse' }
+    ]
+    
+    // Eski format compatibility kontrolü
+    if (insuranceTypes.value && Array.isArray(insuranceTypes.value) && insuranceTypes.value.length > 0) {
+      const firstItem = insuranceTypes.value[0]
+      if (typeof firstItem === 'string') {
+        const defaultIcons = {
+          'Hayvan': 'fa-paw',
+          'Araba': 'fa-car',
+          'Sağlık': 'fa-heart-pulse'
+        }
+        insuranceTypes.value = insuranceTypes.value.map(name => ({
+          name: name,
+          icon: defaultIcons[name] || 'fa-file-alt'
+        }))
+      }
+    }
   } catch (e) {
     console.error('Sigorta türleri yüklenemedi:', e)
-    insuranceTypes.value = ['Hayvan', 'Araba', 'Sağlık'] // Fallback
+    insuranceTypes.value = [
+      { name: 'Hayvan', icon: 'fa-paw' },
+      { name: 'Araba', icon: 'fa-car' },
+      { name: 'Sağlık', icon: 'fa-heart-pulse' }
+    ] // Fallback
   }
 }
 
@@ -104,7 +128,7 @@ async function submit() {
         <label>Sigorta Türü (Opsiyonel)</label>
         <select class="input" v-model="insuranceType">
           <option value="">Sigorta türü seçin</option>
-          <option v-for="type in insuranceTypes" :key="type" :value="type">{{ type }}</option>
+          <option v-for="type in insuranceTypes" :key="type.name" :value="type.name">{{ type.name }}</option>
         </select>
       </div>
       <div class="stack">

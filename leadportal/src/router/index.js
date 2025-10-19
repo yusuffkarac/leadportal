@@ -14,6 +14,7 @@ import AdminFAQView from '../views/AdminFAQView.vue'
 import AdminAboutView from '../views/AdminAboutView.vue'
 import AdminDesignSettingsView from '../views/AdminDesignSettingsView.vue'
 import AdminEmailSMSSettingsView from '../views/AdminEmailSMSSettingsView.vue'
+import AdminLeadTypePermissionsView from '../views/AdminLeadTypePermissionsView.vue'
 import ProfileView from '../views/ProfileView.vue'
 
 export const appRoutes = [
@@ -119,6 +120,12 @@ export const appRoutes = [
       path: '/admin/email-sms-settings',
       name: 'admin-email-sms-settings',
       component: AdminEmailSMSSettingsView,
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin/lead-type-permissions',
+      name: 'admin-lead-type-permissions',
+      component: AdminLeadTypePermissionsView,
       meta: { requiresAdmin: true },
     },
     {

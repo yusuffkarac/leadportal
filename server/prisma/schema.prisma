@@ -8,21 +8,22 @@ datasource db {
 }
 
 model User {
-  id             String      @id @default(cuid())
-  email          String      @unique
-  passwordHash   String
-  userTypeId     String
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  firstName      String?
-  lastName       String?
-  username       String?     @unique
-  profileImage   String?     // Profil fotoğrafı URL'i
-  bids           Bid[]
-  leads          Lead[]      @relation("LeadOwner")
-  purchasedLeads LeadSale[]  @relation("LeadBuyer")
-  watching       LeadWatch[]
-  userType       UserType    @relation(fields: [userTypeId], references: [id])
+  id                    String                   @id @default(cuid())
+  email                 String                   @unique
+  passwordHash          String
+  userTypeId            String
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+  firstName             String?
+  lastName              String?
+  username              String?                  @unique
+  profileImage          String?                  // Profil fotoğrafı URL'i
+  bids                  Bid[]
+  leads                 Lead[]                   @relation("LeadOwner")
+  purchasedLeads        LeadSale[]               @relation("LeadBuyer")
+  watching              LeadWatch[]
+  userType              UserType                 @relation(fields: [userTypeId], references: [id])
+  leadTypePermissions   UserLeadTypePermission[] @relation("UserLeadTypePermissions")
 }
 
 model Lead {
@@ -88,7 +89,7 @@ model Settings {
   defaultCurrency     String   @default("TRY")
   defaultAuctionDays  Int      @default(7)
   defaultMinIncrement Int      @default(10)
-  insuranceTypes      Json     @default("[\"Hayvan\", \"Araba\", \"Sağlık\"]") // Sigorta türleri listesi
+  insuranceTypes      Json     @default("[{\"name\": \"Hayvan\", \"icon\": \"fa-paw\"}, {\"name\": \"Araba\", \"icon\": \"fa-car\"}, {\"name\": \"Sağlık\", \"icon\": \"fa-heart-pulse\"}]") // Sigorta türleri listesi (name, icon)
   maintenanceMode     Boolean  @default(false)
   maintenanceMessage  String   @default("Sistem bakımda. Lütfen daha sonra tekrar deneyin.")
   smtpHost            String   @default("")
@@ -120,14 +121,15 @@ model Settings {
 }
 
 model UserType {
-  id          String               @id
-  name        String
-  description String?
-  isActive    Boolean              @default(true)
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
-  users       User[]
-  permissions UserTypePermission[]
+  id                  String                @id
+  name                String
+  description         String?
+  isActive            Boolean               @default(true)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  users               User[]
+  permissions         UserTypePermission[]
+  leadTypePermissions LeadTypePermission[]  @relation("LeadTypePermissions")
 }
 
 model Page {
@@ -151,6 +153,30 @@ model UserTypePermission {
   userType   UserType @relation(fields: [userTypeId], references: [id], onDelete: Cascade)
 
   @@unique([userTypeId, pageId])
+}
+
+model LeadTypePermission {
+  id             Int      @id @default(autoincrement())
+  userTypeId     String
+  leadType       String   // insuranceType değeri
+  hasAccess      Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  userType       UserType @relation("LeadTypePermissions", fields: [userTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([userTypeId, leadType])
+}
+
+model UserLeadTypePermission {
+  id             Int      @id @default(autoincrement())
+  userId         String
+  leadType       String   // insuranceType değeri
+  hasAccess      Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation("UserLeadTypePermissions", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, leadType])
 }
 
 model FAQ {

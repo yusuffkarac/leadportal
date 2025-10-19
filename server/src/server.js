@@ -84,6 +84,7 @@ import faqRouter from './routes/faq.js'
 import aboutRouter from './routes/about.js'
 import designSettingsRouter from './routes/designSettings.js'
 import emailSmsSettingsRouter from './routes/emailSmsSettings.js'
+import leadTypePermissionsRouter from './routes/leadTypePermissions.js'
 
 app.use('/api/auth', authRouter(prisma))
 app.use('/api/leads', (req, res, next) => requireAuth(req, res, next), leadsRouter(prisma, io))
@@ -97,6 +98,7 @@ app.use('/api/faq', faqRouter(prisma))
 app.use('/api/about', aboutRouter(prisma))
 app.use('/api/settings/design', designSettingsRouter(prisma))
 app.use('/api/email-sms-settings', emailSmsSettingsRouter)
+app.use('/api/lead-type-permissions', leadTypePermissionsRouter(prisma))
 
 const port = process.env.PORT || 4000
 server.listen(port, '0.0.0.0', () => {
