@@ -384,6 +384,14 @@ function closeAdminDropdown() {
               </svg>
               Firma Ayarları
             </RouterLink>
+            <RouterLink to="/admin/statistics" class="menu-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="20" x2="12" y2="10"/>
+                <line x1="18" y1="20" x2="18" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="16"/>
+              </svg>
+              İstatistikler
+            </RouterLink>
             <RouterLink to="/admin/settings" class="menu-item">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="3"/>
@@ -570,6 +578,15 @@ function closeAdminDropdown() {
             <span>Firma Ayarları</span>
           </RouterLink>
           
+          <RouterLink to="/admin/statistics" @click="closeMobileMenu" class="mobile-nav-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="20" x2="12" y2="10"/>
+              <line x1="18" y1="20" x2="18" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="16"/>
+            </svg>
+            <span>İstatistikler</span>
+          </RouterLink>
+
           <RouterLink to="/admin/settings" @click="closeMobileMenu" class="mobile-nav-link">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3"/>

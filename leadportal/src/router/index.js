@@ -18,6 +18,7 @@ import AdminLeadTypePermissionsView from '../views/AdminLeadTypePermissionsView.
 import ProfileView from '../views/ProfileView.vue'
 import LeadMarketplaceView from '../views/LeadMarketplaceView.vue'
 import AdminHomepageSettingsView from '../views/AdminHomepageSettingsView.vue'
+import AdminStatisticsView from '../views/AdminStatisticsView.vue'
 
 export const appRoutes = [
     {
@@ -139,6 +140,12 @@ export const appRoutes = [
       path: '/admin/homepage-settings',
       name: 'admin-homepage-settings',
       component: AdminHomepageSettingsView,
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin/statistics',
+      name: 'admin-statistics',
+      component: AdminStatisticsView,
       meta: { requiresAdmin: true },
     },
     {

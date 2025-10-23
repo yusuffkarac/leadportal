@@ -105,12 +105,25 @@
                 :key="userType.id" 
                 class="permission-group"
               >
-                <div class="group-header">
+                <div class="group-header" @click="toggleUserType(userType.id)">
                   <div class="group-title">
+                    <button class="accordion-toggle">
+                      <svg 
+                        width="16" 
+                        height="16" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        stroke-width="2"
+                        :class="{ 'rotated': isUserTypeExpanded(userType.id) }"
+                      >
+                        <polyline points="6,9 12,15 18,9"/>
+                      </svg>
+                    </button>
                     <h3>{{ userType.name }}</h3>
                     <span class="permission-count">{{ getPermissionCount(userType.id) }} yetki</span>
                   </div>
-                  <div class="group-actions">
+                  <div class="group-actions" @click.stop>
                     <button class="btn btn-outline btn-sm" @click="selectAllPermissionsForType(userType.id)">
                       Tümünü Seç
                     </button>
@@ -138,7 +151,10 @@
                   </div>
                 </div>
                 
-                <div class="permission-list">
+                <div 
+                  class="permission-list" 
+                  :class="{ 'expanded': isUserTypeExpanded(userType.id) }"
+                >
                   <div 
                     v-for="page in pages" 
                     :key="page.id" 
@@ -348,6 +364,7 @@ const showDeleteConfirmModal = ref(false)
 const userTypeToDelete = ref(null)
 const modalMessage = ref('')
 const modalMessageType = ref('')
+const expandedUserTypes = ref({})
 
 // Tabs configuration
 const tabs = [
@@ -582,6 +599,16 @@ const showModalMessage = (msg, type) => {
     modalMessage.value = ''
     modalMessageType.value = ''
   }, 3000)
+}
+
+// Toggle user type accordion
+const toggleUserType = (userTypeId) => {
+  expandedUserTypes.value[userTypeId] = !expandedUserTypes.value[userTypeId]
+}
+
+// Check if user type is expanded
+const isUserTypeExpanded = (userTypeId) => {
+  return expandedUserTypes.value[userTypeId] || false
 }
 
 // Initialize
@@ -861,7 +888,6 @@ onMounted(() => {
 .permission-group {
   background: #f8fafc;
   border-radius: 0.75rem;
-  padding: 1.5rem;
   border: 1px solid #e2e8f0;
 }
 
@@ -869,13 +895,46 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.group-header:hover {
+  background: #f1f5f9;
 }
 
 .group-title {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
+}
+
+.accordion-toggle {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.accordion-toggle:hover {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.accordion-toggle svg {
+  transition: transform 0.2s;
+}
+
+.accordion-toggle svg.rotated {
+  transform: rotate(180deg);
 }
 
 .group-title h3 {
@@ -904,6 +963,14 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.permission-list.expanded {
+  max-height: 2000px;
+  transition: max-height 0.3s ease-in;
 }
 
 .permission-item {
