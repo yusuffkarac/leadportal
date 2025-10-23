@@ -196,6 +196,10 @@ function handleScroll(event) {
   }
 }
 
+function openLeadDetail(leadId) {
+  window.open(`/lead/${leadId}`, '_blank')
+}
+
 onMounted(async () => {
   await loadHomepageSettings()
   await loadShowcaseLeads()
@@ -276,7 +280,7 @@ onMounted(async () => {
                 <span class="tag">Açık</span>
                 <span v-if="lead.instantBuyPrice" class="tag success">Hemen Al</span>
               </div>
-              <button class="card-link" type="button" @click="window.open(`/lead/${lead.id}`, '_blank')">
+              <button class="card-link" type="button" @click="openLeadDetail(lead.id)">
                 Detaya git
                 <Icon icon="mdi:arrow-top-right" height="18" />
               </button>
