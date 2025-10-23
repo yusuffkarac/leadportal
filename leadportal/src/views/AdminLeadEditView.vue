@@ -17,7 +17,10 @@ function authHeaders() {
 
 async function load() {
   const { data } = await axios.get(`/api/leads/${leadId}`, { headers: authHeaders() })
-  lead.value = data
+  lead.value = {
+    ...data,
+    isShowcase: !!data.isShowcase
+  }
 }
 
 async function loadInsuranceTypes() {
@@ -67,7 +70,8 @@ async function save() {
       instantBuyPrice: lead.value.instantBuyPrice,
       insuranceType: lead.value.insuranceType || undefined,
       endsAt: lead.value.endsAt,
-      isActive: lead.value.isActive
+      isActive: lead.value.isActive,
+      isShowcase: !!lead.value.isShowcase
     }
     await axios.put(`/api/leads/${leadId}`, payload, { headers: authHeaders() })
     ok.value = 'Kaydedildi'
@@ -121,6 +125,19 @@ onMounted(() => {
           <label>Aktif mi?</label>
           <input type="checkbox" v-model="lead.isActive" />
         </div>
+        <div class="stack toggle-field">
+          <label>Vitrine Ekle</label>
+          <div class="toggle-container">
+            <label class="toggle-switch">
+              <input type="checkbox" v-model="lead.isShowcase" />
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">{{ lead.isShowcase ? 'Açık' : 'Kapalı' }}</span>
+          </div>
+          <small class="toggle-help">
+            Vitrine alınan leadler ana sayfadaki vitrin bölümünde öne çıkarılır.
+          </small>
+        </div>
         <div class="row">
           <button class="btn" @click="save">Kaydet</button>
           <span v-if="ok" style="color:#16a34a">{{ ok }}</span>
@@ -144,4 +161,3 @@ onMounted(() => {
   </section>
   <section v-else class="muted">Yükleniyor...</section>
 </template>
-

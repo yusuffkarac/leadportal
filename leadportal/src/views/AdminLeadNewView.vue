@@ -4,6 +4,7 @@ import axios from 'axios'
 
 const title = ref('')
 const description = ref('')
+const postalCode = ref('')
 const startPrice = ref('0')
 const minIncrement = ref('1')
 const instantBuyPrice = ref('')
@@ -13,6 +14,7 @@ const insuranceType = ref('')
 const error = ref('')
 const ok = ref('')
 const insuranceTypes = ref([])
+const isShowcase = ref(false)
 
 function authHeaders() {
   const token = localStorage.getItem('token')
@@ -67,21 +69,25 @@ async function submit() {
       title: title.value,
       description: description.value,
       privateDetails: privateDetails.value || undefined,
+      postalCode: postalCode.value || undefined,
       startPrice: Number(startPrice.value),
       minIncrement: Number(minIncrement.value),
       instantBuyPrice: instantBuyPrice.value ? Number(instantBuyPrice.value) : undefined,
       insuranceType: insuranceType.value || undefined,
-      endsAt: endsAt.value
+      endsAt: endsAt.value,
+      isShowcase: isShowcase.value
     }, { headers: authHeaders() })
     ok.value = 'Lead oluşturuldu'
     title.value = ''
     description.value = ''
+    postalCode.value = ''
     privateDetails.value = ''
     startPrice.value = '0'
     minIncrement.value = '1'
     instantBuyPrice.value = ''
     insuranceType.value = ''
     endsAt.value = ''
+    isShowcase.value = false
   } catch (e) {
     const status = e?.response?.status
     const data = e?.response?.data
@@ -101,6 +107,10 @@ async function submit() {
       <div class="stack">
         <label>Başlık</label>
         <input class="input" v-model="title" placeholder="Örn. Avrupa e-ticaret lead’i" />
+      </div>
+      <div class="stack">
+        <label>Posta Kodu</label>
+        <input class="input" v-model="postalCode" placeholder="Örn. 85309" />
       </div>
       <div class="stack">
         <label>Başlangıç Fiyatı</label>
@@ -135,10 +145,22 @@ async function submit() {
         <label>Bitiş Zamanı</label>
         <input class="input" v-model="endsAt" type="datetime-local" />
       </div>
+      <div class="stack toggle-field" style="grid-column: 1 / 3;">
+        <label>Vitrine Ekle</label>
+        <div class="toggle-container">
+          <label class="toggle-switch">
+            <input type="checkbox" v-model="isShowcase" />
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="toggle-label">{{ isShowcase ? 'Açık' : 'Kapalı' }}</span>
+        </div>
+        <small class="toggle-help">
+          Vitrine alınan leadler ana sayfanın vitrin bölümünde öne çıkarılır.
+        </small>
+      </div>
     </div>
     <div class="row" style="margin-top:12px">
       <button class="btn" @click="submit">Oluştur</button>
     </div>
   </section>
 </template>
-

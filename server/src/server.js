@@ -11,6 +11,58 @@ import { Server as SocketIOServer } from 'socket.io'
 import jwt from 'jsonwebtoken'
 import { PrismaClient } from '@prisma/client'
 import { checkMaintenanceMode } from './middleware/maintenance.js'
+import { z } from 'zod'
+
+// Zod hata mesajlarını Almanca yap
+z.setErrorMap((issue, ctx) => {
+  switch (issue.code) {
+    case z.ZodIssueCode.invalid_type:
+      if (issue.expected === 'string' && issue.received === 'number') {
+        return { message: 'Ungültige Eingabe: erwartet string, erhalten number' }
+      }
+      if (issue.expected === 'number' && issue.received === 'string') {
+        return { message: 'Ungültige Eingabe: erwartet number, erhalten string' }
+      }
+      if (issue.expected === 'integer' && issue.received === 'number') {
+        return { message: 'Ungültige Eingabe: erwartet int, erhalten number' }
+      }
+      return { message: `Ungültige Eingabe: erwartet ${issue.expected}, erhalten ${issue.received}` }
+    case z.ZodIssueCode.too_small:
+      if (issue.type === 'string') {
+        return { message: `Mindestens ${issue.minimum} Zeichen erforderlich` }
+      }
+      if (issue.type === 'number') {
+        return { message: `Wert muss mindestens ${issue.minimum} sein` }
+      }
+      return { message: 'Wert zu klein' }
+    case z.ZodIssueCode.too_big:
+      if (issue.type === 'string') {
+        return { message: `Maximal ${issue.maximum} Zeichen erlaubt` }
+      }
+      if (issue.type === 'number') {
+        return { message: `Wert darf maximal ${issue.maximum} sein` }
+      }
+      return { message: 'Wert zu groß' }
+    case z.ZodIssueCode.invalid_string:
+      return { message: 'Ungültiger String' }
+    case z.ZodIssueCode.invalid_date:
+      return { message: 'Ungültiges Datum' }
+    case z.ZodIssueCode.invalid_enum_value:
+      return { message: `Ungültiger Wert. Erlaubte Werte: ${issue.options.join(', ')}` }
+    case z.ZodIssueCode.unrecognized_keys:
+      return { message: `Unbekannte Schlüssel: ${issue.keys.join(', ')}` }
+    case z.ZodIssueCode.invalid_union:
+      return { message: 'Ungültige Eingabe' }
+    case z.ZodIssueCode.invalid_union_discriminator:
+      return { message: 'Ungültiger Diskriminator' }
+    case z.ZodIssueCode.invalid_literal:
+      return { message: `Ungültiger Wert. Erwartet: ${issue.expected}` }
+    case z.ZodIssueCode.custom:
+      return { message: issue.message || 'Ungültige Eingabe' }
+    default:
+      return { message: 'Ungültige Eingabe' }
+  }
+})
 
 const app = express()
 const server = http.createServer(app)

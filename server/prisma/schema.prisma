@@ -8,22 +8,22 @@ datasource db {
 }
 
 model User {
-  id                    String                   @id @default(cuid())
-  email                 String                   @unique
-  passwordHash          String
-  userTypeId            String
-  createdAt             DateTime                 @default(now())
-  updatedAt             DateTime                 @updatedAt
-  firstName             String?
-  lastName              String?
-  username              String?                  @unique
-  profileImage          String?                  // Profil fotoğrafı URL'i
-  bids                  Bid[]
-  leads                 Lead[]                   @relation("LeadOwner")
-  purchasedLeads        LeadSale[]               @relation("LeadBuyer")
-  watching              LeadWatch[]
-  userType              UserType                 @relation(fields: [userTypeId], references: [id])
-  leadTypePermissions   UserLeadTypePermission[] @relation("UserLeadTypePermissions")
+  id                  String                   @id @default(cuid())
+  email               String                   @unique
+  passwordHash        String
+  userTypeId          String
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  firstName           String?
+  lastName            String?
+  username            String?                  @unique
+  profileImage        String?
+  bids                Bid[]
+  leads               Lead[]                   @relation("LeadOwner")
+  purchasedLeads      LeadSale[]               @relation("LeadBuyer")
+  watching            LeadWatch[]
+  userType            UserType                 @relation(fields: [userTypeId], references: [id])
+  leadTypePermissions UserLeadTypePermission[] @relation("UserLeadTypePermissions")
 }
 
 model Lead {
@@ -31,12 +31,15 @@ model Lead {
   title           String
   description     String
   privateDetails  String?     @db.Text
+  postalCode      String?     // Posta kodu (örn. 85309)
   startPrice      Int
   minIncrement    Int
   instantBuyPrice Int?
   insuranceType   String?     // Sigorta türü
   isActive        Boolean     @default(true)
+  isShowcase      Boolean     @default(false)
   isSold          Boolean     @default(false)
+  featured        Boolean     @default(false) // Öne çıkan lead
   endsAt          DateTime
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
@@ -89,7 +92,30 @@ model Settings {
   defaultCurrency     String   @default("TRY")
   defaultAuctionDays  Int      @default(7)
   defaultMinIncrement Int      @default(10)
-  insuranceTypes      Json     @default("[{\"name\": \"Hayvan\", \"icon\": \"fa-paw\"}, {\"name\": \"Araba\", \"icon\": \"fa-car\"}, {\"name\": \"Sağlık\", \"icon\": \"fa-heart-pulse\"}]") // Sigorta türleri listesi (name, icon)
+  homepageHeroEyebrow           String   @default("Sigorta lead pazaryeri")
+  homepageHeroTitle             String   @default("Almanya'nın önde gelen")
+  homepageHeroHighlight         String   @default("sigorta lead")
+  homepageHeroTitleSuffix       String   @default("pazaryeri")
+  homepageHeroSubtitle          String   @default("LeadPortal, sigorta brokerleri için profesyonel açık artırma altyapısı, doğrulanmış lead kalitesi ve canlı teklif takibi sunar.")
+  homepageHeroPrimaryCtaText    String   @default("Şimdi kaydol")
+  homepageHeroPrimaryCtaLink    String   @default("/login")
+  homepageHeroSecondaryCtaText  String   @default("Canlı açık artırmaları gör")
+  homepageHeroSecondaryCtaLink  String   @default("/leads")
+  homepageFeatureHeading        String   @default("LeadPortal'ı neden seçmelisiniz?")
+  homepageFeatures              Json     @default("[{\"icon\":\"mdi:scale-balance\",\"title\":\"Adil Açık Artırmalar\",\"description\":\"Şeffaf kurallar ve gerçek zamanlı teklifler ile esnek açık artırma modelleri.\"},{\"icon\":\"mdi:shield-check\",\"title\":\"Onaylı Kalite\",\"description\":\"Her lead yayına alınmadan önce kalite ve doğruluk kontrollerinden geçer.\"},{\"icon\":\"mdi:account-group\",\"title\":\"Güvenilir İş Ortağı\",\"description\":\"Broker topluluğumuz için doğrulama süreci ve puanlama sistemi.\"}]")
+  homepageShowcaseEyebrow       String   @default("Vitrin leadler")
+  homepageShowcaseTitle         String   @default("Aktüel açık artırmalar")
+  homepageShowcaseCtaText       String   @default("Hepsini gör")
+  homepageShowcaseCtaLink       String   @default("/leads")
+  homepageStatsEyebrow          String   @default("Güven veren rakamlar")
+  homepageStatsTitle            String   @default("Broker topluluğumuz büyümeye devam ediyor")
+  homepageStats                 Json     @default("[{\"value\":\"2.500+\",\"label\":\"Aktif Broker\"},{\"value\":\"15.000+\",\"label\":\"Satılan Lead\"},{\"value\":\"98%\",\"label\":\"Memnuniyet\"},{\"value\":\"€2.1M\",\"label\":\"Toplam Hacim\"}]")
+  homepageCtaTitle              String   @default("Başlamak için hazır mısınız?")
+  homepageCtaSubtitle           String   @default("LeadPortal topluluğuna katılın, doğrulanmış leadlere erişin ve işinizi güvenle büyütün.")
+  homepageCtaPrimaryText        String   @default("Ücretsiz kaydol")
+  homepageCtaPrimaryLink        String   @default("/login")
+  homepageCtaSecondaryText      String   @default("Leadleri incele")
+  homepageCtaSecondaryLink      String   @default("/leads")
   maintenanceMode     Boolean  @default(false)
   maintenanceMessage  String   @default("Sistem bakımda. Lütfen daha sonra tekrar deneyin.")
   smtpHost            String   @default("")
@@ -99,37 +125,33 @@ model Settings {
   smtpFromName        String   @default("LeadPortal")
   smtpUseTLS          Boolean  @default(false)
   smtpUseSSL          Boolean  @default(true)
-  
-  // Branding
-  companyName         String   @default("LeadPortal")
-  companyLogoUrl      String   @default("")
-  faviconUrl          String   @default("")
-  
-  // Footer
-  footerPhone         String   @default("+90 (212) 123 45 67")
-  footerEmail         String   @default("info@leadportal.com")
-  footerNote          String   @default("")
-  footerDescription   String   @default("Almanya'nın önde gelen lead pazar yeri. Profesyonel açık artırmalar ve lead yönetimi platformu.")
-  tradeRegisterNumber String   @default("İstanbul Ticaret Sicil No: 12345")
-  servicesLinks       Json?    // Array of {text, url}
-  supportLinks        Json?    // Array of {text, url}
-  legalLinks          Json?    // Array of {text, url}
-  socialMedia         Json?    // {facebook, twitter, linkedin, instagram}
-  
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
+  companyLogoUrl      String   @default("")
+  companyName         String   @default("LeadPortal")
+  faviconUrl          String   @default("")
+  footerDescription   String   @default("Almanya'nın önde gelen lead pazar yeri. Profesyonel açık artırmalar ve lead yönetimi platformu.")
+  footerEmail         String   @default("info@leadportal.com")
+  footerNote          String   @default("")
+  footerPhone         String   @default("+90 (212) 123 45 67")
+  insuranceTypes      Json     @default("[{\"icon\": \"fa-paw\", \"name\": \"Hayvan\"}, {\"icon\": \"fa-car\", \"name\": \"Araba\"}, {\"icon\": \"fa-heart-pulse\", \"name\": \"Sağlık\"}]")
+  legalLinks          Json?
+  servicesLinks       Json?
+  socialMedia         Json?
+  supportLinks        Json?
+  tradeRegisterNumber String   @default("İstanbul Ticaret Sicil No: 12345")
 }
 
 model UserType {
-  id                  String                @id
+  id                  String               @id
   name                String
   description         String?
-  isActive            Boolean               @default(true)
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
+  isActive            Boolean              @default(true)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  leadTypePermissions LeadTypePermission[] @relation("LeadTypePermissions")
   users               User[]
   permissions         UserTypePermission[]
-  leadTypePermissions LeadTypePermission[]  @relation("LeadTypePermissions")
 }
 
 model Page {
@@ -156,83 +178,83 @@ model UserTypePermission {
 }
 
 model LeadTypePermission {
-  id             Int      @id @default(autoincrement())
-  userTypeId     String
-  leadType       String   // insuranceType değeri
-  hasAccess      Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  userType       UserType @relation("LeadTypePermissions", fields: [userTypeId], references: [id], onDelete: Cascade)
+  id         Int      @id @default(autoincrement())
+  userTypeId String
+  leadType   String
+  hasAccess  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  userType   UserType @relation("LeadTypePermissions", fields: [userTypeId], references: [id], onDelete: Cascade)
 
   @@unique([userTypeId, leadType])
 }
 
 model UserLeadTypePermission {
-  id             Int      @id @default(autoincrement())
-  userId         String
-  leadType       String   // insuranceType değeri
-  hasAccess      Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  user           User     @relation("UserLeadTypePermissions", fields: [userId], references: [id], onDelete: Cascade)
+  id        Int      @id @default(autoincrement())
+  userId    String
+  leadType  String
+  hasAccess Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation("UserLeadTypePermissions", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, leadType])
 }
 
 model FAQ {
-  id          String   @id @default(cuid())
-  question    String
-  answer      String
-  category    String
-  isActive    Boolean  @default(true)
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  category  String
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model About {
-  id          String   @id @default(cuid())
-  section     String   // hero, mission, team, stats, etc.
-  title       String?
-  subtitle    String?
-  content     String?
-  imageUrl    String?
-  data        Json?    // For flexible data like stats, team members
-  isActive    Boolean  @default(true)
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  section   String
+  title     String?
+  subtitle  String?
+  content   String?
+  imageUrl  String?
+  data      Json?
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model DesignSettings {
   id        String   @id @default("default")
-  colors    Json     // Color palette as JSON
+  colors    Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model EmailTemplate {
   id          String   @id @default(cuid())
-  type        String   @unique // bidReceived, outbid, leadWon, leadExpired, welcome, passwordReset, etc.
-  name        String   // Kullanıcı dostu isim
-  description String?  // Template açıklaması
-  subject     String   // Email konusu
-  htmlContent String   @db.Text // HTML email içeriği
-  textContent String?  @db.Text // Plain text email içeriği
+  type        String   @unique
+  name        String
+  description String?
+  subject     String
+  htmlContent String
+  textContent String?
   isActive    Boolean  @default(true)
-  variables   Json?    // Kullanılabilir değişkenler listesi: {leadTitle, amount, currency, leadUrl, etc.}
+  variables   Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 model SMSTemplate {
   id          String   @id @default(cuid())
-  type        String   @unique // bidReceived, outbid, leadWon, etc.
-  name        String   // Kullanıcı dostu isim
-  description String?  // Template açıklaması
-  content     String   @db.Text // SMS içeriği
+  type        String   @unique
+  name        String
+  description String?
+  content     String
   isActive    Boolean  @default(true)
-  variables   Json?    // Kullanılabilir değişkenler listesi
+  variables   Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

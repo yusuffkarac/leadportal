@@ -343,6 +343,7 @@ function closeAdminDropdown() {
       <!-- Desktop Navigation -->
       <div class="nav-links desktop-nav">
         <RouterLink to="/">Anasayfa</RouterLink>
+        <RouterLink to="/leads">Leadler</RouterLink>
         <RouterLink v-if="canAccessAbout" to="/about">Hakkında</RouterLink>
         <RouterLink v-if="canAccessFAQ" to="/faq">FAQ</RouterLink>
         <RouterLink v-if="isAuthed && canAccessPurchased" to="/purchased-leads">Satın Aldıklarım</RouterLink>
@@ -422,6 +423,13 @@ function closeAdminDropdown() {
               </svg>
               Hakkında Yönetimi
             </RouterLink>
+            <RouterLink to="/admin/homepage-settings" class="menu-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9.5 12 3l9 6.5"/>
+                <path d="M19 10v10h-5v-6h-4v6H5V10"/>
+              </svg>
+              Ana Sayfa Ayarları
+            </RouterLink>
             <RouterLink to="/admin/email-sms-settings" class="menu-item">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
@@ -486,6 +494,15 @@ function closeAdminDropdown() {
             <polyline points="9,22 9,12 15,12 15,22"/>
           </svg>
           <span>Anasayfa</span>
+        </RouterLink>
+
+        <RouterLink to="/leads" @click="closeMobileMenu" class="mobile-nav-link">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Leadler</span>
         </RouterLink>
         
         <RouterLink v-if="canAccessAbout" to="/about" @click="closeMobileMenu" class="mobile-nav-link">
@@ -595,6 +612,14 @@ function closeAdminDropdown() {
               <path d="M16 6a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/>
             </svg>
             <span>Hakkında Yönetimi</span>
+          </RouterLink>
+          
+          <RouterLink to="/admin/homepage-settings" @click="closeMobileMenu" class="mobile-nav-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9.5 12 3l9 6.5"/>
+              <path d="M19 10v10h-5v-6h-4v6H5V10"/>
+            </svg>
+            <span>Ana Sayfa Ayarları</span>
           </RouterLink>
           
           <RouterLink to="/admin/email-sms-settings" @click="closeMobileMenu" class="mobile-nav-link">

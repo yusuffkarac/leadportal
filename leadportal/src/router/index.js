@@ -16,12 +16,19 @@ import AdminDesignSettingsView from '../views/AdminDesignSettingsView.vue'
 import AdminEmailSMSSettingsView from '../views/AdminEmailSMSSettingsView.vue'
 import AdminLeadTypePermissionsView from '../views/AdminLeadTypePermissionsView.vue'
 import ProfileView from '../views/ProfileView.vue'
+import LeadMarketplaceView from '../views/LeadMarketplaceView.vue'
+import AdminHomepageSettingsView from '../views/AdminHomepageSettingsView.vue'
 
 export const appRoutes = [
     {
       path: '/',
       name: 'home',
       component: HomeView,
+    },
+    {
+      path: '/leads',
+      name: 'lead-marketplace',
+      component: LeadMarketplaceView,
     },
     {
       path: '/admin/leads/new',
@@ -126,6 +133,12 @@ export const appRoutes = [
       path: '/admin/lead-type-permissions',
       name: 'admin-lead-type-permissions',
       component: AdminLeadTypePermissionsView,
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin/homepage-settings',
+      name: 'admin-homepage-settings',
+      component: AdminHomepageSettingsView,
       meta: { requiresAdmin: true },
     },
     {

@@ -4,6 +4,164 @@ import { PrismaClient } from '@prisma/client'
 const router = express.Router()
 const prisma = new PrismaClient()
 
+const defaultHomepage = {
+  hero: {
+    eyebrow: 'Sigorta lead pazaryeri',
+    title: "Almanya'nın önde gelen",
+    highlight: 'sigorta lead',
+    titleSuffix: 'pazaryeri',
+    subtitle: 'LeadPortal, sigorta brokerleri için profesyonel açık artırma altyapısı, doğrulanmış lead kalitesi ve canlı teklif takibi sunar.',
+    primaryText: 'Şimdi kaydol',
+    primaryLink: '/login',
+    secondaryText: 'Canlı açık artırmaları gör',
+    secondaryLink: '/leads'
+  },
+  featureHeading: "LeadPortal'ı neden seçmelisiniz?",
+  features: [
+    {
+      icon: 'mdi:scale-balance',
+      title: 'Adil Açık Artırmalar',
+      description: 'Şeffaf kurallar ve gerçek zamanlı teklifler ile esnek açık artırma modelleri.'
+    },
+    {
+      icon: 'mdi:shield-check',
+      title: 'Onaylı Kalite',
+      description: 'Her lead yayına alınmadan önce kalite ve doğruluk kontrollerinden geçer.'
+    },
+    {
+      icon: 'mdi:account-group',
+      title: 'Güvenilir İş Ortağı',
+      description: 'Broker topluluğumuz için doğrulama süreci ve puanlama sistemi.'
+    }
+  ],
+  showcase: {
+    eyebrow: 'Vitrin leadler',
+    title: 'Aktüel açık artırmalar',
+    ctaText: 'Hepsini gör',
+    ctaLink: '/leads'
+  },
+  statsHeading: {
+    eyebrow: 'Güven veren rakamlar',
+    title: 'Broker topluluğumuz büyümeye devam ediyor'
+  },
+  stats: [
+    { value: '2.500+', label: 'Aktif Broker' },
+    { value: '15.000+', label: 'Satılan Lead' },
+    { value: '98%', label: 'Memnuniyet' },
+    { value: '€2.1M', label: 'Toplam Hacim' }
+  ],
+  cta: {
+    title: 'Başlamak için hazır mısınız?',
+    subtitle: 'LeadPortal topluluğuna katılın, doğrulanmış leadlere erişin ve işinizi güvenle büyütün.',
+    primaryText: 'Ücretsiz kaydol',
+    primaryLink: '/login',
+    secondaryText: 'Leadleri incele',
+    secondaryLink: '/leads'
+  }
+}
+
+const defaultInsuranceTypes = [
+  { name: 'Hayvan', icon: 'fa-paw' },
+  { name: 'Araba', icon: 'fa-car' },
+  { name: 'Sağlık', icon: 'fa-heart-pulse' }
+]
+
+function normalizeInsuranceTypesList(insuranceTypes) {
+  if (!insuranceTypes) {
+    return defaultInsuranceTypes
+  }
+
+  if (Array.isArray(insuranceTypes)) {
+    if (insuranceTypes.length === 0) {
+      return defaultInsuranceTypes
+    }
+
+    const first = insuranceTypes[0]
+    if (typeof first === 'string') {
+      const defaultIcons = {
+        Hayvan: 'fa-paw',
+        Araba: 'fa-car',
+        Sağlık: 'fa-heart-pulse'
+      }
+      return insuranceTypes.map(name => ({
+        name,
+        icon: defaultIcons[name] || 'fa-file-alt'
+      }))
+    }
+
+    if (typeof first === 'object') {
+      return insuranceTypes.map(item => ({
+        name: item?.name ?? '',
+        icon: item?.icon ?? 'fa-file-alt'
+      }))
+    }
+  }
+
+  return defaultInsuranceTypes
+}
+
+function mapHomepageSettings(settings) {
+  const features = []
+  if (Array.isArray(settings.homepageFeatures)) {
+    settings.homepageFeatures.forEach(item => {
+      if (item && typeof item === 'object') {
+        features.push({
+          icon: item.icon || 'mdi:information',
+          title: item.title || '',
+          description: item.description || ''
+        })
+      }
+    })
+  }
+
+  const stats = []
+  if (Array.isArray(settings.homepageStats)) {
+    settings.homepageStats.forEach(item => {
+      if (item && typeof item === 'object') {
+        stats.push({
+          value: item.value || '',
+          label: item.label || ''
+        })
+      }
+    })
+  }
+
+  return {
+    hero: {
+      eyebrow: settings.homepageHeroEyebrow || defaultHomepage.hero.eyebrow,
+      title: settings.homepageHeroTitle || defaultHomepage.hero.title,
+      highlight: settings.homepageHeroHighlight || defaultHomepage.hero.highlight,
+      titleSuffix: settings.homepageHeroTitleSuffix || defaultHomepage.hero.titleSuffix,
+      subtitle: settings.homepageHeroSubtitle || defaultHomepage.hero.subtitle,
+      primaryText: settings.homepageHeroPrimaryCtaText || defaultHomepage.hero.primaryText,
+      primaryLink: settings.homepageHeroPrimaryCtaLink || defaultHomepage.hero.primaryLink,
+      secondaryText: settings.homepageHeroSecondaryCtaText || defaultHomepage.hero.secondaryText,
+      secondaryLink: settings.homepageHeroSecondaryCtaLink || defaultHomepage.hero.secondaryLink
+    },
+    featureHeading: settings.homepageFeatureHeading || defaultHomepage.featureHeading,
+    features: features.length ? features : defaultHomepage.features,
+    showcase: {
+      eyebrow: settings.homepageShowcaseEyebrow || defaultHomepage.showcase.eyebrow,
+      title: settings.homepageShowcaseTitle || defaultHomepage.showcase.title,
+      ctaText: settings.homepageShowcaseCtaText || defaultHomepage.showcase.ctaText,
+      ctaLink: settings.homepageShowcaseCtaLink || defaultHomepage.showcase.ctaLink
+    },
+    statsHeading: {
+      eyebrow: settings.homepageStatsEyebrow || defaultHomepage.statsHeading.eyebrow,
+      title: settings.homepageStatsTitle || defaultHomepage.statsHeading.title
+    },
+    stats: stats.length ? stats : defaultHomepage.stats,
+    cta: {
+      title: settings.homepageCtaTitle || defaultHomepage.cta.title,
+      subtitle: settings.homepageCtaSubtitle || defaultHomepage.cta.subtitle,
+      primaryText: settings.homepageCtaPrimaryText || defaultHomepage.cta.primaryText,
+      primaryLink: settings.homepageCtaPrimaryLink || defaultHomepage.cta.primaryLink,
+      secondaryText: settings.homepageCtaSecondaryText || defaultHomepage.cta.secondaryText,
+      secondaryLink: settings.homepageCtaSecondaryLink || defaultHomepage.cta.secondaryLink
+    }
+  }
+}
+
 // Middleware to check admin role
 const requireAdmin = async (req, res, next) => {
   try {
@@ -325,6 +483,120 @@ router.post('/branding', requireAdmin, async (req, res) => {
   } catch (error) {
     console.error('Branding update error:', error)
     res.status(500).json({ message: 'Branding ayarları kaydedilemedi' })
+  }
+})
+
+// Get homepage settings (public)
+router.get('/homepage', async (req, res) => {
+  try {
+    let settings = await prisma.settings.findUnique({
+      where: { id: 'default' }
+    })
+
+    if (!settings) {
+      settings = await prisma.settings.create({
+        data: { id: 'default' }
+      })
+    }
+
+    const homepage = mapHomepageSettings(settings)
+    const insuranceTypes = normalizeInsuranceTypesList(settings.insuranceTypes)
+
+    res.json({
+      hero: homepage.hero,
+      featureHeading: homepage.featureHeading,
+      features: homepage.features,
+      showcase: homepage.showcase,
+      statsHeading: homepage.statsHeading,
+      stats: homepage.stats,
+      cta: homepage.cta,
+      defaultCurrency: settings.defaultCurrency || 'TRY',
+      insuranceTypes
+    })
+  } catch (error) {
+    console.error('Homepage settings get error:', error)
+    res.status(500).json({ message: 'Ana sayfa ayarları alınamadı' })
+  }
+})
+
+// Update homepage settings
+router.post('/homepage', requireAdmin, async (req, res) => {
+  try {
+    const {
+      hero = {},
+      featureHeading,
+      features,
+      showcase = {},
+      statsHeading = {},
+      stats,
+      cta = {}
+    } = req.body
+
+    const sanitizeString = (value, fallback = '') =>
+      typeof value === 'string' && value.trim().length ? value.trim() : fallback
+
+    const sanitizedFeatures = Array.isArray(features)
+      ? features
+          .map(item => ({
+            icon: sanitizeString(item?.icon, 'mdi:information'),
+            title: sanitizeString(item?.title),
+            description: sanitizeString(item?.description)
+          }))
+          .filter(item => item.title || item.description)
+      : []
+
+    const sanitizedStats = Array.isArray(stats)
+      ? stats
+          .map(item => ({
+            value: sanitizeString(item?.value),
+            label: sanitizeString(item?.label)
+          }))
+          .filter(item => item.value || item.label)
+      : []
+
+    const updateData = {
+      homepageHeroEyebrow: sanitizeString(hero.eyebrow, defaultHomepage.hero.eyebrow),
+      homepageHeroTitle: sanitizeString(hero.title, defaultHomepage.hero.title),
+      homepageHeroHighlight: sanitizeString(hero.highlight, defaultHomepage.hero.highlight),
+      homepageHeroTitleSuffix: sanitizeString(hero.titleSuffix, defaultHomepage.hero.titleSuffix),
+      homepageHeroSubtitle: sanitizeString(hero.subtitle, defaultHomepage.hero.subtitle),
+      homepageHeroPrimaryCtaText: sanitizeString(hero.primaryText, defaultHomepage.hero.primaryText),
+      homepageHeroPrimaryCtaLink: sanitizeString(hero.primaryLink, defaultHomepage.hero.primaryLink),
+      homepageHeroSecondaryCtaText: sanitizeString(hero.secondaryText, defaultHomepage.hero.secondaryText),
+      homepageHeroSecondaryCtaLink: sanitizeString(hero.secondaryLink, defaultHomepage.hero.secondaryLink),
+      homepageFeatureHeading: sanitizeString(featureHeading, defaultHomepage.featureHeading),
+      homepageFeatures: sanitizedFeatures.length ? sanitizedFeatures : defaultHomepage.features,
+      homepageShowcaseEyebrow: sanitizeString(showcase.eyebrow, defaultHomepage.showcase.eyebrow),
+      homepageShowcaseTitle: sanitizeString(showcase.title, defaultHomepage.showcase.title),
+      homepageShowcaseCtaText: sanitizeString(showcase.ctaText, defaultHomepage.showcase.ctaText),
+      homepageShowcaseCtaLink: sanitizeString(showcase.ctaLink, defaultHomepage.showcase.ctaLink),
+      homepageStatsEyebrow: sanitizeString(statsHeading.eyebrow, defaultHomepage.statsHeading.eyebrow),
+      homepageStatsTitle: sanitizeString(statsHeading.title, defaultHomepage.statsHeading.title),
+      homepageStats: sanitizedStats.length ? sanitizedStats : defaultHomepage.stats,
+      homepageCtaTitle: sanitizeString(cta.title, defaultHomepage.cta.title),
+      homepageCtaSubtitle: sanitizeString(cta.subtitle, defaultHomepage.cta.subtitle),
+      homepageCtaPrimaryText: sanitizeString(cta.primaryText, defaultHomepage.cta.primaryText),
+      homepageCtaPrimaryLink: sanitizeString(cta.primaryLink, defaultHomepage.cta.primaryLink),
+      homepageCtaSecondaryText: sanitizeString(cta.secondaryText, defaultHomepage.cta.secondaryText),
+      homepageCtaSecondaryLink: sanitizeString(cta.secondaryLink, defaultHomepage.cta.secondaryLink)
+    }
+
+    const settings = await prisma.settings.upsert({
+      where: { id: 'default' },
+      update: updateData,
+      create: {
+        id: 'default',
+        ...updateData
+      }
+    })
+
+    res.json({
+      message: 'Ana sayfa ayarları başarıyla kaydedildi',
+      homepage: mapHomepageSettings(settings)
+    })
+  } catch (error) {
+    console.error('Homepage settings update error:', error)
+    res.status(500).json({ message: 'Ana sayfa ayarları kaydedilemedi' })
   }
 })
 

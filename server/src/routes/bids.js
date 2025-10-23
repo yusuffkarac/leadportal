@@ -35,16 +35,16 @@ export default function bidsRouter(prisma, io) {
 
   router.post('/', async (req, res) => {
     const parsed = bidSchema.safeParse(req.body)
-    if (!parsed.success) return res.status(400).json({ error: 'Invalid input' })
+    if (!parsed.success) return res.status(400).json({ error: 'Ungültige Eingabe' })
     const { leadId, amount } = parsed.data
 
     const lead = await prisma.lead.findUnique({ where: { id: leadId }, include: { bids: { orderBy: { createdAt: 'desc' }, take: 1 } } })
-    if (!lead || !lead.isActive) return res.status(400).json({ error: 'Lead is not active' })
+    if (!lead || !lead.isActive) return res.status(400).json({ error: 'Lead ist nicht aktiv' })
 
     const current = lead.bids[0]?.amount ?? lead.startPrice
     const minNext = current + lead.minIncrement
     if (amount < minNext) {
-      return res.status(400).json({ error: `Minimum allowed bid is ${minNext}` })
+      return res.status(400).json({ error: `Mindestgebot ist ${minNext}` })
     }
 
     const previousTopBid = lead.bids[0] || null

@@ -84,14 +84,16 @@ function anonymizeBids(bids, currentUserId = null) {
 }
 
 const createLeadSchema = z.object({
-  title: z.string().min(1, 'Başlık zorunlu'),
-  description: z.string().min(1, 'Açıklama zorunlu'),
+  title: z.string().min(1, 'Titel ist erforderlich'),
+  description: z.string().min(1, 'Beschreibung ist erforderlich'),
   privateDetails: z.string().max(20000).optional().nullable(),
-  startPrice: z.number().int().nonnegative(),
+  postalCode: z.string().min(3).max(12).optional().nullable(),
+  startPrice: z.number().int().nonnegative('Ungültige Eingabe: erwartet int, erhalten number'),
   minIncrement: z.number().int().positive(),
   instantBuyPrice: z.number().int().positive().nullable().optional(),
   insuranceType: z.string().optional().nullable(),
-  endsAt: z.string().min(1, 'Bitiş zamanı zorunlu').transform((v) => new Date(v))
+  endsAt: z.string().min(1, 'Endzeit ist erforderlich').transform((v) => new Date(v)),
+  isShowcase: z.boolean().optional()
 })
 
 // Süresi dolmuş lead'leri kontrol et ve en yüksek teklifi veren kişiye sat
@@ -167,9 +169,17 @@ export default function leadsRouter(prisma, io) {
   router.get('/', async (req, res) => {
     // Önce süresi dolmuş lead'leri kontrol et ve sat
     await checkAndSellExpiredLeads(prisma, io)
+
+    const showcaseOnly = req.query.showcase === 'true' || req.query.showcase === '1'
+    const where = {
+      isActive: true
+    }
+    if (showcaseOnly) {
+      where.isShowcase = true
+    }
     
     const leads = await prisma.lead.findMany({
-      where: { isActive: true },
+      where,
       orderBy: { createdAt: 'desc' },
       include: { bids: { orderBy: { createdAt: 'desc' }, take: 1, include: { user: true } } }
     })
@@ -288,9 +298,9 @@ export default function leadsRouter(prisma, io) {
     const parsed = createLeadSchema.safeParse(req.body)
     if (!parsed.success) {
       const issues = parsed.error.issues.map((i) => ({ path: i.path.join('.'), message: i.message }))
-      return res.status(400).json({ error: 'Validation failed', issues })
+      return res.status(400).json({ error: 'Validierung fehlgeschlagen', issues })
     }
-    const { title, description, privateDetails, startPrice, minIncrement, instantBuyPrice, insuranceType, endsAt } = parsed.data
+    const { title, description, privateDetails, postalCode, startPrice, minIncrement, instantBuyPrice, insuranceType, endsAt, isShowcase = false } = parsed.data
     
     // Ayarlardan ID formatını ve varsayılan değerleri al
     let settings = await prisma.settings.findUnique({
@@ -357,11 +367,13 @@ export default function leadsRouter(prisma, io) {
         title,
         description,
         privateDetails: privateDetails || null,
+        postalCode: postalCode || null,
         startPrice,
         minIncrement: finalMinIncrement, // Varsayılan değeri kullan
         instantBuyPrice,
         insuranceType: insuranceType || null,
         endsAt,
+        isShowcase,
         ownerId: req.user.id
       }
     })
@@ -375,7 +387,7 @@ export default function leadsRouter(prisma, io) {
     const parsed = schema.safeParse(req.body)
     if (!parsed.success) {
       const issues = parsed.error.issues.map((i) => ({ path: i.path.join('.'), message: i.message }))
-      return res.status(400).json({ error: 'Validation failed', issues })
+      return res.status(400).json({ error: 'Validierung fehlgeschlagen', issues })
     }
     const updated = await prisma.lead.update({
       where: { id: req.params.id },
@@ -407,19 +419,19 @@ export default function leadsRouter(prisma, io) {
       })
 
       if (!lead) {
-        return res.status(404).json({ error: 'Lead bulunamadı' })
+        return res.status(404).json({ error: 'Lead nicht gefunden' })
       }
 
       if (!lead.isActive) {
-        return res.status(400).json({ error: 'Bu lead artık aktif değil' })
+        return res.status(400).json({ error: 'Dieser Lead ist nicht mehr aktiv' })
       }
 
       if (lead.isSold) {
-        return res.status(400).json({ error: 'Bu lead zaten satılmış' })
+        return res.status(400).json({ error: 'Dieser Lead wurde bereits verkauft' })
       }
 
       if (!lead.instantBuyPrice) {
-        return res.status(400).json({ error: 'Bu lead için anında satın alma fiyatı belirlenmemiş' })
+        return res.status(400).json({ error: 'Für diesen Lead wurde kein Sofortkaufpreis festgelegt' })
       }
 
       // Lead'i satış olarak işaretle
@@ -451,16 +463,15 @@ export default function leadsRouter(prisma, io) {
 
       res.json({ 
         success: true, 
-        message: 'Lead başarıyla satın alındı',
+        message: 'Lead erfolgreich gekauft',
         sale: sale
       })
 
     } catch (error) {
       console.error('Error in instant buy:', error)
-      res.status(500).json({ error: 'Anında satın alma işlemi başarısız' })
+      res.status(500).json({ error: 'Sofortkauf fehlgeschlagen' })
     }
   })
 
   return router
 }
-

@@ -1,43 +1,183 @@
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import axios from 'axios'
 import { getCurrencySymbol, formatPrice } from '@/utils/currency.js'
+function getInsuranceTypeIconifyName(typeName) {
+  if (!typeName) return 'mdi:file'
+  const list = insuranceTypes.value || []
+  const found = list.find(t => (typeof t === 'object' ? t.name : t) === typeName)
+  const raw = typeof found === 'object' ? found?.icon : null
+  if (!raw) return 'mdi:file'
+  if (raw.includes(':')) return raw
+  return `mdi:${raw}`
+}
 
 const leads = ref([])
-const showNewLeadModal = ref(false)
-const showEditLeadModal = ref(false)
+const showLeadModal = ref(false)
+const modalMode = ref('new') // 'new' veya 'edit'
 const editingLead = ref(null)
 const expandedBids = ref(new Set())
 const settings = ref({ defaultCurrency: 'TRY' })
 
-// New Lead Form
-const newLead = ref({
+// Unified Lead Form
+const leadForm = ref({
   title: '',
   description: '',
   privateDetails: '',
-  startPrice: '',
-  minIncrement: '',
-  buyNowPrice: '',
-  insuranceType: '',
-  endsAt: ''
-})
-
-// Edit Lead Form
-const editLead = ref({
-  title: '',
-  description: '',
-  privateDetails: '',
+  postalCode: '',
   startPrice: '',
   minIncrement: '',
   buyNowPrice: '',
   insuranceType: '',
   endsAt: '',
-  isActive: true
+  isActive: true,
+  isShowcase: false
 })
 
 const errorMessage = ref('')
 const successMessage = ref('')
 const insuranceTypes = ref([])
+
+// Posta kodu autocomplete
+const showPostalCodeDropdown = ref(false)
+const postalCodeSearch = ref('')
+const postalCodeResults = ref([])
+const postalCodeInputFocused = ref(false)
+const selectedPostalCodeIndex = ref(-1)
+const postalCodeDropdownRef = ref(null)
+
+// Posta kodu arama fonksiyonu
+async function searchPostalCodes(query) {
+  if (!query || query.length < 2) {
+    postalCodeResults.value = []
+    return
+  }
+  
+  try {
+    const res = await fetch('/zipcodes.json')
+    const zipcodes = await res.json()
+    
+    const filtered = zipcodes
+      .filter(z => 
+        z.postal && z.postal.toString().includes(query) ||
+        z.name && z.name.toLowerCase().includes(query.toLowerCase())
+      )
+      .slice(0, 40) // İlk 40 sonucu göster
+      .map(z => ({
+        postal: z.postal,
+        name: z.name,
+        display: `${z.postal} - ${z.name}`
+      }))
+    
+    postalCodeResults.value = filtered
+  } catch (error) {
+    console.error('Posta kodu arama hatası:', error)
+    postalCodeResults.value = []
+  }
+}
+
+// Posta kodu seçme fonksiyonu
+function selectPostalCode(zipcode) {
+  leadForm.value.postalCode = zipcode.postal
+  postalCodeSearch.value = zipcode.postal // Sadece posta kodu numarası
+  showPostalCodeDropdown.value = false
+}
+
+// Posta kodu input focus/blur
+function onPostalCodeFocus() {
+  postalCodeInputFocused.value = true
+  if (postalCodeSearch.value) {
+    showPostalCodeDropdown.value = true
+  }
+}
+
+function onPostalCodeBlur() {
+  // Kısa bir gecikme ile dropdown'ı kapat (click event'i için)
+  setTimeout(() => {
+    postalCodeInputFocused.value = false
+    showPostalCodeDropdown.value = false
+  }, 200)
+}
+
+// Posta kodu input değişikliği
+function onPostalCodeInput() {
+  leadForm.value.postalCode = postalCodeSearch.value
+  selectedPostalCodeIndex.value = -1 // Reset selection
+  if (postalCodeSearch.value.length >= 2) {
+    searchPostalCodes(postalCodeSearch.value)
+    showPostalCodeDropdown.value = true
+  } else {
+    postalCodeResults.value = []
+    showPostalCodeDropdown.value = false
+  }
+}
+
+// Seçili item'ı görünür alanda tutmak için scroll
+function scrollToSelectedItem() {
+  if (!postalCodeDropdownRef.value || selectedPostalCodeIndex.value < 0) {
+    return
+  }
+
+  const dropdown = postalCodeDropdownRef.value
+  const selectedItem = dropdown.children[selectedPostalCodeIndex.value]
+  
+  if (!selectedItem) return
+
+  const dropdownRect = dropdown.getBoundingClientRect()
+  const itemRect = selectedItem.getBoundingClientRect()
+
+  // Eğer item dropdown'ın üstünde kalıyorsa
+  if (itemRect.top < dropdownRect.top) {
+    selectedItem.scrollIntoView({ block: 'start', behavior: 'smooth' })
+  }
+  // Eğer item dropdown'ın altında kalıyorsa
+  else if (itemRect.bottom > dropdownRect.bottom) {
+    selectedItem.scrollIntoView({ block: 'end', behavior: 'smooth' })
+  }
+}
+
+// Klavye navigasyonu
+function onPostalCodeKeydown(event) {
+  if (!showPostalCodeDropdown.value || postalCodeResults.value.length === 0) {
+    return
+  }
+
+  switch (event.key) {
+    case 'ArrowDown':
+      event.preventDefault()
+      selectedPostalCodeIndex.value = Math.min(
+        selectedPostalCodeIndex.value + 1,
+        postalCodeResults.value.length - 1
+      )
+      // Seçim değiştiğinde scroll et
+      setTimeout(() => scrollToSelectedItem(), 0)
+      break
+    case 'ArrowUp':
+      event.preventDefault()
+      selectedPostalCodeIndex.value = Math.max(selectedPostalCodeIndex.value - 1, -1)
+      // Seçim değiştiğinde scroll et
+      setTimeout(() => scrollToSelectedItem(), 0)
+      break
+    case 'Enter':
+      event.preventDefault()
+      if (selectedPostalCodeIndex.value >= 0 && selectedPostalCodeIndex.value < postalCodeResults.value.length) {
+        selectPostalCode(postalCodeResults.value[selectedPostalCodeIndex.value])
+      }
+      break
+    case 'Escape':
+      showPostalCodeDropdown.value = false
+      selectedPostalCodeIndex.value = -1
+      break
+  }
+}
+
+// Click outside to close dropdown
+function handleClickOutside(event) {
+  const postalCodeContainer = event.target.closest('.postal-code-container')
+  if (!postalCodeContainer && showPostalCodeDropdown.value) {
+    showPostalCodeDropdown.value = false
+  }
+}
 
 // Filtreleme
 const filters = ref({
@@ -121,168 +261,160 @@ async function fetchMine() {
   })
 }
 
-async function openNewLeadModal() {
-  showNewLeadModal.value = true
-  
-  // Ayarlardan varsayılan değerleri yükle
-  try {
-    const settingsResponse = await axios.get('/api/settings', { headers: authHeaders() })
-    const settings = settingsResponse.data
-    
-    // Varsayılan bitiş tarihini hesapla (şu an + varsayılan gün sayısı)
-    const now = new Date()
-    const defaultEndDate = new Date(now.getTime() + (settings.defaultAuctionDays || 7) * 24 * 60 * 60 * 1000)
-    const formattedEndDate = defaultEndDate.toISOString().slice(0, 16)
-    
-    newLead.value = {
-      title: '',
-      description: '',
-      privateDetails: '',
-      startPrice: '',
-      minIncrement: settings.defaultMinIncrement || 10,
-      buyNowPrice: '',
-      endsAt: formattedEndDate
+async function openLeadModal(mode, lead = null) {
+  modalMode.value = mode
+  showLeadModal.value = true
+  errorMessage.value = ''
+  successMessage.value = ''
+
+  if (mode === 'new') {
+    // Yeni lead için varsayılan değerleri yükle
+    try {
+      const settingsResponse = await axios.get('/api/settings', { headers: authHeaders() })
+      const settings = settingsResponse.data
+
+      // Varsayılan bitiş tarihini hesapla (şu an + varsayılan gün sayısı)
+      const now = new Date()
+      const defaultEndDate = new Date(now.getTime() + (settings.defaultAuctionDays || 7) * 24 * 60 * 60 * 1000)
+      const formattedEndDate = defaultEndDate.toISOString().slice(0, 16)
+
+      leadForm.value = {
+        title: '',
+        description: '',
+        privateDetails: '',
+        startPrice: '',
+        minIncrement: settings.defaultMinIncrement || 10,
+        buyNowPrice: '',
+        endsAt: formattedEndDate,
+        postalCode: '',
+        insuranceType: '',
+        isActive: true,
+        isShowcase: false
+      }
+      postalCodeSearch.value = ''
+      postalCodeResults.value = []
+    } catch (error) {
+      // Hata durumunda varsayılan değerleri kullan
+      const now = new Date()
+      const defaultEndDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+      const formattedEndDate = defaultEndDate.toISOString().slice(0, 16)
+
+      leadForm.value = {
+        title: '',
+        description: '',
+        privateDetails: '',
+        startPrice: '',
+        minIncrement: 10,
+        buyNowPrice: '',
+        endsAt: formattedEndDate,
+        postalCode: '',
+        insuranceType: '',
+        isActive: true,
+        isShowcase: false
+      }
+      postalCodeSearch.value = ''
+      postalCodeResults.value = []
     }
-  } catch (error) {
-    // Hata durumunda varsayılan değerleri kullan
-    const now = new Date()
-    const defaultEndDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // 7 gün sonra
-    const formattedEndDate = defaultEndDate.toISOString().slice(0, 16)
-    
-    newLead.value = {
-      title: '',
-      description: '',
-      privateDetails: '',
-      startPrice: '',
-      minIncrement: 10,
-      buyNowPrice: '',
-      endsAt: formattedEndDate
+  } else if (mode === 'edit' && lead) {
+    // Edit için mevcut lead verilerini yükle
+    editingLead.value = lead
+    leadForm.value = {
+      title: lead.title,
+      description: lead.description || '',
+      privateDetails: lead.privateDetails || '',
+      startPrice: lead.startPrice.toString(),
+      minIncrement: lead.minIncrement.toString(),
+      buyNowPrice: lead.instantBuyPrice ? lead.instantBuyPrice.toString() : '',
+      endsAt: lead.endsAt ? new Date(lead.endsAt).toISOString().slice(0, 16) : '',
+      isActive: lead.isActive,
+      postalCode: lead.postalCode || '',
+      insuranceType: lead.insuranceType || '',
+      isShowcase: !!lead.isShowcase
     }
+    // Posta kodu için sadece posta kodu numarasını göster
+    postalCodeSearch.value = lead.postalCode || ''
   }
-  
-  errorMessage.value = ''
-  successMessage.value = ''
 }
 
-function closeNewLeadModal() {
-  showNewLeadModal.value = false
-  errorMessage.value = ''
-  successMessage.value = ''
-}
-
-function openEditLeadModal(lead) {
-  showEditLeadModal.value = true
-  editingLead.value = lead
-  editLead.value = {
-    title: lead.title,
-    description: lead.description || '',
-    privateDetails: lead.privateDetails || '',
-    startPrice: lead.startPrice.toString(),
-    minIncrement: lead.minIncrement.toString(),
-    buyNowPrice: lead.instantBuyPrice ? lead.instantBuyPrice.toString() : '',
-    endsAt: lead.endsAt ? new Date(lead.endsAt).toISOString().slice(0, 16) : '',
-    isActive: lead.isActive
-  }
-  errorMessage.value = ''
-  successMessage.value = ''
-}
-
-function closeEditLeadModal() {
-  showEditLeadModal.value = false
+function closeLeadModal() {
+  showLeadModal.value = false
   editingLead.value = null
   errorMessage.value = ''
   successMessage.value = ''
 }
 
-async function createLead() {
+async function saveLead() {
   try {
     errorMessage.value = ''
-    
+
     // Validation
-    if (!newLead.value.title.trim()) {
+    if (!leadForm.value.title.trim()) {
       errorMessage.value = 'Başlık gerekli'
       return
     }
-    if (!newLead.value.startPrice || parseFloat(newLead.value.startPrice) <= 0) {
+    if (!leadForm.value.startPrice || parseFloat(leadForm.value.startPrice) <= 0) {
       errorMessage.value = 'Geçerli başlangıç fiyatı girin'
       return
     }
-    if (!newLead.value.minIncrement || parseFloat(newLead.value.minIncrement) <= 0) {
+    if (!leadForm.value.minIncrement || parseFloat(leadForm.value.minIncrement) <= 0) {
       errorMessage.value = 'Geçerli minimum artış girin'
       return
     }
-    if (!newLead.value.endsAt) {
+    if (!leadForm.value.endsAt) {
       errorMessage.value = 'Bitiş tarihi gerekli'
       return
     }
 
     const leadData = {
-      ...newLead.value,
-      privateDetails: newLead.value.privateDetails || undefined,
-      startPrice: parseFloat(newLead.value.startPrice),
-      minIncrement: parseFloat(newLead.value.minIncrement),
-      instantBuyPrice: newLead.value.buyNowPrice ? parseFloat(newLead.value.buyNowPrice) : null,
-      insuranceType: newLead.value.insuranceType || undefined,
-      endsAt: new Date(newLead.value.endsAt).toISOString()
+      ...leadForm.value,
+      privateDetails: leadForm.value.privateDetails || undefined,
+      postalCode: leadForm.value.postalCode || undefined,
+      startPrice: parseFloat(leadForm.value.startPrice),
+      minIncrement: parseFloat(leadForm.value.minIncrement),
+      instantBuyPrice: leadForm.value.buyNowPrice ? parseFloat(leadForm.value.buyNowPrice) : null,
+      insuranceType: leadForm.value.insuranceType || undefined,
+      endsAt: new Date(leadForm.value.endsAt).toISOString(),
+      isShowcase: !!leadForm.value.isShowcase
     }
 
-    await axios.post('/api/leads', leadData, { headers: authHeaders() })
-    
-    successMessage.value = 'Lead başarıyla oluşturuldu!'
+    if (modalMode.value === 'new') {
+      // Yeni lead oluştur
+      await axios.post('/api/leads', leadData, { headers: authHeaders() })
+      successMessage.value = 'Lead başarıyla oluşturuldu!'
+    } else {
+      // Mevcut lead'i güncelle
+      await axios.put(`/api/leads/${editingLead.value.id}`, leadData, { headers: authHeaders() })
+      successMessage.value = 'Lead başarıyla güncellendi!'
+    }
+
     await fetchMine()
-    
+
     setTimeout(() => {
-      closeNewLeadModal()
+      closeLeadModal()
     }, 1500)
-    
+
   } catch (error) {
-    errorMessage.value = error.response?.data?.message || 'Lead oluşturulamadı'
-  }
-}
+    let backendMessage = ''
 
-async function updateLead() {
-  try {
-    errorMessage.value = ''
-    
-    // Validation
-    if (!editLead.value.title.trim()) {
-      errorMessage.value = 'Başlık gerekli'
-      return
-    }
-    if (!editLead.value.startPrice || parseFloat(editLead.value.startPrice) <= 0) {
-      errorMessage.value = 'Geçerli başlangıç fiyatı girin'
-      return
-    }
-    if (!editLead.value.minIncrement || parseFloat(editLead.value.minIncrement) <= 0) {
-      errorMessage.value = 'Geçerli minimum artış girin'
-      return
-    }
-    if (!editLead.value.endsAt) {
-      errorMessage.value = 'Bitiş tarihi gerekli'
-      return
+    if (error.response?.data) {
+      // Eğer message alanı varsa onu kullan
+      if (error.response.data.message) {
+        backendMessage = error.response.data.message
+      }
+      // Eğer error alanı varsa onu kullan
+      else if (error.response.data.error) {
+        backendMessage = error.response.data.error
+        // Eğer issues varsa onları da ekle
+        if (error.response.data.issues && error.response.data.issues.length > 0) {
+          const issueMessages = error.response.data.issues.map(issue => issue.message).join(', ')
+          backendMessage += `: ${issueMessages}`
+        }
+      }
     }
 
-    const leadData = {
-      ...editLead.value,
-      privateDetails: editLead.value.privateDetails || undefined,
-      startPrice: parseFloat(editLead.value.startPrice),
-      minIncrement: parseFloat(editLead.value.minIncrement),
-      instantBuyPrice: editLead.value.buyNowPrice ? parseFloat(editLead.value.buyNowPrice) : null,
-      insuranceType: editLead.value.insuranceType || undefined,
-      endsAt: new Date(editLead.value.endsAt).toISOString()
-    }
-
-    await axios.put(`/api/leads/${editingLead.value.id}`, leadData, { headers: authHeaders() })
-    
-    successMessage.value = 'Lead başarıyla güncellendi!'
-    await fetchMine()
-    
-    setTimeout(() => {
-      closeEditLeadModal()
-    }, 1500)
-    
-  } catch (error) {
-    errorMessage.value = error.response?.data?.message || 'Lead güncellenemedi'
+    errorMessage.value = backendMessage
+      ? `Lead ${modalMode.value === 'new' ? 'oluşturulamadı' : 'güncellenemedi'}: ${backendMessage}`
+      : `Lead ${modalMode.value === 'new' ? 'oluşturulamadı' : 'güncellenemedi'}`
   }
 }
 
@@ -368,6 +500,9 @@ let resizeHandler = null
 onMounted(async () => {
   await loadSettings()
   await fetchMine()
+  await ensureZipcodesLoaded()
+  initMap()
+  updateMapMarkers()
   
   // Ekran boyutu değişikliklerini dinle
   resizeHandler = () => {
@@ -385,13 +520,86 @@ onMounted(async () => {
   }
   
   window.addEventListener('resize', resizeHandler)
+  document.addEventListener('click', handleClickOutside)
 })
 
 onUnmounted(() => {
   if (resizeHandler) {
     window.removeEventListener('resize', resizeHandler)
   }
+  document.removeEventListener('click', handleClickOutside)
 })
+
+// Zipcodes ve harita
+const zipcodeIndex = ref(new Map())
+const mapRoot = ref(null)
+let leafletMap = null
+let markersLayer = null
+
+async function ensureZipcodesLoaded() {
+  if (zipcodeIndex.value.size > 0) return
+  try {
+    const res = await fetch('/zipcodes.json')
+    const arr = await res.json()
+    const m = new Map()
+    for (const z of arr) {
+      if (z.postal) m.set(String(z.postal), { lat: Number(z.lat), lon: Number(z.lon), name: z.name })
+    }
+    zipcodeIndex.value = m
+  } catch (e) {
+    console.error('Zipcodes yüklenemedi', e)
+  }
+}
+
+function initMap() {
+  if (!window.L || !mapRoot.value || leafletMap) return
+  leafletMap = window.L.map(mapRoot.value).setView([51.1657, 10.4515], 5)
+  window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(leafletMap)
+  markersLayer = window.L.layerGroup().addTo(leafletMap)
+}
+
+function updateMapMarkers() {
+  if (!leafletMap || !markersLayer) return
+  markersLayer.clearLayers()
+  const bounds = []
+  for (const lead of filteredLeads.value) {
+    const pc = lead.postalCode || lead.postal || ''
+    const info = zipcodeIndex.value.get(String(pc))
+    if (!info || isNaN(info.lat) || isNaN(info.lon)) continue
+    const marker = window.L.marker([info.lat, info.lon])
+    const price = (lead.bids && lead.bids[0]?.amount) || lead.startPrice
+    const currency = settings.value?.defaultCurrency || 'TRY'
+    const insType = lead.insuranceType || ''
+    const iconifyName = getInsuranceTypeIconifyName(insType)
+    const insIcon = insType ? `<span class=\"iconify\" data-icon=\"${iconifyName}\" style=\"font-size:14px;color:#475569\"></span>` : ''
+    const chip = insType ? `<span style=\"display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid #e2e8f0;border-radius:999px;background:#f8fafc;color:#334155;font-size:12px\">${insIcon}<span>${insType}</span></span>` : ''
+    const postalChip = pc ? `<span style=\"display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid #e2e8f0;border-radius:999px;background:#fff;color:#334155;font-size:12px\"><i class=\"fa fa-location-dot\" style=\"color:#64748b\"></i><span>${pc}</span></span>` : ''
+    const tags = (chip || postalChip) ? `<div style=\"display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 8px\">${chip}${postalChip}</div>` : ''
+    const popupHtml = `
+      <div style=\"min-width:220px;max-width:280px\">
+        <div style=\"font-weight:700;margin-bottom:2px;color:#0f172a;font-size:14px\">${lead.title}</div>
+        ${tags}
+        <div style=\"font-size:12px;margin-bottom:10px;color:#475569;line-height:1.4\">${(lead.description||'').slice(0,120)}</div>
+        <div style=\"display:flex;align-items:baseline;gap:6px;margin-bottom:10px\">
+          <span style=\"font-size:12px;color:#64748b\">Fiyat:</span>
+          <span style=\"font-weight:700;color:#0f766e;font-size:16px\">${formatPrice(price, currency)}</span>
+        </div>
+        <a href=\"/lead/${lead.id}\" style=\"display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid #e2e8f0;border-radius:8px;color:#1d4ed8;text-decoration:none;background:#ffffff\">Detaya git <span aria-hidden>→</span></a>
+      </div>
+    `
+    marker.bindPopup(popupHtml)
+    marker.addTo(markersLayer)
+    bounds.push([info.lat, info.lon])
+  }
+  if (bounds.length > 0) {
+    leafletMap.fitBounds(bounds, { padding: [20, 20] })
+  }
+}
+
+watch(filteredLeads, () => updateMapMarkers())
 </script>
 
 <template>
@@ -409,7 +617,7 @@ onUnmounted(() => {
             </svg>
             Filtreler
           </button>
-          <button class="btn btn-primary btn-large" @click="openNewLeadModal">
+          <button class="btn btn-primary btn-large" @click="openLeadModal('new')">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="12" y1="5" x2="12" y2="19"/>
               <line x1="5" y1="12" x2="19" y2="12"/>
@@ -487,6 +695,11 @@ onUnmounted(() => {
       </div>
     </transition>
 
+    <!-- Harita: filtrelenen leadlerin posta kodlarına göre pinler -->
+    <div style="margin-top:16px; position: relative; z-index: 0;">
+      <div ref="mapRoot" style="width: 100%; height: 380px; border-radius: 12px; border:1px solid #e5e7eb; overflow:hidden; position: relative; z-index: 0;"></div>
+    </div>
+
     <!-- Sonuç sayısı -->
     <div v-if="leads.length" class="results-info">
       <span>{{ filteredLeads.length }} / {{ leads.length }} lead gösteriliyor</span>
@@ -521,7 +734,7 @@ onUnmounted(() => {
               </svg>
               Detay
             </button>
-            <button v-if="!lead.sale" class="btn btn-secondary" @click="openEditLeadModal(lead)">
+            <button v-if="!lead.sale" class="btn btn-secondary" @click="openLeadModal('edit', lead)">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -604,235 +817,143 @@ onUnmounted(() => {
     </div>
     </div>
 
-    <!-- New Lead Modal -->
-    <div v-if="showNewLeadModal" class="modal-backdrop" @click="closeNewLeadModal">
+    <!-- Unified Lead Modal (New/Edit) -->
+    <div v-if="showLeadModal" class="modal-backdrop" @click="closeLeadModal">
       <div class="modal" @click.stop>
         <div class="modal-header">
-          <h3>Yeni Lead Oluştur</h3>
-          <button class="modal-close" @click="closeNewLeadModal">×</button>
+          <h3>{{ modalMode === 'new' ? 'Yeni Lead Oluştur' : 'Lead Düzenle' }}</h3>
+          <button class="modal-close" @click="closeLeadModal">×</button>
         </div>
-        
+
         <div class="modal-body">
-          <div class="form-group">
+          <!-- Tek sütun: Başlık -->
+          <div class="form-group full-width">
             <label>Başlık *</label>
-            <input 
-              v-model="newLead.title" 
-              type="text" 
-              class="form-input" 
-              placeholder="Lead başlığı"
-              required
-            />
-          </div>
-          
-          <div class="form-group">
-            <label>Açıklama</label>
-            <textarea 
-              v-model="newLead.description" 
-              class="form-textarea" 
-              placeholder="Lead açıklaması"
-              rows="3"
-            ></textarea>
+            <input v-model="leadForm.title" type="text" class="form-input" placeholder="Lead başlığı" required />
           </div>
 
-          <div class="form-group">
+          <!-- İki sütun: Sigorta Türü ve Posta Kodu -->
+          <div class="form-row">
+            <div class="form-group">
+              <label>Sigorta Türü</label>
+              <select v-model="leadForm.insuranceType" class="form-input">
+                <option value="">Sigorta türü seçin</option>
+                <option v-for="type in insuranceTypes" :key="type.name" :value="type.name">{{ type.name }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Posta Kodu</label>
+              <div class="postal-code-container">
+                <input 
+                  v-model="postalCodeSearch" 
+                  type="text" 
+                  class="form-input" 
+                  placeholder="Posta kodu veya şehir adı yazın..." 
+                  @input="onPostalCodeInput"
+                  @focus="onPostalCodeFocus"
+                  @blur="onPostalCodeBlur"
+                  @keydown="onPostalCodeKeydown"
+                />
+                <div v-if="showPostalCodeDropdown && postalCodeResults.length > 0" ref="postalCodeDropdownRef" class="postal-code-dropdown">
+                  <div 
+                    v-for="(zipcode, index) in postalCodeResults" 
+                    :key="zipcode.postal"
+                    :class="['postal-code-item', { 'selected': index === selectedPostalCodeIndex }]"
+                    @mousedown="selectPostalCode(zipcode)"
+                  >
+                    {{ zipcode.display }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tek sütun: Açıklama -->
+          <div class="form-group full-width">
+            <label>Açıklama *</label>
+            <textarea v-model="leadForm.description" class="form-textarea" placeholder="Lead açıklaması" rows="3" required></textarea>
+          </div>
+
+          <!-- Tek sütun: Private Details -->
+          <div class="form-group full-width">
             <label>Lead Detayları (Sadece Satın Alan Görür)</label>
-            <textarea 
-              v-model="newLead.privateDetails" 
-              class="form-textarea" 
-              placeholder="Satın alan kişinin göreceği detay bilgileri girin"
-              rows="6"
-            ></textarea>
+            <textarea v-model="leadForm.privateDetails" class="form-textarea" placeholder="Satın alan kişinin göreceği detay bilgileri girin" rows="4"></textarea>
             <small class="form-help">Bu alan sadece leadi satın alan kişi, lead sahibi ve adminler tarafından görülebilir.</small>
           </div>
-          
+
+          <!-- İki sütun: Fiyatlar -->
           <div class="form-row">
             <div class="form-group">
               <label>Başlangıç Fiyatı ({{ getCurrencySymbol(settings.defaultCurrency) }}) *</label>
-              <input 
-                v-model="newLead.startPrice" 
-                type="number" 
-                class="form-input" 
-                placeholder="0"
-                min="0"
-                step="0.01"
-                required
-              />
+              <input v-model="leadForm.startPrice" type="number" class="form-input" placeholder="0" min="0" step="1" required />
             </div>
-            
             <div class="form-group">
               <label>Minimum Artış ({{ getCurrencySymbol(settings.defaultCurrency) }}) *</label>
-              <input 
-                v-model="newLead.minIncrement" 
-                type="number" 
-                class="form-input" 
-                placeholder="0"
-                min="0"
-                step="0.01"
-                required
-              />
+              <input v-model="leadForm.minIncrement" type="number" class="form-input" placeholder="0" min="0" step="1" required />
             </div>
           </div>
-          
-          <div class="form-group">
-            <label>Anında Satın Alma Fiyatı ({{ getCurrencySymbol(settings.defaultCurrency) }})</label>
-            <input 
-              v-model="newLead.buyNowPrice" 
-              type="number" 
-              class="form-input" 
-              placeholder="Opsiyonel - boş bırakabilirsiniz"
-              min="0"
-              step="0.01"
-            />
-            <small class="form-help">Bu fiyat belirlenirse, kullanıcılar bu fiyattan anında satın alabilir</small>
-          </div>
-          
-          <div class="form-group">
-            <label>Sigorta Türü</label>
-            <select v-model="newLead.insuranceType" class="form-input">
-              <option value="">Sigorta türü seçin</option>
-              <option v-for="type in insuranceTypes" :key="type.name" :value="type.name">{{ type.name }}</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label>Bitiş Tarihi *</label>
-            <input 
-              v-model="newLead.endsAt" 
-              type="datetime-local" 
-              class="form-input"
-              required
-            />
-          </div>
-          
-          <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
-          <div v-if="successMessage" class="success-message">{{ successMessage }}</div>
-        </div>
-        
-        <div class="modal-footer">
-          <button class="btn btn-secondary" @click="closeNewLeadModal">İptal</button>
-          <button class="btn btn-primary" @click="createLead">Oluştur</button>
-        </div>
-      </div>
-    </div>
 
-    <!-- Edit Lead Modal -->
-    <div v-if="showEditLeadModal" class="modal-backdrop" @click="closeEditLeadModal">
-      <div class="modal" @click.stop>
-        <div class="modal-header">
-          <h3>Lead Düzenle</h3>
-          <button class="modal-close" @click="closeEditLeadModal">×</button>
-        </div>
-        
-        <div class="modal-body">
-          <div class="form-group">
-            <label>Başlık *</label>
-            <input 
-              v-model="editLead.title" 
-              type="text" 
-              class="form-input" 
-              placeholder="Lead başlığı"
-              required
-            />
-          </div>
-          
-          <div class="form-group">
-            <label>Açıklama</label>
-            <textarea 
-              v-model="editLead.description" 
-              class="form-textarea" 
-              placeholder="Lead açıklaması"
-              rows="3"
-            ></textarea>
-          </div>
-
-          <div class="form-group">
-            <label>Lead Detayları (Sadece Satın Alan Görür)</label>
-            <textarea 
-              v-model="editLead.privateDetails" 
-              class="form-textarea" 
-              placeholder="Satın alan kişinin göreceği detay bilgileri girin"
-              rows="6"
-            ></textarea>
-            <small class="form-help">Bu alan sadece leadi satın alan kişi, lead sahibi ve adminler tarafından görülebilir.</small>
-          </div>
-          
+          <!-- İki sütun: Anında Al ve Bitiş Tarihi -->
           <div class="form-row">
             <div class="form-group">
-              <label>Başlangıç Fiyatı ({{ getCurrencySymbol(settings.defaultCurrency) }}) *</label>
-              <input 
-                v-model="editLead.startPrice" 
-                type="number" 
-                class="form-input" 
-                placeholder="0"
-                min="0"
-                step="0.01"
-                required
-              />
+              <label>Anında Satın Alma Fiyatı ({{ getCurrencySymbol(settings.defaultCurrency) }})</label>
+              <input v-model="leadForm.buyNowPrice" type="number" class="form-input" placeholder="Opsiyonel" min="0" step="1" />
+              <small class="form-help">Anında satın alma fiyatı</small>
             </div>
-            
             <div class="form-group">
-              <label>Minimum Artış ({{ getCurrencySymbol(settings.defaultCurrency) }}) *</label>
-              <input 
-                v-model="editLead.minIncrement" 
-                type="number" 
-                class="form-input" 
-                placeholder="0"
-                min="0"
-                step="0.01"
-                required
-              />
+              <label>Bitiş Tarihi *</label>
+              <input v-model="leadForm.endsAt" type="datetime-local" class="form-input" required />
             </div>
           </div>
-          
-          <div class="form-group">
-            <label>Anında Satın Alma Fiyatı ({{ getCurrencySymbol(settings.defaultCurrency) }})</label>
-            <input 
-              v-model="editLead.buyNowPrice" 
-              type="number" 
-              class="form-input" 
-              placeholder="Opsiyonel - boş bırakabilirsiniz"
-              min="0"
-              step="0.01"
-            />
-            <small class="form-help">Bu fiyat belirlenirse, kullanıcılar bu fiyattan anında satın alabilir</small>
+
+          <!-- Edit modunda: İki sütun: Vitrin ve Aktif Durumu -->
+          <!-- New modunda: Tek sütun: Sadece Vitrin -->
+          <div v-if="modalMode === 'edit'" class="form-row">
+            <div class="form-group toggle-field">
+              <label>Vitrine Ekle</label>
+              <div class="toggle-container">
+                <label class="toggle-switch">
+                  <input type="checkbox" v-model="leadForm.isShowcase" />
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label">{{ leadForm.isShowcase ? 'Açık' : 'Kapalı' }}</span>
+              </div>
+              <small class="toggle-help">Vitrine alınan leadler ana sayfada öne çıkar.</small>
+            </div>
+            <div class="form-group toggle-field">
+              <label>Lead aktif</label>
+              <div class="toggle-container">
+                <label class="toggle-switch">
+                  <input type="checkbox" v-model="leadForm.isActive" />
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label">{{ leadForm.isActive ? 'Açık' : 'Kapalı' }}</span>
+              </div>
+              <small class="toggle-help">Görülebilir ve teklif verilebilir.</small>
+            </div>
           </div>
-          
-          <div class="form-group">
-            <label>Sigorta Türü</label>
-            <select v-model="editLead.insuranceType" class="form-input">
-              <option value="">Sigorta türü seçin</option>
-              <option v-for="type in insuranceTypes" :key="type.name" :value="type.name">{{ type.name }}</option>
-            </select>
+
+          <div v-else class="form-group toggle-field full-width">
+            <label>Vitrine Ekle</label>
+            <div class="toggle-container">
+              <label class="toggle-switch">
+                <input type="checkbox" v-model="leadForm.isShowcase" />
+                <span class="toggle-slider"></span>
+              </label>
+              <span class="toggle-label">{{ leadForm.isShowcase ? 'Açık' : 'Kapalı' }}</span>
+            </div>
+            <small class="toggle-help">Vitrine alınan leadler ana sayfanın vitrin bölümünde öne çıkarılır.</small>
           </div>
-          
-          <div class="form-group">
-            <label>Bitiş Tarihi *</label>
-            <input 
-              v-model="editLead.endsAt" 
-              type="datetime-local" 
-              class="form-input"
-              required
-            />
-          </div>
-          
-          <div class="form-group">
-            <label class="checkbox-label">
-              <input 
-                v-model="editLead.isActive" 
-                type="checkbox" 
-                class="form-checkbox"
-              />
-              <span>Lead aktif</span>
-            </label>
-          </div>
-          
+
           <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
           <div v-if="successMessage" class="success-message">{{ successMessage }}</div>
         </div>
-        
+
         <div class="modal-footer">
-          <button class="btn btn-secondary" @click="closeEditLeadModal">İptal</button>
-          <button class="btn btn-primary" @click="updateLead">Güncelle</button>
+          <button class="btn btn-secondary" @click="closeLeadModal">İptal</button>
+          <button class="btn btn-primary" @click="saveLead">
+            {{ modalMode === 'new' ? 'Oluştur' : 'Güncelle' }}
+          </button>
         </div>
       </div>
     </div>
@@ -1424,5 +1545,112 @@ onUnmounted(() => {
     font-size: 18px;
   }
 }
-</style>
 
+/* Modal genişliği ve form düzeni */
+.modal {
+  max-width: 700px;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-help {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--primary);
+}
+
+/* Responsive modal */
+@media (max-width: 768px) {
+  .modal {
+    max-width: 95vw;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* Posta kodu dropdown stilleri */
+.postal-code-container {
+  position: relative;
+  width: 100%;
+}
+
+.postal-code-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 2px;
+}
+
+.postal-code-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+  color: #374151;
+}
+
+.postal-code-item:hover,
+.postal-code-item.selected {
+  background-color: #f9fafb;
+}
+
+.postal-code-item.selected {
+  background-color: #e5f3ff;
+  border-left: 3px solid #3b82f6;
+}
+
+.postal-code-item:last-child {
+  border-bottom: none;
+}
+
+.postal-code-item:first-child {
+  border-radius: 8px 8px 0 0;
+}
+
+.postal-code-item:last-child {
+  border-radius: 0 0 8px 8px;
+}
+
+.postal-code-item:only-child {
+  border-radius: 8px;
+}
+
+/* Mobil uyumluluk */
+@media (max-width: 768px) {
+  .postal-code-dropdown {
+    max-height: 150px;
+  }
+  
+  .postal-code-item {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}
+</style>
