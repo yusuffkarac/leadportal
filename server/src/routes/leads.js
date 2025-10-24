@@ -500,13 +500,20 @@ export default function leadsRouter(prisma, io) {
       console.log('Sending request to:', apiUrl)
       console.log('Using token:', token.substring(0, 20) + '...')
       
+      // Client IP adresini al
+      const clientIP = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || '127.0.0.1'
+      console.log('Client IP:', clientIP)
+      
       const response = await fetch(apiUrl, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
           'User-Agent': 'LeadPortal/1.0',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'X-Forwarded-For': clientIP,
+          'X-Real-IP': clientIP,
+          'X-Client-IP': clientIP
         },
         timeout: 30000  // 30 saniye timeout
       })
