@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { z } from 'zod'
+import jwt from 'jsonwebtoken'
 
 // Lead tipi yetkilendirmesini kontrol eden helper fonksiyon
 async function filterLeadsByPermission(prisma, leads, userId, userTypeId) {
@@ -470,6 +471,83 @@ export default function leadsRouter(prisma, io) {
     } catch (error) {
       console.error('Error in instant buy:', error)
       res.status(500).json({ error: 'Sofortkauf fehlgeschlagen' })
+    }
+  })
+
+  // Formleadport entegrasyonu - form verilerini çek
+  router.get('/formleadport-data/:formId', async (req, res) => {
+    try {
+      const { formId } = req.params
+      
+      // Formleadport API'sine istek gönder
+      const formleadportUrl ='http://localhost:8000'
+      const apiUrl = `${formleadportUrl}/api/form-data/${formId}/`
+      
+      // JWT token oluştur (formleadport için)
+      const jwtSecret = process.env.FORMLEADPORT_JWT_SECRET || 'your-secret-key-change-this-in-production'
+      
+      const token = jwt.sign(
+        { 
+          source: 'leadportal',
+          timestamp: Date.now()
+        },
+        jwtSecret,
+        { expiresIn: '1h' }
+      )
+      
+      // Formleadport'a istek gönder
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          return res.status(404).json({ 
+            success: false, 
+            error: 'Form bulunamadı' 
+          })
+        } else if (response.status === 401) {
+          return res.status(401).json({ 
+            success: false, 
+            error: 'Yetkilendirme hatası' 
+          })
+        } else if (response.status === 429) {
+          return res.status(429).json({ 
+            success: false, 
+            error: 'Çok fazla istek gönderildi, lütfen bekleyin' 
+          })
+        } else {
+          return res.status(response.status).json({ 
+            success: false, 
+            error: 'Formleadport API hatası' 
+          })
+        }
+      }
+      
+      const data = await response.json()
+      
+      if (data.success) {
+        res.json({
+          success: true,
+          data: data.data
+        })
+      } else {
+        res.status(400).json({
+          success: false,
+          error: data.error || 'Form verileri alınamadı'
+        })
+      }
+      
+    } catch (error) {
+      console.error('Formleadport API error:', error)
+      res.status(500).json({
+        success: false,
+        error: 'Formleadport bağlantı hatası'
+      })
     }
   })
 

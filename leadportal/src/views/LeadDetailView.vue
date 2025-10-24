@@ -425,7 +425,7 @@ onUnmounted(() => {
 <style scoped>
 /* Page Layout */
 .page-content {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 24px;
   display: grid;

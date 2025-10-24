@@ -388,28 +388,29 @@ onMounted(async () => {
 .home-page {
   display: flex;
   flex-direction: column;
-  gap: 80px;
-  max-width: 1180px;
+  gap: 64px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 48px 24px 96px;
+  padding: 40px 24px 80px;
   box-sizing: border-box;
 }
 
 .hero {
   position: relative;
-  background: linear-gradient(145deg, #eef2ff, #f8fafc);
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   border: 1px solid #e2e8f0;
-  border-radius: 36px;
-  padding: 72px 24px;
+  border-radius: 24px;
+  padding: 64px 32px;
   overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .hero::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at top right, rgba(96, 165, 250, 0.25), transparent 55%),
-    radial-gradient(circle at bottom left, rgba(37, 99, 235, 0.2), transparent 50%);
+  background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 60%),
+    radial-gradient(circle at bottom left, rgba(37, 99, 235, 0.08), transparent 50%);
   pointer-events: none;
 }
 
@@ -518,14 +519,21 @@ onMounted(async () => {
 
 .feature-card {
   background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 24px;
-  padding: 32px 24px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 28px 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   text-align: left;
-  box-shadow: 0 24px 48px -36px rgba(15, 23, 42, 0.35);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
 }
 
 .feature-icon {
@@ -665,13 +673,20 @@ onMounted(async () => {
 
 .showcase-card {
   background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 24px;
-  padding: 24px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  box-shadow: 0 28px 10px -36px rgba(15, 23, 42, 0.28);
+  gap: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.showcase-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
 }
 
 .showcase-card-header {
@@ -689,17 +704,19 @@ onMounted(async () => {
 .tag {
   display: inline-flex;
   align-items: center;
-  padding: 4px 12px;
-  border-radius: 999px;
+  padding: 6px 12px;
+  border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
-  background: #e2e8f0;
-  color: #0f172a;
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
 }
 
 .tag.success {
-  background: #dcfce7;
-  color: #047857;
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
 }
 
 .card-link {
@@ -716,7 +733,7 @@ onMounted(async () => {
 .showcase-title {
   display: flex;
   gap: 12px;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .insurance-icon {
@@ -744,22 +761,28 @@ onMounted(async () => {
 .showcase-meta {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+  gap: 12px;
   margin: 0;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #f1f5f9;
 }
 
 .showcase-meta dt {
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   font-size: 0.7rem;
-  margin-bottom: 4px;
-  color: #94a3b8;
+  margin-bottom: 6px;
+  color: #64748b;
+  font-weight: 600;
 }
 
 .showcase-meta dd {
   margin: 0;
-  font-weight: 600;
-  color: #0f172a;
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 0.95rem;
 }
 
 .showcase-footer {
@@ -798,16 +821,27 @@ onMounted(async () => {
   color: #1d4ed8;
   font-weight: 600;
   text-decoration: none;
+  padding: 10px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  transition: all 0.2s ease;
+}
+
+.ghost-link:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
 }
 
 .stats {
   background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 28px;
-  padding: 48px 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 40px 32px;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 28px;
   text-align: center;
 }
 
@@ -825,14 +859,21 @@ onMounted(async () => {
 
 .stat-card {
   background: #fff;
-  border: 1px solid #e0e7ff;
-  border-radius: 24px;
-  padding: 24px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px 20px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   align-items: center;
-  box-shadow: 0 24px 48px -40px rgba(29, 78, 216, 0.4);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
 }
 
 .stat-card strong {
@@ -851,18 +892,18 @@ onMounted(async () => {
 }
 
 .cta-card {
-  background: #0f172a;
+  background: #1e293b;
   color: #fff;
-  border-radius: 28px;
-  padding: 48px 40px;
+  border-radius: 20px;
+  padding: 40px 32px;
   width: 100%;
-  max-width: 980px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 32px;
   flex-wrap: wrap;
-  box-shadow: 0 40px 60px -48px rgba(15, 23, 42, 0.7);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid #334155;
 }
 
 .cta-card h2 {

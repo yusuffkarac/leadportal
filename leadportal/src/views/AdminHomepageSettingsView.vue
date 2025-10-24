@@ -176,7 +176,7 @@ onMounted(loadHomepageSettings)
 </script>
 
 <template>
-  <section class="section" style="max-width:1080px; margin: 0 auto;">
+  <section class="section" style="max-width: 1400px; margin: 0 auto;">
     <header class="section-header">
       <div>
         <h2>Ana Sayfa Ayarları</h2>

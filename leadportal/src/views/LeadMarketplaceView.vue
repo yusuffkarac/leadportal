@@ -60,6 +60,7 @@ function toggleMapVisibility() {
   }
 }
 
+
 // Zaman hesaplama fonksiyonu
 function formatTimeRemaining(endsAt) {
   const now = new Date()
@@ -376,7 +377,7 @@ function updateMapMarkers() {
     const iconifyName = getInsuranceTypeIcon(insType)
     const insIcon = insType ? `<span class=\"iconify\" data-icon=\"${iconifyName}\" style=\"font-size:14px;color:#475569\"></span>` : ''
     const chip = insType ? `<span style=\"display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid #e2e8f0;border-radius:999px;background:#f8fafc;color:#334155;font-size:12px\">${insIcon}<span>${insType}</span></span>` : ''
-    const postalChip = pc ? `<span style=\"display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid #e2e8f0;border-radius:999px;background:#fff;color:#334155;font-size:12px\"><i class=\"fa fa-location-dot\" style=\"color:#64748b\"></i><span>${pc}</span></span>` : ''
+    const postalChip = pc ? `<span style=\"display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid #e2e8f0;border-radius:999px;background:#fff;color:#334155;font-size:12px\"><span class=\"iconify\" data-icon=\"mdi:map-marker-outline\" style=\"font-size:14px;color:#64748b\"></span><span>${pc}</span></span>` : ''
     const tags = (chip || postalChip) ? `<div style=\"display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 8px\">${chip}${postalChip}</div>` : ''
     const popupHtml = `
       <div style=\"min-width:220px;max-width:280px\">

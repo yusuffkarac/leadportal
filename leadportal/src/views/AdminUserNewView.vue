@@ -505,7 +505,7 @@ onMounted(() => {
 }
 
 .page-content {
-  max-width: 75%;
+  max-width: 85%;
   margin: 0 auto;
   padding: 32px 24px;
 }

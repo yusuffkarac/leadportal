@@ -377,13 +377,7 @@ function closeAdminDropdown() {
               </svg>
               Kullanıcılar
             </RouterLink>
-            <RouterLink to="/admin/company-settings" class="menu-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="18" height="14" rx="2"/>
-                <path d="M7 21h10"/>
-              </svg>
-              Firma Ayarları
-            </RouterLink>
+            
             <RouterLink to="/admin/statistics" class="menu-item">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="20" x2="12" y2="10"/>
@@ -569,14 +563,7 @@ function closeAdminDropdown() {
             </svg>
             <span>Kullanıcılar</span>
           </RouterLink>
-          
-          <RouterLink to="/admin/company-settings" @click="closeMobileMenu" class="mobile-nav-link">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="18" height="14" rx="2"/>
-              <path d="M7 21h10"/>
-            </svg>
-            <span>Firma Ayarları</span>
-          </RouterLink>
+         
           
           <RouterLink to="/admin/statistics" @click="closeMobileMenu" class="mobile-nav-link">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

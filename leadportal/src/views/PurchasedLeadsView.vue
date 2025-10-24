@@ -65,6 +65,33 @@
           >
         </div>
         <div class="filter-controls">
+          <button class="view-toggle-btn" @click="toggleMapVisibility" :title="showMap ? 'Haritayı Gizle' : 'Haritayı Göster'">
+            <svg v-if="showMap" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+              <line x1="2" y1="2" x2="22" y2="22"/>
+            </svg>
+          </button>
+          <button class="view-toggle-btn" @click="toggleViewMode" :title="viewMode === 'grid' ? 'Tablo Görünümü' : 'Kart Görünümü'">
+            <svg v-if="viewMode === 'grid'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="8" y1="6" x2="21" y2="6"/>
+              <line x1="8" y1="12" x2="21" y2="12"/>
+              <line x1="8" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/>
+              <line x1="3" y1="12" x2="3.01" y2="12"/>
+              <line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+            <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+          </button>
           <select v-model="sortBy" class="sort-select">
             <option value="date">Tarihe Göre</option>
             <option value="price">Fiyata Göre</option>
@@ -97,8 +124,64 @@
         <RouterLink to="/" class="btn btn-primary">Açık Artırmalara Git</RouterLink>
       </div>
 
-      <!-- Purchased Leads List -->
-      <div v-else class="purchased-leads-list">
+      <!-- Harita -->
+      <div v-if="showMap" class="map-container">
+        <div ref="mapRoot" class="leads-map"></div>
+      </div>
+
+      <!-- Tablo Görünümü -->
+      <div v-if="viewMode === 'table'" class="table-view">
+        <table class="purchased-leads-table">
+          <thead>
+            <tr>
+              <th>Lead</th>
+              <th>Satın Alma Fiyatı</th>
+              <th>Satıcı</th>
+              <th>Satın Alma Tarihi</th>
+              <th>İşlemler</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="sale in filteredAndSortedLeads" :key="sale.id" class="table-row">
+              <td class="lead-cell">
+                <div class="lead-info">
+                  <div>
+                    <div class="lead-title-text">{{ sale.lead.title }}</div>
+                    <div class="lead-description-text">{{ sale.lead.description?.substring(0, 80) }}...</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="price-cell">
+                  <span class="purchase-price">{{ formatPrice(sale.amount, settings.defaultCurrency) }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="seller-text">{{ sale.lead.owner.email }}</span>
+              </td>
+              <td>
+                <span class="date-text">{{ formatDate(sale.soldAt) }}</span>
+              </td>
+              <td>
+                <div class="table-actions">
+                  <button class="table-btn primary" @click="viewLeadDetails(sale.lead.id)">
+                    Detay
+                  </button>
+                  <button class="table-btn secondary" @click="downloadLeadInfo(sale)" title="JSON İndir">
+                    JSON
+                  </button>
+                  <button class="table-btn secondary" @click="() => downloadLeadAsPDF(sale)" title="PDF İndir">
+                    PDF
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Grid Görünümü -->
+      <div v-if="viewMode === 'grid'" class="purchased-leads-list">
         <div v-for="sale in filteredAndSortedLeads" :key="sale.id" class="purchased-lead-card" :data-lead-id="sale.lead.id">
           <div class="lead-header">
             <div class="lead-info">
@@ -200,10 +283,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { formatPrice } from '@/utils/currency.js'
+import { useMap } from '@/composables/useMap.js'
 import jsPDF from 'jspdf'
 
 const router = useRouter()
@@ -213,6 +297,12 @@ const settings = ref({ defaultCurrency: 'TRY' })
 const searchQuery = ref('')
 const sortBy = ref('date')
 const sortOrder = ref('desc')
+
+// Görünüm tipi (grid veya table)
+const viewMode = ref(localStorage.getItem('purchasedLeadViewMode') || 'grid')
+
+// Harita composable'ını kullan
+const { showMap, mapRoot, toggleMapVisibility, ensureZipcodesLoaded, initMap, updateMapMarkers, cleanup } = useMap('purchasedLeads')
 
 // Ayarları yükle
 async function loadSettings() {
@@ -322,6 +412,12 @@ function formatDate(dateString) {
 
 function viewLeadDetails(leadId) {
   router.push(`/lead/${leadId}`)
+}
+
+// Görünüm tipini değiştir
+function toggleViewMode() {
+  viewMode.value = viewMode.value === 'grid' ? 'table' : 'grid'
+  localStorage.setItem('purchasedLeadViewMode', viewMode.value)
 }
 
 function downloadLeadInfo(sale) {
@@ -583,6 +679,29 @@ async function downloadLeadAsPDF(sale) {
 onMounted(async () => {
   await loadSettings()
   await fetchPurchasedLeads()
+  await ensureZipcodesLoaded()
+  initMap()
+  // Satın alınan lead'ler için harita marker'larını güncelle
+  if (showMap.value) {
+    updateMapMarkers(filteredAndSortedLeads.value, settings.value, () => 'mdi:file', formatPrice)
+  }
+})
+
+// Harita güncellemelerini izle
+watch(filteredAndSortedLeads, () => {
+  if (showMap.value) {
+    updateMapMarkers(filteredAndSortedLeads.value, settings.value, () => 'mdi:file', formatPrice)
+  }
+})
+
+// Harita görünürlüğü değiştiğinde marker'ları güncelle
+watch(showMap, (newValue) => {
+  if (newValue) {
+    // Harita açıldığında marker'ları güncelle
+    setTimeout(() => {
+      updateMapMarkers(filteredAndSortedLeads.value, settings.value, () => 'mdi:file', formatPrice)
+    }, 100)
+  }
 })
 </script>
 
@@ -932,6 +1051,7 @@ onMounted(async () => {
   border: 1px solid #fed7aa;
   border-radius: 8px;
   padding: 12px;
+  margin-bottom: 1rem;
 }
 .private-title {
   font-weight: 600;
@@ -1083,6 +1203,228 @@ onMounted(async () => {
   
   .stat-value {
     font-size: 1.5rem;
+  }
+}
+
+/* Map Container */
+.map-container {
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 0;
+}
+
+.leads-map {
+  width: 100%;
+  height: 380px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  position: relative;
+  z-index: 0;
+}
+
+/* View Toggle Button */
+.view-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #64748b;
+}
+
+.view-toggle-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+/* Tablo Görünümü */
+.table-view {
+  overflow-x: auto;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.purchased-leads-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.purchased-leads-table thead {
+  background: #f8fafc;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.purchased-leads-table th {
+  padding: 16px 20px;
+  text-align: left;
+  font-weight: 600;
+  color: #475569;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.purchased-leads-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.2s ease;
+}
+
+.purchased-leads-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.purchased-leads-table td {
+  padding: 16px 20px;
+  color: #1e293b;
+  vertical-align: middle;
+}
+
+.lead-cell {
+  min-width: 300px;
+  max-width: 400px;
+}
+
+.lead-info {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.lead-title-text {
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 4px;
+  line-height: 1.3;
+  font-size: 0.9375rem;
+}
+
+.lead-description-text {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.price-cell {
+  text-align: left;
+}
+
+.purchase-price {
+  font-weight: 700;
+  color: #059669;
+  font-size: 1rem;
+}
+
+.seller-text {
+  font-size: 0.875rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+.date-text {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.table-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.table-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.table-btn.primary {
+  background: #1e293b;
+  color: white;
+}
+
+.table-btn.primary:hover {
+  background: #0f172a;
+}
+
+.table-btn.secondary {
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.table-btn.secondary:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+/* Tablo Responsive */
+@media (max-width: 1200px) {
+  .purchased-leads-table {
+    font-size: 0.8125rem;
+  }
+
+  .purchased-leads-table th,
+  .purchased-leads-table td {
+    padding: 12px 16px;
+  }
+
+  .lead-cell {
+    min-width: 250px;
+    max-width: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-view {
+    border-radius: 8px;
+  }
+
+  .purchased-leads-table {
+    font-size: 0.75rem;
+  }
+
+  .purchased-leads-table th,
+  .purchased-leads-table td {
+    padding: 10px 12px;
+  }
+
+  .lead-description-text {
+    display: none;
+  }
+
+  .table-actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .table-btn {
+    padding: 4px 8px;
+    font-size: 0.6875rem;
+  }
+
+  .view-toggle-btn {
+    padding: 10px;
   }
 }
 </style>

@@ -790,6 +790,8 @@ onMounted(() => {
   border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1.5rem;
+  margin-bottom:1.5rem
+
 }
 
 .card-header {
@@ -954,6 +956,7 @@ onMounted(() => {
   border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1.5rem;
+  margin-bottom:1.5rem;
 }
 
 .activity-list {
@@ -1066,7 +1069,7 @@ onMounted(() => {
   border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .chart-container {
@@ -1422,7 +1425,9 @@ onMounted(() => {
   border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 2.5rem;
+
 }
 
 .engagement-grid {
