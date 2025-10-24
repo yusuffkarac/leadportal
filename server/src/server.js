@@ -9,7 +9,7 @@ import http from 'http'
 import cors from 'cors'
 import { Server as SocketIOServer } from 'socket.io'
 import jwt from 'jsonwebtoken'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from './prismaClient.js'
 import { checkMaintenanceMode } from './middleware/maintenance.js'
 import { z } from 'zod'
 

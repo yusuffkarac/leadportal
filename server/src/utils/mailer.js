@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '../prismaClient.js'
 
 const prisma = new PrismaClient()
 
