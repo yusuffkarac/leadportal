@@ -571,7 +571,7 @@ onUnmounted(() => {
 .submit-bid-btn {
   width: 100%;
   padding: 16px 24px;
-  background: linear-gradient(135deg, var(--#3b82f6) 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: white;
   border: none;
   border-radius: 12px;

@@ -121,7 +121,7 @@ function showMaintenanceModal(message) {
           cursor: pointer;
           margin: 0 auto;
           transition: background-color 0.2s ease;
-        " onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='var(--#3b82f6)'">
+        " onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="23 4 23 10 17 10"/>
             <polyline points="1 20 1 14 7 14"/>

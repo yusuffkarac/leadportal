@@ -466,7 +466,7 @@ async function downloadLeadAsPDF(sale) {
     
     // Başlık - Almanca
     doc.setFontSize(20)
-    doc.setTextColor(59, 130, 246) // var(--#3b82f6)
+    doc.setTextColor(59, 130, 246) // #3b82f6
     doc.text('Lead Informationen', pageWidth / 2, yPosition, { align: 'center' })
     yPosition += 15
     
