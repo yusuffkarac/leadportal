@@ -480,12 +480,13 @@ export default function leadsRouter(prisma, io) {
       const { formId } = req.params
       
       // Formleadport API'sine istek gönder
-      const formleadportUrl = process.env.FORMLEADPORT_URL || 'http://localhost:8000'
-      const apiUrl = `${formleadportUrl}/api/form-data/${formId}/`
+      const formleadportUrl = process.env.FORMLEADPORT_URL || 'https://15935test.leadport.de'
       
+      const apiUrl = `${formleadportUrl}/api/form-data/${formId}/`
+      console.log('apiUrl:' ,apiUrl)
       // JWT token oluştur (formleadport için)
       const jwtSecret = process.env.FORMLEADPORT_JWT_SECRET || 'your-secret-key-change-this-in-production'
-      
+      console.log('jwtSecret:' ,jwtSecret)
       const token = jwt.sign(
         { 
           source: 'leadportal',
@@ -521,6 +522,7 @@ export default function leadsRouter(prisma, io) {
             error: 'Çok fazla istek gönderildi, lütfen bekleyin' 
           })
         } else {
+          console.log('response:' ,response)
           return res.status(response.status).json({ 
             success: false, 
             error: 'Formleadport API hatası' 
