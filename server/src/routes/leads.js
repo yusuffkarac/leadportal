@@ -497,12 +497,18 @@ export default function leadsRouter(prisma, io) {
       )
       
       // Formleadport'a istek gönder
+      console.log('Sending request to:', apiUrl)
+      console.log('Using token:', token.substring(0, 20) + '...')
+      
       const response = await fetch(apiUrl, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+          'User-Agent': 'LeadPortal/1.0',
+          'Accept': 'application/json'
+        },
+        timeout: 30000  // 30 saniye timeout
       })
       
       if (!response.ok) {
@@ -522,10 +528,26 @@ export default function leadsRouter(prisma, io) {
             error: 'Çok fazla istek gönderildi, lütfen bekleyin' 
           })
         } else {
-          console.log('response:' ,response)
+          console.log('API Error Response:', {
+            status: response.status,
+            statusText: response.statusText,
+            url: response.url,
+            headers: Object.fromEntries(response.headers.entries())
+          })
+          
+          // Response body'yi oku
+          let errorBody = ''
+          try {
+            errorBody = await response.text()
+            console.log('Error Response Body:', errorBody.substring(0, 500))
+          } catch (e) {
+            console.log('Could not read error response body:', e.message)
+          }
+          
           return res.status(response.status).json({ 
             success: false, 
-            error: 'Formleadport API hatası' 
+            error: `Formleadport API hatası: ${response.status} ${response.statusText}`,
+            details: errorBody.substring(0, 200)
           })
         }
       }
