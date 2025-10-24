@@ -83,6 +83,10 @@ NODE_ENV=development
 
 # CORS
 CORS_ORIGIN="http://localhost:5173"
+
+# Formleadport Integration
+FORMLEADPORT_URL="http://localhost:8000"
+FORMLEADPORT_JWT_SECRET="your-formleadport-jwt-secret-change-this"
 EOF
     echo -e "${GREEN}✅ .env dosyası oluşturuldu. Lütfen gerekli değerleri düzenleyin.${NC}"
 else

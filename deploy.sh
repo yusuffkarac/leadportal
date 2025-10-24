@@ -43,8 +43,18 @@ echo -e "${YELLOW}🔧 Environment variables kontrol ediliyor...${NC}"
 if [ ! -f .env ]; then
     echo -e "${RED}❌ .env dosyası bulunamadı!${NC}"
     echo "Lütfen .env dosyasını oluşturun ve gerekli değişkenleri ayarlayın."
+    echo "Örnek dosya: cp env.production.example .env"
     exit 1
 fi
+
+# Environment variable'ları kontrol et
+required_vars=("DATABASE_URL" "JWT_SECRET" "FORMLEADPORT_URL" "CORS_ORIGIN")
+for var in "${required_vars[@]}"; do
+    if ! grep -q "^${var}=" .env; then
+        echo -e "${RED}❌ ${var} environment variable eksik!${NC}"
+        exit 1
+    fi
+done
 echo -e "${GREEN}✅ Environment variables hazır${NC}"
 
 # 6. PM2 ile başlatma (opsiyonel)

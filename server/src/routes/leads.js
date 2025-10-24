@@ -480,7 +480,7 @@ export default function leadsRouter(prisma, io) {
       const { formId } = req.params
       
       // Formleadport API'sine istek gönder
-      const formleadportUrl ='http://localhost:8000'
+      const formleadportUrl = process.env.FORMLEADPORT_URL || 'http://localhost:8000'
       const apiUrl = `${formleadportUrl}/api/form-data/${formId}/`
       
       // JWT token oluştur (formleadport için)
