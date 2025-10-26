@@ -17,23 +17,97 @@ const users = ref([])
 const userTypes = ref([])
 const query = ref('')
 const filterUserType = ref('')
-const sortKey = ref('createdAt')
+const sortKey = ref('lastActivity')
 const sortDir = ref('desc')
+
+function setSortKey(key) {
+  if (sortKey.value === key) {
+    // Aynı kolona tıklanırsa direction'ı değiştir
+    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    // Farklı kolona tıklanırsa o kolonu seç ve asc yap
+    sortKey.value = key
+    sortDir.value = 'asc'
+  }
+}
+
+// Online kullanıcı sayısı
+const onlineCount = computed(() => users.value.filter(u => u.isOnline).length)
 
 const filteredUsers = computed(() => {
   let list = users.value.slice()
+  
+  // Deaktif kullanıcıları filtrele (sadece aktif kullanıcıları göster)
+  list = list.filter(u => u.isActive !== false)
+  
   if (query.value) {
     const q = query.value.toLowerCase()
-    list = list.filter(u => u.email.toLowerCase().includes(q))
+    list = list.filter(u =>
+      u.email.toLowerCase().includes(q) ||
+      u.firstName?.toLowerCase().includes(q) ||
+      u.lastName?.toLowerCase().includes(q) ||
+      u.username?.toLowerCase().includes(q)
+    )
   }
   if (filterUserType.value) list = list.filter(u => u.userType?.id === filterUserType.value)
   list.sort((a,b) => {
     const dir = sortDir.value === 'asc' ? 1 : -1
-    if (sortKey.value === 'email') return a.email.localeCompare(b.email) * dir
+
+    if (sortKey.value === 'status') {
+      // Online önce gelsin (true > false, 1 > 0)
+      const aOnline = a.isOnline ? 1 : 0
+      const bOnline = b.isOnline ? 1 : 0
+      return (bOnline - aOnline) * dir
+    }
+
+    if (sortKey.value === 'email') {
+      return a.email.localeCompare(b.email) * dir
+    }
+
+    if (sortKey.value === 'name') {
+      const aName = `${a.firstName || ''} ${a.lastName || ''}`.trim() || a.email
+      const bName = `${b.firstName || ''} ${b.lastName || ''}`.trim() || b.email
+      return aName.localeCompare(bName) * dir
+    }
+
+    if (sortKey.value === 'username') {
+      const aUsername = a.username || ''
+      const bUsername = b.username || ''
+      return aUsername.localeCompare(bUsername) * dir
+    }
+
+    if (sortKey.value === 'userType') {
+      const aType = a.userType?.name || ''
+      const bType = b.userType?.name || ''
+      return aType.localeCompare(bType) * dir
+    }
+
+    if (sortKey.value === 'lastActivity') {
+      const aDate = a.lastActivity ? new Date(a.lastActivity).getTime() : 0
+      const bDate = b.lastActivity ? new Date(b.lastActivity).getTime() : 0
+      return (aDate - bDate) * dir
+    }
+
+    // createdAt (default)
     return (new Date(a.createdAt) - new Date(b.createdAt)) * dir
   })
   return list
 })
+
+function formatTimeAgo(date) {
+  if (!date) return 'Hiç'
+
+  const now = new Date()
+  const diff = now - new Date(date)
+  const minutes = Math.floor(diff / 60000)
+  const hours = Math.floor(diff / 3600000)
+  const days = Math.floor(diff / 86400000)
+
+  if (minutes < 1) return 'Şimdi'
+  if (minutes < 60) return `${minutes} dk önce`
+  if (hours < 24) return `${hours} saat önce`
+  return `${days} gün önce`
+}
 
 function authHeaders() {
   const token = localStorage.getItem('token')
@@ -191,6 +265,9 @@ const resetPass = ref('')
 const showModal = ref(false)
 const modalMode = ref('create') // 'create' or 'edit'
 const editUserId = ref(null)
+const showDeleteConfirm = ref(false)
+const deleteUserId = ref(null)
+const deleteUserName = ref('')
 const passValid = computed(() => {
   const p = resetPass.value
   const long = p.length >= 8
@@ -218,18 +295,18 @@ function closeReset() {
 }
 async function confirmReset() {
   err.value = ''
-  
+
   // Frontend validation
   if (!resetPass.value.trim()) {
     error('Şifre gerekli')
     return
   }
-  
+
   if (!passValid.value.ok) {
     error('Şifre kurallara uygun değil')
     return
   }
-  
+
   try {
     await axios.put(`/api/users/${resetUserId.value}/password`, { password: resetPass.value }, { headers: authHeaders() })
     showReset.value = false
@@ -237,7 +314,7 @@ async function confirmReset() {
   } catch (e) {
     const status = e?.response?.status
     const serverError = e?.response?.data?.error
-    
+
     if (serverError) {
       error(serverError)
     } else if (status === 403) {
@@ -256,9 +333,89 @@ async function confirmReset() {
   }
 }
 
+function openDeleteConfirm(user) {
+  deleteUserId.value = user.id
+  deleteUserName.value = user.firstName && user.lastName
+    ? `${user.firstName} ${user.lastName}`
+    : user.email
+  showDeleteConfirm.value = true
+}
+
+function closeDeleteConfirm() {
+  showDeleteConfirm.value = false
+  deleteUserId.value = null
+  deleteUserName.value = ''
+}
+
+async function adminDisable2FA(userId) {
+  if (!confirm('Bu kullanıcının 2FA korumasını devre dışı bırakmak istediğinize emin misiniz?')) {
+    return
+  }
+
+  try {
+    await axios.delete(`/api/2fa/admin/${userId}`, { headers: authHeaders() })
+    success('Kullanıcının 2FA\'sı başarıyla devre dışı bırakıldı')
+    loadUsers()
+    // Modalı kapatıp tekrar aç, güncel veriyi görmek için
+    const currentUserId = editUserId.value
+    closeModal()
+    setTimeout(() => {
+      const user = users.value.find(u => u.id === currentUserId)
+      if (user) openEditUser(user)
+    }, 100)
+  } catch (e) {
+    const serverError = e?.response?.data?.error
+    if (serverError) {
+      error(serverError)
+    } else {
+      error('2FA devre dışı bırakılırken hata oluştu')
+    }
+  }
+}
+
+async function confirmDelete() {
+  try {
+    await axios.put(`/api/users/${deleteUserId.value}/deactivate`, {}, { headers: authHeaders() })
+    success('Kullanıcı başarıyla silindi')
+    closeDeleteConfirm()
+    closeModal()
+    loadUsers()
+  } catch (e) {
+    const status = e?.response?.status
+    const serverError = e?.response?.data?.error
+
+    if (serverError) {
+      error(serverError)
+    } else if (status === 403) {
+      error('Bu işlem için yetkiniz yok')
+    } else if (status === 400) {
+      error('Kendinizi silemezsiniz')
+    } else if (status === 404) {
+      error('Kullanıcı bulunamadı')
+    } else if (status === 500) {
+      error('Sunucu hatası oluştu')
+    } else if (status === 0 || !status) {
+      error('Sunucuya bağlanılamıyor')
+    } else {
+      error('Kullanıcı silinemedi')
+    }
+  }
+}
+
+// Her 30 saniyede bir otomatik yenile (online durumları güncel tutmak için)
+let refreshInterval
 onMounted(() => {
   loadUsers()
   loadUserTypes()
+  refreshInterval = setInterval(loadUsers, 30000)
+})
+
+// Component unmount olduğunda interval'i temizle
+import { onUnmounted } from 'vue'
+onUnmounted(() => {
+  if (refreshInterval) {
+    clearInterval(refreshInterval)
+  }
 })
 </script>
 <template>
@@ -268,7 +425,13 @@ onMounted(() => {
       <div class="page-header">
         <div class="header-content">
           <h1>Kullanıcılar</h1>
-          <p class="page-subtitle">{{ filteredUsers.length }} kullanıcı</p>
+          <div class="header-stats">
+            <p class="page-subtitle">{{ filteredUsers.length }} kullanıcı</p>
+            <div class="online-indicator-badge">
+              <span class="online-dot"></span>
+              <span>{{ onlineCount }} online</span>
+            </div>
+          </div>
         </div>
         <button class="btn btn-primary" @click="openNewUser">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -282,10 +445,10 @@ onMounted(() => {
       <!-- Filters -->
       <div class="filters-section">
         <div class="filter-group">
-          <input 
-            class="filter-input" 
-            v-model="query" 
-            placeholder="Email ile ara..." 
+          <input
+            class="filter-input"
+            v-model="query"
+            placeholder="Email, ad veya kullanıcı adı ile ara..."
             type="text"
           />
         </div>
@@ -295,18 +458,6 @@ onMounted(() => {
             <option v-for="userType in userTypes" :key="userType.id" :value="userType.id">
               {{ userType.name }}
             </option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <select class="filter-select" v-model="sortKey">
-            <option value="createdAt">Tarihe Göre</option>
-            <option value="email">Email'e Göre</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <select class="filter-select" v-model="sortDir">
-            <option value="desc">Azalan</option>
-            <option value="asc">Artan</option>
           </select>
         </div>
       </div>
@@ -326,18 +477,58 @@ onMounted(() => {
       </div>
       
       <div v-else class="users-container">
-        <div class="users-table">
+        <!-- Desktop Table View -->
+        <div class="users-table desktop-only">
           <div class="table-header">
-            <div class="header-cell">Kullanıcı</div>
-            <div class="header-cell">Email</div>
-            <div class="header-cell">Kullanıcı Adı</div>
-            <div class="header-cell">Tip</div>
-            <div class="header-cell">Kayıt Tarihi</div>
+            <div class="header-cell status-col sortable" @click="setSortKey('status')">
+              <span>Durum</span>
+              <svg v-if="sortKey === 'status'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ 'rotate-180': sortDir === 'desc' }">
+                <polyline points="18 15 12 9 6 15"/>
+              </svg>
+            </div>
+            <div class="header-cell sortable" @click="setSortKey('name')">
+              <span>Kullanıcı</span>
+              <svg v-if="sortKey === 'name'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ 'rotate-180': sortDir === 'desc' }">
+                <polyline points="18 15 12 9 6 15"/>
+              </svg>
+            </div>
+            <div class="header-cell sortable" @click="setSortKey('email')">
+              <span>Email</span>
+              <svg v-if="sortKey === 'email'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ 'rotate-180': sortDir === 'desc' }">
+                <polyline points="18 15 12 9 6 15"/>
+              </svg>
+            </div>
+            <div class="header-cell sortable" @click="setSortKey('username')">
+              <span>Kullanıcı Adı</span>
+              <svg v-if="sortKey === 'username'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ 'rotate-180': sortDir === 'desc' }">
+                <polyline points="18 15 12 9 6 15"/>
+              </svg>
+            </div>
+            <div class="header-cell sortable" @click="setSortKey('userType')">
+              <span>Tip</span>
+              <svg v-if="sortKey === 'userType'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ 'rotate-180': sortDir === 'desc' }">
+                <polyline points="18 15 12 9 6 15"/>
+              </svg>
+            </div>
+            <div class="header-cell sortable" @click="setSortKey('lastActivity')">
+              <span>Son Aktivite</span>
+              <svg v-if="sortKey === 'lastActivity'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ 'rotate-180': sortDir === 'desc' }">
+                <polyline points="18 15 12 9 6 15"/>
+              </svg>
+            </div>
+            <div class="header-cell">2FA</div>
             <div class="header-cell actions">İşlemler</div>
           </div>
-          
+
           <div class="table-body">
             <div class="table-row" v-for="u in filteredUsers" :key="u.id">
+              <div class="table-cell status-col">
+                <span
+                  class="status-indicator"
+                  :class="{ 'online': u.isOnline, 'offline': !u.isOnline }"
+                  :title="u.isOnline ? 'Online' : 'Offline'"
+                ></span>
+              </div>
               <div class="table-cell user-info">
                 <div class="user-avatar">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -354,11 +545,11 @@ onMounted(() => {
                   </div>
                 </div>
               </div>
-              
+
               <div class="table-cell">
                 <div class="email-cell">{{ u.email }}</div>
               </div>
-              
+
               <div class="table-cell">
                 <div class="username-cell" v-if="u.username">
                   <span class="username-badge">@{{ u.username }}</span>
@@ -367,19 +558,38 @@ onMounted(() => {
                   <span class="no-username">-</span>
                 </div>
               </div>
-              
+
               <div class="table-cell">
                 <span class="user-type-badge" :class="'type-' + (u.userType?.id || 'none')">
                   {{ u.userType?.name || 'Tip Yok' }}
                 </span>
               </div>
-              
+
               <div class="table-cell">
-                <div class="date-cell">
-                  {{ new Date(u.createdAt).toLocaleDateString('tr-TR') }}
+                <div class="activity-cell">
+                  <span class="activity-time">{{ formatTimeAgo(u.lastActivity) }}</span>
                 </div>
               </div>
-              
+
+              <div class="table-cell">
+                <div class="twofa-cell">
+                  <span v-if="u.twoFactorEnabled" class="twofa-badge enabled" title="2FA Aktif">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                      <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    Aktif
+                  </span>
+                  <span v-else class="twofa-badge disabled" title="2FA Kapalı">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="18" y1="6" x2="6" y2="18"/>
+                      <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                    Kapalı
+                  </span>
+                </div>
+              </div>
+
               <div class="table-cell actions">
                 <div class="action-buttons">
                   <button class="action-btn edit-btn" @click="openEditUser(u)" title="Düzenle">
@@ -389,6 +599,81 @@ onMounted(() => {
                     </svg>
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="users-cards mobile-only">
+          <div class="user-card" v-for="u in filteredUsers" :key="u.id">
+            <div class="card-header">
+              <div class="card-user-info">
+                <div class="user-avatar">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                </div>
+                <div class="card-user-details">
+                  <div class="card-user-name" v-if="u.firstName || u.lastName">
+                    {{ u.firstName }} {{ u.lastName }}
+                  </div>
+                  <div class="card-user-name-placeholder" v-else>
+                    İsim belirtilmemiş
+                  </div>
+                  <div class="card-user-email">{{ u.email }}</div>
+                </div>
+              </div>
+              <div class="card-header-actions">
+                <span
+                  class="status-indicator"
+                  :class="{ 'online': u.isOnline, 'offline': !u.isOnline }"
+                  :title="u.isOnline ? 'Online' : 'Offline'"
+                ></span>
+                <button class="card-edit-btn" @click="openEditUser(u)" title="Düzenle">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="card-info-row" v-if="u.username">
+                <span class="card-label">Kullanıcı Adı:</span>
+                <span class="username-badge">@{{ u.username }}</span>
+              </div>
+
+              <div class="card-info-row">
+                <span class="card-label">Tip:</span>
+                <span class="user-type-badge" :class="'type-' + (u.userType?.id || 'none')">
+                  {{ u.userType?.name || 'Tip Yok' }}
+                </span>
+              </div>
+
+              <div class="card-info-row">
+                <span class="card-label">Son Aktivite:</span>
+                <span class="card-value">{{ formatTimeAgo(u.lastActivity) }}</span>
+              </div>
+
+              <div class="card-info-row">
+                <span class="card-label">2FA:</span>
+                <span v-if="u.twoFactorEnabled" class="twofa-badge enabled">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                  Aktif
+                </span>
+                <span v-else class="twofa-badge disabled">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                  Kapalı
+                </span>
               </div>
             </div>
           </div>
@@ -471,6 +756,75 @@ onMounted(() => {
             <button type="submit" class="btn btn-primary">{{ modalMode === 'create' ? 'Oluştur' : 'Güncelle' }}</button>
           </div>
         </form>
+
+        <!-- Danger Zone - Sadece edit modunda göster -->
+        <div v-if="modalMode === 'edit'" class="danger-zone">
+          <div class="danger-zone-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <h4>Tehlikeli Bölge</h4>
+          </div>
+
+          <!-- 2FA Disable -->
+          <div v-if="users.find(u => u.id === editUserId)?.twoFactorEnabled" class="danger-zone-section">
+            <p class="danger-zone-description">Kullanıcının 2FA korumasını devre dışı bırakabilirsiniz (cihaz kaybı durumunda).</p>
+            <button type="button" class="btn btn-warning" @click="adminDisable2FA(editUserId)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                <line x1="9" y1="16" x2="15" y2="16"/>
+              </svg>
+              2FA'yı Devre Dışı Bırak
+            </button>
+          </div>
+
+          <!-- Delete User -->
+          <div class="danger-zone-section">
+            <p class="danger-zone-description">Bu kullanıcıyı kalıcı olarak silebilirsiniz. Bu işlem geri alınamaz.</p>
+            <button type="button" class="btn btn-danger" @click="openDeleteConfirm(users.find(u => u.id === editUserId))">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                <line x1="10" y1="11" x2="10" y2="17"/>
+                <line x1="14" y1="11" x2="14" y2="17"/>
+              </svg>
+              Kullanıcıyı Sil
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kullanıcı Silme Onay Modal -->
+    <div v-if="showDeleteConfirm" class="modal-backdrop">
+      <div class="modal delete-modal">
+        <div class="delete-modal-header">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <h3>Kullanıcıyı Sil</h3>
+        <p class="delete-warning">
+          <strong>{{ deleteUserName }}</strong> kullanıcısını silmek üzeresiniz.
+          Bu işlem geri alınamaz ve kullanıcının tüm verileri silinecektir.
+        </p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" @click="closeDeleteConfirm">İptal</button>
+          <button type="button" class="btn btn-danger" @click="confirmDelete">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              <line x1="10" y1="11" x2="10" y2="17"/>
+              <line x1="14" y1="11" x2="14" y2="17"/>
+            </svg>
+            Evet, Sil
+          </button>
+        </div>
       </div>
     </div>
 
@@ -611,6 +965,15 @@ onMounted(() => {
 }
 
 .users-container {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.users-table {
+  width: 100%;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -618,13 +981,9 @@ onMounted(() => {
   overflow: hidden;
 }
 
-.users-table {
-  width: 100%;
-}
-
 .table-header {
   display: grid;
-  grid-template-columns: 2fr 2fr 1.5fr 1.5fr 1.5fr 120px;
+  grid-template-columns: 50px 2fr 2fr 1.5fr 1.5fr 1.5fr 100px 120px;
   gap: 1rem;
   padding: 20px;
   background: var(--bg);
@@ -636,13 +995,35 @@ onMounted(() => {
   letter-spacing: 0.05em;
 }
 
+.header-cell.sortable {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s;
+}
+
+.header-cell.sortable:hover {
+  color: var(--primary);
+}
+
+.header-cell.sortable svg {
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.header-cell.sortable svg.rotate-180 {
+  transform: rotate(180deg);
+}
+
 .table-body {
   background: var(--panel);
 }
 
 .table-row {
   display: grid;
-  grid-template-columns: 2fr 2fr 1.5fr 1.5fr 1.5fr 120px;
+  grid-template-columns: 50px 2fr 2fr 1.5fr 1.5fr 1.5fr 100px 120px;
   gap: 1rem;
   padding: 20px;
   border-bottom: 1px solid var(--border);
@@ -755,6 +1136,85 @@ onMounted(() => {
 .date-cell {
   color: var(--muted);
   font-size: 0.875rem;
+}
+
+.activity-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.activity-time {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.875rem;
+}
+
+.status-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.status-col.sortable {
+  justify-content: flex-start;
+}
+
+.status-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-indicator.online {
+  background: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+  animation: pulse 2s infinite;
+}
+
+.status-indicator.offline {
+  background: #94a3b8;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+.header-stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.online-indicator-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #047857;
+}
+
+.online-dot {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
 }
 
 .action-buttons {
@@ -927,119 +1387,343 @@ onMounted(() => {
   border-top: 1px solid var(--border);
 }
 
-@media (max-width: 1024px) {
-  .table-header,
-  .table-row {
-    grid-template-columns: 1fr 1fr 1fr 100px;
-  }
-  
-  .table-header .header-cell:nth-child(3),
-  .table-header .header-cell:nth-child(5),
-  .table-row .table-cell:nth-child(3),
-  .table-row .table-cell:nth-child(5) {
-    display: none;
-  }
+.danger-zone {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border: 2px solid #fecaca;
+  border-radius: 8px;
+  background: #fef2f2;
+}
+
+.danger-zone-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  color: #dc2626;
+}
+
+.danger-zone-header svg {
+  flex-shrink: 0;
+}
+
+.danger-zone-header h4 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.danger-zone-section {
+  margin-bottom: 1.5rem;
+}
+
+.danger-zone-section:last-child {
+  margin-bottom: 0;
+}
+
+.danger-zone-description {
+  margin: 0 0 1rem 0;
+  color: #7f1d1d;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: white;
+  border: 1px solid #dc2626;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+
+.btn-warning {
+  background: #f59e0b;
+  color: white;
+  border: 1px solid #f59e0b;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-warning:hover {
+  background: #d97706;
+  border-color: #d97706;
+}
+
+.delete-modal {
+  text-align: center;
+}
+
+.delete-modal-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+  color: #dc2626;
+}
+
+.delete-modal h3 {
+  color: #1f2937;
+}
+
+.delete-warning {
+  margin: 1rem 0 2rem 0;
+  padding: 1rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #7f1d1d;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.delete-warning strong {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* Desktop/Mobile Toggle */
+.desktop-only {
+  display: block;
+}
+
+.mobile-only {
+  display: none;
+}
+
+/* Mobile Card View */
+.users-cards {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+}
+
+.user-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.2s;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.card-edit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text);
+}
+
+.card-edit-btn:hover {
+  background: var(--panel);
+  border-color: var(--text);
+  transform: translateY(-1px);
+}
+
+.card-user-info {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.card-user-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-user-name {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.card-user-name-placeholder {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 0.875rem;
+  margin-bottom: 4px;
+}
+
+.card-user-email {
+  color: var(--muted);
+  font-size: 0.875rem;
+  word-break: break-word;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-info-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.card-label {
+  font-size: 0.875rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.card-value {
+  font-size: 0.875rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* 2FA Badge Styles */
+.twofa-cell {
+  display: flex;
+  align-items: center;
+}
+
+.twofa-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.twofa-badge.enabled {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.twofa-badge.enabled svg {
+  color: #10b981;
+}
+
+.twofa-badge.disabled {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+
+.twofa-badge.disabled svg {
+  color: #9ca3af;
 }
 
 @media (max-width: 768px) {
   .admin-user-new-view {
     padding: 0;
   }
-  
+
   .page-content {
-    padding: 16px;
+    padding: 12px;
     margin: 0;
     max-width: 100%;
     width: 100%;
     box-sizing: border-box;
   }
-  
+
   .page-header {
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     align-items: stretch;
     text-align: left;
+    margin-bottom: 16px;
   }
-  
+
   .page-header .btn {
     width: 100%;
     justify-content: center;
   }
-  
+
   .filters-section {
     flex-direction: column;
     gap: 8px;
+    margin-bottom: 12px;
   }
-  
+
   .filter-group {
     min-width: auto;
   }
-  
-  .users-container {
-    margin: 0 -16px;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
+
+  /* Toggle desktop/mobile views */
+  .desktop-only {
+    display: none !important;
   }
-  
-  .table-header,
-  .table-row {
-    grid-template-columns: 1fr 80px;
-    padding: 16px;
-    gap: 16px;
+
+  .mobile-only {
+    display: block !important;
   }
-  
-  .table-header .header-cell:nth-child(2),
-  .table-header .header-cell:nth-child(3),
-  .table-header .header-cell:nth-child(4),
-  .table-header .header-cell:nth-child(5),
-  .table-row .table-cell:nth-child(2),
-  .table-row .table-cell:nth-child(3),
-  .table-row .table-cell:nth-child(4),
-  .table-row .table-cell:nth-child(5) {
-    display: none;
-  }
-  
-  .user-info {
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
+
+  .users-cards {
+    display: flex !important;
+    flex-direction: column;
+    gap: 10px;
     width: 100%;
+    margin: 0;
+    padding: 0;
   }
-  
-  .user-avatar {
+
+  .user-card {
+    padding: 12px;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .card-header {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+  }
+
+  .card-body {
+    gap: 8px;
+  }
+
+  .users-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .card-edit-btn {
     width: 32px;
     height: 32px;
-    flex-shrink: 0;
   }
-  
-  .user-details {
-    flex: 1;
-    min-width: 0;
-  }
-  
-  .user-name {
-    font-size: 0.875rem;
-    margin-bottom: 2px;
-  }
-  
-  .user-name-placeholder {
-    font-size: 0.875rem;
-    margin-bottom: 2px;
-  }
-  
-  .action-buttons {
-    flex-direction: column;
-    gap: 4px;
-    width: 80px;
-    align-items: stretch;
-  }
-  
-  .action-btn {
-    width: 100%;
-    justify-content: center;
-    padding: 8px 4px;
-    font-size: 0.75rem;
+
+  .card-edit-btn svg {
+    width: 16px;
+    height: 16px;
   }
   
   .form-row {
@@ -1096,7 +1780,7 @@ onMounted(() => {
   }
   
   .modal-backdrop {
-    padding: 0;
+    padding: 5%;
     align-items: stretch;
     justify-content: stretch;
   }

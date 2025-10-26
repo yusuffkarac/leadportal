@@ -5,6 +5,10 @@ import { z } from 'zod'
 import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
+import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activityLogger.js'
+import speakeasy from 'speakeasy'
+import crypto from 'crypto'
+import { sendPasswordResetEmail } from '../utils/emailSender.js'
 
 const registerSchema = z.object({
   email: z.string().email(),
@@ -13,7 +17,8 @@ const registerSchema = z.object({
 
 const loginSchema = z.object({
   emailOrUsername: z.string().min(1),
-  password: z.string().min(6)
+  password: z.string().min(6),
+  twoFactorCode: z.string().optional()
 })
 
 const updateProfileSchema = z.object({
@@ -83,11 +88,11 @@ export default function authRouter(prisma) {
   router.post('/login', async (req, res) => {
     const parse = loginSchema.safeParse(req.body)
     if (!parse.success) return res.status(400).json({ error: 'Invalid input' })
-    const { emailOrUsername, password } = parse.data
-    
+    const { emailOrUsername, password, twoFactorCode } = parse.data
+
     // Email veya username ile kullanıcıyı bul
-    const user = await prisma.user.findFirst({ 
-      where: { 
+    const user = await prisma.user.findFirst({
+      where: {
         OR: [
           { email: emailOrUsername },
           { username: emailOrUsername }
@@ -96,16 +101,60 @@ export default function authRouter(prisma) {
       include: { userType: true }
     })
     if (!user) return res.status(401).json({ error: 'Invalid credentials' })
+    
+    // Deaktif kullanıcı kontrolü
+    if (user.isActive === false) {
+      return res.status(401).json({ error: 'Hesabınız deaktif edilmiştir' })
+    }
+    
     const ok = await bcrypt.compare(password, user.passwordHash)
     if (!ok) return res.status(401).json({ error: 'Invalid credentials' })
+
+    // 2FA kontrolü
+    if (user.twoFactorEnabled) {
+      // 2FA kodu gönderilmemişse, 2FA gerekli olduğunu bildir
+      if (!twoFactorCode) {
+        return res.status(200).json({
+          requires2FA: true,
+          message: '2FA kodu gerekli'
+        })
+      }
+
+      // 2FA kodunu doğrula
+      if (!user.twoFactorSecret) {
+        return res.status(500).json({ error: '2FA yapılandırması hatalı' })
+      }
+
+      const verified = speakeasy.totp.verify({
+        secret: user.twoFactorSecret,
+        encoding: 'base32',
+        token: twoFactorCode,
+        window: 2
+      })
+
+      if (!verified) {
+        return res.status(401).json({ error: 'Geçersiz 2FA kodu' })
+      }
+    }
+
+    // Login activity log
+    const { ipAddress, userAgent } = extractRequestInfo(req)
+    await logActivity({
+      userId: user.id,
+      action: ActivityTypes.LOGIN,
+      details: { method: user.twoFactorEnabled ? '2fa' : 'password', identifier: emailOrUsername },
+      ipAddress,
+      userAgent
+    })
+
     const token = jwt.sign({ id: user.id, email: user.email, userTypeId: user.userTypeId }, process.env.JWT_SECRET, { expiresIn: '7d' })
-    res.json({ 
-      token, 
-      user: { 
-        id: user.id, 
-        email: user.email, 
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
         userType: user.userType
-      } 
+      }
     })
   })
 
@@ -122,6 +171,10 @@ export default function authRouter(prisma) {
       })
       
       if (!user) return res.status(404).json({ error: 'Kullanıcı bulunamadı' })
+      
+      if (user.isActive === false) {
+        return res.status(401).json({ error: 'Hesabınız deaktif edilmiştir' })
+      }
       
       res.json({ user, userType: user.userType })
     } catch (error) {
@@ -261,30 +314,193 @@ export default function authRouter(prisma) {
     try {
       const token = req.headers.authorization?.replace('Bearer ', '')
       if (!token) return res.status(401).json({ error: 'Token gerekli' })
-      
+
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
-      
+
       const user = await prisma.user.findUnique({
         where: { id: decoded.id },
         select: { profileImage: true }
       })
-      
+
       if (user?.profileImage) {
         const imagePath = user.profileImage.replace('/uploads/profile-images/', 'uploads/profile-images/')
         if (fs.existsSync(imagePath)) {
           fs.unlinkSync(imagePath)
         }
       }
-      
+
       await prisma.user.update({
         where: { id: decoded.id },
         data: { profileImage: null }
       })
-      
+
       res.json({ message: 'Profil fotoğrafı kaldırıldı' })
     } catch (error) {
       console.error('Profil fotoğrafı kaldırma hatası:', error)
       res.status(500).json({ error: 'Fotoğraf kaldırılırken hata oluştu' })
+    }
+  })
+
+  // Şifre sıfırlama talebi (email gönder)
+  router.post('/forgot-password', async (req, res) => {
+    try {
+      const { email } = req.body
+
+      if (!email) {
+        return res.status(400).json({ error: 'Email adresi gerekli' })
+      }
+
+      // Kullanıcıyı bul
+      const user = await prisma.user.findUnique({
+        where: { email }
+      })
+
+      // Güvenlik için kullanıcı bulunamasa bile başarılı mesajı döndür
+      if (!user) {
+        return res.json({ message: 'Eğer bu email adresine kayıtlı bir hesap varsa, şifre sıfırlama linki gönderildi.' })
+      }
+
+      // Deaktif kullanıcı kontrolü
+      if (user.isActive === false) {
+        return res.json({ message: 'Eğer bu email adresine kayıtlı bir hesap varsa, şifre sıfırlama linki gönderildi.' })
+      }
+
+      // Eski kullanılmamış token'ları sil
+      await prisma.passwordResetToken.deleteMany({
+        where: {
+          userId: user.id,
+          used: false
+        }
+      })
+
+      // Yeni token oluştur
+      const resetToken = crypto.randomBytes(32).toString('hex')
+      const expiresAt = new Date(Date.now() + 3600000) // 1 saat
+
+      await prisma.passwordResetToken.create({
+        data: {
+          userId: user.id,
+          token: resetToken,
+          expiresAt
+        }
+      })
+
+      // Email gönder
+      const userName = user.firstName || user.username || null
+      const emailResult = await sendPasswordResetEmail({
+        email: user.email,
+        resetToken,
+        userName
+      })
+
+      if (!emailResult.success) {
+        console.error('Password reset email failed:', emailResult.error)
+        return res.status(500).json({ error: 'Email gönderilemedi. Lütfen daha sonra tekrar deneyin.' })
+      }
+
+      res.json({ message: 'Şifre sıfırlama linki email adresinize gönderildi3.', emailResult: emailResult.messageId })
+    } catch (error) {
+      console.error('Forgot password error:', error)
+      res.status(500).json({ error: 'Bir hata oluştu. Lütfen daha sonra tekrar deneyin.' })
+    }
+  })
+
+  // Şifre sıfırlama token doğrulama
+  router.get('/verify-reset-token/:token', async (req, res) => {
+    try {
+      const { token } = req.params
+
+      const resetToken = await prisma.passwordResetToken.findUnique({
+        where: { token },
+        include: { user: true }
+      })
+
+      if (!resetToken) {
+        return res.status(400).json({ error: 'Geçersiz veya süresi dolmuş token' })
+      }
+
+      if (resetToken.used) {
+        return res.status(400).json({ error: 'Bu token daha önce kullanılmış' })
+      }
+
+      if (new Date() > resetToken.expiresAt) {
+        return res.status(400).json({ error: 'Token süresi dolmuş' })
+      }
+
+      if (resetToken.user.isActive === false) {
+        return res.status(400).json({ error: 'Hesap deaktif edilmiş' })
+      }
+
+      res.json({ valid: true, email: resetToken.user.email })
+    } catch (error) {
+      console.error('Verify reset token error:', error)
+      res.status(500).json({ error: 'Token doğrulanamadı' })
+    }
+  })
+
+  // Şifre sıfırlama (yeni şifre belirleme)
+  router.post('/reset-password', async (req, res) => {
+    try {
+      const { token, newPassword } = req.body
+
+      if (!token || !newPassword) {
+        return res.status(400).json({ error: 'Token ve yeni şifre gerekli' })
+      }
+
+      if (newPassword.length < 6) {
+        return res.status(400).json({ error: 'Şifre en az 6 karakter olmalıdır' })
+      }
+
+      const resetToken = await prisma.passwordResetToken.findUnique({
+        where: { token },
+        include: { user: true }
+      })
+
+      if (!resetToken) {
+        return res.status(400).json({ error: 'Geçersiz veya süresi dolmuş token' })
+      }
+
+      if (resetToken.used) {
+        return res.status(400).json({ error: 'Bu token daha önce kullanılmış' })
+      }
+
+      if (new Date() > resetToken.expiresAt) {
+        return res.status(400).json({ error: 'Token süresi dolmuş' })
+      }
+
+      if (resetToken.user.isActive === false) {
+        return res.status(400).json({ error: 'Hesap deaktif edilmiş' })
+      }
+
+      // Yeni şifreyi hashle
+      const passwordHash = await bcrypt.hash(newPassword, 10)
+
+      // Şifreyi güncelle
+      await prisma.user.update({
+        where: { id: resetToken.userId },
+        data: { passwordHash }
+      })
+
+      // Token'ı kullanılmış olarak işaretle
+      await prisma.passwordResetToken.update({
+        where: { id: resetToken.id },
+        data: { used: true }
+      })
+
+      // Activity log
+      const { ipAddress, userAgent } = extractRequestInfo(req)
+      await logActivity({
+        userId: resetToken.userId,
+        action: 'PASSWORD_RESET',
+        details: { method: 'email_reset' },
+        ipAddress,
+        userAgent
+      })
+
+      res.json({ message: 'Şifreniz başarıyla değiştirildi. Şimdi giriş yapabilirsiniz.' })
+    } catch (error) {
+      console.error('Reset password error:', error)
+      res.status(500).json({ error: 'Şifre sıfırlanamadı. Lütfen daha sonra tekrar deneyin.' })
     }
   })
 

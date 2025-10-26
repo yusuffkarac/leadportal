@@ -532,6 +532,60 @@ onMounted(() => {
         </div>
       </div>
 
+      <!-- Kullanıcı Aktivite İstatistikleri -->
+      <div v-if="statistics.userActivity" class="activity-stats-section">
+        <div class="card-header">
+          <h2>Son Kullanıcı Aktiviteleri</h2>
+          <span class="subtitle">En son aktif olan kullanıcılar ve online durum</span>
+        </div>
+
+        <div class="online-stats">
+          <div class="online-badge">
+            <span class="online-indicator"></span>
+            <span class="online-text">{{ statistics.userActivity.onlineUsers }} kullanıcı şu anda online</span>
+          </div>
+        </div>
+
+        <div class="user-activity-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Durum</th>
+                <th>Kullanıcı</th>
+                <th>Son Aktivite</th>
+                <th>IP Adresi</th>
+                <th>Cihaz</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="user in statistics.userActivity.recentActiveUsers" :key="user.id">
+                <td>
+                  <span class="status-dot" :class="{ 'online': user.isOnline, 'offline': !user.isOnline }"></span>
+                </td>
+                <td>
+                  <div class="user-cell">
+                    <span class="user-name">{{ user.name }}</span>
+                    <span class="user-email">{{ user.email }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="activity-time">{{ user.lastActivityFormatted }}</span>
+                </td>
+                <td>
+                  <span class="ip-address">{{ user.lastIP }}</span>
+                </td>
+                <td>
+                  <span class="device-info">{{ user.deviceInfo }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div v-if="!statistics.userActivity.recentActiveUsers || statistics.userActivity.recentActiveUsers.length === 0" class="empty-state">
+            <p>Henüz aktivite verisi bulunmuyor.</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Kullanıcı Engagement -->
       <div v-if="statistics.userEngagement" class="engagement-section">
         <div class="card-header">
@@ -1568,6 +1622,158 @@ onMounted(() => {
 
   .chart-container {
     height: 300px;
+  }
+}
+
+/* Kullanıcı Aktivite Bölümü */
+.activity-stats-section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.online-stats {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--bg);
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.online-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--panel);
+  border: 2px solid #dcfce7;
+  border-radius: 999px;
+}
+
+.online-indicator {
+  width: 12px;
+  height: 12px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+.online-text {
+  font-weight: 600;
+  color: #047857;
+  font-size: 1rem;
+}
+
+.user-activity-table {
+  overflow-x: auto;
+}
+
+.user-activity-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.user-activity-table th {
+  text-align: left;
+  padding: 0.75rem;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-bottom: 2px solid var(--border);
+}
+
+.user-activity-table td {
+  padding: 1rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.user-activity-table tr:hover {
+  background: var(--bg);
+}
+
+.user-activity-table tr:last-child td {
+  border-bottom: none;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+.status-dot.online {
+  background: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+  animation: pulse 2s infinite;
+}
+
+.status-dot.offline {
+  background: #94a3b8;
+}
+
+.user-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.user-email {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.activity-time {
+  font-size: 0.875rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.ip-address {
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  color: var(--muted);
+  background: var(--bg);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.device-info {
+  font-size: 0.875rem;
+  color: var(--text);
+}
+
+@media (max-width: 768px) {
+  .user-activity-table {
+    font-size: 0.875rem;
+  }
+
+  .user-activity-table th,
+  .user-activity-table td {
+    padding: 0.5rem;
   }
 }
 </style>

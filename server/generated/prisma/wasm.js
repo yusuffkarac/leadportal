@@ -5,13 +5,28 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 
 const {
+  PrismaClientKnownRequestError,
+  PrismaClientUnknownRequestError,
+  PrismaClientRustPanicError,
+  PrismaClientInitializationError,
+  PrismaClientValidationError,
+  getPrismaClient,
+  sqltag,
+  empty,
+  join,
+  raw,
+  skip,
   Decimal,
+  Debug,
   objectEnumValues,
   makeStrictEnum,
+  Extensions,
+  warnOnce,
+  defineDmmfProperty,
   Public,
   getRuntime,
-  skip
-} = require('./runtime/index-browser.js')
+  createParam,
+} = require('./runtime/wasm-engine-edge.js')
 
 
 const Prisma = {}
@@ -20,79 +35,35 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.15.0
- * Query Engine version: 85179d7826409ee107a6ba334b5e305ae3fba9fb
+ * Prisma Client JS version: 6.17.1
+ * Query Engine version: 272a37d34178c2894197e17273bf937f25acdeac
  */
 Prisma.prismaVersion = {
-  client: "6.15.0",
-  engine: "85179d7826409ee107a6ba334b5e305ae3fba9fb"
+  client: "6.17.1",
+  engine: "272a37d34178c2894197e17273bf937f25acdeac"
 }
 
-Prisma.PrismaClientKnownRequestError = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`PrismaClientKnownRequestError is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)};
-Prisma.PrismaClientUnknownRequestError = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`PrismaClientUnknownRequestError is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.PrismaClientRustPanicError = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`PrismaClientRustPanicError is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.PrismaClientInitializationError = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`PrismaClientInitializationError is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.PrismaClientValidationError = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`PrismaClientValidationError is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
+Prisma.PrismaClientKnownRequestError = PrismaClientKnownRequestError;
+Prisma.PrismaClientUnknownRequestError = PrismaClientUnknownRequestError
+Prisma.PrismaClientRustPanicError = PrismaClientRustPanicError
+Prisma.PrismaClientInitializationError = PrismaClientInitializationError
+Prisma.PrismaClientValidationError = PrismaClientValidationError
 Prisma.Decimal = Decimal
 
 /**
  * Re-export of sql-template-tag
  */
-Prisma.sql = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`sqltag is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.empty = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`empty is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.join = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`join is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.raw = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`raw is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
+Prisma.sql = sqltag
+Prisma.empty = empty
+Prisma.join = join
+Prisma.raw = raw
 Prisma.validator = Public.validator
 
 /**
 * Extensions
 */
-Prisma.getExtensionContext = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`Extensions.getExtensionContext is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.defineExtension = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`Extensions.defineExtension is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
+Prisma.getExtensionContext = Extensions.getExtensionContext
+Prisma.defineExtension = Extensions.defineExtension
 
 /**
  * Shorthand utilities for JSON filtering
@@ -109,10 +80,11 @@ Prisma.NullTypes = {
 
 
 
+
+
 /**
  * Enums
  */
-
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   ReadUncommitted: 'ReadUncommitted',
   ReadCommitted: 'ReadCommitted',
@@ -124,21 +96,35 @@ exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
   passwordHash: 'passwordHash',
-  role: 'role',
   userTypeId: 'userTypeId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  username: 'username',
+  profileImage: 'profileImage',
+  lastActivity: 'lastActivity',
+  lastIP: 'lastIP',
+  lastUserAgent: 'lastUserAgent',
+  twoFactorEnabled: 'twoFactorEnabled',
+  twoFactorSecret: 'twoFactorSecret',
+  isActive: 'isActive'
 };
 
 exports.Prisma.LeadScalarFieldEnum = {
   id: 'id',
   title: 'title',
   description: 'description',
+  privateDetails: 'privateDetails',
+  postalCode: 'postalCode',
   startPrice: 'startPrice',
   minIncrement: 'minIncrement',
   instantBuyPrice: 'instantBuyPrice',
+  insuranceType: 'insuranceType',
   isActive: 'isActive',
+  isShowcase: 'isShowcase',
   isSold: 'isSold',
+  featured: 'featured',
   endsAt: 'endsAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -151,6 +137,13 @@ exports.Prisma.BidScalarFieldEnum = {
   createdAt: 'createdAt',
   leadId: 'leadId',
   userId: 'userId'
+};
+
+exports.Prisma.LeadWatchScalarFieldEnum = {
+  id: 'id',
+  leadId: 'leadId',
+  userId: 'userId',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.LeadSaleScalarFieldEnum = {
@@ -172,10 +165,54 @@ exports.Prisma.SettingsScalarFieldEnum = {
   defaultCurrency: 'defaultCurrency',
   defaultAuctionDays: 'defaultAuctionDays',
   defaultMinIncrement: 'defaultMinIncrement',
+  homepageHeroEyebrow: 'homepageHeroEyebrow',
+  homepageHeroTitle: 'homepageHeroTitle',
+  homepageHeroHighlight: 'homepageHeroHighlight',
+  homepageHeroTitleSuffix: 'homepageHeroTitleSuffix',
+  homepageHeroSubtitle: 'homepageHeroSubtitle',
+  homepageHeroPrimaryCtaText: 'homepageHeroPrimaryCtaText',
+  homepageHeroPrimaryCtaLink: 'homepageHeroPrimaryCtaLink',
+  homepageHeroSecondaryCtaText: 'homepageHeroSecondaryCtaText',
+  homepageHeroSecondaryCtaLink: 'homepageHeroSecondaryCtaLink',
+  homepageFeatureHeading: 'homepageFeatureHeading',
+  homepageFeatures: 'homepageFeatures',
+  homepageShowcaseEyebrow: 'homepageShowcaseEyebrow',
+  homepageShowcaseTitle: 'homepageShowcaseTitle',
+  homepageShowcaseCtaText: 'homepageShowcaseCtaText',
+  homepageShowcaseCtaLink: 'homepageShowcaseCtaLink',
+  homepageStatsEyebrow: 'homepageStatsEyebrow',
+  homepageStatsTitle: 'homepageStatsTitle',
+  homepageStats: 'homepageStats',
+  homepageCtaTitle: 'homepageCtaTitle',
+  homepageCtaSubtitle: 'homepageCtaSubtitle',
+  homepageCtaPrimaryText: 'homepageCtaPrimaryText',
+  homepageCtaPrimaryLink: 'homepageCtaPrimaryLink',
+  homepageCtaSecondaryText: 'homepageCtaSecondaryText',
+  homepageCtaSecondaryLink: 'homepageCtaSecondaryLink',
   maintenanceMode: 'maintenanceMode',
   maintenanceMessage: 'maintenanceMessage',
+  smtpHost: 'smtpHost',
+  smtpPort: 'smtpPort',
+  smtpUser: 'smtpUser',
+  smtpPass: 'smtpPass',
+  smtpFromName: 'smtpFromName',
+  smtpUseTLS: 'smtpUseTLS',
+  smtpUseSSL: 'smtpUseSSL',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  companyLogoUrl: 'companyLogoUrl',
+  companyName: 'companyName',
+  faviconUrl: 'faviconUrl',
+  footerDescription: 'footerDescription',
+  footerEmail: 'footerEmail',
+  footerNote: 'footerNote',
+  footerPhone: 'footerPhone',
+  insuranceTypes: 'insuranceTypes',
+  legalLinks: 'legalLinks',
+  servicesLinks: 'servicesLinks',
+  socialMedia: 'socialMedia',
+  supportLinks: 'supportLinks',
+  tradeRegisterNumber: 'tradeRegisterNumber'
 };
 
 exports.Prisma.UserTypeScalarFieldEnum = {
@@ -205,9 +242,115 @@ exports.Prisma.UserTypePermissionScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.LeadTypePermissionScalarFieldEnum = {
+  id: 'id',
+  userTypeId: 'userTypeId',
+  leadType: 'leadType',
+  hasAccess: 'hasAccess',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UserLeadTypePermissionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  leadType: 'leadType',
+  hasAccess: 'hasAccess',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.FAQScalarFieldEnum = {
+  id: 'id',
+  question: 'question',
+  answer: 'answer',
+  category: 'category',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AboutScalarFieldEnum = {
+  id: 'id',
+  section: 'section',
+  title: 'title',
+  subtitle: 'subtitle',
+  content: 'content',
+  imageUrl: 'imageUrl',
+  data: 'data',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DesignSettingsScalarFieldEnum = {
+  id: 'id',
+  colors: 'colors',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.EmailTemplateScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  name: 'name',
+  description: 'description',
+  subject: 'subject',
+  htmlContent: 'htmlContent',
+  textContent: 'textContent',
+  isActive: 'isActive',
+  variables: 'variables',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SMSTemplateScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  name: 'name',
+  description: 'description',
+  content: 'content',
+  isActive: 'isActive',
+  variables: 'variables',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ActivityLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  action: 'action',
+  details: 'details',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PasswordResetTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  token: 'token',
+  expiresAt: 'expiresAt',
+  used: 'used',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -219,49 +362,114 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-exports.Role = exports.$Enums.Role = {
-  USER: 'USER',
-  ADMIN: 'ADMIN'
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
+
 
 exports.Prisma.ModelName = {
   User: 'User',
   Lead: 'Lead',
   Bid: 'Bid',
+  LeadWatch: 'LeadWatch',
   LeadSale: 'LeadSale',
   Settings: 'Settings',
   UserType: 'UserType',
   Page: 'Page',
-  UserTypePermission: 'UserTypePermission'
+  UserTypePermission: 'UserTypePermission',
+  LeadTypePermission: 'LeadTypePermission',
+  UserLeadTypePermission: 'UserLeadTypePermission',
+  FAQ: 'FAQ',
+  About: 'About',
+  DesignSettings: 'DesignSettings',
+  EmailTemplate: 'EmailTemplate',
+  SMSTemplate: 'SMSTemplate',
+  ActivityLog: 'ActivityLog',
+  PasswordResetToken: 'PasswordResetToken'
 };
-
 /**
- * This is a stub Prisma Client that will error at runtime if called.
+ * Create the Client
  */
-class PrismaClient {
-  constructor() {
-    return new Proxy(this, {
-      get(target, prop) {
-        let message
-        const runtime = getRuntime()
-        if (runtime.isEdge) {
-          message = `PrismaClient is not configured to run in ${runtime.prettyName}. In order to run Prisma Client on edge runtime, either:
-- Use Prisma Accelerate: https://pris.ly/d/accelerate
-- Use Driver Adapters: https://pris.ly/d/driver-adapters
-`;
-        } else {
-          message = 'PrismaClient is unable to run in this browser environment, or has been bundled for the browser (running in `' + runtime.prettyName + '`).'
-        }
-
-        message += `
-If this is unexpected, please open an issue: https://pris.ly/prisma-prisma-bug-report`
-
-        throw new Error(message)
+const config = {
+  "generator": {
+    "name": "client",
+    "provider": {
+      "fromEnvVar": null,
+      "value": "prisma-client-js"
+    },
+    "output": {
+      "value": "/Users/yusuf/Documents/GitHub/leadportal/server/generated/prisma",
+      "fromEnvVar": null
+    },
+    "config": {
+      "engineType": "library"
+    },
+    "binaryTargets": [
+      {
+        "fromEnvVar": null,
+        "value": "darwin-arm64",
+        "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
       }
-    })
+    ],
+    "previewFeatures": [],
+    "sourceFilePath": "/Users/yusuf/Documents/GitHub/leadportal/server/prisma/schema.prisma",
+    "isCustomOutput": true
+  },
+  "relativeEnvPaths": {
+    "rootEnvPath": null,
+    "schemaEnvPath": "../../.env"
+  },
+  "relativePath": "../../prisma",
+  "clientVersion": "6.17.1",
+  "engineVersion": "272a37d34178c2894197e17273bf937f25acdeac",
+  "datasourceNames": [
+    "db"
+  ],
+  "activeProvider": "postgresql",
+  "inlineDatasources": {
+    "db": {
+      "url": {
+        "fromEnvVar": "DATABASE_URL",
+        "value": null
+      }
+    }
+  },
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../generated/prisma\"\n  binaryTargets = [\"native\", \"debian-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id                  String                   @id @default(cuid())\n  email               String                   @unique\n  passwordHash        String\n  userTypeId          String\n  createdAt           DateTime                 @default(now())\n  updatedAt           DateTime                 @updatedAt\n  firstName           String?\n  lastName            String?\n  username            String?                  @unique\n  profileImage        String?\n  lastActivity        DateTime? // Son aktivite zamanı\n  lastIP              String? // Son bağlantı IP adresi\n  lastUserAgent       String? // Son kullanılan tarayıcı/cihaz bilgisi\n  twoFactorEnabled    Boolean                  @default(false) // 2FA aktif mi?\n  twoFactorSecret     String? // 2FA secret key (şifreli)\n  isActive            Boolean                  @default(true) // Kullanıcı aktif mi?\n  bids                Bid[]\n  leads               Lead[]                   @relation(\"LeadOwner\")\n  purchasedLeads      LeadSale[]               @relation(\"LeadBuyer\")\n  watching            LeadWatch[]\n  userType            UserType                 @relation(fields: [userTypeId], references: [id])\n  leadTypePermissions UserLeadTypePermission[] @relation(\"UserLeadTypePermissions\")\n  activityLogs        ActivityLog[]\n  passwordResetTokens PasswordResetToken[]\n}\n\nmodel Lead {\n  id              String      @id @default(cuid())\n  title           String\n  description     String\n  privateDetails  String?     @db.Text\n  postalCode      String? // Posta kodu (örn. 85309)\n  startPrice      Int\n  minIncrement    Int\n  instantBuyPrice Int?\n  insuranceType   String? // Sigorta türü\n  isActive        Boolean     @default(true)\n  isShowcase      Boolean     @default(false)\n  isSold          Boolean     @default(false)\n  featured        Boolean     @default(false) // Öne çıkan lead\n  endsAt          DateTime\n  createdAt       DateTime    @default(now())\n  updatedAt       DateTime    @updatedAt\n  ownerId         String\n  bids            Bid[]\n  owner           User        @relation(\"LeadOwner\", fields: [ownerId], references: [id])\n  sale            LeadSale?\n  watchers        LeadWatch[]\n}\n\nmodel Bid {\n  id        String   @id @default(cuid())\n  amount    Int\n  createdAt DateTime @default(now())\n  leadId    String\n  userId    String\n  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)\n  user      User     @relation(fields: [userId], references: [id])\n}\n\nmodel LeadWatch {\n  id        String   @id @default(cuid())\n  leadId    String\n  userId    String\n  createdAt DateTime @default(now())\n  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([leadId, userId])\n}\n\nmodel LeadSale {\n  id        String   @id @default(cuid())\n  leadId    String   @unique\n  buyerId   String\n  amount    Int\n  soldAt    DateTime @default(now())\n  createdAt DateTime @default(now())\n  buyer     User     @relation(\"LeadBuyer\", fields: [buyerId], references: [id])\n  lead      Lead     @relation(fields: [leadId], references: [id])\n}\n\nmodel Settings {\n  id                           String   @id @default(\"default\")\n  leadIdFormat                 String   @default(\"numeric\")\n  customFormat                 String   @default(\"L{YYYY}{MM}{DD}-{NUM}\")\n  leadPrefix                   String   @default(\"LEAD\")\n  startingNumber               Int      @default(1)\n  numberType                   String   @default(\"sequential\")\n  defaultCurrency              String   @default(\"TRY\")\n  defaultAuctionDays           Int      @default(7)\n  defaultMinIncrement          Int      @default(10)\n  homepageHeroEyebrow          String   @default(\"Sigorta lead pazaryeri\")\n  homepageHeroTitle            String   @default(\"Almanya'nın önde gelen\")\n  homepageHeroHighlight        String   @default(\"sigorta lead\")\n  homepageHeroTitleSuffix      String   @default(\"pazaryeri\")\n  homepageHeroSubtitle         String   @default(\"LeadPortal, sigorta brokerleri için profesyonel açık artırma altyapısı, doğrulanmış lead kalitesi ve canlı teklif takibi sunar.\")\n  homepageHeroPrimaryCtaText   String   @default(\"Şimdi kaydol\")\n  homepageHeroPrimaryCtaLink   String   @default(\"/login\")\n  homepageHeroSecondaryCtaText String   @default(\"Canlı açık artırmaları gör\")\n  homepageHeroSecondaryCtaLink String   @default(\"/leads\")\n  homepageFeatureHeading       String   @default(\"LeadPortal'ı neden seçmelisiniz?\")\n  homepageFeatures             Json     @default(\"[{\\\"icon\\\":\\\"mdi:scale-balance\\\",\\\"title\\\":\\\"Adil Açık Artırmalar\\\",\\\"description\\\":\\\"Şeffaf kurallar ve gerçek zamanlı teklifler ile esnek açık artırma modelleri.\\\"},{\\\"icon\\\":\\\"mdi:shield-check\\\",\\\"title\\\":\\\"Onaylı Kalite\\\",\\\"description\\\":\\\"Her lead yayına alınmadan önce kalite ve doğruluk kontrollerinden geçer.\\\"},{\\\"icon\\\":\\\"mdi:account-group\\\",\\\"title\\\":\\\"Güvenilir İş Ortağı\\\",\\\"description\\\":\\\"Broker topluluğumuz için doğrulama süreci ve puanlama sistemi.\\\"}]\")\n  homepageShowcaseEyebrow      String   @default(\"Vitrin leadler\")\n  homepageShowcaseTitle        String   @default(\"Aktüel açık artırmalar\")\n  homepageShowcaseCtaText      String   @default(\"Hepsini gör\")\n  homepageShowcaseCtaLink      String   @default(\"/leads\")\n  homepageStatsEyebrow         String   @default(\"Güven veren rakamlar\")\n  homepageStatsTitle           String   @default(\"Broker topluluğumuz büyümeye devam ediyor\")\n  homepageStats                Json     @default(\"[{\\\"value\\\":\\\"2.500+\\\",\\\"label\\\":\\\"Aktif Broker\\\"},{\\\"value\\\":\\\"15.000+\\\",\\\"label\\\":\\\"Satılan Lead\\\"},{\\\"value\\\":\\\"98%\\\",\\\"label\\\":\\\"Memnuniyet\\\"},{\\\"value\\\":\\\"€2.1M\\\",\\\"label\\\":\\\"Toplam Hacim\\\"}]\")\n  homepageCtaTitle             String   @default(\"Başlamak için hazır mısınız?\")\n  homepageCtaSubtitle          String   @default(\"LeadPortal topluluğuna katılın, doğrulanmış leadlere erişin ve işinizi güvenle büyütün.\")\n  homepageCtaPrimaryText       String   @default(\"Ücretsiz kaydol\")\n  homepageCtaPrimaryLink       String   @default(\"/login\")\n  homepageCtaSecondaryText     String   @default(\"Leadleri incele\")\n  homepageCtaSecondaryLink     String   @default(\"/leads\")\n  maintenanceMode              Boolean  @default(false)\n  maintenanceMessage           String   @default(\"Sistem bakımda. Lütfen daha sonra tekrar deneyin.\")\n  smtpHost                     String   @default(\"\")\n  smtpPort                     Int      @default(465)\n  smtpUser                     String   @default(\"\")\n  smtpPass                     String   @default(\"\")\n  smtpFromName                 String   @default(\"LeadPortal\")\n  smtpUseTLS                   Boolean  @default(false)\n  smtpUseSSL                   Boolean  @default(true)\n  createdAt                    DateTime @default(now())\n  updatedAt                    DateTime @updatedAt\n  companyLogoUrl               String   @default(\"\")\n  companyName                  String   @default(\"LeadPortal\")\n  faviconUrl                   String   @default(\"\")\n  footerDescription            String   @default(\"Almanya'nın önde gelen lead pazar yeri. Profesyonel açık artırmalar ve lead yönetimi platformu.\")\n  footerEmail                  String   @default(\"info@leadportal.com\")\n  footerNote                   String   @default(\"\")\n  footerPhone                  String   @default(\"+90 (212) 123 45 67\")\n  insuranceTypes               Json     @default(\"[{\\\"icon\\\": \\\"fa-paw\\\", \\\"name\\\": \\\"Hayvan\\\"}, {\\\"icon\\\": \\\"fa-car\\\", \\\"name\\\": \\\"Araba\\\"}, {\\\"icon\\\": \\\"fa-heart-pulse\\\", \\\"name\\\": \\\"Sağlık\\\"}]\")\n  legalLinks                   Json?\n  servicesLinks                Json?\n  socialMedia                  Json?\n  supportLinks                 Json?\n  tradeRegisterNumber          String   @default(\"İstanbul Ticaret Sicil No: 12345\")\n}\n\nmodel UserType {\n  id                  String               @id\n  name                String\n  description         String?\n  isActive            Boolean              @default(true)\n  createdAt           DateTime             @default(now())\n  updatedAt           DateTime             @updatedAt\n  leadTypePermissions LeadTypePermission[] @relation(\"LeadTypePermissions\")\n  users               User[]\n  permissions         UserTypePermission[]\n}\n\nmodel Page {\n  id          String               @id\n  name        String\n  description String?\n  isActive    Boolean              @default(true)\n  createdAt   DateTime             @default(now())\n  updatedAt   DateTime             @updatedAt\n  permissions UserTypePermission[]\n}\n\nmodel UserTypePermission {\n  id         Int      @id @default(autoincrement())\n  userTypeId String\n  pageId     String\n  hasAccess  Boolean  @default(false)\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n  page       Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)\n  userType   UserType @relation(fields: [userTypeId], references: [id], onDelete: Cascade)\n\n  @@unique([userTypeId, pageId])\n}\n\nmodel LeadTypePermission {\n  id         Int      @id @default(autoincrement())\n  userTypeId String\n  leadType   String\n  hasAccess  Boolean  @default(true)\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n  userType   UserType @relation(\"LeadTypePermissions\", fields: [userTypeId], references: [id], onDelete: Cascade)\n\n  @@unique([userTypeId, leadType])\n}\n\nmodel UserLeadTypePermission {\n  id        Int      @id @default(autoincrement())\n  userId    String\n  leadType  String\n  hasAccess Boolean  @default(true)\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  user      User     @relation(\"UserLeadTypePermissions\", fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([userId, leadType])\n}\n\nmodel FAQ {\n  id        String   @id @default(cuid())\n  question  String\n  answer    String\n  category  String\n  isActive  Boolean  @default(true)\n  sortOrder Int      @default(0)\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel About {\n  id        String   @id @default(cuid())\n  section   String\n  title     String?\n  subtitle  String?\n  content   String?\n  imageUrl  String?\n  data      Json?\n  isActive  Boolean  @default(true)\n  sortOrder Int      @default(0)\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel DesignSettings {\n  id        String   @id @default(\"default\")\n  colors    Json\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel EmailTemplate {\n  id          String   @id @default(cuid())\n  type        String   @unique\n  name        String\n  description String?\n  subject     String\n  htmlContent String\n  textContent String?\n  isActive    Boolean  @default(true)\n  variables   Json?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n}\n\nmodel SMSTemplate {\n  id          String   @id @default(cuid())\n  type        String   @unique\n  name        String\n  description String?\n  content     String\n  isActive    Boolean  @default(true)\n  variables   Json?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n}\n\nmodel ActivityLog {\n  id         String   @id @default(cuid())\n  userId     String\n  action     String // LOGIN, LOGOUT, VIEW_LEAD, CREATE_LEAD, EDIT_LEAD, DELETE_LEAD, CREATE_BID, PURCHASE_LEAD, ADD_WATCH, REMOVE_WATCH, VIEW_STATS, CREATE_USER, EDIT_USER, DELETE_USER, CHANGE_SETTINGS, etc.\n  details    String? // JSON string with additional details\n  entityType String? // \"lead\", \"bid\", \"user\", \"settings\", etc.\n  entityId   String? // ID of the entity (leadId, bidId, userId, etc.)\n  ipAddress  String?\n  userAgent  String?\n  createdAt  DateTime @default(now())\n  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@index([action])\n  @@index([createdAt])\n  @@index([entityType, entityId])\n}\n\nmodel PasswordResetToken {\n  id        String   @id @default(cuid())\n  userId    String\n  token     String   @unique\n  expiresAt DateTime\n  used      Boolean  @default(false)\n  createdAt DateTime @default(now())\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([token])\n  @@index([userId])\n}\n",
+  "inlineSchemaHash": "2fdf665f1a04df3e9d3953140ebe22c0f3a50ec948e54b1ed8b29d97225e9b83",
+  "copyEngine": true
+}
+config.dirname = '/'
+
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"passwordHash\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userTypeId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"firstName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"lastName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"profileImage\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"lastActivity\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"lastIP\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"lastUserAgent\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"twoFactorEnabled\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"twoFactorSecret\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"bids\",\"kind\":\"object\",\"type\":\"Bid\",\"relationName\":\"BidToUser\"},{\"name\":\"leads\",\"kind\":\"object\",\"type\":\"Lead\",\"relationName\":\"LeadOwner\"},{\"name\":\"purchasedLeads\",\"kind\":\"object\",\"type\":\"LeadSale\",\"relationName\":\"LeadBuyer\"},{\"name\":\"watching\",\"kind\":\"object\",\"type\":\"LeadWatch\",\"relationName\":\"LeadWatchToUser\"},{\"name\":\"userType\",\"kind\":\"object\",\"type\":\"UserType\",\"relationName\":\"UserToUserType\"},{\"name\":\"leadTypePermissions\",\"kind\":\"object\",\"type\":\"UserLeadTypePermission\",\"relationName\":\"UserLeadTypePermissions\"},{\"name\":\"activityLogs\",\"kind\":\"object\",\"type\":\"ActivityLog\",\"relationName\":\"ActivityLogToUser\"},{\"name\":\"passwordResetTokens\",\"kind\":\"object\",\"type\":\"PasswordResetToken\",\"relationName\":\"PasswordResetTokenToUser\"}],\"dbName\":null},\"Lead\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"privateDetails\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"postalCode\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"startPrice\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"minIncrement\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"instantBuyPrice\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"insuranceType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"isShowcase\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"isSold\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"featured\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"endsAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"ownerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"bids\",\"kind\":\"object\",\"type\":\"Bid\",\"relationName\":\"BidToLead\"},{\"name\":\"owner\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"LeadOwner\"},{\"name\":\"sale\",\"kind\":\"object\",\"type\":\"LeadSale\",\"relationName\":\"LeadToLeadSale\"},{\"name\":\"watchers\",\"kind\":\"object\",\"type\":\"LeadWatch\",\"relationName\":\"LeadToLeadWatch\"}],\"dbName\":null},\"Bid\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"leadId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"lead\",\"kind\":\"object\",\"type\":\"Lead\",\"relationName\":\"BidToLead\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"BidToUser\"}],\"dbName\":null},\"LeadWatch\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"leadId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"lead\",\"kind\":\"object\",\"type\":\"Lead\",\"relationName\":\"LeadToLeadWatch\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"LeadWatchToUser\"}],\"dbName\":null},\"LeadSale\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"leadId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"buyerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"soldAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"buyer\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"LeadBuyer\"},{\"name\":\"lead\",\"kind\":\"object\",\"type\":\"Lead\",\"relationName\":\"LeadToLeadSale\"}],\"dbName\":null},\"Settings\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"leadIdFormat\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"customFormat\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"leadPrefix\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"startingNumber\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"numberType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"defaultCurrency\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"defaultAuctionDays\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"defaultMinIncrement\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"homepageHeroEyebrow\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageHeroTitle\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageHeroHighlight\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageHeroTitleSuffix\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageHeroSubtitle\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageHeroPrimaryCtaText\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageHeroPrimaryCtaLink\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageHeroSecondaryCtaText\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageHeroSecondaryCtaLink\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageFeatureHeading\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageFeatures\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"homepageShowcaseEyebrow\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageShowcaseTitle\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageShowcaseCtaText\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageShowcaseCtaLink\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageStatsEyebrow\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageStatsTitle\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageStats\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"homepageCtaTitle\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageCtaSubtitle\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageCtaPrimaryText\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageCtaPrimaryLink\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageCtaSecondaryText\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"homepageCtaSecondaryLink\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"maintenanceMode\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"maintenanceMessage\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"smtpHost\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"smtpPort\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"smtpUser\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"smtpPass\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"smtpFromName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"smtpUseTLS\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"smtpUseSSL\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"companyLogoUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"companyName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"faviconUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"footerDescription\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"footerEmail\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"footerNote\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"footerPhone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"insuranceTypes\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"legalLinks\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"servicesLinks\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"socialMedia\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"supportLinks\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"tradeRegisterNumber\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"UserType\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"leadTypePermissions\",\"kind\":\"object\",\"type\":\"LeadTypePermission\",\"relationName\":\"LeadTypePermissions\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"UserToUserType\"},{\"name\":\"permissions\",\"kind\":\"object\",\"type\":\"UserTypePermission\",\"relationName\":\"UserTypeToUserTypePermission\"}],\"dbName\":null},\"Page\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"permissions\",\"kind\":\"object\",\"type\":\"UserTypePermission\",\"relationName\":\"PageToUserTypePermission\"}],\"dbName\":null},\"UserTypePermission\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userTypeId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"pageId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"hasAccess\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"page\",\"kind\":\"object\",\"type\":\"Page\",\"relationName\":\"PageToUserTypePermission\"},{\"name\":\"userType\",\"kind\":\"object\",\"type\":\"UserType\",\"relationName\":\"UserTypeToUserTypePermission\"}],\"dbName\":null},\"LeadTypePermission\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userTypeId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"leadType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"hasAccess\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"userType\",\"kind\":\"object\",\"type\":\"UserType\",\"relationName\":\"LeadTypePermissions\"}],\"dbName\":null},\"UserLeadTypePermission\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"leadType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"hasAccess\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"UserLeadTypePermissions\"}],\"dbName\":null},\"FAQ\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"question\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"answer\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"category\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"sortOrder\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"About\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"section\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"subtitle\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"imageUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"data\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"sortOrder\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"DesignSettings\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"colors\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"EmailTemplate\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"subject\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"htmlContent\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"textContent\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"variables\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"SMSTemplate\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"variables\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"ActivityLog\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"action\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"details\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"entityType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"entityId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"ipAddress\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userAgent\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ActivityLogToUser\"}],\"dbName\":null},\"PasswordResetToken\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"used\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"PasswordResetTokenToUser\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
+config.engineWasm = {
+  getRuntime: async () => require('./query_engine_bg.js'),
+  getQueryEngineWasmModule: async () => {
+    const loader = (await import('#wasm-engine-loader')).default
+    const engine = (await loader).default
+    return engine
   }
 }
+config.compilerWasm = undefined
 
+config.injectableEdgeEnv = () => ({
+  parsed: {
+    DATABASE_URL: typeof globalThis !== 'undefined' && globalThis['DATABASE_URL'] || typeof process !== 'undefined' && process.env && process.env.DATABASE_URL || undefined
+  }
+})
+
+if (typeof globalThis !== 'undefined' && globalThis['DEBUG'] || typeof process !== 'undefined' && process.env && process.env.DEBUG || undefined) {
+  Debug.enable(typeof globalThis !== 'undefined' && globalThis['DEBUG'] || typeof process !== 'undefined' && process.env && process.env.DEBUG || undefined)
+}
+
+const PrismaClient = getPrismaClient(config)
 exports.PrismaClient = PrismaClient
-
 Object.assign(exports, Prisma)
+

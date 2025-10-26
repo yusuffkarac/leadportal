@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { z } from 'zod'
 import bcrypt from 'bcrypt'
+import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activityLogger.js'
 
 const createSchema = z.object({
   email: z.string().email('Geçerli bir email adresi giriniz'),
@@ -24,11 +25,21 @@ export default function usersRouter(prisma) {
 
   router.get('/', async (req, res) => {
     // Admin kontrolü - userTypeId ile yapılacak
-    const users = await prisma.user.findMany({ 
+    const users = await prisma.user.findMany({
       include: { userType: true },
-      orderBy: { createdAt: 'desc' } 
+      orderBy: { createdAt: 'desc' }
     })
-    res.json(users)
+
+    // Online durumunu hesapla (son 5 dakika içinde aktivite)
+    const fiveMinutesAgo = new Date()
+    fiveMinutesAgo.setMinutes(fiveMinutesAgo.getMinutes() - 5)
+
+    const usersWithOnlineStatus = users.map(user => ({
+      ...user,
+      isOnline: user.lastActivity ? new Date(user.lastActivity) >= fiveMinutesAgo : false
+    }))
+
+    res.json(usersWithOnlineStatus)
   })
 
   router.post('/', async (req, res) => {
@@ -51,10 +62,27 @@ export default function usersRouter(prisma) {
     }
     
     const passwordHash = await bcrypt.hash(password, 10)
-    const user = await prisma.user.create({ 
+    const user = await prisma.user.create({
       data: { email, passwordHash, firstName, lastName, username, userTypeId },
       include: { userType: true }
     })
+
+    // Activity log
+    try {
+      const { ipAddress, userAgent } = extractRequestInfo(req)
+      await logActivity({
+        userId: req.user.id,
+        action: ActivityTypes.CREATE_USER,
+        details: { userEmail: email, userName: username || firstName || email },
+        entityType: 'user',
+        entityId: user.id,
+        ipAddress,
+        userAgent
+      })
+    } catch (e) {
+      console.error('Activity log error:', e.message)
+    }
+
     res.status(201).json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, username: user.username, userType: user.userType })
   })
 
@@ -90,11 +118,28 @@ export default function usersRouter(prisma) {
       if (usernameExists) return res.status(409).json({ error: 'Bu kullanıcı adı zaten kullanılıyor' })
     }
     
-    const user = await prisma.user.update({ 
-      where: { id: req.params.id }, 
+    const user = await prisma.user.update({
+      where: { id: req.params.id },
       data: { email, firstName, lastName, username, userTypeId },
       include: { userType: true }
     })
+
+    // Activity log
+    try {
+      const { ipAddress, userAgent } = extractRequestInfo(req)
+      await logActivity({
+        userId: req.user.id,
+        action: ActivityTypes.EDIT_USER,
+        details: { userEmail: email, userName: username || firstName || email },
+        entityType: 'user',
+        entityId: user.id,
+        ipAddress,
+        userAgent
+      })
+    } catch (e) {
+      console.error('Activity log error:', e.message)
+    }
+
     res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, username: user.username, userType: user.userType })
   })
 
@@ -107,8 +152,112 @@ export default function usersRouter(prisma) {
       return res.status(400).json({ error: errors })
     }
     const passwordHash = await bcrypt.hash(body.data.password, 10)
-    await prisma.user.update({ where: { id: req.params.id }, data: { passwordHash } })
+    const user = await prisma.user.update({ where: { id: req.params.id }, data: { passwordHash } })
+
+    // Activity log
+    try {
+      const { ipAddress, userAgent } = extractRequestInfo(req)
+      await logActivity({
+        userId: req.user.id,
+        action: ActivityTypes.RESET_PASSWORD,
+        details: { targetUserEmail: user.email },
+        entityType: 'user',
+        entityId: user.id,
+        ipAddress,
+        userAgent
+      })
+    } catch (e) {
+      console.error('Activity log error:', e.message)
+    }
+
     res.json({ ok: true })
+  })
+
+  // Admin: deactivate user
+  router.put('/:id/deactivate', async (req, res) => {
+    if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') {
+      return res.status(403).json({ error: 'Bu işlem için yetkiniz yok' })
+    }
+
+    // Kendini deaktif etmeyi engelle
+    if (req.params.id === req.user.id) {
+      return res.status(400).json({ error: 'Kendinizi deaktif edemezsiniz' })
+    }
+
+    try {
+      const user = await prisma.user.findUnique({ where: { id: req.params.id } })
+      if (!user) {
+        return res.status(404).json({ error: 'Kullanıcı bulunamadı' })
+      }
+
+      await prisma.user.update({ 
+        where: { id: req.params.id }, 
+        data: { isActive: false } 
+      })
+
+      // Activity log
+      try {
+        const { ipAddress, userAgent } = extractRequestInfo(req)
+        await logActivity({
+          userId: req.user.id,
+          action: ActivityTypes.DEACTIVATE_USER,
+          details: { userEmail: user.email, userName: user.username || user.firstName || user.email },
+          entityType: 'user',
+          entityId: user.id,
+          ipAddress,
+          userAgent
+        })
+      } catch (e) {
+        console.error('Activity log error:', e.message)
+      }
+
+      res.json({ ok: true })
+    } catch (error) {
+      console.error('Deactivate user error:', error)
+      res.status(500).json({ error: 'Kullanıcı deaktif edilirken bir hata oluştu' })
+    }
+  })
+
+  // Admin: delete user
+  router.delete('/:id', async (req, res) => {
+    if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') {
+      return res.status(403).json({ error: 'Bu işlem için yetkiniz yok' })
+    }
+
+    // Kendini silmeyi engelle
+    if (req.params.id === req.user.id) {
+      return res.status(400).json({ error: 'Kendinizi silemezsiniz' })
+    }
+
+    try {
+      const user = await prisma.user.findUnique({ where: { id: req.params.id } })
+      if (!user) {
+        return res.status(404).json({ error: 'Kullanıcı bulunamadı' })
+      }
+
+      await prisma.user.delete({ where: { id: req.params.id } })
+
+      // Activity log
+      try {
+        const { ipAddress, userAgent } = extractRequestInfo(req)
+        await logActivity({
+          userId: req.user.id,
+          action: ActivityTypes.DELETE_USER,
+          details: { userEmail: user.email, userName: user.username || user.firstName || user.email },
+          entityType: 'user',
+          entityId: user.id,
+          ipAddress,
+          userAgent
+        })
+      } catch (e) {
+        console.error('Activity log error:', e.message)
+      }
+
+      res.json({ ok: true })
+    } catch (error) {
+      console.error('Delete user error:', error)
+      res.status(500).json({ error: 'Kullanıcı silinirken bir hata oluştu' })
+    }
   })
 
   return router

@@ -14,10 +14,18 @@ export const requireAdmin = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
-      select: { userTypeId: true }
+      select: { userTypeId: true, isActive: true }
     })
 
-    if (!user || (user.userTypeId !== 'ADMIN' && user.userTypeId !== 'SUPERADMIN')) {
+    if (!user) {
+      return res.status(401).json({ message: 'Kullanıcı bulunamadı' })
+    }
+
+    if (user.isActive === false) {
+      return res.status(401).json({ message: 'Hesabınız deaktif edilmiştir' })
+    }
+
+    if (user.userTypeId !== 'ADMIN' && user.userTypeId !== 'SUPERADMIN') {
       return res.status(403).json({ message: 'Admin yetkisi gerekli' })
     }
 
@@ -40,11 +48,15 @@ export const requireAuth = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
-      select: { id: true, role: true, userTypeId: true }
+      select: { id: true, role: true, userTypeId: true, isActive: true }
     })
 
     if (!user) {
       return res.status(401).json({ message: 'Kullanıcı bulunamadı' })
+    }
+
+    if (user.isActive === false) {
+      return res.status(401).json({ message: 'Hesabınız deaktif edilmiştir' })
     }
 
     req.user = user

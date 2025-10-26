@@ -131,6 +131,16 @@
                       Tümünü Temizle
                     </button>
                     <button 
+                      class="btn btn-secondary btn-sm" 
+                      @click="toggleAdminPermissions(userType.id)"
+                      :title="hasAdminPermissions(userType.id) ? 'Admin izinlerini kapat' : 'Admin izinlerini aç'"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      {{ hasAdminPermissions(userType.id) ? 'Admin Kapat' : 'Admin Aç' }}
+                    </button>
+                    <button 
                       class="btn btn-primary btn-sm" 
                       @click="savePermissionsForType(userType.id)"
                       :disabled="saving"
@@ -609,6 +619,23 @@ const toggleUserType = (userTypeId) => {
 // Check if user type is expanded
 const isUserTypeExpanded = (userTypeId) => {
   return expandedUserTypes.value[userTypeId] || false
+}
+
+// Check if user type has admin permissions
+const hasAdminPermissions = (userTypeId) => {
+  const userPermissions = permissions.value[userTypeId] || {}
+  const adminPages = pages.value.filter(page => page.id.startsWith('/admin'))
+  return adminPages.some(page => userPermissions[page.id])
+}
+
+// Toggle admin permissions for a user type
+const toggleAdminPermissions = (userTypeId) => {
+  const adminPages = pages.value.filter(page => page.id.startsWith('/admin'))
+  const hasAdmin = hasAdminPermissions(userTypeId)
+  
+  adminPages.forEach(page => {
+    updatePermission(userTypeId, page.id, !hasAdmin)
+  })
 }
 
 // Initialize

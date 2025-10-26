@@ -19,6 +19,10 @@ import ProfileView from '../views/ProfileView.vue'
 import LeadMarketplaceView from '../views/LeadMarketplaceView.vue'
 import AdminHomepageSettingsView from '../views/AdminHomepageSettingsView.vue'
 import AdminStatisticsView from '../views/AdminStatisticsView.vue'
+import AdminActivityLogView from '../views/AdminActivityLogView.vue'
+import ForgotPasswordView from '../views/ForgotPasswordView.vue'
+import ResetPasswordView from '../views/ResetPasswordView.vue'
+import UserDashboardView from '../views/UserDashboardView.vue'
 
 export const appRoutes = [
     {
@@ -30,6 +34,16 @@ export const appRoutes = [
       path: '/leads',
       name: 'lead-marketplace',
       component: LeadMarketplaceView,
+    },
+    {
+      path: '/forgot-password',
+      name: 'forgot-password',
+      component: ForgotPasswordView,
+    },
+    {
+      path: '/reset-password',
+      name: 'reset-password',
+      component: ResetPasswordView,
     },
     {
       path: '/admin/leads/new',
@@ -55,8 +69,8 @@ export const appRoutes = [
       meta: { requiresAdmin: true },
     },
     {
-      path: '/admin/users/new',
-      name: 'admin-users-new',
+      path: '/admin/users',
+      name: 'admin-users',
       component: AdminUserNewView,
       meta: { requiresAdmin: true },
     },
@@ -93,6 +107,11 @@ export const appRoutes = [
       path: '/purchased-leads',
       name: 'purchased-leads',
       component: PurchasedLeadsView,
+    },
+    {
+      path: '/dashboard',
+      name: 'user-dashboard',
+      component: UserDashboardView,
     },
     {
       path: '/admin/settings',
@@ -149,6 +168,12 @@ export const appRoutes = [
       meta: { requiresAdmin: true },
     },
     {
+      path: '/admin/activity-log',
+      name: 'admin-activity-log',
+      component: AdminActivityLogView,
+      meta: { requiresAdmin: true },
+    },
+    {
       path: '/profile',
       name: 'profile',
       component: ProfileView,
@@ -158,6 +183,10 @@ export const appRoutes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: appRoutes,
+  scrollBehavior(to, from, savedPosition) {
+    // Her sayfa değişikliğinde sayfanın en üstüne git
+    return { top: 0 }
+  }
 })
 
 // Global guard: Kullanıcı tipi yetkilendirme kontrolü
@@ -170,8 +199,8 @@ router.beforeEach(async (to, from, next) => {
     
     console.log('Permission check - token:', !!token, 'userTypeId:', userTypeId, 'path:', to.path)
     
-    // Login ve forbidden sayfalarına herkes erişebilir
-    if (to.path === '/forbidden' || to.path === '/login') {
+    // Login, şifre sıfırlama ve forbidden sayfalarına herkes erişebilir
+    if (to.path === '/forbidden' || to.path === '/login' || to.path === '/forgot-password' || to.path === '/reset-password') {
       console.log('Allowing access to:', to.path)
       next()
       return

@@ -20,12 +20,20 @@ model User {
   lastName            String?
   username            String?                  @unique
   profileImage        String?
+  lastActivity        DateTime?                // Son aktivite zamanı
+  lastIP              String?                  // Son bağlantı IP adresi
+  lastUserAgent       String?                  // Son kullanılan tarayıcı/cihaz bilgisi
+  twoFactorEnabled    Boolean                  @default(false) // 2FA aktif mi?
+  twoFactorSecret     String?                  // 2FA secret key (şifreli)
+  isActive            Boolean                  @default(true) // Kullanıcı aktif mi?
   bids                Bid[]
   leads               Lead[]                   @relation("LeadOwner")
   purchasedLeads      LeadSale[]               @relation("LeadBuyer")
   watching            LeadWatch[]
   userType            UserType                 @relation(fields: [userTypeId], references: [id])
   leadTypePermissions UserLeadTypePermission[] @relation("UserLeadTypePermissions")
+  activityLogs        ActivityLog[]
+  passwordResetTokens PasswordResetToken[]
 }
 
 model Lead {
@@ -259,4 +267,35 @@ model SMSTemplate {
   variables   Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  userId      String
+  action      String   // LOGIN, LOGOUT, VIEW_LEAD, CREATE_LEAD, EDIT_LEAD, DELETE_LEAD, CREATE_BID, PURCHASE_LEAD, ADD_WATCH, REMOVE_WATCH, VIEW_STATS, CREATE_USER, EDIT_USER, DELETE_USER, CHANGE_SETTINGS, etc.
+  details     String?  // JSON string with additional details
+  entityType  String?  // "lead", "bid", "user", "settings", etc.
+  entityId    String?  // ID of the entity (leadId, bidId, userId, etc.)
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([entityType, entityId])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
 }

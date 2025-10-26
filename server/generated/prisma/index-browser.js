@@ -20,12 +20,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.15.0
- * Query Engine version: 85179d7826409ee107a6ba334b5e305ae3fba9fb
+ * Prisma Client JS version: 6.17.1
+ * Query Engine version: 272a37d34178c2894197e17273bf937f25acdeac
  */
 Prisma.prismaVersion = {
-  client: "6.15.0",
-  engine: "85179d7826409ee107a6ba334b5e305ae3fba9fb"
+  client: "6.17.1",
+  engine: "272a37d34178c2894197e17273bf937f25acdeac"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -124,21 +124,35 @@ exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
   passwordHash: 'passwordHash',
-  role: 'role',
   userTypeId: 'userTypeId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  username: 'username',
+  profileImage: 'profileImage',
+  lastActivity: 'lastActivity',
+  lastIP: 'lastIP',
+  lastUserAgent: 'lastUserAgent',
+  twoFactorEnabled: 'twoFactorEnabled',
+  twoFactorSecret: 'twoFactorSecret',
+  isActive: 'isActive'
 };
 
 exports.Prisma.LeadScalarFieldEnum = {
   id: 'id',
   title: 'title',
   description: 'description',
+  privateDetails: 'privateDetails',
+  postalCode: 'postalCode',
   startPrice: 'startPrice',
   minIncrement: 'minIncrement',
   instantBuyPrice: 'instantBuyPrice',
+  insuranceType: 'insuranceType',
   isActive: 'isActive',
+  isShowcase: 'isShowcase',
   isSold: 'isSold',
+  featured: 'featured',
   endsAt: 'endsAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -151,6 +165,13 @@ exports.Prisma.BidScalarFieldEnum = {
   createdAt: 'createdAt',
   leadId: 'leadId',
   userId: 'userId'
+};
+
+exports.Prisma.LeadWatchScalarFieldEnum = {
+  id: 'id',
+  leadId: 'leadId',
+  userId: 'userId',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.LeadSaleScalarFieldEnum = {
@@ -172,10 +193,54 @@ exports.Prisma.SettingsScalarFieldEnum = {
   defaultCurrency: 'defaultCurrency',
   defaultAuctionDays: 'defaultAuctionDays',
   defaultMinIncrement: 'defaultMinIncrement',
+  homepageHeroEyebrow: 'homepageHeroEyebrow',
+  homepageHeroTitle: 'homepageHeroTitle',
+  homepageHeroHighlight: 'homepageHeroHighlight',
+  homepageHeroTitleSuffix: 'homepageHeroTitleSuffix',
+  homepageHeroSubtitle: 'homepageHeroSubtitle',
+  homepageHeroPrimaryCtaText: 'homepageHeroPrimaryCtaText',
+  homepageHeroPrimaryCtaLink: 'homepageHeroPrimaryCtaLink',
+  homepageHeroSecondaryCtaText: 'homepageHeroSecondaryCtaText',
+  homepageHeroSecondaryCtaLink: 'homepageHeroSecondaryCtaLink',
+  homepageFeatureHeading: 'homepageFeatureHeading',
+  homepageFeatures: 'homepageFeatures',
+  homepageShowcaseEyebrow: 'homepageShowcaseEyebrow',
+  homepageShowcaseTitle: 'homepageShowcaseTitle',
+  homepageShowcaseCtaText: 'homepageShowcaseCtaText',
+  homepageShowcaseCtaLink: 'homepageShowcaseCtaLink',
+  homepageStatsEyebrow: 'homepageStatsEyebrow',
+  homepageStatsTitle: 'homepageStatsTitle',
+  homepageStats: 'homepageStats',
+  homepageCtaTitle: 'homepageCtaTitle',
+  homepageCtaSubtitle: 'homepageCtaSubtitle',
+  homepageCtaPrimaryText: 'homepageCtaPrimaryText',
+  homepageCtaPrimaryLink: 'homepageCtaPrimaryLink',
+  homepageCtaSecondaryText: 'homepageCtaSecondaryText',
+  homepageCtaSecondaryLink: 'homepageCtaSecondaryLink',
   maintenanceMode: 'maintenanceMode',
   maintenanceMessage: 'maintenanceMessage',
+  smtpHost: 'smtpHost',
+  smtpPort: 'smtpPort',
+  smtpUser: 'smtpUser',
+  smtpPass: 'smtpPass',
+  smtpFromName: 'smtpFromName',
+  smtpUseTLS: 'smtpUseTLS',
+  smtpUseSSL: 'smtpUseSSL',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  companyLogoUrl: 'companyLogoUrl',
+  companyName: 'companyName',
+  faviconUrl: 'faviconUrl',
+  footerDescription: 'footerDescription',
+  footerEmail: 'footerEmail',
+  footerNote: 'footerNote',
+  footerPhone: 'footerPhone',
+  insuranceTypes: 'insuranceTypes',
+  legalLinks: 'legalLinks',
+  servicesLinks: 'servicesLinks',
+  socialMedia: 'socialMedia',
+  supportLinks: 'supportLinks',
+  tradeRegisterNumber: 'tradeRegisterNumber'
 };
 
 exports.Prisma.UserTypeScalarFieldEnum = {
@@ -205,9 +270,115 @@ exports.Prisma.UserTypePermissionScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.LeadTypePermissionScalarFieldEnum = {
+  id: 'id',
+  userTypeId: 'userTypeId',
+  leadType: 'leadType',
+  hasAccess: 'hasAccess',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UserLeadTypePermissionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  leadType: 'leadType',
+  hasAccess: 'hasAccess',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.FAQScalarFieldEnum = {
+  id: 'id',
+  question: 'question',
+  answer: 'answer',
+  category: 'category',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AboutScalarFieldEnum = {
+  id: 'id',
+  section: 'section',
+  title: 'title',
+  subtitle: 'subtitle',
+  content: 'content',
+  imageUrl: 'imageUrl',
+  data: 'data',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DesignSettingsScalarFieldEnum = {
+  id: 'id',
+  colors: 'colors',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.EmailTemplateScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  name: 'name',
+  description: 'description',
+  subject: 'subject',
+  htmlContent: 'htmlContent',
+  textContent: 'textContent',
+  isActive: 'isActive',
+  variables: 'variables',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SMSTemplateScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  name: 'name',
+  description: 'description',
+  content: 'content',
+  isActive: 'isActive',
+  variables: 'variables',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ActivityLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  action: 'action',
+  details: 'details',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PasswordResetTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  token: 'token',
+  expiresAt: 'expiresAt',
+  used: 'used',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -219,20 +390,33 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-exports.Role = exports.$Enums.Role = {
-  USER: 'USER',
-  ADMIN: 'ADMIN'
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
+
 
 exports.Prisma.ModelName = {
   User: 'User',
   Lead: 'Lead',
   Bid: 'Bid',
+  LeadWatch: 'LeadWatch',
   LeadSale: 'LeadSale',
   Settings: 'Settings',
   UserType: 'UserType',
   Page: 'Page',
-  UserTypePermission: 'UserTypePermission'
+  UserTypePermission: 'UserTypePermission',
+  LeadTypePermission: 'LeadTypePermission',
+  UserLeadTypePermission: 'UserLeadTypePermission',
+  FAQ: 'FAQ',
+  About: 'About',
+  DesignSettings: 'DesignSettings',
+  EmailTemplate: 'EmailTemplate',
+  SMSTemplate: 'SMSTemplate',
+  ActivityLog: 'ActivityLog',
+  PasswordResetToken: 'PasswordResetToken'
 };
 
 /**

@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { z } from 'zod'
 import { sendAppEmail } from '../utils/mailer.js'
 import { renderEmailTemplate } from '../utils/emailTemplateRenderer.js'
+import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activityLogger.js'
 
 // User bilgilerini anonim hale getir (kendi teklifi değilse)
 function anonymizeUser(user, currentUserId = null) {
@@ -49,6 +50,22 @@ export default function bidsRouter(prisma, io) {
 
     const previousTopBid = lead.bids[0] || null
     const bid = await prisma.bid.create({ data: { amount, leadId, userId: req.user.id }, include: { user: true } })
+
+    // Activity log
+    try {
+      const { ipAddress, userAgent } = extractRequestInfo(req)
+      await logActivity({
+        userId: req.user.id,
+        action: ActivityTypes.CREATE_BID,
+        details: { amount, leadTitle: lead.title },
+        entityType: 'bid',
+        entityId: bid.id,
+        ipAddress,
+        userAgent
+      })
+    } catch (e) {
+      console.error('Activity log error:', e.message)
+    }
 
     // Socket için anonim bid oluştur (tüm kullanıcılar için anonim)
     const anonymizedBid = {

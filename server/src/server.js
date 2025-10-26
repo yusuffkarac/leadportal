@@ -11,6 +11,7 @@ import { Server as SocketIOServer } from 'socket.io'
 import jwt from 'jsonwebtoken'
 import { PrismaClient } from './prismaClient.js'
 import { checkMaintenanceMode } from './middleware/maintenance.js'
+import { trackUserActivity } from './middleware/activityTracker.js'
 import { z } from 'zod'
 
 // Zod hata mesajlarını Almanca yap
@@ -88,6 +89,9 @@ app.use('/uploads', express.static(join(__dirname, '../uploads')))
 // Bakım modu kontrolü (tüm API rotalarından önce)
 app.use('/api', checkMaintenanceMode)
 
+// Kullanıcı aktivite takibi (tüm API rotalarından önce)
+app.use('/api', trackUserActivity)
+
 // Health
 app.get('/health', (_req, res) => res.json({ ok: true }))
 
@@ -141,6 +145,8 @@ import designSettingsRouter from './routes/designSettings.js'
 import emailSmsSettingsRouter from './routes/emailSmsSettings.js'
 import leadTypePermissionsRouter from './routes/leadTypePermissions.js'
 import statisticsRouter from './routes/statistics.js'
+import activityLogRouter from './routes/activityLog.js'
+import twoFactorRouter from './routes/twoFactor.js'
 
 app.use('/api/auth', authRouter(prisma))
 app.use('/api/leads', (req, res, next) => requireAuth(req, res, next), leadsRouter(prisma, io))
@@ -156,6 +162,8 @@ app.use('/api/about', aboutRouter(prisma))
 app.use('/api/settings/design', designSettingsRouter(prisma))
 app.use('/api/email-sms-settings', emailSmsSettingsRouter)
 app.use('/api/lead-type-permissions', leadTypePermissionsRouter(prisma))
+app.use('/api/activity-log', activityLogRouter)
+app.use('/api/2fa', (req, res, next) => requireAuth(req, res, next), twoFactorRouter(prisma))
 
 const port = process.env.PORT || 4000
 server.listen(port, '0.0.0.0', () => {

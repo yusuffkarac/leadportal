@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { z } from 'zod'
 import jwt from 'jsonwebtoken'
+import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activityLogger.js'
 
 // Lead tipi yetkilendirmesini kontrol eden helper fonksiyon
 async function filterLeadsByPermission(prisma, leads, userId, userTypeId) {
@@ -253,13 +254,13 @@ export default function leadsRouter(prisma, io) {
   router.get('/:id', async (req, res) => {
     const lead = await prisma.lead.findUnique({
       where: { id: req.params.id },
-      include: { 
+      include: {
         bids: { orderBy: { createdAt: 'desc' }, include: { user: true } },
         sale: { select: { buyerId: true } }
       }
     })
     if (!lead) return res.status(404).json({ error: 'Not found' })
-    
+
     // Bids'leri anonim hale getir (kendi teklifleri hariç)
     const isBuyer = !!(lead.sale && req.user?.id && lead.sale.buyerId === req.user.id)
     const isOwner = !!(req.user?.id && lead.ownerId && req.user.id === lead.ownerId)
@@ -270,7 +271,21 @@ export default function leadsRouter(prisma, io) {
       privateDetails: isBuyer || isOwner || isAdmin ? lead.privateDetails : null,
       bids: anonymizeBids(lead.bids, req.user?.id)
     }
-    
+
+    // Log activity
+    if (req.user?.id) {
+      const { ipAddress, userAgent } = extractRequestInfo(req)
+      await logActivity({
+        userId: req.user.id,
+        action: ActivityTypes.VIEW_LEAD,
+        details: { leadTitle: lead.title },
+        entityType: 'lead',
+        entityId: lead.id,
+        ipAddress,
+        userAgent
+      })
+    }
+
     res.json(anonymizedLead)
   })
 
@@ -285,11 +300,37 @@ export default function leadsRouter(prisma, io) {
   router.post('/:id/watch', async (req, res) => {
     if (!req.user) return res.status(401).json({ error: 'Unauthorized' })
     const exists = await prisma.leadWatch.findUnique({ where: { leadId_userId: { leadId: req.params.id, userId: req.user.id } } })
+
+    const { ipAddress, userAgent } = extractRequestInfo(req)
+
     if (exists) {
       await prisma.leadWatch.delete({ where: { leadId_userId: { leadId: req.params.id, userId: req.user.id } } })
+
+      // Log remove watch
+      await logActivity({
+        userId: req.user.id,
+        action: ActivityTypes.REMOVE_WATCH,
+        entityType: 'lead',
+        entityId: req.params.id,
+        ipAddress,
+        userAgent
+      })
+
       return res.json({ watching: false })
     }
+
     await prisma.leadWatch.create({ data: { leadId: req.params.id, userId: req.user.id } })
+
+    // Log add watch
+    await logActivity({
+      userId: req.user.id,
+      action: ActivityTypes.ADD_WATCH,
+      entityType: 'lead',
+      entityId: req.params.id,
+      ipAddress,
+      userAgent
+    })
+
     res.json({ watching: true })
   })
 
@@ -378,6 +419,19 @@ export default function leadsRouter(prisma, io) {
         ownerId: req.user.id
       }
     })
+
+    // Log activity
+    const { ipAddress, userAgent } = extractRequestInfo(req)
+    await logActivity({
+      userId: req.user.id,
+      action: ActivityTypes.CREATE_LEAD,
+      details: { leadTitle: title, leadId: customId },
+      entityType: 'lead',
+      entityId: lead.id,
+      ipAddress,
+      userAgent
+    })
+
     res.status(201).json(lead)
   })
 
@@ -394,6 +448,19 @@ export default function leadsRouter(prisma, io) {
       where: { id: req.params.id },
       data: parsed.data
     })
+
+    // Log activity
+    const { ipAddress, userAgent } = extractRequestInfo(req)
+    await logActivity({
+      userId: req.user.id,
+      action: ActivityTypes.EDIT_LEAD,
+      details: { leadTitle: updated.title },
+      entityType: 'lead',
+      entityId: req.params.id,
+      ipAddress,
+      userAgent
+    })
+
     // Canlı yayın: lead güncellendi
     io.to(`lead:${req.params.id}`).emit('lead:update', { leadId: req.params.id, lead: updated })
     res.json(updated)
@@ -402,7 +469,22 @@ export default function leadsRouter(prisma, io) {
   // Admin delete (cascade bids)
   router.delete('/:id', async (req, res) => {
     if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') return res.status(403).json({ error: 'Forbidden' })
+
+    const lead = await prisma.lead.findUnique({ where: { id: req.params.id } })
     await prisma.lead.delete({ where: { id: req.params.id } })
+
+    // Log activity
+    const { ipAddress, userAgent } = extractRequestInfo(req)
+    await logActivity({
+      userId: req.user.id,
+      action: ActivityTypes.DELETE_LEAD,
+      details: { leadTitle: lead?.title },
+      entityType: 'lead',
+      entityId: req.params.id,
+      ipAddress,
+      userAgent
+    })
+
     io.to(`lead:${req.params.id}`).emit('lead:deleted', { leadId: req.params.id })
     res.json({ ok: true })
   })

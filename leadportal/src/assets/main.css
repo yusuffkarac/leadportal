@@ -1053,6 +1053,7 @@ a,
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: center;
+  font-weight: 600;
 }
 
 .quick-bid-btn:hover:not(:disabled) {

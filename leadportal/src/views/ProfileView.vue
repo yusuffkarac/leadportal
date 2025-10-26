@@ -169,6 +169,57 @@
           </form>
         </div>
 
+        <!-- İki Faktörlü Kimlik Doğrulama (2FA) -->
+        <div class="profile-section">
+          <div class="section-header">
+            <h2>İki Faktörlü Kimlik Doğrulama (2FA)</h2>
+            <p class="section-description">
+              Hesabınızı ekstra bir güvenlik katmanı ile koruyun
+            </p>
+          </div>
+
+          <!-- 2FA Aktif Değil -->
+          <div v-if="!twoFactorEnabled" class="twofa-disabled">
+            <div class="twofa-info">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <p>2FA şu anda aktif değil. Hesabınızı korumak için 2FA'yı etkinleştirin.</p>
+            </div>
+            <button
+              class="btn btn-primary"
+              @click="initiate2FA"
+              :disabled="is2FALoading"
+            >
+              <span v-if="is2FALoading">Yükleniyor...</span>
+              <span v-else>2FA'yı Etkinleştir</span>
+            </button>
+          </div>
+
+          <!-- 2FA Aktif -->
+          <div v-else class="twofa-enabled">
+            <div class="twofa-status">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="check-icon">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              <div>
+                <h3>2FA Aktif</h3>
+                <p>Hesabınız iki faktörlü kimlik doğrulama ile korunuyor</p>
+              </div>
+            </div>
+            <button
+              class="btn btn-danger"
+              @click="disable2FA"
+              :disabled="is2FALoading"
+            >
+              <span v-if="is2FALoading">Devre Dışı Bırakılıyor...</span>
+              <span v-else>2FA'yı Devre Dışı Bırak</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Hesap Bilgileri -->
         <div class="profile-section">
           <div class="section-header">
@@ -189,6 +240,114 @@
             </div>
           </div>
         </div>
+
+      <!-- 2FA Setup Modal -->
+      <div v-if="show2FAModal" class="modal-overlay" @click.self="close2FAModal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>2FA Kurulumu</h3>
+            <button class="close-btn" @click="close2FAModal">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <div class="setup-step">
+              <h4>1. Authenticator uygulamasını indirin</h4>
+              <p>Google Authenticator, Authy veya benzeri bir uygulama kullanın.</p>
+            </div>
+
+            <div class="setup-step">
+              <h4>2. QR kodunu tarayın</h4>
+              <div class="qr-code-container">
+                <img v-if="qrCodeUrl" :src="qrCodeUrl" alt="QR Code" />
+              </div>
+              <p class="secret-key">Veya bu kodu manuel olarak girin: <code>{{ secretKey }}</code></p>
+            </div>
+
+            <div class="setup-step">
+              <h4>3. Doğrulama kodunu girin</h4>
+              <div class="form-group">
+                <input
+                  type="text"
+                  v-model="verificationCode"
+                  class="form-input verification-input"
+                  placeholder="6 haneli kod"
+                  maxlength="6"
+                  @input="verificationCode = verificationCode.replace(/[^0-9]/g, '')"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-secondary" @click="close2FAModal">İptal</button>
+            <button
+              class="btn btn-primary"
+              @click="verify2FA"
+              :disabled="!verificationCode || verificationCode.length !== 6 || is2FALoading"
+            >
+              <span v-if="is2FALoading">Doğrulanıyor...</span>
+              <span v-else>Doğrula ve Etkinleştir</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2FA Disable Confirmation Modal -->
+      <div v-if="showDisable2FAModal" class="modal-overlay" @click.self="showDisable2FAModal = false">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>2FA'yı Devre Dışı Bırak</h3>
+            <button class="close-btn" @click="showDisable2FAModal = false">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <p>2FA'yı devre dışı bırakmak için lütfen doğrulama kodunu veya şifrenizi girin:</p>
+
+            <div class="form-group">
+              <label>2FA Kodu (varsa)</label>
+              <input
+                type="text"
+                v-model="disable2FACode"
+                class="form-input"
+                placeholder="6 haneli kod"
+                maxlength="6"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Veya Şifreniz</label>
+              <input
+                type="password"
+                v-model="disable2FAPassword"
+                class="form-input"
+                placeholder="Şifrenizi girin"
+              />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-secondary" @click="showDisable2FAModal = false">İptal</button>
+            <button
+              class="btn btn-danger"
+              @click="confirmDisable2FA"
+              :disabled="(!disable2FACode && !disable2FAPassword) || is2FALoading"
+            >
+              <span v-if="is2FALoading">Devre Dışı Bırakılıyor...</span>
+              <span v-else>Devre Dışı Bırak</span>
+            </button>
+          </div>
+        </div>
+      </div>
       </div>
     </div>
   </div>
@@ -220,6 +379,17 @@ const passwordForm = reactive({
   newPassword: '',
   confirmPassword: ''
 })
+
+// 2FA state
+const twoFactorEnabled = ref(false)
+const is2FALoading = ref(false)
+const show2FAModal = ref(false)
+const showDisable2FAModal = ref(false)
+const qrCodeUrl = ref('')
+const secretKey = ref('')
+const verificationCode = ref('')
+const disable2FACode = ref('')
+const disable2FAPassword = ref('')
 
 const displayName = computed(() => {
   if (user.value?.firstName && user.value?.lastName) {
@@ -367,8 +537,82 @@ function formatDate(dateString) {
   })
 }
 
+// 2FA Functions
+async function load2FAStatus() {
+  try {
+    const response = await api.get('/2fa/status')
+    twoFactorEnabled.value = response.data.enabled
+  } catch (err) {
+    console.error('2FA durum yüklenemedi:', err)
+  }
+}
+
+async function initiate2FA() {
+  is2FALoading.value = true
+  try {
+    const response = await api.post('/2fa/enable')
+    qrCodeUrl.value = response.data.qrCode
+    secretKey.value = response.data.secret
+    show2FAModal.value = true
+  } catch (err) {
+    console.error('2FA başlatılamadı:', err)
+    error(err.response?.data?.error || '2FA başlatılırken hata oluştu')
+  } finally {
+    is2FALoading.value = false
+  }
+}
+
+async function verify2FA() {
+  is2FALoading.value = true
+  try {
+    await api.post('/2fa/verify', {
+      token: verificationCode.value
+    })
+    success('2FA başarıyla etkinleştirildi')
+    twoFactorEnabled.value = true
+    close2FAModal()
+  } catch (err) {
+    console.error('2FA doğrulama hatası:', err)
+    error(err.response?.data?.error || 'Geçersiz kod')
+  } finally {
+    is2FALoading.value = false
+  }
+}
+
+function close2FAModal() {
+  show2FAModal.value = false
+  verificationCode.value = ''
+  qrCodeUrl.value = ''
+  secretKey.value = ''
+}
+
+function disable2FA() {
+  showDisable2FAModal.value = true
+}
+
+async function confirmDisable2FA() {
+  is2FALoading.value = true
+  try {
+    await api.post('/2fa/disable', {
+      token: disable2FACode.value || undefined,
+      password: disable2FAPassword.value || undefined
+    })
+    success('2FA başarıyla devre dışı bırakıldı')
+    twoFactorEnabled.value = false
+    showDisable2FAModal.value = false
+    disable2FACode.value = ''
+    disable2FAPassword.value = ''
+  } catch (err) {
+    console.error('2FA devre dışı bırakma hatası:', err)
+    error(err.response?.data?.error || '2FA devre dışı bırakılırken hata oluştu')
+  } finally {
+    is2FALoading.value = false
+  }
+}
+
 onMounted(() => {
   loadUserProfile()
+  load2FAStatus()
 })
 </script>
 
@@ -582,36 +826,235 @@ onMounted(() => {
   font-weight: 500;
 }
 
+/* 2FA Styles */
+.section-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+.twofa-disabled,
+.twofa-enabled {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.twofa-info,
+.twofa-status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.twofa-info svg {
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.twofa-status svg.check-icon {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.twofa-status h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.twofa-status p,
+.twofa-info p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.setup-step {
+  margin-bottom: 1.5rem;
+}
+
+.setup-step:last-child {
+  margin-bottom: 0;
+}
+
+.setup-step h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.setup-step p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.qr-code-container {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.qr-code-container img {
+  max-width: 100%;
+  height: auto;
+}
+
+.secret-key {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+.secret-key code {
+  background: #f3f4f6;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-family: monospace;
+  color: #1f2937;
+  font-size: 0.875rem;
+}
+
+.verification-input {
+  text-align: center;
+  font-size: 1.5rem;
+  letter-spacing: 0.5rem;
+  font-weight: 600;
+}
+
 @media (max-width: 768px) {
   .profile-container {
     padding: 0 0.5rem;
   }
-  
+
   .profile-header h1 {
     font-size: 2rem;
   }
-  
+
   .profile-section {
     padding: 1.5rem;
   }
-  
+
   .profile-photo-section {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .current-photo {
     width: 100px;
     height: 100px;
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
   }
-  
+
   .photo-actions {
     flex-direction: row;
     justify-content: center;
+  }
+
+  .twofa-disabled,
+  .twofa-enabled {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .twofa-info,
+  .twofa-status {
+    width: 100%;
+  }
+
+  .twofa-disabled button,
+  .twofa-enabled button {
+    width: 100%;
+  }
+
+  .modal-content {
+    max-width: 100%;
+    margin: 0;
   }
 }
 </style>

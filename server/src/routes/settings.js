@@ -1,5 +1,6 @@
 import express from 'express'
 import { PrismaClient } from '../prismaClient.js'
+import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activityLogger.js'
 
 const router = express.Router()
 const prisma = new PrismaClient()
@@ -375,6 +376,20 @@ router.post('/', requireAdmin, async (req, res) => {
       }
     })
 
+    // Activity log
+    try {
+      const { ipAddress, userAgent } = extractRequestInfo(req)
+      await logActivity({
+        userId: req.user.id,
+        action: ActivityTypes.CHANGE_SETTINGS,
+        details: { settingType: 'general' },
+        ipAddress,
+        userAgent
+      })
+    } catch (e) {
+      console.error('Activity log error:', e.message)
+    }
+
     res.json({ message: 'Ayarlar başarıyla kaydedildi', settings })
   } catch (error) {
     console.error('Settings update error:', error)
@@ -478,6 +493,20 @@ router.post('/branding', requireAdmin, async (req, res) => {
         socialMedia: socialMedia || null
       }
     })
+
+    // Activity log
+    try {
+      const { ipAddress, userAgent } = extractRequestInfo(req)
+      await logActivity({
+        userId: req.user.id,
+        action: ActivityTypes.CHANGE_BRANDING,
+        details: { companyName },
+        ipAddress,
+        userAgent
+      })
+    } catch (e) {
+      console.error('Activity log error:', e.message)
+    }
 
     res.json({ message: 'Branding ayarları başarıyla kaydedildi', settings })
   } catch (error) {
@@ -589,6 +618,20 @@ router.post('/homepage', requireAdmin, async (req, res) => {
         ...updateData
       }
     })
+
+    // Activity log
+    try {
+      const { ipAddress, userAgent } = extractRequestInfo(req)
+      await logActivity({
+        userId: req.user.id,
+        action: ActivityTypes.CHANGE_SETTINGS,
+        details: { settingType: 'homepage' },
+        ipAddress,
+        userAgent
+      })
+    } catch (e) {
+      console.error('Activity log error:', e.message)
+    }
 
     res.json({
       message: 'Ana sayfa ayarları başarıyla kaydedildi',

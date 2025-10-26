@@ -171,7 +171,6 @@ onMounted(async () => {
     const currentBids = lead.value?.bids || []
     lead.value = { ...lead.value, ...payload.lead, bids: currentBids }
   })
-  loadLead()
 })
 
 onUnmounted(() => {

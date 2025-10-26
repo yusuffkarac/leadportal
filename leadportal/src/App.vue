@@ -346,6 +346,7 @@ function closeAdminDropdown() {
         <RouterLink to="/leads">Leadler</RouterLink>
         <RouterLink v-if="canAccessAbout" to="/about">Hakkında</RouterLink>
         <RouterLink v-if="canAccessFAQ" to="/faq">FAQ</RouterLink>
+        <RouterLink v-if="isAuthed" to="/dashboard">Dashboard</RouterLink>
         <RouterLink v-if="isAuthed && canAccessPurchased" to="/purchased-leads">Satın Aldıklarım</RouterLink>
         <RouterLink v-if="!isAuthed" to="/login">Giriş</RouterLink>
         
@@ -358,94 +359,136 @@ function closeAdminDropdown() {
             </svg>
           </button>
           <div v-if="isAdminDropdownOpen" class="admin-dropdown-menu">
-            <RouterLink to="/admin/leads" class="menu-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/>
-                <rect x="9" y="11" width="6" height="11"/>
-                <path d="M9 7v4"/>
-                <path d="M15 7v4"/>
-                <path d="M9 7a4 4 0 0 1 4-4 4 4 0 0 1 4 4v4"/>
-              </svg>
-              Leadler
-            </RouterLink>
-            <RouterLink to="/admin/users/new" class="menu-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <line x1="19" y1="8" x2="19" y2="14"/>
-                <line x1="22" y1="11" x2="16" y2="11"/>
-              </svg>
-              Kullanıcılar
-            </RouterLink>
-            
-            <RouterLink to="/admin/statistics" class="menu-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="20" x2="12" y2="10"/>
-                <line x1="18" y1="20" x2="18" y2="4"/>
-                <line x1="6" y1="20" x2="6" y2="16"/>
-              </svg>
-              İstatistikler
-            </RouterLink>
-            <RouterLink to="/admin/settings" class="menu-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-              </svg>
-              Ayarlar
-            </RouterLink>
-            <RouterLink to="/admin/user-types" class="menu-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-              </svg>
-              Kullanıcı Tipleri
-            </RouterLink>
-            <RouterLink to="/admin/lead-type-permissions" class="menu-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                <path d="M9 12l2 2 4-4"/>
-              </svg>
-              Lead Tipi Yetkileri
-            </RouterLink>
-            <RouterLink to="/admin/faq" class="menu-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
-              </svg>
-              FAQ Yönetimi
-            </RouterLink>
-            <RouterLink to="/admin/about" class="menu-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12"/>
-                <path d="M16 6a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/>
-              </svg>
-              Hakkında Yönetimi
-            </RouterLink>
-            <RouterLink to="/admin/homepage-settings" class="menu-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 9.5 12 3l9 6.5"/>
-                <path d="M19 10v10h-5v-6h-4v6H5V10"/>
-              </svg>
-              Ana Sayfa Ayarları
-            </RouterLink>
-            <RouterLink to="/admin/email-sms-settings" class="menu-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                <polyline points="22,6 12,13 2,6"/>
-              </svg>
-              Mail/SMS Ayarları
-            </RouterLink>
-            <RouterLink to="/admin/design-settings" class="menu-item" style="display: none!important;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1m10.5-5.5L15 3.5m-6 6L3.5 15m6-6L15 20.5m-6-6L3.5 9"/>
-              </svg>
-              Tasarım Ayarları
-            </RouterLink>
+            <!-- Yönetim Kategorisi -->
+            <div class="menu-category">
+              <div class="category-header">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/>
+                  <rect x="9" y="11" width="6" height="11"/>
+                </svg>
+                <span>Yönetim</span>
+              </div>
+              <RouterLink to="/admin/leads" class="menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/>
+                  <rect x="9" y="11" width="6" height="11"/>
+                </svg>
+                Leadler
+              </RouterLink>
+              <RouterLink to="/admin/users" class="menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <line x1="19" y1="8" x2="19" y2="14"/>
+                  <line x1="22" y1="11" x2="16" y2="11"/>
+                </svg>
+                Kullanıcılar
+              </RouterLink>
+              <RouterLink to="/admin/statistics" class="menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="20" x2="12" y2="10"/>
+                  <line x1="18" y1="20" x2="18" y2="4"/>
+                  <line x1="6" y1="20" x2="6" y2="16"/>
+                </svg>
+                İstatistikler
+              </RouterLink>
+              <RouterLink to="/admin/activity-log" class="menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 3h18v18H3z"/>
+                  <polyline points="9 11 12 14 15 10"/>
+                  <line x1="3" y1="8" x2="21" y2="8"/>
+                </svg>
+                Aktivite Geçmişi
+              </RouterLink>
+            </div>
+
+            <!-- Ayarlar Kategorisi -->
+            <div class="menu-category">
+              <div class="category-header">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+                <span>Ayarlar</span>
+              </div>
+              <RouterLink to="/admin/settings" class="menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+                Ayarlar
+              </RouterLink>
+              <RouterLink to="/admin/email-sms-settings" class="menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                Mail/SMS Ayarları
+              </RouterLink>
+            </div>
+
+            <!-- Yetkiler Kategorisi -->
+            <div class="menu-category">
+              <div class="category-header">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span>Yetkiler</span>
+              </div>
+              <RouterLink to="/admin/user-types" class="menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                Kullanıcı Tipleri
+              </RouterLink>
+              <RouterLink to="/admin/lead-type-permissions" class="menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <path d="M9 12l2 2 4-4"/>
+                </svg>
+                Lead Tipi Yetkileri
+              </RouterLink>
+            </div>
+
+            <!-- İçerik Yönetimi Kategorisi -->
+            <div class="menu-category">
+              <div class="category-header">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14,2 14,8 20,8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                  <polyline points="10,9 9,9 8,9"/>
+                </svg>
+                <span>İçerik Yönetimi</span>
+              </div>
+              <RouterLink to="/admin/faq" class="menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                FAQ Yönetimi
+              </RouterLink>
+              <RouterLink to="/admin/about" class="menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12"/>
+                  <path d="M16 6a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/>
+                </svg>
+                Hakkında Yönetimi
+              </RouterLink>
+              <RouterLink to="/admin/homepage-settings" class="menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 9.5 12 3l9 6.5"/>
+                  <path d="M19 10v10h-5v-6h-4v6H5V10"/>
+                </svg>
+                Ana Sayfa Yönetimi
+              </RouterLink>
+            </div>
           </div>
         </div>
         <UserProfile 
@@ -525,6 +568,16 @@ function closeAdminDropdown() {
           <span>FAQ</span>
         </RouterLink>
         
+        <RouterLink v-if="isAuthed" to="/dashboard" @click="closeMobileMenu" class="mobile-nav-link">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+          </svg>
+          <span>Dashboard</span>
+        </RouterLink>
+        
         <RouterLink v-if="isAuthed && canAccessPurchased" to="/purchased-leads" @click="closeMobileMenu" class="mobile-nav-link">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
@@ -545,16 +598,24 @@ function closeAdminDropdown() {
         
         <!-- Admin Section -->
         <div v-if="isAuthed && (userTypeId === 'ADMIN' || userTypeId === 'SUPERADMIN')" class="mobile-admin-section">
-          <div class="mobile-admin-label">Admin</div>
-          
+          <!-- Yönetim Kategorisi -->
+          <div class="mobile-category-label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/>
+              <rect x="9" y="11" width="6" height="11"/>
+            </svg>
+            Yönetim
+          </div>
+
           <RouterLink to="/admin/leads" @click="closeMobileMenu" class="mobile-nav-link">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/>
+              <rect x="9" y="11" width="6" height="11"/>
             </svg>
             <span>Leadler</span>
           </RouterLink>
-          
-          <RouterLink to="/admin/users/new" @click="closeMobileMenu" class="mobile-nav-link">
+
+          <RouterLink to="/admin/users" @click="closeMobileMenu" class="mobile-nav-link">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
               <circle cx="8.5" cy="7" r="4"/>
@@ -563,8 +624,7 @@ function closeAdminDropdown() {
             </svg>
             <span>Kullanıcılar</span>
           </RouterLink>
-         
-          
+
           <RouterLink to="/admin/statistics" @click="closeMobileMenu" class="mobile-nav-link">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="12" y1="20" x2="12" y2="10"/>
@@ -574,14 +634,49 @@ function closeAdminDropdown() {
             <span>İstatistikler</span>
           </RouterLink>
 
+          <RouterLink to="/admin/activity-log" @click="closeMobileMenu" class="mobile-nav-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 3h18v18H3z"/>
+              <polyline points="9 11 12 14 15 10"/>
+              <line x1="3" y1="8" x2="21" y2="8"/>
+            </svg>
+            <span>Aktivite Geçmişi</span>
+          </RouterLink>
+
+          <!-- Ayarlar Kategorisi -->
+          <div class="mobile-category-label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            Ayarlar
+          </div>
+
           <RouterLink to="/admin/settings" @click="closeMobileMenu" class="mobile-nav-link">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3"/>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
             </svg>
             <span>Ayarlar</span>
           </RouterLink>
-          
+
+
+          <RouterLink to="/admin/email-sms-settings" @click="closeMobileMenu" class="mobile-nav-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <span>Mail/SMS Ayarları</span>
+          </RouterLink>
+
+          <!-- Yetkiler Kategorisi -->
+          <div class="mobile-category-label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Yetkiler
+          </div>
+
           <RouterLink to="/admin/user-types" @click="closeMobileMenu" class="mobile-nav-link">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -591,7 +686,7 @@ function closeAdminDropdown() {
             </svg>
             <span>Kullanıcı Tipleri</span>
           </RouterLink>
-          
+
           <RouterLink to="/admin/lead-type-permissions" @click="closeMobileMenu" class="mobile-nav-link">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -599,7 +694,18 @@ function closeAdminDropdown() {
             </svg>
             <span>Lead Tipi Yetkileri</span>
           </RouterLink>
-          
+
+          <!-- İçerik Yönetimi Kategorisi -->
+          <div class="mobile-category-label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14,2 14,8 20,8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            İçerik Yönetimi
+          </div>
+
           <RouterLink to="/admin/faq" @click="closeMobileMenu" class="mobile-nav-link">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"/>
@@ -608,7 +714,7 @@ function closeAdminDropdown() {
             </svg>
             <span>FAQ Yönetimi</span>
           </RouterLink>
-          
+
           <RouterLink to="/admin/about" @click="closeMobileMenu" class="mobile-nav-link">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"/>
@@ -617,29 +723,13 @@ function closeAdminDropdown() {
             </svg>
             <span>Hakkında Yönetimi</span>
           </RouterLink>
-          
+
           <RouterLink to="/admin/homepage-settings" @click="closeMobileMenu" class="mobile-nav-link">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M3 9.5 12 3l9 6.5"/>
               <path d="M19 10v10h-5v-6h-4v6H5V10"/>
             </svg>
-            <span>Ana Sayfa Ayarları</span>
-          </RouterLink>
-          
-          <RouterLink to="/admin/email-sms-settings" @click="closeMobileMenu" class="mobile-nav-link">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-              <polyline points="22,6 12,13 2,6"/>
-            </svg>
-            <span>Mail/SMS Ayarları</span>
-          </RouterLink>
-          
-          <RouterLink to="/admin/design-settings" @click="closeMobileMenu" class="mobile-nav-link" style="display: none!important;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="3"/>
-              <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1m10.5-5.5L15 3.5m-6 6L3.5 15m6-6L15 20.5m-6-6L3.5 9"/>
-            </svg>
-            <span>Tasarım Ayarları</span>
+            <span>Ana Sayfa Yönetimi</span>
           </RouterLink>
         </div>
         
@@ -856,7 +946,7 @@ nav a:first-of-type {
   position: absolute;
   top: 100%;
   left: 0;
-  min-width: 200px;
+  min-width: 15rem;
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
@@ -875,42 +965,56 @@ nav a:first-of-type {
   pointer-events: auto;
 }
 
-.admin-dropdown-menu a {
+/* Menu Categories */
+.menu-category {
+  padding: 0.5rem 0;
+}
+
+.menu-category:not(:last-child) {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #f9fafb;
+}
+
+.category-header svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.menu-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  padding: 0.625rem 1rem 0.625rem 2.25rem;
   color: #374151;
   text-decoration: none;
   transition: all 0.2s ease;
-  border-bottom: 1px solid #f3f4f6;
-  transform: translateX(-10px);
-  opacity: 0;
-  animation: slideInFromLeft 0.3s ease forwards;
+  font-size: 0.875rem;
 }
 
-.admin-dropdown-menu a:nth-child(1) { animation-delay: 0.05s; }
-.admin-dropdown-menu a:nth-child(2) { animation-delay: 0.1s; }
-.admin-dropdown-menu a:nth-child(3) { animation-delay: 0.15s; }
-.admin-dropdown-menu a:nth-child(4) { animation-delay: 0.2s; }
-
-.admin-dropdown-menu a:last-child {
-  border-bottom: none;
-}
-
-.admin-dropdown-menu a:hover {
+.menu-item:hover {
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   color: #1f2937;
-  transform: translateX(5px);
   box-shadow: inset 3px 0 0 var(--text);
 }
 
-.admin-dropdown-menu a svg {
+.menu-item svg {
   transition: transform 0.2s ease;
   flex-shrink: 0;
 }
 
-.admin-dropdown-menu a:hover svg {
+.menu-item:hover svg {
   transform: scale(1.1);
   color: var(--text);
 }
@@ -928,14 +1032,27 @@ nav a:first-of-type {
   padding-top: 0.5rem;
 }
 
-.mobile-admin-label {
+.mobile-category-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--primary);
+  color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 0.5rem 1rem;
-  margin-bottom: 0.25rem;
+  padding: 0.75rem 1rem 0.5rem;
+  margin-top: 0.5rem;
+  background: #f9fafb;
+}
+
+.mobile-category-label:first-child {
+  margin-top: 0;
+}
+
+.mobile-category-label svg {
+  flex-shrink: 0;
+  opacity: 0.7;
 }
 
 .mobile-user-section {

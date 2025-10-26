@@ -136,12 +136,15 @@ export default (prisma) => {
         return res.status(400).json({ message: 'Geçersiz yetkilendirme verisi' })
       }
 
-      // Clear existing permissions
-      await prisma.userTypePermission.deleteMany({})
-
-      // Create new permissions
-      const permissionData = []
+      // Her kullanıcı tipi için ayrı ayrı işle
       for (const [userTypeId, pagePermissions] of Object.entries(permissions)) {
+        // Bu kullanıcı tipinin mevcut yetkilendirmelerini sil
+        await prisma.userTypePermission.deleteMany({
+          where: { userTypeId }
+        })
+
+        // Yeni yetkilendirmeleri oluştur
+        const permissionData = []
         for (const [pageId, hasAccess] of Object.entries(pagePermissions)) {
           permissionData.push({
             userTypeId,
@@ -149,12 +152,12 @@ export default (prisma) => {
             hasAccess
           })
         }
-      }
 
-      if (permissionData.length > 0) {
-        await prisma.userTypePermission.createMany({
-          data: permissionData
-        })
+        if (permissionData.length > 0) {
+          await prisma.userTypePermission.createMany({
+            data: permissionData
+          })
+        }
       }
 
       res.json({ message: 'Yetkilendirmeler başarıyla kaydedildi' })

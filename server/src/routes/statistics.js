@@ -539,6 +539,83 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
       isSold: lead.isSold
     }));
 
+    // 9. KULLANICI AKTİVİTE İSTATİSTİKLERİ
+    const fiveMinutesAgo = new Date(now);
+    fiveMinutesAgo.setMinutes(fiveMinutesAgo.getMinutes() - 5);
+
+    // Son 10 kullanıcının aktivite bilgileri
+    const recentActiveUsers = await prisma.user.findMany({
+      where: {
+        lastActivity: {
+          not: null
+        }
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        username: true,
+        lastActivity: true,
+        lastIP: true,
+        lastUserAgent: true,
+        createdAt: true
+      },
+      orderBy: {
+        lastActivity: 'desc'
+      },
+      take: 10
+    });
+
+    // Online kullanıcı sayısı (son 5 dakika içinde aktivite gösteren)
+    const onlineUsers = await prisma.user.count({
+      where: {
+        lastActivity: {
+          gte: fiveMinutesAgo
+        }
+      }
+    });
+
+    // User agent'ları parse et (basit versiyon)
+    const userActivityStats = recentActiveUsers.map(user => {
+      const userName = user.firstName
+        ? `${user.firstName} ${user.lastName || ''}`.trim()
+        : user.username || user.email;
+
+      // User agent'tan basit cihaz/tarayıcı bilgisi çıkar
+      let deviceInfo = 'Bilinmeyen Cihaz';
+      if (user.lastUserAgent) {
+        if (user.lastUserAgent.includes('Mobile') || user.lastUserAgent.includes('Android')) {
+          deviceInfo = 'Mobil';
+        } else if (user.lastUserAgent.includes('iPhone') || user.lastUserAgent.includes('iPad')) {
+          deviceInfo = 'iOS';
+        } else {
+          deviceInfo = 'Masaüstü';
+        }
+
+        // Tarayıcı bilgisi
+        if (user.lastUserAgent.includes('Chrome')) deviceInfo += ' - Chrome';
+        else if (user.lastUserAgent.includes('Firefox')) deviceInfo += ' - Firefox';
+        else if (user.lastUserAgent.includes('Safari') && !user.lastUserAgent.includes('Chrome')) deviceInfo += ' - Safari';
+        else if (user.lastUserAgent.includes('Edge')) deviceInfo += ' - Edge';
+      }
+
+      // Online durumu (son 5 dakika)
+      const isOnline = user.lastActivity && new Date(user.lastActivity) >= fiveMinutesAgo;
+
+      return {
+        id: user.id,
+        name: userName,
+        email: user.email,
+        lastActivity: user.lastActivity,
+        lastActivityFormatted: user.lastActivity ? formatTimeAgo(user.lastActivity) : 'Hiç',
+        lastIP: user.lastIP || 'Bilinmiyor',
+        deviceInfo,
+        isOnline,
+        registeredAt: user.createdAt
+      };
+    });
+
     res.json({
       // Mevcut istatistikler
       totalUsers,
@@ -593,10 +670,256 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
         totalWatches,
         watchesLast24h,
         mostWatchedLeads: watchedLeadsData
+      },
+      userActivity: {
+        recentActiveUsers: userActivityStats,
+        onlineUsers
       }
     });
   } catch (error) {
     console.error('İstatistik hatası:', error);
+    res.status(500).json({ error: 'İstatistikler yüklenirken bir hata oluştu' });
+  }
+});
+
+/**
+ * GET /api/statistics/user
+ * Kullanıcı kişisel istatistiklerini getir
+ */
+router.get('/user', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const now = new Date();
+    
+    // Zaman aralıkları
+    const oneDayAgo = new Date(now);
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+    
+    const sevenDaysAgo = new Date(now);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    
+    const thirtyDaysAgo = new Date(now);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const thisMonthStart = new Date();
+    thisMonthStart.setDate(1);
+    thisMonthStart.setHours(0, 0, 0, 0);
+    
+    const lastMonthStart = new Date(thisMonthStart);
+    lastMonthStart.setMonth(lastMonthStart.getMonth() - 1);
+
+    // 1. SATIN ALMA İSTATİSTİKLERİ
+    const purchasedLeads = await prisma.leadSale.findMany({
+      where: { buyerId: userId },
+      include: {
+        lead: {
+          include: {
+            owner: {
+              select: { email: true, firstName: true, lastName: true }
+            }
+          }
+        }
+      },
+      orderBy: { soldAt: 'desc' }
+    });
+
+    const totalSpent = purchasedLeads.reduce((sum, sale) => sum + sale.amount, 0);
+    const avgPurchasePrice = purchasedLeads.length > 0 ? Math.round(totalSpent / purchasedLeads.length) : 0;
+    
+    // Son 30 gün satın almalar
+    const last30DaysPurchases = purchasedLeads.filter(sale => 
+      new Date(sale.soldAt) >= thirtyDaysAgo
+    );
+    
+    const last30DaysSpent = last30DaysPurchases.reduce((sum, sale) => sum + sale.amount, 0);
+    
+    // Bu ay vs geçen ay karşılaştırması
+    const thisMonthPurchases = purchasedLeads.filter(sale => 
+      new Date(sale.soldAt) >= thisMonthStart
+    );
+    
+    const lastMonthPurchases = purchasedLeads.filter(sale => {
+      const saleDate = new Date(sale.soldAt);
+      return saleDate >= lastMonthStart && saleDate < thisMonthStart;
+    });
+    
+    const thisMonthSpent = thisMonthPurchases.reduce((sum, sale) => sum + sale.amount, 0);
+    const lastMonthSpent = lastMonthPurchases.reduce((sum, sale) => sum + sale.amount, 0);
+    const monthlyGrowth = lastMonthSpent > 0 ? 
+      Math.round(((thisMonthSpent - lastMonthSpent) / lastMonthSpent) * 100) : 0;
+
+    // 2. TEKLİF İSTATİSTİKLERİ
+    const userBids = await prisma.bid.findMany({
+      where: { userId },
+      include: {
+        lead: {
+          select: { 
+            id: true, 
+            title: true, 
+            isSold: true, 
+            sale: { select: { buyerId: true, amount: true } }
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const totalBids = userBids.length;
+    const wonBids = userBids.filter(bid => 
+      bid.lead.isSold && bid.lead.sale?.buyerId === userId
+    ).length;
+    
+    const bidWinRate = totalBids > 0 ? Math.round((wonBids / totalBids) * 100) : 0;
+    
+    // Son 30 gün teklifler
+    const last30DaysBids = userBids.filter(bid => 
+      new Date(bid.createdAt) >= thirtyDaysAgo
+    );
+
+    // 3. WATCHLIST İSTATİSTİKLERİ
+    const watchlist = await prisma.leadWatch.findMany({
+      where: { userId },
+      include: {
+        lead: {
+          select: { 
+            id: true, 
+            title: true, 
+            isSold: true, 
+            sale: { select: { buyerId: true } }
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const totalWatched = watchlist.length;
+    const purchasedFromWatchlist = watchlist.filter(watch => 
+      watch.lead.isSold && watch.lead.sale?.buyerId === userId
+    ).length;
+    
+    const watchlistConversionRate = totalWatched > 0 ? 
+      Math.round((purchasedFromWatchlist / totalWatched) * 100) : 0;
+
+    // 4. COĞRAFİ ANALİZ
+    const postalCodeStats = {};
+    purchasedLeads.forEach(sale => {
+      const postalCode = sale.lead.postalCode || 'Belirtilmemiş';
+      if (!postalCodeStats[postalCode]) {
+        postalCodeStats[postalCode] = { count: 0, totalSpent: 0 };
+      }
+      postalCodeStats[postalCode].count++;
+      postalCodeStats[postalCode].totalSpent += sale.amount;
+    });
+
+    const topPostalCodes = Object.entries(postalCodeStats)
+      .map(([postalCode, stats]) => ({
+        postalCode,
+        count: stats.count,
+        totalSpent: stats.totalSpent,
+        avgSpent: Math.round(stats.totalSpent / stats.count)
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    // 5. ZAMAN ANALİZİ
+    const hourlyActivity = Array(24).fill(0);
+    const dailyActivity = Array(7).fill(0);
+    
+    purchasedLeads.forEach(sale => {
+      const date = new Date(sale.soldAt);
+      hourlyActivity[date.getHours()]++;
+      dailyActivity[date.getDay()]++;
+    });
+
+    // En aktif saatler
+    const peakHours = hourlyActivity
+      .map((count, hour) => ({ hour, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 3);
+
+    // 6. PERFORMANS METRİKLERİ
+    const recentPurchases = purchasedLeads.slice(0, 5);
+    const recentBids = userBids.slice(0, 5);
+    const recentWatchlist = watchlist.slice(0, 5);
+
+    // 7. BAŞARIM ROZETLERİ
+    const achievements = [];
+    
+    if (purchasedLeads.length >= 10) achievements.push({ name: 'Deneyimli Alıcı', description: '10+ lead satın aldı' });
+    if (bidWinRate >= 50) achievements.push({ name: 'Uzman Teklifçi', description: '%50+ kazanma oranı' });
+    if (totalSpent >= 10000) achievements.push({ name: 'Büyük Yatırımcı', description: '10.000+ TL harcama' });
+    if (thisMonthSpent > lastMonthSpent) achievements.push({ name: 'Büyüyen Alıcı', description: 'Aylık artış gösterdi' });
+    if (purchasedFromWatchlist >= 5) achievements.push({ name: 'Planlı Alıcı', description: '5+ watchlist satın alımı' });
+
+    // 8. HEDEFLER VE İLERLEME
+    const monthlyGoal = 5000; // Varsayılan aylık hedef
+    const goalProgress = Math.min(Math.round((thisMonthSpent / monthlyGoal) * 100), 100);
+
+    res.json({
+      // Genel istatistikler
+      totalPurchases: purchasedLeads.length,
+      totalSpent,
+      avgPurchasePrice,
+      totalBids,
+      wonBids,
+      bidWinRate,
+      totalWatched,
+      purchasedFromWatchlist,
+      watchlistConversionRate,
+      
+      // Zaman bazlı analizler
+      last30Days: {
+        purchases: last30DaysPurchases.length,
+        spent: last30DaysSpent,
+        bids: last30DaysBids.length
+      },
+      
+      monthlyComparison: {
+        thisMonth: { purchases: thisMonthPurchases.length, spent: thisMonthSpent },
+        lastMonth: { purchases: lastMonthPurchases.length, spent: lastMonthSpent },
+        growth: monthlyGrowth
+      },
+      
+      // Coğrafi analiz
+      topPostalCodes,
+      
+      // Aktivite paternleri
+      peakHours,
+      hourlyActivity,
+      dailyActivity,
+      
+      // Son aktiviteler
+      recentPurchases: recentPurchases.map(sale => ({
+        id: sale.id,
+        leadTitle: sale.lead.title,
+        amount: sale.amount,
+        soldAt: sale.soldAt,
+        seller: sale.lead.owner.email
+      })),
+      
+      recentBids: recentBids.map(bid => ({
+        id: bid.id,
+        leadTitle: bid.lead.title,
+        amount: bid.amount,
+        createdAt: bid.createdAt,
+        won: bid.lead.isSold && bid.lead.sale?.buyerId === userId
+      })),
+      
+      recentWatchlist: recentWatchlist.map(watch => ({
+        id: watch.id,
+        leadTitle: watch.lead.title,
+        watchedAt: watch.createdAt,
+        purchased: watch.lead.isSold && watch.lead.sale?.buyerId === userId
+      })),
+      
+      // Başarımlar ve hedefler
+      achievements,
+      monthlyGoal,
+      goalProgress
+    });
+
+  } catch (error) {
+    console.error('Kullanıcı istatistik hatası:', error);
     res.status(500).json({ error: 'İstatistikler yüklenirken bir hata oluştu' });
   }
 });
