@@ -6,7 +6,7 @@ import LineChart from '@/components/charts/LineChart.vue'
 import BarChart from '@/components/charts/BarChart.vue'
 
 const statistics = ref(null)
-const settings = ref({ defaultCurrency: 'TRY' })
+const settings = ref({ defaultCurrency: 'EUR' })
 const isLoading = ref(true)
 const error = ref('')
 
@@ -91,7 +91,7 @@ async function loadStatistics() {
     ])
 
     statistics.value = statsRes.data
-    settings.value.defaultCurrency = settingsRes.data?.defaultCurrency || 'TRY'
+    settings.value.defaultCurrency = settingsRes.data?.defaultCurrency || 'EUR'
   } catch (err) {
     console.error('İstatistikler yüklenemedi:', err)
     error.value = 'İstatistikler yüklenirken bir hata oluştu.'

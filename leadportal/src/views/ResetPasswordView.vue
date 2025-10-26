@@ -18,9 +18,7 @@
       <!-- Invalid Token -->
       <div v-else-if="tokenError" class="error-state">
         <div class="error-icon">
-          <svg viewBox="0 0 24 24" width="48" height="48">
-            <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-          </svg>
+          <Icon icon="mdi:alert-circle" width="48" height="48" />
         </div>
         <h3>Geçersiz Link</h3>
         <p>{{ tokenError }}</p>
@@ -32,9 +30,7 @@
       <!-- Success State -->
       <div v-else-if="success" class="success-state">
         <div class="success-icon">
-          <svg viewBox="0 0 24 24" width="48" height="48">
-            <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-          </svg>
+          <Icon icon="mdi:check-circle" width="48" height="48" />
         </div>
         <h3>Şifreniz Değiştirildi!</h3>
         <p>{{ success }}</p>
@@ -46,16 +42,12 @@
       <!-- Reset Form -->
       <div v-else>
         <div v-if="userEmail" class="info-box">
-          <svg viewBox="0 0 24 24" width="18" height="18">
-            <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-          </svg>
+          <Icon icon="mdi:information" width="18" height="18" />
           <span>Şifre sıfırlama: <strong>{{ userEmail }}</strong></span>
         </div>
 
         <div v-if="error" class="alert">
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-            <path fill="currentColor" d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>
-          </svg>
+          <Icon icon="mdi:alert-triangle" width="18" height="18" aria-hidden="true" />
           <span>{{ error }}</span>
         </div>
 
@@ -64,9 +56,7 @@
             <span class="label">Yeni Şifre</span>
             <div class="control">
               <span class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="18" height="18">
-                  <path fill="currentColor" d="M17 8V7a5 5 0 0 0-10 0v1H5v12h14V8h-2Zm-8 0V7a3 3 0 0 1 6 0v1H9Zm3 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
-                </svg>
+                <Icon icon="mdi:lock" width="18" height="18" />
               </span>
               <input
                 class="input"
@@ -85,12 +75,8 @@
                 :aria-pressed="showPassword"
                 :title="showPassword ? 'Gizle' : 'Göster'"
               >
-                <svg v-if="showPassword" viewBox="0 0 24 24" width="18" height="18">
-                  <path fill="currentColor" d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0-5C7 3 2.73 6.11 1 12c1.73 5.89 6 9 11 9s9.27-3.11 11-9c-1.73-5.89-6-9-11-9Z"/>
-                </svg>
-                <svg v-else viewBox="0 0 24 24" width="18" height="18">
-                  <path fill="currentColor" d="M2 5.27 3.28 4 20 20.72 18.73 22l-2.4-2.4A12.52 12.52 0 0 1 12 21C7 21 2.73 17.89 1 12a18.46 18.46 0 0 1 5.14-7.11L2 5.27Zm9.77 4.9 2.06 2.06A3 3 0 0 0 11 12a3 3 0 0 0 .77-1.83ZM12 7a5 5 0 0 1 5 5c0 .63-.12 1.22-.34 1.77l4.11 4.11A15.54 15.54 0 0 0 23 12C21.27 6.11 17 3 12 3a11.55 11.55 0 0 0-3.73.63l2.2 2.2C10.96 5.3 11.47 5.25 12 5.25Z"/>
-                </svg>
+                <Icon v-if="showPassword" icon="mdi:eye" width="18" height="18" />
+                <Icon v-else icon="mdi:eye-off" width="18" height="18" />
               </button>
             </div>
             <div v-if="passwordError" class="field-error">{{ passwordError }}</div>
@@ -100,9 +86,7 @@
             <span class="label">Yeni Şifre (Tekrar)</span>
             <div class="control">
               <span class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="18" height="18">
-                  <path fill="currentColor" d="M17 8V7a5 5 0 0 0-10 0v1H5v12h14V8h-2Zm-8 0V7a3 3 0 0 1 6 0v1H9Zm3 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
-                </svg>
+                <Icon icon="mdi:lock" width="18" height="18" />
               </span>
               <input
                 class="input"
@@ -121,12 +105,8 @@
                 :aria-pressed="showConfirmPassword"
                 :title="showConfirmPassword ? 'Gizle' : 'Göster'"
               >
-                <svg v-if="showConfirmPassword" viewBox="0 0 24 24" width="18" height="18">
-                  <path fill="currentColor" d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0-5C7 3 2.73 6.11 1 12c1.73 5.89 6 9 11 9s9.27-3.11 11-9c-1.73-5.89-6-9-11-9Z"/>
-                </svg>
-                <svg v-else viewBox="0 0 24 24" width="18" height="18">
-                  <path fill="currentColor" d="M2 5.27 3.28 4 20 20.72 18.73 22l-2.4-2.4A12.52 12.52 0 0 1 12 21C7 21 2.73 17.89 1 12a18.46 18.46 0 0 1 5.14-7.11L2 5.27Zm9.77 4.9 2.06 2.06A3 3 0 0 0 11 12a3 3 0 0 0 .77-1.83ZM12 7a5 5 0 0 1 5 5c0 .63-.12 1.22-.34 1.77l4.11 4.11A15.54 15.54 0 0 0 23 12C21.27 6.11 17 3 12 3a11.55 11.55 0 0 0-3.73.63l2.2 2.2C10.96 5.3 11.47 5.25 12 5.25Z"/>
-                </svg>
+                <Icon v-if="showConfirmPassword" icon="mdi:eye" width="18" height="18" />
+                <Icon v-else icon="mdi:eye-off" width="18" height="18" />
               </button>
             </div>
             <div v-if="confirmPasswordError" class="field-error">{{ confirmPasswordError }}</div>
@@ -154,6 +134,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import defaultLogo from '@/assets/images/logo.png'
+import { Icon } from '@iconify/vue'
 
 const route = useRoute()
 

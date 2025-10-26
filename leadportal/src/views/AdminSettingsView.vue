@@ -492,9 +492,9 @@
                 <div class="setting-group">
                   <label class="setting-label">Varsayılan Para Birimi</label>
                   <select v-model="settings.defaultCurrency" class="form-select" @change="updateSettings">
+                    <option value="EUR">Euro (€)</option>
                     <option value="TRY">Türk Lirası (₺)</option>
                     <option value="USD">Amerikan Doları ($)</option>
-                    <option value="EUR">Euro (€)</option>
                   </select>
                 </div>
 
@@ -644,7 +644,7 @@ const settings = ref({
   leadPrefix: 'LEAD',
   startingNumber: 1,
   numberType: 'sequential',
-  defaultCurrency: 'TRY',
+  defaultCurrency: 'EUR',
   defaultAuctionDays: 7,
   defaultMinIncrement: 10,
   insuranceTypes: [

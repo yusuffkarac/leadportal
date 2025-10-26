@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import api from '@/utils/axios.js'
+import { Icon } from '@iconify/vue'
 
 const logs = ref([])
 const stats = ref(null)
@@ -183,9 +184,7 @@ onMounted(() => {
         <p class="subtitle">Tüm kullanıcı aktivitelerini izleyin</p>
       </div>
       <button class="refresh-btn" @click="loadLogs" :disabled="isLoading">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-        </svg>
+        <Icon icon="mdi:refresh" width="18" height="18" />
         Yenile
       </button>
     </div>
@@ -194,9 +193,7 @@ onMounted(() => {
     <div v-if="stats" class="stats-grid">
       <div class="stat-card">
         <div class="stat-icon total">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-          </svg>
+          <Icon icon="mdi:chart-line" width="24" height="24" />
         </div>
         <div class="stat-content">
           <span class="stat-label">Toplam Aktivite</span>
@@ -206,10 +203,7 @@ onMounted(() => {
 
       <div class="stat-card">
         <div class="stat-icon success">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M12 6v6l4 2"/>
-          </svg>
+          <Icon icon="mdi:clock-outline" width="24" height="24" />
         </div>
         <div class="stat-content">
           <span class="stat-label">Son 24 Saat</span>
@@ -219,12 +213,7 @@ onMounted(() => {
 
       <div class="stat-card">
         <div class="stat-icon primary">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-            <line x1="16" y1="2" x2="16" y2="6"/>
-            <line x1="8" y1="2" x2="8" y2="6"/>
-            <line x1="3" y1="10" x2="21" y2="10"/>
-          </svg>
+          <Icon icon="mdi:calendar" width="24" height="24" />
         </div>
         <div class="stat-content">
           <span class="stat-label">Son 7 Gün</span>
@@ -234,9 +223,7 @@ onMounted(() => {
 
       <div class="stat-card">
         <div class="stat-icon warning">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-          </svg>
+          <Icon icon="mdi:message-text" width="24" height="24" />
         </div>
         <div class="stat-content">
           <span class="stat-label">Son 30 Gün</span>
@@ -249,10 +236,7 @@ onMounted(() => {
     <div class="filters-section">
       <div class="filter-row">
         <div class="search-box">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="m21 21-4.35-4.35"/>
-          </svg>
+          <Icon icon="mdi:magnify" width="18" height="18" />
           <input
             v-model="searchQuery"
             type="text"
@@ -281,10 +265,7 @@ onMounted(() => {
         </div>
 
         <button class="reset-btn" @click="resetFilters">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="1 4 1 10 7 10"/>
-            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
-          </svg>
+          <Icon icon="mdi:refresh" width="16" height="16" />
           Sıfırla
         </button>
       </div>
@@ -298,24 +279,14 @@ onMounted(() => {
     </div>
 
     <div v-else-if="error" class="error-state">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="8" x2="12" y2="12"/>
-        <line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
+      <Icon icon="mdi:alert-circle" width="48" height="48" />
       <p>{{ error }}</p>
       <button @click="loadLogs" class="retry-btn">Tekrar Dene</button>
     </div>
 
     <div v-else class="logs-content">
       <div v-if="logs.length === 0" class="empty-state">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/>
-          <line x1="16" y1="17" x2="8" y2="17"/>
-          <polyline points="10 9 9 9 8 9"/>
-        </svg>
+        <Icon icon="mdi:file-document-outline" width="64" height="64" />
         <p>Aktivite bulunamadı</p>
       </div>
 
@@ -371,9 +342,7 @@ onMounted(() => {
           :disabled="currentPage === 1"
           @click="changePage(currentPage - 1)"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="15 18 9 12 15 6"/>
-          </svg>
+          <Icon icon="mdi:chevron-left" width="16" height="16" />
           Önceki
         </button>
 
@@ -404,9 +373,7 @@ onMounted(() => {
           @click="changePage(currentPage + 1)"
         >
           Sonraki
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
+          <Icon icon="mdi:chevron-right" width="16" height="16" />
         </button>
       </div>
     </div>

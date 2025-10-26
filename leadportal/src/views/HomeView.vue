@@ -7,7 +7,7 @@ import { formatPrice } from '@/utils/currency.js'
 const showcaseLeads = ref([])
 const isLoadingShowcase = ref(false)
 const showcaseError = ref('')
-const settings = ref({ defaultCurrency: 'TRY', insuranceTypes: [] })
+const settings = ref({ defaultCurrency: 'EUR', insuranceTypes: [] })
 const showScrollIndicator = ref(true)
 
 const defaultHomepageContent = {
@@ -114,13 +114,13 @@ async function loadHomepageSettings() {
     }
 
     settings.value = {
-      defaultCurrency: data.defaultCurrency || 'TRY',
+      defaultCurrency: data.defaultCurrency || 'EUR',
       insuranceTypes: normalizeInsuranceTypes(data.insuranceTypes || [])
     }
   } catch (error) {
     console.error('Ana sayfa ayarları yüklenemedi:', error)
     settings.value = {
-      defaultCurrency: 'TRY',
+      defaultCurrency: 'EUR',
       insuranceTypes: normalizeInsuranceTypes()
     }
     homepageContent.value = JSON.parse(JSON.stringify(defaultHomepageContent))

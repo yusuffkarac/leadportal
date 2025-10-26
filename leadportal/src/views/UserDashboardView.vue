@@ -6,9 +6,7 @@
         <p class="subtitle">Satın alma performansınız ve aktivite analizleriniz</p>
       </div>
       <button class="refresh-btn" @click="loadUserStats" :disabled="isLoading">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-        </svg>
+        <Icon icon="mdi:refresh" width="18" height="18" />
         Yenile
       </button>
     </div>
@@ -19,11 +17,7 @@
     </div>
 
     <div v-else-if="error" class="error-state">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="8" x2="12" y2="12"/>
-        <line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
+      <Icon icon="mdi:alert-circle" width="48" height="48" />
       <p>{{ error }}</p>
       <button @click="loadUserStats" class="retry-btn">Tekrar Dene</button>
     </div>
@@ -34,11 +28,7 @@
         <div class="metric-card">
           <div class="metric-header">
             <span class="metric-label">Toplam Satın Alınan</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-              <line x1="3" y1="6" x2="21" y2="6"/>
-              <path d="M16 10a4 4 0 0 1-8 0"/>
-            </svg>
+            <Icon icon="mdi:shopping" width="20" height="20" />
           </div>
           <div class="metric-value">{{ userStats.totalPurchases }}</div>
           <div class="metric-detail">
@@ -50,10 +40,7 @@
         <div class="metric-card">
           <div class="metric-header">
             <span class="metric-label">Toplam Harcama</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="12" y1="1" x2="12" y2="23"/>
-              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-            </svg>
+            <Icon icon="mdi:currency-eur" width="20" height="20" />
           </div>
           <div class="metric-value">{{ formatPrice(userStats.totalSpent, settings.defaultCurrency) }}</div>
           <div class="metric-detail">
@@ -65,11 +52,7 @@
         <div class="metric-card">
           <div class="metric-header">
             <span class="metric-label">Teklif Kazanma Oranı</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 12l2 2 4-4"/>
-              <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"/>
-              <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"/>
-            </svg>
+            <Icon icon="mdi:target" width="20" height="20" />
           </div>
           <div class="metric-value">%{{ userStats.bidWinRate }}</div>
           <div class="metric-detail">
@@ -81,10 +64,7 @@
         <div class="metric-card">
           <div class="metric-header">
             <span class="metric-label">Watchlist Dönüşüm</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
+            <Icon icon="mdi:eye" width="20" height="20" />
           </div>
           <div class="metric-value">%{{ userStats.watchlistConversionRate }}</div>
           <div class="metric-detail">
@@ -139,14 +119,7 @@
         <div class="achievements-grid">
           <div v-for="achievement in userStats.achievements" :key="achievement.name" class="achievement-card">
             <div class="achievement-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
-                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
-                <path d="M4 22h16"/>
-                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21l-1 .42c-.56.24-1.03-.1-1.03-.7V14.66"/>
-                <path d="M14 14.66V17c0 .55.47.98.97 1.21l1 .42c.56.24 1.03-.1 1.03-.7V14.66"/>
-                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
-              </svg>
+              <Icon icon="mdi:trophy" width="24" height="24" />
             </div>
             <div class="achievement-content">
               <h4>{{ achievement.name }}</h4>
@@ -184,11 +157,7 @@
             <div class="activity-list">
               <div v-for="purchase in userStats.recentPurchases" :key="purchase.id" class="activity-item">
                 <div class="activity-icon purchase">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                    <line x1="3" y1="6" x2="21" y2="6"/>
-                    <path d="M16 10a4 4 0 0 1-8 0"/>
-                  </svg>
+                  <Icon icon="mdi:shopping" width="16" height="16" />
                 </div>
                 <div class="activity-content">
                   <p class="activity-title">{{ purchase.leadTitle }}</p>
@@ -213,11 +182,7 @@
             <div class="activity-list">
               <div v-for="bid in userStats.recentBids" :key="bid.id" class="activity-item">
                 <div class="activity-icon" :class="bid.won ? 'bid-won' : 'bid-lost'">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 12l2 2 4-4"/>
-                    <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"/>
-                    <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"/>
-                  </svg>
+                  <Icon icon="mdi:target" width="16" height="16" />
                 </div>
                 <div class="activity-content">
                   <p class="activity-title">{{ bid.leadTitle }}</p>
@@ -244,10 +209,7 @@
             <div class="activity-list">
               <div v-for="watch in userStats.recentWatchlist" :key="watch.id" class="activity-item">
                 <div class="activity-icon" :class="watch.purchased ? 'watch-purchased' : 'watch-active'">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                  </svg>
+                  <Icon icon="mdi:eye" width="16" height="16" />
                 </div>
                 <div class="activity-content">
                   <p class="activity-title">{{ watch.leadTitle }}</p>
@@ -274,10 +236,11 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/utils/axios.js'
 import { formatPrice } from '@/utils/currency.js'
+import { Icon } from '@iconify/vue'
 
 const router = useRouter()
 const userStats = ref(null)
-const settings = ref({ defaultCurrency: 'TRY' })
+const settings = ref({ defaultCurrency: 'EUR' })
 const isLoading = ref(true)
 const error = ref('')
 
@@ -292,7 +255,7 @@ async function loadUserStats() {
     ])
 
     userStats.value = statsRes.data
-    settings.value.defaultCurrency = settingsRes.data?.defaultCurrency || 'TRY'
+    settings.value.defaultCurrency = settingsRes.data?.defaultCurrency || 'EUR'
   } catch (err) {
     console.error('Kullanıcı istatistikleri yüklenemedi:', err)
     error.value = 'İstatistikler yüklenirken bir hata oluştu.'

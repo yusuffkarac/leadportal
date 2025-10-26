@@ -293,7 +293,7 @@ import jsPDF from 'jspdf'
 const router = useRouter()
 const purchasedLeads = ref([])
 const loading = ref(true)
-const settings = ref({ defaultCurrency: 'TRY' })
+const settings = ref({ defaultCurrency: 'EUR' })
 const searchQuery = ref('')
 const sortBy = ref('date')
 const sortOrder = ref('desc')

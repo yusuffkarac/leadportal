@@ -13,10 +13,7 @@
           :class="{ active: activeTab === 'email' }"
           @click="activeTab = 'email'"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-            <polyline points="22,6 12,13 2,6"/>
-          </svg>
+          <Icon icon="mdi:email" width="20" height="20" />
           Email Template'leri
         </button>
         <button
@@ -24,10 +21,7 @@
           :class="{ active: activeTab === 'sms' }"
           @click="activeTab = 'sms'"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
-            <line x1="12" y1="18" x2="12.01" y2="18"/>
-          </svg>
+          <Icon icon="mdi:cellphone" width="20" height="20" />
           SMS Template'leri
         </button>
       </div>
@@ -37,9 +31,7 @@
         <div class="section-header">
           <h2>Email Template'leri</h2>
           <button class="btn btn-primary" @click="openEmailModal(null)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 5v14M5 12h14"/>
-            </svg>
+            <Icon icon="mdi:plus" width="16" height="16" />
             Yeni Template
           </button>
         </div>
@@ -71,17 +63,11 @@
             </div>
             <div class="template-footer">
               <button class="btn btn-sm btn-outline" @click="openEmailModal(template)">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                </svg>
+                <Icon icon="mdi:pencil" width="14" height="14" />
                 Düzenle
               </button>
               <button class="btn btn-sm btn-danger" @click="deleteEmailTemplate(template.id)">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="3,6 5,6 21,6"/>
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                </svg>
+                <Icon icon="mdi:delete" width="14" height="14" />
                 Sil
               </button>
             </div>
@@ -94,9 +80,7 @@
         <div class="section-header">
           <h2>SMS Template'leri</h2>
           <button class="btn btn-primary" @click="openSmsModal(null)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 5v14M5 12h14"/>
-            </svg>
+            <Icon icon="mdi:plus" width="16" height="16" />
             Yeni Template
           </button>
         </div>
@@ -129,17 +113,11 @@
             </div>
             <div class="template-footer">
               <button class="btn btn-sm btn-outline" @click="openSmsModal(template)">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                </svg>
+                <Icon icon="mdi:pencil" width="14" height="14" />
                 Düzenle
               </button>
               <button class="btn btn-sm btn-danger" @click="deleteSmsTemplate(template.id)">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="3,6 5,6 21,6"/>
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                </svg>
+                <Icon icon="mdi:delete" width="14" height="14" />
                 Sil
               </button>
             </div>
@@ -154,10 +132,7 @@
         <div class="modal-header">
           <h2>{{ editingEmailTemplate ? 'Email Template Düzenle' : 'Yeni Email Template' }}</h2>
           <button class="modal-close" @click="closeEmailModal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
+            <Icon icon="mdi:close" width="24" height="24" />
           </button>
         </div>
         <div class="modal-body">
@@ -369,10 +344,7 @@ Teşekkürler,
         <div class="modal-header">
           <h2>{{ editingSmsTemplate ? 'SMS Template Düzenle' : 'Yeni SMS Template' }}</h2>
           <button class="modal-close" @click="closeSmsModal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
+            <Icon icon="mdi:close" width="24" height="24" />
           </button>
         </div>
         <div class="modal-body">
@@ -480,6 +452,7 @@ Teşekkürler,
 import { ref, onMounted, computed, nextTick, watch } from 'vue'
 import api from '@/utils/axios.js'
 import { useAlert } from '@/composables/useAlert.js'
+import { Icon } from '@iconify/vue'
 
 const { showAlert } = useAlert()
 
@@ -525,7 +498,7 @@ const smsVariablesInput = ref('')
 const commonEmailVariables = [
   { name: 'companyName', icon: 'fa-building' },
   { name: 'leadTitle', icon: 'fa-file-lines' },
-  { name: 'amount', icon: 'fa-dollar-sign' },
+  { name: 'amount', icon: 'fa-euro-sign' },
   { name: 'currency', icon: 'fa-coins' },
   { name: 'leadUrl', icon: 'fa-link' },
   { name: 'year', icon: 'fa-calendar' },
@@ -537,7 +510,7 @@ const commonEmailVariables = [
 const commonSmsVariables = [
   { name: 'companyName', icon: 'fa-building' },
   { name: 'leadTitle', icon: 'fa-file-lines' },
-  { name: 'amount', icon: 'fa-dollar-sign' },
+  { name: 'amount', icon: 'fa-euro-sign' },
   { name: 'currency', icon: 'fa-coins' },
   { name: 'newAmount', icon: 'fa-arrow-up' }
 ]

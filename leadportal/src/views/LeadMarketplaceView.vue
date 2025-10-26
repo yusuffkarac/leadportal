@@ -11,7 +11,7 @@ const socket = io('/', { path: '/socket.io' })
 const showInstantBuyModal = ref(false)
 const selectedLead = ref(null)
 const isProcessing = ref(false)
-const settings = ref({ defaultCurrency: 'TRY', insuranceTypes: [] })
+const settings = ref({ defaultCurrency: 'EUR', insuranceTypes: [] })
 const quickBidAmounts = ref({})
 const isSubmittingBid = ref({})
 
@@ -372,7 +372,7 @@ function updateMapMarkers() {
     if (!info || isNaN(info.lat) || isNaN(info.lon)) continue
     const marker = window.L.marker([info.lat, info.lon])
     const price = (lead.bids && lead.bids[0]?.amount) || lead.startPrice
-    const currency = settings.value?.defaultCurrency || 'TRY'
+    const currency = settings.value?.defaultCurrency || 'EUR'
     const insType = lead.insuranceType || ''
     const iconifyName = getInsuranceTypeIcon(insType)
     const insIcon = insType ? `<span class=\"iconify\" data-icon=\"${iconifyName}\" style=\"font-size:14px;color:#475569\"></span>` : ''
@@ -461,24 +461,43 @@ onMounted(async () => {
       <div class="premium-showcase">
         <div class="premium-header">
           <div class="premium-title">
-            <Icon icon="mdi:star" class="premium-star" width="24" height="24" />
-            <h2>Premium Lead'ler</h2>
+            <div class="premium-title-icon">
+              <Icon icon="mdi:star" class="premium-star" width="28" height="28" />
+              <div class="premium-title-glow"></div>
+            </div>
+            <div class="premium-title-text">
+              <h2>Premium Lead'ler</h2>
+              <p class="premium-subtitle">Özel seçilmiş yüksek kaliteli lead'ler</p>
+            </div>
           </div>
-          <span class="premium-badge">VIP</span>
+          <div class="premium-badge-container">
+            <span class="premium-badge">VIP</span>
+            <div class="premium-badge-glow"></div>
+          </div>
         </div>
 
         <div class="premium-slider-container">
           <div class="premium-slider">
-            <div v-if="premiumLeads.length === 0" style="padding: 20px; text-align: center; color: #92400e;">
-              Şu anda premium lead bulunmuyor. İlk premium lead'i siz ekleyin!
+            <div v-if="premiumLeads.length === 0" class="premium-empty-state">
+              <div class="premium-empty-icon">
+                <Icon icon="mdi:star-outline" width="48" height="48" />
+              </div>
+              <h3>Henüz premium lead yok</h3>
+              <p>İlk premium lead'i siz ekleyin ve öne çıkın!</p>
             </div>
             <div class="premium-card" v-for="lead in premiumLeads" :key="lead.id" @click="navigateToLead(lead)">
+              <div class="premium-card-glow"></div>
               <div class="premium-card-header">
                 <div class="premium-card-title">
-                  <Icon v-if="lead.insuranceType" :icon="getInsuranceTypeIcon(lead.insuranceType)" class="insurance-iconify" width="20" height="20" />
+                  <div class="premium-card-icon">
+                    <Icon v-if="lead.insuranceType" :icon="getInsuranceTypeIcon(lead.insuranceType)" class="insurance-iconify" width="22" height="22" />
+                  </div>
                   <h3>{{ lead.title }}</h3>
                 </div>
-                <Icon icon="mdi:star" class="premium-icon" width="20" height="20" />
+                <div class="premium-card-star">
+                  <Icon icon="mdi:star" class="premium-icon" width="20" height="20" />
+                  <div class="premium-star-glow"></div>
+                </div>
               </div>
 
               <div class="premium-card-description">
@@ -705,7 +724,7 @@ onMounted(async () => {
             <span class="detail-text">{{ lead.bids ? lead.bids.length : 0 }} teklif</span>
           </div>
           <div class="detail-item">
-            <Icon icon="mdi:currency-usd" class="detail-icon" width="16" height="16" />
+            <Icon icon="mdi:currency-eur" class="detail-icon" width="16" height="16" />
             <span class="detail-text">+{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement }}</span>
           </div>
           <button class="share-btn-small" @click="shareLead(lead, $event)" title="Paylaş">
@@ -779,7 +798,7 @@ onMounted(async () => {
               class="instant-buy-btn-small"
               @click="openInstantBuyModal(lead, $event)"
             >
-              <i class="fas fa-dollar"></i>
+              <i class="fas fa-euro-sign"></i>
               Anında Al
             </button>
           </div>
@@ -863,17 +882,18 @@ onMounted(async () => {
 .premium-showcase {
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
   border-radius: 16px;
-  padding: 24px;
+  padding: 28px;
   margin-bottom: 32px;
   border: 2px solid #fbbf24;
-  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.15);
+  box-shadow: 0 4px 20px rgba(251, 191, 36, 0.15);
+  position: relative;
 }
 
 .premium-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .premium-title {
@@ -882,15 +902,40 @@ onMounted(async () => {
   gap: 12px;
 }
 
-.premium-title h2 {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #92400e;
+.premium-title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .premium-star {
   color: #f59e0b;
+}
+
+.premium-title-glow {
+  display: none;
+}
+
+.premium-title-text h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #92400e;
+  letter-spacing: -0.01em;
+}
+
+.premium-subtitle {
+  margin: 4px 0 0 0;
+  font-size: 0.875rem;
+  color: #a16207;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.premium-badge-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .premium-badge {
@@ -902,6 +947,11 @@ onMounted(async () => {
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(146, 64, 14, 0.2);
+}
+
+.premium-badge-glow {
+  display: none;
 }
 
 .premium-slider-container {
@@ -942,33 +992,58 @@ onMounted(async () => {
   background: white;
   border: 2px solid #fbbf24;
   border-radius: 12px;
-  padding: 18px;
+  padding: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   min-height: 200px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+.premium-card::before {
+  display: none;
 }
 
 .premium-card:hover {
-  box-shadow: 0 8px 20px rgba(251, 191, 36, 0.3);
-  border-color: #f59e0b;
+
+  box-shadow: 0 8px 25px rgba(251, 191, 36, 0.2);
+  border: 2px solid #f59e0b;
+}
+
+.premium-card-glow {
+  display: none;
 }
 
 .premium-card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 8px;
+  gap: 12px;
 }
 
 .premium-card-title {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex: 1;
+}
+
+.premium-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: #fef3c7;
+  border-radius: 8px;
+  border: 1px solid #fbbf24;
+}
+
+.insurance-iconify {
+  color: #92400e;
 }
 
 .premium-card-title h3 {
@@ -979,9 +1054,19 @@ onMounted(async () => {
   line-height: 1.3;
 }
 
+.premium-card-star {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .premium-icon {
   color: #f59e0b;
   flex-shrink: 0;
+}
+
+.premium-star-glow {
+  display: none;
 }
 
 .premium-card-description {
@@ -1000,9 +1085,10 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  padding: 12px;
+  padding: 14px;
   background: #fef3c7;
   border-radius: 8px;
+  border: 1px solid #fbbf24;
 }
 
 .premium-price-info {
@@ -1033,6 +1119,10 @@ onMounted(async () => {
   padding: 8px 12px;
   background: #10b981;
   border-radius: 6px;
+}
+
+.premium-instant-price::before {
+  display: none;
 }
 
 .premium-instant-label {
@@ -1066,15 +1156,49 @@ onMounted(async () => {
   color: #92400e;
 }
 
+.premium-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  text-align: center;
+  color: #92400e;
+  grid-column: 1 / -1;
+}
+
+.premium-empty-icon {
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+
+.premium-empty-state h3 {
+  margin: 0 0 6px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.premium-empty-state p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #a16207;
+  opacity: 0.8;
+}
+
 /* Responsive Premium Slider */
 @media (max-width: 768px) {
   .premium-showcase {
-    padding: 16px;
+    padding: 20px;
     margin-bottom: 24px;
   }
 
-  .premium-title h2 {
-    font-size: 1.25rem;
+  .premium-title-text h2 {
+    font-size: 1.3rem;
+  }
+
+  .premium-subtitle {
+    font-size: 0.8rem;
   }
 
   .premium-slider {
@@ -1083,7 +1207,58 @@ onMounted(async () => {
   }
 
   .premium-card {
+    padding: 16px;
+    min-height: 180px;
+  }
+
+  .premium-card-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .premium-card-title h3 {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .premium-showcase {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .premium-title-text h2 {
+    font-size: 1.2rem;
+  }
+
+  .premium-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .premium-badge-container {
+    align-self: flex-end;
+  }
+
+  .premium-slider {
+    grid-auto-columns: minmax(260px, 1fr);
+    gap: 10px;
+  }
+
+  .premium-card {
     padding: 14px;
+    min-height: 160px;
+  }
+
+  .premium-card-price {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .premium-instant-price {
+    align-self: flex-end;
   }
 }
 
@@ -1552,7 +1727,8 @@ onMounted(async () => {
 }
 
 .quick-bid-submit-btn {
-  padding: 8px 16px;
+  flex: 0.75;
+  padding: 10px 20px;
   background: #1f2937;
   color: white;
   border: none;

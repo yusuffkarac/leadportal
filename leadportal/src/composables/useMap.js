@@ -63,7 +63,7 @@ export function useMap(mapKey = 'default') {
   }
 
   // Harita marker'larını güncelle
-  function updateMapMarkers(leads = [], settings = { defaultCurrency: 'TRY' }, getInsuranceTypeIcon = () => 'mdi:file', formatPrice = (price, currency) => `${currency} ${price}`) {
+  function updateMapMarkers(leads = [], settings = { defaultCurrency: 'EUR' }, getInsuranceTypeIcon = () => 'mdi:file', formatPrice = (price, currency) => `${currency} ${price}`) {
     if (!leafletMap || !markersLayer) return
     markersLayer.clearLayers()
     const bounds = []
@@ -77,7 +77,7 @@ export function useMap(mapKey = 'default') {
       
       const marker = window.L.marker([info.lat, info.lon])
       const price = lead.amount || (leadData.bids && leadData.bids[0]?.amount) || leadData.startPrice
-      const currency = settings?.defaultCurrency || 'TRY'
+      const currency = settings?.defaultCurrency || 'EUR'
       const insType = leadData.insuranceType || ''
       const iconifyName = getInsuranceTypeIcon(insType)
       const insIcon = insType ? `<span class="iconify" data-icon="${iconifyName}" style="font-size:14px;color:#475569"></span>` : ''

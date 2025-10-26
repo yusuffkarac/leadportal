@@ -13,7 +13,7 @@ const errorMessage = ref('')
 const isSubmitting = ref(false)
 const showInstantBuyModal = ref(false)
 const isProcessingInstantBuy = ref(false)
-const settings = ref({ defaultCurrency: 'TRY' })
+const settings = ref({ defaultCurrency: 'EUR' })
 const socket = io('/', {
   path: '/socket.io',
   transports: ['websocket'],

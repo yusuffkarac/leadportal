@@ -189,12 +189,7 @@ onMounted(async () => {
           :class="{ active: activeTab === 'userTypes' }"
           @click="activeTab = 'userTypes'"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-          </svg>
+          <Icon icon="mdi:account-group" width="20" height="20" />
           Kullanıcı Tipi Bazlı
         </button>
         <button 
@@ -202,10 +197,7 @@ onMounted(async () => {
           :class="{ active: activeTab === 'users' }"
           @click="activeTab = 'users'"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
+          <Icon icon="mdi:account" width="20" height="20" />
           Kullanıcı Bazlı
         </button>
       </div>
@@ -213,11 +205,7 @@ onMounted(async () => {
       <!-- Kullanıcı Tipi Bazlı Yetkilendirmeler -->
       <div v-if="activeTab === 'userTypes'" class="tab-content">
         <div class="info-box">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="16" x2="12" y2="12"/>
-            <line x1="12" y1="8" x2="12.01" y2="8"/>
-          </svg>
+          <Icon icon="mdi:information" width="20" height="20" />
           <div>
             <strong>Varsayılan Davranış:</strong> Tüm lead tipleri tüm kullanıcı tiplerine açıktır.
             <br>
@@ -231,10 +219,7 @@ onMounted(async () => {
         </div>
 
         <div v-else-if="leadTypes.length === 0" class="empty-state">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 11l3 3L22 4"/>
-            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-          </svg>
+          <Icon icon="mdi:file-document-outline" width="48" height="48" />
           <h3>Henüz lead tipi tanımlanmamış</h3>
           <p>Ayarlar bölümünden lead tipleri (sigorta türleri) ekleyin</p>
         </div>
@@ -259,19 +244,14 @@ onMounted(async () => {
                   @click="toggleAllForUserType(userType.id, true)"
                   title="Tümünü aç"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
+                  <Icon icon="mdi:check" width="16" height="16" />
                 </button>
                 <button 
                   class="btn-quick" 
                   @click="toggleAllForUserType(userType.id, false)"
                   title="Tümünü kapat"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
+                  <Icon icon="mdi:close" width="16" height="16" />
                 </button>
               </div>
             </div>
@@ -305,11 +285,7 @@ onMounted(async () => {
             @click="saveUserTypePermissions"
             :disabled="saving"
           >
-            <svg v-if="!saving" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-              <polyline points="17 21 17 13 7 13 7 21"/>
-              <polyline points="7 3 7 8 15 8"/>
-            </svg>
+            <Icon v-if="!saving" icon="mdi:content-save" width="20" height="20" />
             <div v-else class="spinner-small"></div>
             {{ saving ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet' }}
           </button>
@@ -319,11 +295,7 @@ onMounted(async () => {
       <!-- Kullanıcı Bazlı Yetkilendirmeler -->
       <div v-if="activeTab === 'users'" class="tab-content">
         <div class="info-box">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="16" x2="12" y2="12"/>
-            <line x1="12" y1="8" x2="12.01" y2="8"/>
-          </svg>
+          <Icon icon="mdi:information" width="20" height="20" />
           <div>
             <strong>Kullanıcı Özel İzinler:</strong> Bu izinler, kullanıcı tipi izinlerini geçersiz kılar.
             <br>
@@ -414,11 +386,7 @@ onMounted(async () => {
               @click="saveUserPermissions"
               :disabled="saving"
             >
-              <svg v-if="!saving" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                <polyline points="17 21 17 13 7 13 7 21"/>
-                <polyline points="7 3 7 8 15 8"/>
-              </svg>
+              <Icon v-if="!saving" icon="mdi:content-save" width="20" height="20" />
               <div v-else class="spinner-small"></div>
               {{ saving ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet' }}
             </button>
@@ -426,10 +394,7 @@ onMounted(async () => {
         </div>
 
         <div v-else class="empty-state">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
+          <Icon icon="mdi:account" width="48" height="48" />
           <h3>Kullanıcı seçilmedi</h3>
           <p>Yukarıdan bir kullanıcı seçerek başlayın</p>
         </div>

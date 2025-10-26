@@ -7,23 +7,23 @@ const CURRENCY_SYMBOLS = {
 }
 
 // Para birimi sembolünü al
-export function getCurrencySymbol(currency = 'TRY') {
-  return CURRENCY_SYMBOLS[currency] || '₺'
+export function getCurrencySymbol(currency = 'EUR') {
+  return CURRENCY_SYMBOLS[currency] || '€'
 }
 
 // Para birimi ile birlikte fiyatı formatla
-export function formatPrice(amount, currency = 'TRY') {
+export function formatPrice(amount, currency = 'EUR') {
   const symbol = getCurrencySymbol(currency)
-  return `${symbol}${amount.toLocaleString('tr-TR')}`
+  return `${symbol}${amount.toLocaleString('de-DE')}`
 }
 
 // Para birimi ile birlikte label oluştur
-export function getCurrencyLabel(currency = 'TRY') {
+  export function getCurrencyLabel(currency = 'EUR') {
   const symbols = {
     'TRY': '₺',
     'USD': '$',
     'EUR': '€',
     'GBP': '£'
   }
-  return symbols[currency] || '₺'
+  return symbols[currency] || '€'
 }

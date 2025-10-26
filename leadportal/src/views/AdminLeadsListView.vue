@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import axios from 'axios'
 import { getCurrencySymbol, formatPrice } from '@/utils/currency.js'
 import { useMap } from '@/composables/useMap.js'
+import { Icon } from '@iconify/vue'
 function getInsuranceTypeIconifyName(typeName) {
   if (!typeName) return 'mdi:file'
   const list = insuranceTypes.value || []
@@ -18,7 +19,7 @@ const showLeadModal = ref(false)
 const modalMode = ref('new') // 'new' veya 'edit'
 const editingLead = ref(null)
 const expandedBids = ref(new Set())
-const settings = ref({ defaultCurrency: 'TRY' })
+const settings = ref({ defaultCurrency: 'EUR' })
 
 // Unified Lead Form
 const leadForm = ref({
@@ -682,43 +683,19 @@ watch(showMap, (newValue) => {
         </div>
         <div class="header-actions">
           <button class="view-toggle-btn" @click="toggleMapVisibility" :title="showMap ? 'Haritayı Gizle' : 'Haritayı Göster'">
-            <svg v-if="showMap" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-              <circle cx="12" cy="10" r="3"/>
-            </svg>
-            <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-              <circle cx="12" cy="10" r="3"/>
-              <line x1="2" y1="2" x2="22" y2="22"/>
-            </svg>
+            <Icon v-if="showMap" icon="mdi:map-marker" width="20" height="20" />
+            <Icon v-else icon="mdi:map-marker-off" width="20" height="20" />
           </button>
           <button class="view-toggle-btn" @click="toggleViewMode" :title="viewMode === 'grid' ? 'Tablo Görünümü' : 'Kart Görünümü'">
-            <svg v-if="viewMode === 'grid'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="8" y1="6" x2="21" y2="6"/>
-              <line x1="8" y1="12" x2="21" y2="12"/>
-              <line x1="8" y1="18" x2="21" y2="18"/>
-              <line x1="3" y1="6" x2="3.01" y2="6"/>
-              <line x1="3" y1="12" x2="3.01" y2="12"/>
-              <line x1="3" y1="18" x2="3.01" y2="18"/>
-            </svg>
-            <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="7" height="7"/>
-              <rect x="14" y="3" width="7" height="7"/>
-              <rect x="14" y="14" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/>
-            </svg>
+            <Icon v-if="viewMode === 'grid'" icon="mdi:view-list" width="20" height="20" />
+            <Icon v-else icon="mdi:view-grid" width="20" height="20" />
           </button>
           <button class="btn btn-outline" @click="toggleFilters">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
-            </svg>
+            <Icon icon="mdi:filter" width="20" height="20" />
             Filtreler
           </button>
           <button class="btn btn-primary btn-large" @click="openLeadModal('new')">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="12" y1="5" x2="12" y2="19"/>
-              <line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
+            <Icon icon="mdi:plus" width="20" height="20" />
             Yeni Lead
           </button>
         </div>
@@ -899,17 +876,11 @@ watch(showMap, (newValue) => {
           </div>
           <div class="lead-actions">
             <button class="btn btn-primary" @click="viewLeadDetails(lead.id)">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
+              <Icon icon="mdi:eye" width="14" height="14" />
               Detay
             </button>
             <button v-if="!lead.sale" class="btn btn-secondary" @click="openLeadModal('edit', lead)">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-              </svg>
+              <Icon icon="mdi:pencil" width="14" height="14" />
               Düzenle
             </button>
           </div>
@@ -1232,7 +1203,7 @@ watch(showMap, (newValue) => {
 /* Kompakt grid düzeni - 2'li düzen */
 .leads-grid-compact {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   margin-top: 20px;
 }

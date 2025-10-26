@@ -99,7 +99,7 @@ model Settings {
   leadPrefix                   String   @default("LEAD")
   startingNumber               Int      @default(1)
   numberType                   String   @default("sequential")
-  defaultCurrency              String   @default("TRY")
+  defaultCurrency              String   @default("EUR")
   defaultAuctionDays           Int      @default(7)
   defaultMinIncrement          Int      @default(10)
   homepageHeroEyebrow          String   @default("Sigorta lead pazaryeri")

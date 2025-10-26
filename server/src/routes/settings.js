@@ -209,7 +209,7 @@ router.get('/', requireAdmin, async (req, res) => {
           leadPrefix: 'LEAD',
           startingNumber: 1,
           numberType: 'sequential',
-          defaultCurrency: 'TRY',
+          defaultCurrency: 'EUR',
           defaultAuctionDays: 7,
           defaultMinIncrement: 10,
           insuranceTypes: [
@@ -339,7 +339,7 @@ router.post('/', requireAdmin, async (req, res) => {
         leadPrefix: leadPrefix || 'LEAD',
         startingNumber: startingNumber || 1,
         numberType: numberType || 'sequential',
-        defaultCurrency: defaultCurrency || 'TRY',
+        defaultCurrency: defaultCurrency || 'EUR',
         defaultAuctionDays: defaultAuctionDays || 7,
         defaultMinIncrement: defaultMinIncrement || 10,
         insuranceTypes: insuranceTypes || ["Hayvan", "Araba", "Sağlık"],
@@ -360,7 +360,7 @@ router.post('/', requireAdmin, async (req, res) => {
         leadPrefix: leadPrefix || 'LEAD',
         startingNumber: startingNumber || 1,
         numberType: numberType || 'sequential',
-        defaultCurrency: defaultCurrency || 'TRY',
+        defaultCurrency: defaultCurrency || 'EUR',
         defaultAuctionDays: defaultAuctionDays || 7,
         defaultMinIncrement: defaultMinIncrement || 10,
         insuranceTypes: insuranceTypes || ["Hayvan", "Araba", "Sağlık"],
@@ -414,7 +414,8 @@ router.get('/branding', async (req, res) => {
         servicesLinks: true,
         supportLinks: true,
         legalLinks: true,
-        socialMedia: true
+        socialMedia: true,
+        defaultCurrency: true
       }
     })
     
@@ -432,7 +433,8 @@ router.get('/branding', async (req, res) => {
         servicesLinks: null,
         supportLinks: null,
         legalLinks: null,
-        socialMedia: null
+        socialMedia: null,
+        defaultCurrency: 'EUR'
       }
     }
 
@@ -539,7 +541,7 @@ router.get('/homepage', async (req, res) => {
       statsHeading: homepage.statsHeading,
       stats: homepage.stats,
       cta: homepage.cta,
-      defaultCurrency: settings.defaultCurrency || 'TRY',
+      defaultCurrency: settings.defaultCurrency || 'EUR',
       insuranceTypes
     })
   } catch (error) {

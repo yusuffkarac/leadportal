@@ -19,27 +19,18 @@
         </div>
       </div>
       <div class="profile-arrow" :class="{ 'rotated': isDropdownOpen }">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="6,9 12,15 18,9"/>
-        </svg>
+        <Icon icon="mdi:chevron-down" width="16" height="16" />
       </div>
     </div>
     
     <!-- Dropdown Menu -->
     <div v-if="isDropdownOpen" class="profile-dropdown">
       <div class="dropdown-item" @click="goToProfile">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
+        <Icon icon="mdi:account" width="16" height="16" />
         <span>Profil</span>
       </div>
       <div class="dropdown-item logout" @click="logout">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-          <polyline points="16,17 21,12 16,7"/>
-          <line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
+        <Icon icon="mdi:logout" width="16" height="16" />
         <span>Çıkış Yap</span>
       </div>
     </div>
@@ -50,6 +41,7 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '../composables/useAlert'
+import { Icon } from '@iconify/vue'
 
 const props = defineProps({
   user: {
