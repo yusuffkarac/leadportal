@@ -187,14 +187,14 @@ router.get('/unread', requireAuth, async (req, res) => {
 
     const notifications = await getUnreadNotifications(userId, limit)
 
-    await logActivity({
-      userId,
-      action: 'VIEW_NOTIFICATIONS',
-      entityType: 'notification',
-      details: JSON.stringify({ type: 'unread', count: notifications.length }),
-      ipAddress: req.ip,
-      userAgent: req.get('user-agent')
-    })
+    // await logActivity({
+    //   userId,
+    //   action: 'VIEW_NOTIFICATIONS',
+    //   entityType: 'notification',
+    //   details: JSON.stringify({ type: 'unread', count: notifications.length }),
+    //   ipAddress: req.ip,
+    //   userAgent: req.get('user-agent')
+    // })
 
     res.json({
       success: true,
@@ -243,14 +243,14 @@ router.get('/', requireAuth, async (req, res) => {
 
     const result = await getNotifications(userId, page, limit)
 
-    await logActivity({
-      userId,
-      action: 'VIEW_NOTIFICATIONS',
-      entityType: 'notification',
-      details: JSON.stringify({ page, limit }),
-      ipAddress: req.ip,
-      userAgent: req.get('user-agent')
-    })
+    // await logActivity({
+    //   userId,
+    //   action: 'VIEW_NOTIFICATIONS',
+    //   entityType: 'notification',
+    //   details: JSON.stringify({ page, limit }),
+    //   ipAddress: req.ip,
+    //   userAgent: req.get('user-agent')
+    // })
 
     res.json({
       success: true,
