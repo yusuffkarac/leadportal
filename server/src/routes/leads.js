@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { z } from 'zod'
 import jwt from 'jsonwebtoken'
 import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activityLogger.js'
+import { createNotification } from '../services/notificationService.js'
 
 // Lead tipi yetkilendirmesini kontrol eden helper fonksiyon
 async function filterLeadsByPermission(prisma, leads, userId, userTypeId) {
@@ -134,12 +135,45 @@ async function checkAndSellExpiredLeads(prisma, io) {
           }
         })
 
+        // Önce mevcut bakiyeyi al
+        const currentUser = await prisma.user.findUnique({
+          where: { id: highestBid.userId },
+          select: { balance: true }
+        })
+        
+        const balanceBefore = currentUser.balance
+        const balanceAfter = balanceBefore - highestBid.amount
+
         // LeadSale kaydı oluştur
         await prisma.leadSale.create({
           data: {
             leadId: lead.id,
             buyerId: highestBid.userId,
-            amount: highestBid.amount
+            amount: highestBid.amount,
+            paymentMethod: 'balance',
+            balanceBefore: balanceBefore,
+            balanceAfter: balanceAfter
+          }
+        })
+
+        // Bakiyeyi düş
+        await prisma.user.update({
+          where: { id: highestBid.userId },
+          data: {
+            balance: {
+              decrement: highestBid.amount
+            }
+          }
+        })
+
+        // Bakiye transaction kaydı oluştur
+        await prisma.balanceTransaction.create({
+          data: {
+            userId: highestBid.userId,
+            amount: -highestBid.amount,
+            type: 'PURCHASE_DEDUCT',
+            description: `Lead satın alma: ${lead.title}`,
+            relatedId: lead.id
           }
         })
 
@@ -492,8 +526,33 @@ export default function leadsRouter(prisma, io) {
   // Anında satın alma
   router.post('/:id/instant-buy', async (req, res) => {
     try {
+      console.log('=== INSTANT BUY REQUEST ===')
+      console.log('Lead ID:', req.params.id)
+      console.log('User ID:', req.user?.id)
+      console.log('Request body:', req.body)
+      
       const leadId = req.params.id
       const userId = req.user.id
+
+      // Kullanıcının bilgilerini al
+      const buyer = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          balance: true,
+          balanceEnabled: true,
+          paymentMethod: true,
+          ibanNumber: true,
+          ibanAccountHolder: true,
+          ibanBic: true,
+          ibanAddress: true,
+          ibanPostalCode: true,
+          ibanCity: true
+        }
+      })
+
+      if (!buyer) {
+        return res.status(404).json({ error: 'Kullanıcı bulunamadı' })
+      }
 
       // Lead'i kontrol et
       const lead = await prisma.lead.findUnique({
@@ -517,42 +576,250 @@ export default function leadsRouter(prisma, io) {
         return res.status(400).json({ error: 'Für diesen Lead wurde kein Sofortkaufpreis festgelegt' })
       }
 
-      // Lead'i satış olarak işaretle
-      await prisma.lead.update({
-        where: { id: leadId },
-        data: { 
-          isActive: false,
-          isSold: true
-        }
-      })
+      // Ödeme yöntemi mantığı
+      const hasIban = !!buyer.ibanNumber
+      const userPreferredBalance = buyer.balanceEnabled && buyer.paymentMethod === 'balance'
+      const hasSufficientBalance = buyer.balance >= lead.instantBuyPrice
 
-      // LeadSale kaydı oluştur
-      const sale = await prisma.leadSale.create({
-        data: {
+      // Karar mantığı:
+      // 1. Kullanıcı bakiye tercih etti VE bakiye yeterli → Bakiyeden çek
+      // 2. Kullanıcı bakiye tercih etti VE bakiye yetersiz VE IBAN var → IBAN'dan çek
+      // 3. Kullanıcı bakiye tercih etti VE bakiye yetersiz VE IBAN yok → Hata
+      // 4. Kullanıcı IBAN tercih etti VE IBAN var → IBAN'dan çek
+      // 5. Kullanıcı IBAN tercih etti VE IBAN yok → Hata
+
+      let paymentMethod = 'balance'
+
+      if (userPreferredBalance) {
+        // Kullanıcı bakiye tercih etti
+        if (hasSufficientBalance) {
+          paymentMethod = 'balance'
+        } else if (hasIban) {
+          // Bakiye yetersiz ama IBAN var
+          paymentMethod = 'iban'
+        } else {
+          // Bakiye yetersiz ve IBAN yok
+          return res.status(400).json({
+            error: 'Lütfen IBAN bilgilerinizi ekleyin veya bakiyenizi yükleyin.',
+            errorType: 'INSUFFICIENT_BALANCE',
+            required: lead.instantBuyPrice,
+            available: buyer.balance
+          })
+        }
+      } else {
+        // Kullanıcı IBAN tercih etti
+        if (hasIban) {
+          paymentMethod = 'iban'
+        } else {
+          return res.status(400).json({
+            error: 'IBAN bilgileriniz kayıtlı değil. Lütfen önce IBAN bilgilerinizi ekleyin.',
+            errorType: 'IBAN_NOT_FOUND'
+          })
+        }
+      }
+
+      // Ödeme işlemi
+      if (paymentMethod === 'balance') {
+
+        // Önce mevcut bakiyeyi al
+        const currentUser = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { balance: true }
+        })
+        
+        const balanceBefore = currentUser.balance
+        const balanceAfter = balanceBefore - lead.instantBuyPrice
+
+        // Transaction ile bakiyeyi düş ve satışı kaydet
+        const [sale, updatedUser, balanceTransaction] = await prisma.$transaction([
+          // LeadSale kaydı oluştur
+          prisma.leadSale.create({
+            data: {
+              leadId: leadId,
+              buyerId: userId,
+              amount: lead.instantBuyPrice,
+              paymentMethod: 'balance',
+              balanceBefore: balanceBefore,
+              balanceAfter: balanceAfter
+            }
+          }),
+          // Bakiyeyi düş
+          prisma.user.update({
+            where: { id: userId },
+            data: {
+              balance: {
+                decrement: lead.instantBuyPrice
+              }
+            }
+          }),
+          // Bakiye transaction kaydı oluştur
+          prisma.balanceTransaction.create({
+            data: {
+              userId: userId,
+              amount: -lead.instantBuyPrice,
+              type: 'PURCHASE_DEDUCT',
+              description: `Lead satın alma: ${lead.title}`,
+              relatedId: leadId
+            }
+          }),
+          // Lead'i satış olarak işaretle
+          prisma.lead.update({
+            where: { id: leadId },
+            data: {
+              isActive: false,
+              isSold: true
+            }
+          })
+        ])
+
+        // Activity log
+        try {
+          const { ipAddress, userAgent } = extractRequestInfo(req)
+          await logActivity({
+            userId: userId,
+            action: ActivityTypes.INSTANT_BUY,
+            details: {
+              leadId: leadId,
+              leadTitle: lead.title,
+              amount: lead.instantBuyPrice,
+              paymentMethod: 'balance',
+              newBalance: updatedUser.balance
+            },
+            entityType: 'lead',
+            entityId: leadId,
+            ipAddress,
+            userAgent
+          })
+        } catch (e) {
+          console.error('Activity log error:', e.message)
+        }
+
+        // Socket ile bildirim gönder
+        io.emit('lead:sold', {
           leadId: leadId,
           buyerId: userId,
-          amount: lead.instantBuyPrice
+          amount: lead.instantBuyPrice,
+          title: lead.title,
+          instantBuy: true,
+          paymentMethod: 'balance'
+        })
+
+        // Bildirim 1: Satın alan kullanıcıya
+        try {
+          await createNotification(
+            userId,
+            'LEAD_PURCHASED',
+            'Lead Satın Alındı',
+            `"${lead.title}" lead'ini ${lead.instantBuyPrice} TL'ye satın aldınız.`,
+            { leadId, saleId: sale.id, amount: lead.instantBuyPrice }
+          )
+        } catch (e) {
+          console.error('Notification error (LEAD_PURCHASED):', e.message)
         }
-      })
 
-      // Socket ile bildirim gönder
-      io.emit('lead:sold', {
-        leadId: leadId,
-        buyerId: userId,
-        amount: lead.instantBuyPrice,
-        title: lead.title,
-        instantBuy: true
-      })
+        // Bildirim 2: Lead sahibine
+        try {
+          await createNotification(
+            lead.ownerId,
+            'LEAD_SOLD',
+            'Lead Satıldı',
+            `"${lead.title}" lead'iniz ${lead.instantBuyPrice} TL'ye satıldı.`,
+            { leadId, saleId: sale.id, amount: lead.instantBuyPrice }
+          )
+        } catch (e) {
+          console.error('Notification error (LEAD_SOLD):', e.message)
+        }
 
-      res.json({ 
-        success: true, 
-        message: 'Lead erfolgreich gekauft',
-        sale: sale
-      })
+        // Bildirim 3: Ödeme bildirimi (satıcıya)
+        try {
+          await createNotification(
+            lead.ownerId,
+            'PAYMENT_RECEIVED',
+            'Ödeme Alındı',
+            `"${lead.title}" satışından ${lead.instantBuyPrice} TL ödeme aldınız.`,
+            { leadId, saleId: sale.id, amount: lead.instantBuyPrice }
+          )
+        } catch (e) {
+          console.error('Notification error (PAYMENT_RECEIVED):', e.message)
+        }
+
+        res.json({
+          success: true,
+          message: 'Lead erfolgreich gekauft',
+          sale: sale,
+          paymentMethod: 'balance',
+          newBalance: updatedUser.balance
+        })
+      } else if (paymentMethod === 'iban') {
+        // IBAN ile ödeme
+        const [sale] = await prisma.$transaction([
+          // LeadSale kaydı oluştur
+          prisma.leadSale.create({
+            data: {
+              leadId: leadId,
+              buyerId: userId,
+              amount: lead.instantBuyPrice,
+              paymentMethod: 'iban',
+              balanceBefore: null,
+              balanceAfter: null
+            }
+          }),
+          // Lead'i satış olarak işaretle
+          prisma.lead.update({
+            where: { id: leadId },
+            data: {
+              isActive: false,
+              isSold: true
+            }
+          })
+        ])
+
+        // Activity log
+        try {
+          const { ipAddress, userAgent } = extractRequestInfo(req)
+          await logActivity({
+            userId: userId,
+            action: ActivityTypes.INSTANT_BUY,
+            details: {
+              leadId: leadId,
+              leadTitle: lead.title,
+              amount: lead.instantBuyPrice,
+              paymentMethod: 'iban'
+            },
+            entityType: 'lead',
+            entityId: leadId,
+            ipAddress,
+            userAgent
+          })
+        } catch (e) {
+          console.error('Activity log error:', e.message)
+        }
+
+        // Socket ile bildirim gönder
+        io.emit('lead:sold', {
+          leadId: leadId,
+          buyerId: userId,
+          amount: lead.instantBuyPrice,
+          title: lead.title,
+          instantBuy: true,
+          paymentMethod: 'iban'
+        })
+
+        res.json({
+          success: true,
+          message: 'Lead erfolgreich gekauft - Zahlung wird per IBAN verarbeitet',
+          sale: sale,
+          paymentMethod: 'iban'
+        })
+      }
 
     } catch (error) {
-      console.error('Error in instant buy:', error)
-      res.status(500).json({ error: 'Sofortkauf fehlgeschlagen' })
+      console.error('=== INSTANT BUY ERROR ===')
+      console.error('Error message:', error.message)
+      console.error('Error stack:', error.stack)
+      console.error('Lead ID:', req.params.id)
+      console.error('User ID:', req.user?.id)
+      res.status(500).json({ error: 'Sofortkauf fehlgeschlagen', errorMessage: error.message })
     }
   })
 

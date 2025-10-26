@@ -938,6 +938,15 @@ watch(showMap, (newValue) => {
             <span class="sale-buyer">{{ lead.sale.buyer?.email || 'Bilinmiyor' }}</span>
             <span class="sale-date">{{ new Date(lead.sale.soldAt).toLocaleDateString('tr-TR') }}</span>
           </div>
+          <div class="sale-payment-info">
+            <span class="payment-method-badge" :class="lead.sale.paymentMethod">
+              {{ lead.sale.paymentMethod === 'balance' ? 'Bakiye' : 'IBAN' }}
+            </span>
+            <div v-if="lead.sale.paymentMethod === 'balance' && lead.sale.balanceBefore !== null && lead.sale.balanceAfter !== null" class="balance-info">
+              <span class="balance-before">Öncesi: {{ formatPrice(lead.sale.balanceBefore, settings.defaultCurrency) }}</span>
+              <span class="balance-after">Sonrası: {{ formatPrice(lead.sale.balanceAfter, settings.defaultCurrency) }}</span>
+            </div>
+          </div>
         </div>
         
         <!-- Satılmamış lead için normal stats -->
@@ -2261,5 +2270,50 @@ watch(showMap, (newValue) => {
 
 .btn-primary:hover {
   background: #2563eb;
+}
+
+/* Ödeme yöntemi ve bakiye stilleri */
+.payment-method-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.payment-method-badge.balance {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.payment-method-badge.iban {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.sale-payment-info {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.balance-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.75rem;
+}
+
+.balance-before {
+  color: #6b7280;
+}
+
+.balance-after {
+  color: #059669;
+  font-weight: 600;
 }
 </style>

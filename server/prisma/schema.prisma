@@ -26,14 +26,26 @@ model User {
   twoFactorEnabled    Boolean                  @default(false) // 2FA aktif mi?
   twoFactorSecret     String?                  // 2FA secret key (şifreli)
   isActive            Boolean                  @default(true) // Kullanıcı aktif mi?
+  balance             Float                    @default(0) // Kullanıcı bakiyesi
+  balanceEnabled      Boolean                  @default(true) // Bakiye özelliği aktif mi?
+  paymentMethod       String                   @default("balance") // "balance" veya "iban"
+  ibanAccountHolder   String?                  // IBAN hesap sahibi
+  ibanNumber          String?                  // IBAN numarası (şifreli)
+  ibanBic             String?                  // BIC/SWIFT kodu
+  ibanAddress         String?                  // Adres
+  ibanPostalCode      String?                  // Posta kodu
+  ibanCity            String?                  // Şehir
   bids                Bid[]
   leads               Lead[]                   @relation("LeadOwner")
   purchasedLeads      LeadSale[]               @relation("LeadBuyer")
   watching            LeadWatch[]
   userType            UserType                 @relation(fields: [userTypeId], references: [id])
   leadTypePermissions UserLeadTypePermission[] @relation("UserLeadTypePermissions")
-  activityLogs        ActivityLog[]
-  passwordResetTokens PasswordResetToken[]
+  activityLogs            ActivityLog[]
+  passwordResetTokens     PasswordResetToken[]
+  balanceTransactions     BalanceTransaction[]
+  notifications           Notification[]
+  notificationPreferences NotificationPreference[]
 }
 
 model Lead {
@@ -82,14 +94,17 @@ model LeadWatch {
 }
 
 model LeadSale {
-  id        String   @id @default(cuid())
-  leadId    String   @unique
-  buyerId   String
-  amount    Int
-  soldAt    DateTime @default(now())
-  createdAt DateTime @default(now())
-  buyer     User     @relation("LeadBuyer", fields: [buyerId], references: [id])
-  lead      Lead     @relation(fields: [leadId], references: [id])
+  id            String   @id @default(cuid())
+  leadId        String   @unique
+  buyerId       String
+  amount        Int
+  paymentMethod String   @default("balance") // "balance" veya "iban"
+  balanceBefore Int?     // Bakiye ile ödeme yapıldıysa öncesi
+  balanceAfter  Int?     // Bakiye ile ödeme yapıldıysa sonrası
+  soldAt        DateTime @default(now())
+  createdAt     DateTime @default(now())
+  buyer         User     @relation("LeadBuyer", fields: [buyerId], references: [id])
+  lead          Lead     @relation(fields: [leadId], references: [id])
 }
 
 model Settings {
@@ -159,9 +174,10 @@ model UserType {
   isActive            Boolean              @default(true)
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
-  leadTypePermissions LeadTypePermission[] @relation("LeadTypePermissions")
-  users               User[]
-  permissions         UserTypePermission[]
+  leadTypePermissions         LeadTypePermission[]         @relation("LeadTypePermissions")
+  users                       User[]
+  permissions                 UserTypePermission[]
+  notificationRolePermissions NotificationRolePermission[]
 }
 
 model Page {
@@ -298,4 +314,95 @@ model PasswordResetToken {
 
   @@index([token])
   @@index([userId])
+}
+
+model BalanceTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+  amount      Float    // Pozitif: ekleme, Negatif: düşme
+  type        String   // "ADMIN_ADD", "PURCHASE_DEDUCT", "REFUND"
+  description String?
+  relatedId   String?  // İlgili leadSale veya başka entity ID
+  adminId     String?  // İşlemi yapan admin ID (varsa)
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([type])
+}
+
+// Bildirim kategorileri
+model NotificationType {
+  id                   String                         @id @default(cuid())
+  code                 String                         @unique // "BID_RECEIVED", "BID_PLACED", "LEAD_SOLD", "LEAD_EXPIRED", "LEAD_CREATED", etc.
+  name                 String                         // "Teklif Alındı", "Teklif Verildi", etc.
+  description          String?                        // Açıklama
+  category             String                         // "BID", "LEAD", "PAYMENT", "ADMIN"
+  defaultEnabled       Boolean                        @default(true) // Varsayılan olarak açık mı?
+  emailEnabled         Boolean                        @default(true) // Email gönderilebilir mi?
+  inAppEnabled         Boolean                        @default(true) // In-app gösterilebilir mi?
+  icon                 String?                        // Iconify icon kodu
+  isActive             Boolean                        @default(true)
+  createdAt            DateTime                       @default(now())
+  updatedAt            DateTime                       @updatedAt
+  notifications        Notification[]
+  userPreferences      NotificationPreference[]
+  roleTypePermissions  NotificationRolePermission[]
+
+  @@index([code])
+  @@index([category])
+}
+
+// Kullanıcıların bildirim tercihleri
+model NotificationPreference {
+  id                 String             @id @default(cuid())
+  userId             String
+  notificationTypeId String
+  emailEnabled       Boolean            @default(true) // Email almak istiyor mu?
+  inAppEnabled       Boolean            @default(true) // In-app bildirim görmek istiyor mu?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notificationType   NotificationType   @relation(fields: [notificationTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, notificationTypeId])
+  @@index([userId])
+}
+
+// Bildirimler
+model Notification {
+  id                 String           @id @default(cuid())
+  userId             String
+  notificationTypeId String
+  title              String
+  message            String           @db.Text
+  data               Json?            // Ek veriler (leadId, bidId, amount, vb.)
+  isRead             Boolean          @default(false)
+  readAt             DateTime?
+  emailSent          Boolean          @default(false)
+  emailSentAt        DateTime?
+  createdAt          DateTime         @default(now())
+  user               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notificationType   NotificationType @relation(fields: [notificationTypeId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@index([notificationTypeId])
+}
+
+// Rol bazlı bildirim izinleri (admin tarafından yönetilir)
+model NotificationRolePermission {
+  id                 Int              @id @default(autoincrement())
+  userTypeId         String
+  notificationTypeId String
+  canReceive         Boolean          @default(true) // Bu rol bu bildirimi alabilir mi?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  userType           UserType         @relation(fields: [userTypeId], references: [id], onDelete: Cascade)
+  notificationType   NotificationType @relation(fields: [notificationTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([userTypeId, notificationTypeId])
+  @@index([userTypeId])
 }

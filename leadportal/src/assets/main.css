@@ -126,6 +126,11 @@ a,
   background: rgba(107, 114, 128, 0.1);
   color: #000000;
 }
+.desktop-nav a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
 /* Desktop Navigation - default for large screens */
 @media (min-width: 1201px) {

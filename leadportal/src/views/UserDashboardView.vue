@@ -152,10 +152,10 @@
           <div class="activity-card">
             <div class="card-header">
               <h3>Son Satın Almalar</h3>
-              <RouterLink to="/purchased-leads" class="view-all-link">Tümünü Gör</RouterLink>
+              <button @click="openPurchasesModal" class="view-all-link">Tümünü Gör</button>
             </div>
             <div class="activity-list">
-              <div v-for="purchase in userStats.recentPurchases" :key="purchase.id" class="activity-item">
+              <div v-for="purchase in userStats.recentPurchases" :key="purchase.id" class="activity-item clickable" @click="goToLead(purchase.leadId)">
                 <div class="activity-icon purchase">
                   <Icon icon="mdi:shopping" width="16" height="16" />
                 </div>
@@ -177,11 +177,15 @@
           <div class="activity-card">
             <div class="card-header">
               <h3>Son Teklifler</h3>
-              <RouterLink to="/" class="view-all-link">Tümünü Gör</RouterLink>
+              <button @click="openBidsModal" class="view-all-link">Tümünü Gör</button>
             </div>
             <div class="activity-list">
-              <div v-for="bid in userStats.recentBids" :key="bid.id" class="activity-item">
-                <div class="activity-icon" :class="bid.won ? 'bid-won' : 'bid-lost'">
+              <div v-for="bid in userStats.recentBids" :key="bid.id" class="activity-item clickable" @click="goToLead(bid.leadId)">
+                <div class="activity-icon" :class="{
+                  'bid-won': bid.status === 'won',
+                  'bid-lost': bid.status === 'lost',
+                  'bid-waiting': bid.status === 'waiting'
+                }">
                   <Icon icon="mdi:target" width="16" height="16" />
                 </div>
                 <div class="activity-content">
@@ -190,8 +194,9 @@
                 </div>
                 <div class="activity-meta">
                   <span class="activity-time">{{ formatDate(bid.createdAt) }}</span>
-                  <span v-if="bid.won" class="status-badge won">Kazandı</span>
-                  <span v-else class="status-badge lost">Kaybetti</span>
+                  <span v-if="bid.status === 'won'" class="status-badge won">Kazandı</span>
+                  <span v-else-if="bid.status === 'lost'" class="status-badge lost">Kaybetti</span>
+                  <span v-else class="status-badge waiting">Bekliyor</span>
                 </div>
               </div>
               <div v-if="userStats.recentBids.length === 0" class="empty-state">
@@ -204,10 +209,10 @@
           <div class="activity-card">
             <div class="card-header">
               <h3>Watchlist</h3>
-              <RouterLink to="/" class="view-all-link">Tümünü Gör</RouterLink>
+              <button @click="openWatchlistModal" class="view-all-link">Tümünü Gör</button>
             </div>
             <div class="activity-list">
-              <div v-for="watch in userStats.recentWatchlist" :key="watch.id" class="activity-item">
+              <div v-for="watch in userStats.recentWatchlist" :key="watch.id" class="activity-item clickable" @click="goToLead(watch.leadId)">
                 <div class="activity-icon" :class="watch.purchased ? 'watch-purchased' : 'watch-active'">
                   <Icon icon="mdi:eye" width="16" height="16" />
                 </div>
@@ -222,6 +227,129 @@
               </div>
               <div v-if="userStats.recentWatchlist.length === 0" class="empty-state">
                 <p>Watchlist'iniz boş.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Purchases Modal -->
+    <div v-if="showPurchasesModal" class="modal-overlay" @click="showPurchasesModal = false">
+      <div class="modal-container" @click.stop>
+        <div class="modal-header">
+          <h2>Tüm Satın Almalar</h2>
+          <button class="close-btn" @click="showPurchasesModal = false">
+            <Icon icon="mdi:close" width="24" height="24" />
+          </button>
+        </div>
+        <div class="modal-body">
+          <div v-if="isLoadingModal" class="modal-loading">
+            <div class="spinner"></div>
+            <p>Yükleniyor...</p>
+          </div>
+          <div v-else-if="allPurchases.length === 0" class="modal-empty">
+            <Icon icon="mdi:shopping-outline" width="48" height="48" />
+            <p>Henüz satın alma yapmadınız.</p>
+          </div>
+          <div v-else class="modal-list">
+            <div v-for="purchase in allPurchases" :key="purchase.id" class="modal-item clickable" @click="goToLead(purchase.leadId)">
+              <div class="activity-icon purchase">
+                <Icon icon="mdi:shopping" width="20" height="20" />
+              </div>
+              <div class="modal-item-content">
+                <h4>{{ purchase.leadTitle }}</h4>
+                <p class="item-description">{{ purchase.seller }}</p>
+                <div class="item-details">
+                  <span class="item-price">{{ formatPrice(purchase.amount, settings.defaultCurrency) }}</span>
+                  <span class="item-method">{{ purchase.paymentMethod === 'balance' ? 'Bakiye' : 'IBAN' }}</span>
+                </div>
+              </div>
+              <div class="modal-item-meta">
+                <span class="item-date">{{ formatDate(purchase.soldAt) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bids Modal -->
+    <div v-if="showBidsModal" class="modal-overlay" @click="showBidsModal = false">
+      <div class="modal-container" @click.stop>
+        <div class="modal-header">
+          <h2>Tüm Teklifler</h2>
+          <button class="close-btn" @click="showBidsModal = false">
+            <Icon icon="mdi:close" width="24" height="24" />
+          </button>
+        </div>
+        <div class="modal-body">
+          <div v-if="isLoadingModal" class="modal-loading">
+            <div class="spinner"></div>
+            <p>Yükleniyor...</p>
+          </div>
+          <div v-else-if="allBids.length === 0" class="modal-empty">
+            <Icon icon="mdi:target-variant" width="48" height="48" />
+            <p>Henüz teklif vermediniz.</p>
+          </div>
+          <div v-else class="modal-list">
+            <div v-for="bid in allBids" :key="bid.id" class="modal-item clickable" @click="goToLead(bid.leadId)">
+              <div class="activity-icon" :class="{
+                'bid-won': bid.status === 'won',
+                'bid-lost': bid.status === 'lost',
+                'bid-waiting': bid.status === 'waiting'
+              }">
+                <Icon icon="mdi:target" width="20" height="20" />
+              </div>
+              <div class="modal-item-content">
+                <h4>{{ bid.leadTitle }}</h4>
+                <div class="item-details">
+                  <span class="item-price">{{ formatPrice(bid.amount, settings.defaultCurrency) }}</span>
+                  <span v-if="bid.status === 'won'" class="status-badge won">Kazandı</span>
+                  <span v-else-if="bid.status === 'lost'" class="status-badge lost">Kaybetti</span>
+                  <span v-else class="status-badge waiting">Bekliyor</span>
+                </div>
+              </div>
+              <div class="modal-item-meta">
+                <span class="item-date">{{ formatDate(bid.createdAt) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Watchlist Modal -->
+    <div v-if="showWatchlistModal" class="modal-overlay" @click="showWatchlistModal = false">
+      <div class="modal-container" @click.stop>
+        <div class="modal-header">
+          <h2>Watchlist</h2>
+          <button class="close-btn" @click="showWatchlistModal = false">
+            <Icon icon="mdi:close" width="24" height="24" />
+          </button>
+        </div>
+        <div class="modal-body">
+          <div v-if="isLoadingModal" class="modal-loading">
+            <div class="spinner"></div>
+            <p>Yükleniyor...</p>
+          </div>
+          <div v-else-if="allWatchlist.length === 0" class="modal-empty">
+            <Icon icon="mdi:eye-outline" width="48" height="48" />
+            <p>Watchlist'iniz boş.</p>
+          </div>
+          <div v-else class="modal-list">
+            <div v-for="watch in allWatchlist" :key="watch.id" class="modal-item clickable" @click="goToLead(watch.leadId)">
+              <div class="activity-icon" :class="watch.purchased ? 'watch-purchased' : 'watch-active'">
+                <Icon icon="mdi:eye" width="20" height="20" />
+              </div>
+              <div class="modal-item-content">
+                <h4>{{ watch.leadTitle }}</h4>
+                <p class="item-description">Takip ediliyor</p>
+              </div>
+              <div class="modal-item-meta">
+                <span class="item-date">{{ formatDate(watch.watchedAt) }}</span>
+                <span v-if="watch.purchased" class="status-badge purchased">Satın Alındı</span>
               </div>
             </div>
           </div>
@@ -243,6 +371,17 @@ const userStats = ref(null)
 const settings = ref({ defaultCurrency: 'EUR' })
 const isLoading = ref(true)
 const error = ref('')
+
+// Modal states
+const showPurchasesModal = ref(false)
+const showBidsModal = ref(false)
+const showWatchlistModal = ref(false)
+
+// Full data for modals
+const allPurchases = ref([])
+const allBids = ref([])
+const allWatchlist = ref([])
+const isLoadingModal = ref(false)
 
 async function loadUserStats() {
   isLoading.value = true
@@ -273,6 +412,61 @@ function formatDate(dateString) {
     hour: '2-digit',
     minute: '2-digit'
   })
+}
+
+function goToLead(leadId) {
+  router.push(`/lead/${leadId}`)
+}
+
+async function loadAllPurchases() {
+  isLoadingModal.value = true
+  try {
+    const response = await api.get('/statistics/user/purchases')
+    allPurchases.value = response.data
+  } catch (err) {
+    console.error('Satın almalar yüklenemedi:', err)
+  } finally {
+    isLoadingModal.value = false
+  }
+}
+
+async function loadAllBids() {
+  isLoadingModal.value = true
+  try {
+    const response = await api.get('/statistics/user/bids')
+    allBids.value = response.data
+  } catch (err) {
+    console.error('Teklifler yüklenemedi:', err)
+  } finally {
+    isLoadingModal.value = false
+  }
+}
+
+async function loadAllWatchlist() {
+  isLoadingModal.value = true
+  try {
+    const response = await api.get('/statistics/user/watchlist')
+    allWatchlist.value = response.data
+  } catch (err) {
+    console.error('Watchlist yüklenemedi:', err)
+  } finally {
+    isLoadingModal.value = false
+  }
+}
+
+function openPurchasesModal() {
+  showPurchasesModal.value = true
+  loadAllPurchases()
+}
+
+function openBidsModal() {
+  showBidsModal.value = true
+  loadAllBids()
+}
+
+function openWatchlistModal() {
+  showWatchlistModal.value = true
+  loadAllWatchlist()
 }
 
 onMounted(() => {
@@ -720,6 +914,16 @@ onMounted(() => {
   background: var(--border);
 }
 
+.activity-item.clickable {
+  cursor: pointer;
+}
+
+.activity-item.clickable:hover {
+  background: var(--border);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 .activity-icon {
   width: 32px;
   height: 32px;
@@ -743,6 +947,11 @@ onMounted(() => {
 .activity-icon.bid-lost {
   background: #fee2e2;
   color: #991b1b;
+}
+
+.activity-icon.bid-waiting {
+  background: #dbeafe;
+  color: #1e40af;
 }
 
 .activity-icon.watch-purchased {
@@ -804,6 +1013,11 @@ onMounted(() => {
   color: #991b1b;
 }
 
+.status-badge.waiting {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
 .status-badge.purchased {
   background: #dcfce7;
   color: #047857;
@@ -821,6 +1035,173 @@ onMounted(() => {
 .empty-state p {
   margin: 0;
   font-size: 0.875rem;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-container {
+  background: var(--panel);
+  border-radius: 1rem;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--text);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+.modal-loading,
+.modal-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.modal-empty svg {
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.modal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.modal-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg);
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+}
+
+.modal-item.clickable {
+  cursor: pointer;
+}
+
+.modal-item.clickable:hover {
+  background: var(--border);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modal-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.modal-item-content h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.item-description {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.item-details {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.item-price {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 0.875rem;
+}
+
+.item-method {
+  padding: 0.25rem 0.5rem;
+  background: var(--border);
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.modal-item-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.item-date {
+  font-size: 0.75rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.view-all-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
 }
 
 /* Responsive */
@@ -851,6 +1232,22 @@ onMounted(() => {
 
   .achievements-grid {
     grid-template-columns: 1fr;
+  }
+
+  .modal-container {
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .modal-item {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .modal-item-meta {
+    align-items: flex-start;
+    width: 100%;
   }
 }
 </style>

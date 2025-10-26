@@ -27,6 +27,8 @@ const actionTranslations = {
   LOGIN: 'Giriş Yaptı',
   LOGOUT: 'Çıkış Yaptı',
   VIEW_LEAD: 'Lead Görüntüledi',
+  ADD_BALANCE: 'Bakiye Eklendi',
+  TOGGLE_BALANCE: 'Bakiye Ayarı Değiştirildi',
   CREATE_LEAD: 'Lead Oluşturdu',
   EDIT_LEAD: 'Lead Düzenledi',
   DELETE_LEAD: 'Lead Sildi',
@@ -54,7 +56,15 @@ const actionTranslations = {
   CREATE_FAQ: 'SSS Oluşturdu',
   EDIT_FAQ: 'SSS Düzenledi',
   DELETE_FAQ: 'SSS Sildi',
-  EDIT_ABOUT: 'Hakkında Düzenledi'
+  EDIT_ABOUT: 'Hakkında Düzenledi',
+  PASSWORD_RESET : 'Şifre Sıfırlandı',
+  DEACTIVATE_USER	 : 'Kullanıcı Deaktif Edildi',
+  DISABLE_2FA : '2FA Deaktif Edildi',
+  ADMIN_DISABLE_2FA : 'ADMIN - 2FA Deaktif Etti',
+  INITIATE_2FA : '2FA Ayarlandı',
+  ENABLE_2FA	 : '2FA Aktif Edildi'
+
+
 }
 
 function translateAction(action) {

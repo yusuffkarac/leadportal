@@ -277,7 +277,7 @@ onMounted(async () => {
           >
             <header class="showcase-card-header">
               <div class="showcase-tags">
-                <span class="tag">Açık</span>
+                <span class="tag">Aktif</span>
                 <span v-if="lead.instantBuyPrice" class="tag success">Hemen Al</span>
               </div>
               <button class="card-link" type="button" @click="openLeadDetail(lead.id)">

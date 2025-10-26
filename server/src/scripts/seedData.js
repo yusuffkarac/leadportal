@@ -134,6 +134,129 @@ async function seedData() {
     }
     console.log('✅ Default users created')
 
+    // 5. Create notification types (sadece aktif olarak kullanılanlar)
+    const notificationTypes = [
+      // BID kategorisi
+      {
+        code: 'BID_RECEIVED',
+        name: 'Lead\'inizde Yeni Teklif',
+        description: 'Lead\'inizde başka bir kullanıcı teklif verdi',
+        category: 'BID',
+        defaultEnabled: true,
+        emailEnabled: true,
+        inAppEnabled: true,
+        icon: 'mdi:gavel'
+      },
+      {
+        code: 'BID_PLACED',
+        name: 'Teklifiniz Alındı',
+        description: 'Lead için verdiğiniz teklif başarıyla kaydedildi',
+        category: 'BID',
+        defaultEnabled: true,
+        emailEnabled: false,
+        inAppEnabled: true,
+        icon: 'mdi:hand-wave'
+      },
+      {
+        code: 'BID_OUTBID',
+        name: 'Teklifiniz Geçildi',
+        description: 'Teklif verdiğiniz lead\'de daha yüksek bir teklif yapıldı',
+        category: 'BID',
+        defaultEnabled: true,
+        emailEnabled: true,
+        inAppEnabled: true,
+        icon: 'mdi:arrow-up-bold'
+      },
+
+      // LEAD kategorisi
+      {
+        code: 'LEAD_SOLD',
+        name: 'Lead Satıldı',
+        description: 'Lead\'iniz başarıyla satıldı',
+        category: 'LEAD',
+        defaultEnabled: true,
+        emailEnabled: true,
+        inAppEnabled: true,
+        icon: 'mdi:check-circle'
+      },
+      {
+        code: 'LEAD_PURCHASED',
+        name: 'Lead Satın Alındı',
+        description: 'Bir lead satın aldınız',
+        category: 'LEAD',
+        defaultEnabled: true,
+        emailEnabled: true,
+        inAppEnabled: true,
+        icon: 'mdi:cart-check'
+      },
+
+      // PAYMENT kategorisi
+      {
+        code: 'PAYMENT_RECEIVED',
+        name: 'Ödeme Alındı',
+        description: 'Lead satışından ödeme aldınız',
+        category: 'PAYMENT',
+        defaultEnabled: true,
+        emailEnabled: true,
+        inAppEnabled: true,
+        icon: 'mdi:cash-check'
+      },
+      {
+        code: 'BALANCE_ADDED',
+        name: 'Bakiye Eklendi',
+        description: 'Admin tarafından hesabınıza bakiye eklendi',
+        category: 'PAYMENT',
+        defaultEnabled: true,
+        emailEnabled: true,
+        inAppEnabled: true,
+        icon: 'mdi:wallet-plus'
+      }
+    ]
+
+    console.log('Creating notification types...')
+    for (const notifType of notificationTypes) {
+      await prisma.notificationType.upsert({
+        where: { code: notifType.code },
+        update: notifType,
+        create: notifType
+      })
+    }
+    console.log('✅ Notification types created')
+
+    // 6. Create default notification role permissions
+    const allNotificationTypes = await prisma.notificationType.findMany()
+    const allUserTypes = await prisma.userType.findMany()
+
+    console.log('Creating default notification role permissions...')
+    for (const userType of allUserTypes) {
+      for (const notifType of allNotificationTypes) {
+        // Admin rolleri tüm bildirimleri alabilir
+        const isAdmin = userType.id.includes('ADMIN')
+
+        // Kategoriye göre rol izinleri
+        let canReceive = true
+        if (notifType.category === 'ADMIN' && !isAdmin) {
+          canReceive = false // Admin bildirimleri sadece adminler alabilir
+        }
+
+        await prisma.notificationRolePermission.upsert({
+          where: {
+            userTypeId_notificationTypeId: {
+              userTypeId: userType.id,
+              notificationTypeId: notifType.id
+            }
+          },
+          update: { canReceive },
+          create: {
+            userTypeId: userType.id,
+            notificationTypeId: notifType.id,
+            canReceive
+          }
+        })
+      }
+    }
+    console.log('✅ Default notification role permissions created')
+
     console.log('🎉 Database seeding completed successfully!')
   } catch (error) {
     console.error('❌ Error seeding database:', error)

@@ -25,7 +25,17 @@ const updateProfileSchema = z.object({
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   username: z.string().optional(),
-  email: z.string().email().optional()
+  email: z.string().email().optional(),
+  paymentMethod: z.enum(['balance', 'iban']).optional()
+})
+
+const updateIbanSchema = z.object({
+  ibanAccountHolder: z.string().min(1, 'Hesap sahibi adı gereklidir'),
+  ibanNumber: z.string().min(15, 'Geçerli bir IBAN numarası giriniz'),
+  ibanBic: z.string().optional(),
+  ibanAddress: z.string().min(1, 'Adres gereklidir'),
+  ibanPostalCode: z.string().min(1, 'Posta kodu gereklidir'),
+  ibanCity: z.string().min(1, 'Şehir gereklidir')
 })
 
 const changePasswordSchema = z.object({
@@ -217,17 +227,40 @@ export default function authRouter(prisma) {
         if (existingUser) return res.status(409).json({ error: 'Bu kullanıcı adı zaten kullanılıyor' })
       }
       
+      const updateData = {
+        firstName: firstName || null,
+        lastName: lastName || null,
+        username: username || null,
+        email: email || undefined
+      }
+
+      // paymentMethod varsa ekle
+      if (req.body.paymentMethod) {
+        updateData.paymentMethod = req.body.paymentMethod
+
+        // Activity log for payment method change
+        try {
+          const { ipAddress, userAgent } = extractRequestInfo(req)
+          await logActivity({
+            userId: decoded.id,
+            action: ActivityTypes.UPDATE_PAYMENT_METHOD,
+            details: { newPaymentMethod: req.body.paymentMethod },
+            entityType: 'user',
+            entityId: decoded.id,
+            ipAddress,
+            userAgent
+          })
+        } catch (e) {
+          console.error('Activity log error:', e.message)
+        }
+      }
+
       const updatedUser = await prisma.user.update({
         where: { id: decoded.id },
-        data: {
-          firstName: firstName || null,
-          lastName: lastName || null,
-          username: username || null,
-          email: email || undefined
-        },
+        data: updateData,
         include: { userType: true }
       })
-      
+
       res.json({ user: updatedUser, userType: updatedUser.userType })
     } catch (error) {
       console.error('Profil güncelleme hatası:', error)
@@ -338,6 +371,134 @@ export default function authRouter(prisma) {
     } catch (error) {
       console.error('Profil fotoğrafı kaldırma hatası:', error)
       res.status(500).json({ error: 'Fotoğraf kaldırılırken hata oluştu' })
+    }
+  })
+
+  // IBAN bilgilerini güncelle
+  router.put('/iban', async (req, res) => {
+    try {
+      const token = req.headers.authorization?.replace('Bearer ', '')
+      if (!token) return res.status(401).json({ error: 'Token gerekli' })
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      const parse = updateIbanSchema.safeParse(req.body)
+      if (!parse.success) {
+        const errors = parse.error?.errors?.map(e => e.message).join(', ') || 'Geçersiz veri'
+        return res.status(400).json({ error: errors })
+      }
+
+      const { ibanAccountHolder, ibanNumber, ibanBic, ibanAddress, ibanPostalCode, ibanCity } = parse.data
+
+      // IBAN numarasını temizle (boşlukları kaldır)
+      const cleanedIban = ibanNumber.replace(/\s/g, '').toUpperCase()
+
+      const updatedUser = await prisma.user.update({
+        where: { id: decoded.id },
+        data: {
+          ibanAccountHolder,
+          ibanNumber: cleanedIban,
+          ibanBic: ibanBic || null,
+          ibanAddress,
+          ibanPostalCode,
+          ibanCity
+        },
+        select: {
+          id: true,
+          ibanAccountHolder: true,
+          ibanNumber: true,
+          ibanBic: true,
+          ibanAddress: true,
+          ibanPostalCode: true,
+          ibanCity: true
+        }
+      })
+
+      res.json({
+        message: 'IBAN bilgileri başarıyla güncellendi',
+        iban: updatedUser
+      })
+    } catch (error) {
+      console.error('IBAN güncelleme hatası:', error)
+      res.status(500).json({ error: 'IBAN bilgileri güncellenirken hata oluştu' })
+    }
+  })
+
+  // IBAN bilgilerini al
+  router.get('/iban', async (req, res) => {
+    try {
+      const token = req.headers.authorization?.replace('Bearer ', '')
+      if (!token) return res.status(401).json({ error: 'Token gerekli' })
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+
+      const user = await prisma.user.findUnique({
+        where: { id: decoded.id },
+        select: {
+          ibanAccountHolder: true,
+          ibanNumber: true,
+          ibanBic: true,
+          ibanAddress: true,
+          ibanPostalCode: true,
+          ibanCity: true
+        }
+      })
+
+      if (!user) {
+        return res.status(404).json({ error: 'Kullanıcı bulunamadı' })
+      }
+
+      // IBAN varsa maskele (son 4 hane hariç)
+      let maskedIban = null
+      if (user.ibanNumber) {
+        const iban = user.ibanNumber
+        if (iban.length > 4) {
+          maskedIban = '*'.repeat(iban.length - 4) + iban.slice(-4)
+        } else {
+          maskedIban = iban
+        }
+      }
+
+      res.json({
+        ibanAccountHolder: user.ibanAccountHolder,
+        ibanNumber: maskedIban,
+        ibanNumberFull: user.ibanNumber, // Düzenleme için
+        ibanBic: user.ibanBic,
+        ibanAddress: user.ibanAddress,
+        ibanPostalCode: user.ibanPostalCode,
+        ibanCity: user.ibanCity,
+        hasIban: !!user.ibanNumber
+      })
+    } catch (error) {
+      console.error('IBAN alma hatası:', error)
+      res.status(500).json({ error: 'IBAN bilgileri alınırken hata oluştu' })
+    }
+  })
+
+  // IBAN bilgilerini sil
+  router.delete('/iban', async (req, res) => {
+    try {
+      const token = req.headers.authorization?.replace('Bearer ', '')
+      if (!token) return res.status(401).json({ error: 'Token gerekli' })
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+
+      await prisma.user.update({
+        where: { id: decoded.id },
+        data: {
+          ibanAccountHolder: null,
+          ibanNumber: null,
+          ibanBic: null,
+          ibanAddress: null,
+          ibanPostalCode: null,
+          ibanCity: null,
+          paymentMethod: 'balance' // IBAN silindiğinde varsayılan olarak bakiye kullan
+        }
+      })
+
+      res.json({ message: 'IBAN bilgileri başarıyla silindi' })
+    } catch (error) {
+      console.error('IBAN silme hatası:', error)
+      res.status(500).json({ error: 'IBAN bilgileri silinirken hata oluştu' })
     }
   })
 

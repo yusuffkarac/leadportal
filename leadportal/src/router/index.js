@@ -23,6 +23,9 @@ import AdminActivityLogView from '../views/AdminActivityLogView.vue'
 import ForgotPasswordView from '../views/ForgotPasswordView.vue'
 import ResetPasswordView from '../views/ResetPasswordView.vue'
 import UserDashboardView from '../views/UserDashboardView.vue'
+import AdminBalanceView from '../views/AdminBalanceView.vue'
+import NotificationPreferencesView from '../views/NotificationPreferencesView.vue'
+import AdminNotificationSettingsView from '../views/AdminNotificationSettingsView.vue'
 
 export const appRoutes = [
     {
@@ -174,9 +177,26 @@ export const appRoutes = [
       meta: { requiresAdmin: true },
     },
     {
+      path: '/admin/balance',
+      name: 'admin-balance',
+      component: AdminBalanceView,
+      meta: { requiresAdmin: true },
+    },
+    {
       path: '/profile',
       name: 'profile',
       component: ProfileView,
+    },
+    {
+      path: '/profile/notifications',
+      name: 'notification-preferences',
+      component: NotificationPreferencesView,
+    },
+    {
+      path: '/admin/notification-settings',
+      name: 'admin-notification-settings',
+      component: AdminNotificationSettingsView,
+      meta: { requiresAdmin: true },
     },
 ]
 

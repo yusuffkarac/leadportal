@@ -4,6 +4,9 @@ import { Icon } from '@iconify/vue'
 import api from '@/utils/axios.js'
 import { io } from 'socket.io-client'
 import { formatPrice, getCurrencySymbol } from '@/utils/currency.js'
+import { useAlert } from '../composables/useAlert'
+
+const { success, error } = useAlert()
 
 const leads = ref([])
 const allLeads = ref([]) // Tüm lead'ler
@@ -253,7 +256,7 @@ function shareLead(lead, event) {
   } else {
     // Fallback: URL'yi panoya kopyala
     navigator.clipboard.writeText(url).then(() => {
-      alert('Lead linki panoya kopyalandı!')
+      success('Lead linki panoya kopyalandı!')
     }).catch(() => {
       // Fallback: prompt ile göster
       prompt('Lead linkini kopyalayın:', url)
@@ -278,20 +281,39 @@ function closeInstantBuyModal() {
 
 async function confirmInstantBuy() {
   if (!selectedLead.value) return
-  
+
   isProcessing.value = true
-  
+
   try {
     const response = await api.post(`/leads/${selectedLead.value.id}/instant-buy`, {}, { headers: authHeaders() })
-    
+
     if (response.data.success) {
       closeInstantBuyModal()
       // Lead'leri yeniden yükle
       await fetchLeads()
+
+      // Başarı mesajı göster
+      const paymentInfo = response.data.paymentMethod === 'balance'
+        ? `Bakiyenizden ${formatPrice(response.data.sale.amount, settings.value.defaultCurrency)} düşüldü.`
+        : 'IBAN üzerinden ödeme yapılacaktır.'
+
+      success(`Lead başarıyla satın alındı!\n\n${paymentInfo}`)
     }
-  } catch (error) {
-    const errorData = error.response?.data
-    console.error('Anında satın alma hatası:', errorData?.error || 'Anında satın alma işlemi başarısız')
+  } catch (err) {
+    const errorData = err.response?.data
+
+    closeInstantBuyModal()
+
+    // Hata tipine göre mesaj göster
+    if (errorData?.errorType === 'INSUFFICIENT_BALANCE') {
+      error(`Yetersiz bakiye!\n\nGerekli: ${formatPrice(errorData.required, settings.value.defaultCurrency)}\nMevcut: ${formatPrice(errorData.available, settings.value.defaultCurrency)}\n\n${errorData.error}`)
+    } else if (errorData?.errorType === 'IBAN_NOT_FOUND') {
+      error(errorData.error + '\n\nProfil sayfanızdan IBAN bilgilerinizi ekleyebilirsiniz.')
+    } else {
+      error(errorData?.error || 'Anında satın alma işlemi başarısız')
+    }
+
+    console.error('Anında satın alma hatası:', errorData?.error)
   } finally {
     isProcessing.value = false
   }
@@ -301,7 +323,7 @@ async function submitQuickBid(lead, event) {
   event.stopPropagation()
   
   if (!quickBidAmounts.value[lead.id] || quickBidAmounts.value[lead.id] <= 0) {
-    alert('Lütfen geçerli bir teklif miktarı girin')
+    error('Lütfen geçerli bir teklif miktarı girin')
     return
   }
   
@@ -321,7 +343,7 @@ async function submitQuickBid(lead, event) {
     }
   } catch (error) {
     const errorData = error.response?.data
-    alert(errorData?.error || 'Teklif verme işlemi başarısız')
+    error(errorData?.error || 'Teklif verme işlemi başarısız')
   } finally {
     isSubmittingBid.value[lead.id] = false
   }
@@ -456,8 +478,8 @@ onMounted(async () => {
       </div>
     </section>
 
-    <div class="page-content">
-      <!-- Premium Vitrin Alanı -->
+    <!-- Premium Vitrin Alanı -->
+    <div v-if="premiumLeads.length > 0" class="premium-section">
       <div class="premium-showcase">
         <div class="premium-header">
           <div class="premium-title">
@@ -478,13 +500,6 @@ onMounted(async () => {
 
         <div class="premium-slider-container">
           <div class="premium-slider">
-            <div v-if="premiumLeads.length === 0" class="premium-empty-state">
-              <div class="premium-empty-icon">
-                <Icon icon="mdi:star-outline" width="48" height="48" />
-              </div>
-              <h3>Henüz premium lead yok</h3>
-              <p>İlk premium lead'i siz ekleyin ve öne çıkın!</p>
-            </div>
             <div class="premium-card" v-for="lead in premiumLeads" :key="lead.id" @click="navigateToLead(lead)">
               <div class="premium-card-glow"></div>
               <div class="premium-card-header">
@@ -532,12 +547,17 @@ onMounted(async () => {
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Harita -->
-      <div v-if="showMap" class="map-container">
+    <!-- Harita -->
+    <div v-if="showMap" class="map-section">
+      <div class="map-container">
         <div ref="mapRoot" class="leads-map"></div>
       </div>
+    </div>
 
+    <!-- Aktif Açık Artırmalar -->
+    <div class="auctions-section">
       <div class="page-header">
         <h1>Aktif Açık Artırmalar</h1>
         <div class="header-actions">
@@ -798,7 +818,7 @@ onMounted(async () => {
               class="instant-buy-btn-small"
               @click="openInstantBuyModal(lead, $event)"
             >
-              <i class="fas fa-euro-sign"></i>
+              <Icon icon="mdi:currency-eur" width="16" height="16" />
               Anında Al
             </button>
           </div>
@@ -807,7 +827,8 @@ onMounted(async () => {
     </div>
   </div>
 
-    <!-- Hero Section - Lead varsa altta -->
+    <!-- 
+    Hero Section - Lead varsa altta
     <section v-if="leads.length" class="hero-section">
       <div class="hero-content">
         <h1 class="hero-title">
@@ -824,6 +845,7 @@ onMounted(async () => {
         </div>
       </div>
     </section>
+    -->
 
     <!-- Instant Buy Modal -->
     <div v-if="showInstantBuyModal" class="modal-backdrop" @click="closeInstantBuyModal">
@@ -861,9 +883,40 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+/* Section Containers */
+.premium-section {
+  background: #f5f7fb;
+  border-radius: 24px;
+  padding: 32px 28px;
+  margin: 0 auto 24px auto;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  max-width: 1200px;
+  width: 100%;
+}
+
+.map-section {
+  background: #f5f7fb;
+  border-radius: 24px;
+  padding: 32px 28px;
+  margin: 0 auto 24px auto;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  max-width: 1200px;
+  width: 100%;
+}
+
+.auctions-section {
+  background: #f5f7fb;
+  border-radius: 24px;
+  padding: 32px 28px;
+  margin: 0 auto;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  max-width: 1200px;
+  width: 100%;
+}
+
 /* Map Container */
 .map-container {
-  margin-bottom: 24px;
+  margin-bottom: 0;
   position: relative;
   z-index: 0;
 }
@@ -1863,16 +1916,34 @@ onMounted(async () => {
   margin: 0;
 }
 
-.page-content {
-  background: #f5f7fb;
-  border-radius: 24px;
-  padding: 32px 28px;
-  border: 1px solid rgba(15, 23, 42, 0.06);
+/* Responsive Section Containers */
+@media (max-width: 1200px) {
+  .premium-section,
+  .map-section,
+  .auctions-section {
+    max-width: 100%;
+    margin-left: 16px;
+    margin-right: 16px;
+  }
 }
 
 @media (max-width: 768px) {
-  .page-content {
+  .premium-section,
+  .map-section,
+  .auctions-section {
     padding: 20px 16px;
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .premium-section,
+  .map-section,
+  .auctions-section {
+    margin-left: 8px;
+    margin-right: 8px;
+    padding: 16px 12px;
   }
 }
 

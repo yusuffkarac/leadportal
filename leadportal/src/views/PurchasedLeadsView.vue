@@ -136,6 +136,8 @@
             <tr>
               <th>Lead</th>
               <th>Satın Alma Fiyatı</th>
+              <th>Ödeme Yöntemi</th>
+              <th>Bakiye Bilgisi</th>
               <th>Satıcı</th>
               <th>Satın Alma Tarihi</th>
               <th>İşlemler</th>
@@ -154,6 +156,20 @@
               <td>
                 <div class="price-cell">
                   <span class="purchase-price">{{ formatPrice(sale.amount, settings.defaultCurrency) }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="payment-method-badge" :class="sale.paymentMethod">
+                  {{ sale.paymentMethod === 'balance' ? 'Bakiye' : 'IBAN' }}
+                </span>
+              </td>
+              <td>
+                <div v-if="sale.paymentMethod === 'balance' && sale.balanceBefore !== null && sale.balanceAfter !== null" class="balance-info">
+                  <div class="balance-before">Öncesi: {{ formatPrice(sale.balanceBefore, settings.defaultCurrency) }}</div>
+                  <div class="balance-after">Sonrası: {{ formatPrice(sale.balanceAfter, settings.defaultCurrency) }}</div>
+                </div>
+                <div v-else class="balance-info">
+                  <span class="text-muted">-</span>
                 </div>
               </td>
               <td>
@@ -210,6 +226,42 @@
                 <div class="detail-content">
                   <span class="detail-label">Satın Alma Fiyatı</span>
                   <span class="detail-value price">{{ formatPrice(sale.amount, settings.defaultCurrency) }}</span>
+                </div>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                    <line x1="1" y1="10" x2="23" y2="10"/>
+                  </svg>
+                </div>
+                <div class="detail-content">
+                  <span class="detail-label">Ödeme Yöntemi</span>
+                  <span class="detail-value">
+                    <span class="payment-method-badge" :class="sale.paymentMethod">
+                      {{ sale.paymentMethod === 'balance' ? 'Bakiye' : 'IBAN' }}
+                    </span>
+                  </span>
+                </div>
+              </div>
+
+              <div v-if="sale.paymentMethod === 'balance' && sale.balanceBefore !== null && sale.balanceAfter !== null" class="detail-item">
+                <div class="detail-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+                  </svg>
+                </div>
+                <div class="detail-content">
+                  <span class="detail-label">Bakiye Değişimi</span>
+                  <span class="detail-value">
+                    <div class="balance-change">
+                      <span class="balance-before">{{ formatPrice(sale.balanceBefore, settings.defaultCurrency) }}</span>
+                      <span class="balance-arrow">→</span>
+                      <span class="balance-after">{{ formatPrice(sale.balanceAfter, settings.defaultCurrency) }}</span>
+                    </div>
+                  </span>
                 </div>
               </div>
 
@@ -1426,5 +1478,58 @@ watch(showMap, (newValue) => {
   .view-toggle-btn {
     padding: 10px;
   }
+}
+
+/* Ödeme yöntemi ve bakiye stilleri */
+.payment-method-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.payment-method-badge.balance {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.payment-method-badge.iban {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.balance-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.75rem;
+}
+
+.balance-before {
+  color: #6b7280;
+}
+
+.balance-after {
+  color: #059669;
+  font-weight: 600;
+}
+
+.balance-change {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+}
+
+.balance-arrow {
+  color: #6b7280;
+  font-weight: bold;
+}
+
+.text-muted {
+  color: #9ca3af;
+  font-style: italic;
 }
 </style>

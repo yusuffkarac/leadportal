@@ -103,6 +103,31 @@ export type ActivityLog = $Result.DefaultSelection<Prisma.$ActivityLogPayload>
  * 
  */
 export type PasswordResetToken = $Result.DefaultSelection<Prisma.$PasswordResetTokenPayload>
+/**
+ * Model BalanceTransaction
+ * 
+ */
+export type BalanceTransaction = $Result.DefaultSelection<Prisma.$BalanceTransactionPayload>
+/**
+ * Model NotificationType
+ * 
+ */
+export type NotificationType = $Result.DefaultSelection<Prisma.$NotificationTypePayload>
+/**
+ * Model NotificationPreference
+ * 
+ */
+export type NotificationPreference = $Result.DefaultSelection<Prisma.$NotificationPreferencePayload>
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
+/**
+ * Model NotificationRolePermission
+ * 
+ */
+export type NotificationRolePermission = $Result.DefaultSelection<Prisma.$NotificationRolePermissionPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -401,6 +426,56 @@ export class PrismaClient<
     * ```
     */
   get passwordResetToken(): Prisma.PasswordResetTokenDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.balanceTransaction`: Exposes CRUD operations for the **BalanceTransaction** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BalanceTransactions
+    * const balanceTransactions = await prisma.balanceTransaction.findMany()
+    * ```
+    */
+  get balanceTransaction(): Prisma.BalanceTransactionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.notificationType`: Exposes CRUD operations for the **NotificationType** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more NotificationTypes
+    * const notificationTypes = await prisma.notificationType.findMany()
+    * ```
+    */
+  get notificationType(): Prisma.NotificationTypeDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.notificationPreference`: Exposes CRUD operations for the **NotificationPreference** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more NotificationPreferences
+    * const notificationPreferences = await prisma.notificationPreference.findMany()
+    * ```
+    */
+  get notificationPreference(): Prisma.NotificationPreferenceDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.notification`: Exposes CRUD operations for the **Notification** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Notifications
+    * const notifications = await prisma.notification.findMany()
+    * ```
+    */
+  get notification(): Prisma.NotificationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.notificationRolePermission`: Exposes CRUD operations for the **NotificationRolePermission** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more NotificationRolePermissions
+    * const notificationRolePermissions = await prisma.notificationRolePermission.findMany()
+    * ```
+    */
+  get notificationRolePermission(): Prisma.NotificationRolePermissionDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -858,7 +933,12 @@ export namespace Prisma {
     EmailTemplate: 'EmailTemplate',
     SMSTemplate: 'SMSTemplate',
     ActivityLog: 'ActivityLog',
-    PasswordResetToken: 'PasswordResetToken'
+    PasswordResetToken: 'PasswordResetToken',
+    BalanceTransaction: 'BalanceTransaction',
+    NotificationType: 'NotificationType',
+    NotificationPreference: 'NotificationPreference',
+    Notification: 'Notification',
+    NotificationRolePermission: 'NotificationRolePermission'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -877,7 +957,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "lead" | "bid" | "leadWatch" | "leadSale" | "settings" | "userType" | "page" | "userTypePermission" | "leadTypePermission" | "userLeadTypePermission" | "fAQ" | "about" | "designSettings" | "emailTemplate" | "sMSTemplate" | "activityLog" | "passwordResetToken"
+      modelProps: "user" | "lead" | "bid" | "leadWatch" | "leadSale" | "settings" | "userType" | "page" | "userTypePermission" | "leadTypePermission" | "userLeadTypePermission" | "fAQ" | "about" | "designSettings" | "emailTemplate" | "sMSTemplate" | "activityLog" | "passwordResetToken" | "balanceTransaction" | "notificationType" | "notificationPreference" | "notification" | "notificationRolePermission"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2213,6 +2293,376 @@ export namespace Prisma {
           }
         }
       }
+      BalanceTransaction: {
+        payload: Prisma.$BalanceTransactionPayload<ExtArgs>
+        fields: Prisma.BalanceTransactionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BalanceTransactionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BalanceTransactionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BalanceTransactionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BalanceTransactionPayload>
+          }
+          findFirst: {
+            args: Prisma.BalanceTransactionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BalanceTransactionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BalanceTransactionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BalanceTransactionPayload>
+          }
+          findMany: {
+            args: Prisma.BalanceTransactionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BalanceTransactionPayload>[]
+          }
+          create: {
+            args: Prisma.BalanceTransactionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BalanceTransactionPayload>
+          }
+          createMany: {
+            args: Prisma.BalanceTransactionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BalanceTransactionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BalanceTransactionPayload>[]
+          }
+          delete: {
+            args: Prisma.BalanceTransactionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BalanceTransactionPayload>
+          }
+          update: {
+            args: Prisma.BalanceTransactionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BalanceTransactionPayload>
+          }
+          deleteMany: {
+            args: Prisma.BalanceTransactionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BalanceTransactionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BalanceTransactionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BalanceTransactionPayload>[]
+          }
+          upsert: {
+            args: Prisma.BalanceTransactionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BalanceTransactionPayload>
+          }
+          aggregate: {
+            args: Prisma.BalanceTransactionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBalanceTransaction>
+          }
+          groupBy: {
+            args: Prisma.BalanceTransactionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BalanceTransactionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BalanceTransactionCountArgs<ExtArgs>
+            result: $Utils.Optional<BalanceTransactionCountAggregateOutputType> | number
+          }
+        }
+      }
+      NotificationType: {
+        payload: Prisma.$NotificationTypePayload<ExtArgs>
+        fields: Prisma.NotificationTypeFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NotificationTypeFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationTypePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NotificationTypeFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationTypePayload>
+          }
+          findFirst: {
+            args: Prisma.NotificationTypeFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationTypePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NotificationTypeFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationTypePayload>
+          }
+          findMany: {
+            args: Prisma.NotificationTypeFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationTypePayload>[]
+          }
+          create: {
+            args: Prisma.NotificationTypeCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationTypePayload>
+          }
+          createMany: {
+            args: Prisma.NotificationTypeCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NotificationTypeCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationTypePayload>[]
+          }
+          delete: {
+            args: Prisma.NotificationTypeDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationTypePayload>
+          }
+          update: {
+            args: Prisma.NotificationTypeUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationTypePayload>
+          }
+          deleteMany: {
+            args: Prisma.NotificationTypeDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NotificationTypeUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NotificationTypeUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationTypePayload>[]
+          }
+          upsert: {
+            args: Prisma.NotificationTypeUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationTypePayload>
+          }
+          aggregate: {
+            args: Prisma.NotificationTypeAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNotificationType>
+          }
+          groupBy: {
+            args: Prisma.NotificationTypeGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NotificationTypeGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NotificationTypeCountArgs<ExtArgs>
+            result: $Utils.Optional<NotificationTypeCountAggregateOutputType> | number
+          }
+        }
+      }
+      NotificationPreference: {
+        payload: Prisma.$NotificationPreferencePayload<ExtArgs>
+        fields: Prisma.NotificationPreferenceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NotificationPreferenceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NotificationPreferenceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+          }
+          findFirst: {
+            args: Prisma.NotificationPreferenceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NotificationPreferenceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+          }
+          findMany: {
+            args: Prisma.NotificationPreferenceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>[]
+          }
+          create: {
+            args: Prisma.NotificationPreferenceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+          }
+          createMany: {
+            args: Prisma.NotificationPreferenceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NotificationPreferenceCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>[]
+          }
+          delete: {
+            args: Prisma.NotificationPreferenceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+          }
+          update: {
+            args: Prisma.NotificationPreferenceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+          }
+          deleteMany: {
+            args: Prisma.NotificationPreferenceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NotificationPreferenceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NotificationPreferenceUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>[]
+          }
+          upsert: {
+            args: Prisma.NotificationPreferenceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+          }
+          aggregate: {
+            args: Prisma.NotificationPreferenceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNotificationPreference>
+          }
+          groupBy: {
+            args: Prisma.NotificationPreferenceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NotificationPreferenceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NotificationPreferenceCountArgs<ExtArgs>
+            result: $Utils.Optional<NotificationPreferenceCountAggregateOutputType> | number
+          }
+        }
+      }
+      Notification: {
+        payload: Prisma.$NotificationPayload<ExtArgs>
+        fields: Prisma.NotificationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NotificationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NotificationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          findFirst: {
+            args: Prisma.NotificationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NotificationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          findMany: {
+            args: Prisma.NotificationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+          }
+          create: {
+            args: Prisma.NotificationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          createMany: {
+            args: Prisma.NotificationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NotificationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+          }
+          delete: {
+            args: Prisma.NotificationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          update: {
+            args: Prisma.NotificationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          deleteMany: {
+            args: Prisma.NotificationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NotificationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NotificationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+          }
+          upsert: {
+            args: Prisma.NotificationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          aggregate: {
+            args: Prisma.NotificationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNotification>
+          }
+          groupBy: {
+            args: Prisma.NotificationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NotificationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NotificationCountArgs<ExtArgs>
+            result: $Utils.Optional<NotificationCountAggregateOutputType> | number
+          }
+        }
+      }
+      NotificationRolePermission: {
+        payload: Prisma.$NotificationRolePermissionPayload<ExtArgs>
+        fields: Prisma.NotificationRolePermissionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NotificationRolePermissionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationRolePermissionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NotificationRolePermissionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationRolePermissionPayload>
+          }
+          findFirst: {
+            args: Prisma.NotificationRolePermissionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationRolePermissionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NotificationRolePermissionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationRolePermissionPayload>
+          }
+          findMany: {
+            args: Prisma.NotificationRolePermissionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationRolePermissionPayload>[]
+          }
+          create: {
+            args: Prisma.NotificationRolePermissionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationRolePermissionPayload>
+          }
+          createMany: {
+            args: Prisma.NotificationRolePermissionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NotificationRolePermissionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationRolePermissionPayload>[]
+          }
+          delete: {
+            args: Prisma.NotificationRolePermissionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationRolePermissionPayload>
+          }
+          update: {
+            args: Prisma.NotificationRolePermissionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationRolePermissionPayload>
+          }
+          deleteMany: {
+            args: Prisma.NotificationRolePermissionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NotificationRolePermissionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NotificationRolePermissionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationRolePermissionPayload>[]
+          }
+          upsert: {
+            args: Prisma.NotificationRolePermissionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationRolePermissionPayload>
+          }
+          aggregate: {
+            args: Prisma.NotificationRolePermissionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNotificationRolePermission>
+          }
+          groupBy: {
+            args: Prisma.NotificationRolePermissionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NotificationRolePermissionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NotificationRolePermissionCountArgs<ExtArgs>
+            result: $Utils.Optional<NotificationRolePermissionCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2327,6 +2777,11 @@ export namespace Prisma {
     sMSTemplate?: SMSTemplateOmit
     activityLog?: ActivityLogOmit
     passwordResetToken?: PasswordResetTokenOmit
+    balanceTransaction?: BalanceTransactionOmit
+    notificationType?: NotificationTypeOmit
+    notificationPreference?: NotificationPreferenceOmit
+    notification?: NotificationOmit
+    notificationRolePermission?: NotificationRolePermissionOmit
   }
 
   /* Types for Logging */
@@ -2414,6 +2869,9 @@ export namespace Prisma {
     leadTypePermissions: number
     activityLogs: number
     passwordResetTokens: number
+    balanceTransactions: number
+    notifications: number
+    notificationPreferences: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2424,6 +2882,9 @@ export namespace Prisma {
     leadTypePermissions?: boolean | UserCountOutputTypeCountLeadTypePermissionsArgs
     activityLogs?: boolean | UserCountOutputTypeCountActivityLogsArgs
     passwordResetTokens?: boolean | UserCountOutputTypeCountPasswordResetTokensArgs
+    balanceTransactions?: boolean | UserCountOutputTypeCountBalanceTransactionsArgs
+    notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
+    notificationPreferences?: boolean | UserCountOutputTypeCountNotificationPreferencesArgs
   }
 
   // Custom InputTypes
@@ -2486,6 +2947,27 @@ export namespace Prisma {
     where?: PasswordResetTokenWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountBalanceTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BalanceTransactionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountNotificationPreferencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationPreferenceWhereInput
+  }
+
 
   /**
    * Count Type LeadCountOutputType
@@ -2535,12 +3017,14 @@ export namespace Prisma {
     leadTypePermissions: number
     users: number
     permissions: number
+    notificationRolePermissions: number
   }
 
   export type UserTypeCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     leadTypePermissions?: boolean | UserTypeCountOutputTypeCountLeadTypePermissionsArgs
     users?: boolean | UserTypeCountOutputTypeCountUsersArgs
     permissions?: boolean | UserTypeCountOutputTypeCountPermissionsArgs
+    notificationRolePermissions?: boolean | UserTypeCountOutputTypeCountNotificationRolePermissionsArgs
   }
 
   // Custom InputTypes
@@ -2573,6 +3057,13 @@ export namespace Prisma {
    */
   export type UserTypeCountOutputTypeCountPermissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserTypePermissionWhereInput
+  }
+
+  /**
+   * UserTypeCountOutputType without action
+   */
+  export type UserTypeCountOutputTypeCountNotificationRolePermissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationRolePermissionWhereInput
   }
 
 
@@ -2608,6 +3099,55 @@ export namespace Prisma {
 
 
   /**
+   * Count Type NotificationTypeCountOutputType
+   */
+
+  export type NotificationTypeCountOutputType = {
+    notifications: number
+    userPreferences: number
+    roleTypePermissions: number
+  }
+
+  export type NotificationTypeCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    notifications?: boolean | NotificationTypeCountOutputTypeCountNotificationsArgs
+    userPreferences?: boolean | NotificationTypeCountOutputTypeCountUserPreferencesArgs
+    roleTypePermissions?: boolean | NotificationTypeCountOutputTypeCountRoleTypePermissionsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * NotificationTypeCountOutputType without action
+   */
+  export type NotificationTypeCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationTypeCountOutputType
+     */
+    select?: NotificationTypeCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * NotificationTypeCountOutputType without action
+   */
+  export type NotificationTypeCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationWhereInput
+  }
+
+  /**
+   * NotificationTypeCountOutputType without action
+   */
+  export type NotificationTypeCountOutputTypeCountUserPreferencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationPreferenceWhereInput
+  }
+
+  /**
+   * NotificationTypeCountOutputType without action
+   */
+  export type NotificationTypeCountOutputTypeCountRoleTypePermissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationRolePermissionWhereInput
+  }
+
+
+  /**
    * Models
    */
 
@@ -2617,8 +3157,18 @@ export namespace Prisma {
 
   export type AggregateUser = {
     _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
+  }
+
+  export type UserAvgAggregateOutputType = {
+    balance: number | null
+  }
+
+  export type UserSumAggregateOutputType = {
+    balance: number | null
   }
 
   export type UserMinAggregateOutputType = {
@@ -2638,6 +3188,15 @@ export namespace Prisma {
     twoFactorEnabled: boolean | null
     twoFactorSecret: string | null
     isActive: boolean | null
+    balance: number | null
+    balanceEnabled: boolean | null
+    paymentMethod: string | null
+    ibanAccountHolder: string | null
+    ibanNumber: string | null
+    ibanBic: string | null
+    ibanAddress: string | null
+    ibanPostalCode: string | null
+    ibanCity: string | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -2657,6 +3216,15 @@ export namespace Prisma {
     twoFactorEnabled: boolean | null
     twoFactorSecret: string | null
     isActive: boolean | null
+    balance: number | null
+    balanceEnabled: boolean | null
+    paymentMethod: string | null
+    ibanAccountHolder: string | null
+    ibanNumber: string | null
+    ibanBic: string | null
+    ibanAddress: string | null
+    ibanPostalCode: string | null
+    ibanCity: string | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -2676,9 +3244,26 @@ export namespace Prisma {
     twoFactorEnabled: number
     twoFactorSecret: number
     isActive: number
+    balance: number
+    balanceEnabled: number
+    paymentMethod: number
+    ibanAccountHolder: number
+    ibanNumber: number
+    ibanBic: number
+    ibanAddress: number
+    ibanPostalCode: number
+    ibanCity: number
     _all: number
   }
 
+
+  export type UserAvgAggregateInputType = {
+    balance?: true
+  }
+
+  export type UserSumAggregateInputType = {
+    balance?: true
+  }
 
   export type UserMinAggregateInputType = {
     id?: true
@@ -2697,6 +3282,15 @@ export namespace Prisma {
     twoFactorEnabled?: true
     twoFactorSecret?: true
     isActive?: true
+    balance?: true
+    balanceEnabled?: true
+    paymentMethod?: true
+    ibanAccountHolder?: true
+    ibanNumber?: true
+    ibanBic?: true
+    ibanAddress?: true
+    ibanPostalCode?: true
+    ibanCity?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -2716,6 +3310,15 @@ export namespace Prisma {
     twoFactorEnabled?: true
     twoFactorSecret?: true
     isActive?: true
+    balance?: true
+    balanceEnabled?: true
+    paymentMethod?: true
+    ibanAccountHolder?: true
+    ibanNumber?: true
+    ibanBic?: true
+    ibanAddress?: true
+    ibanPostalCode?: true
+    ibanCity?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -2735,6 +3338,15 @@ export namespace Prisma {
     twoFactorEnabled?: true
     twoFactorSecret?: true
     isActive?: true
+    balance?: true
+    balanceEnabled?: true
+    paymentMethod?: true
+    ibanAccountHolder?: true
+    ibanNumber?: true
+    ibanBic?: true
+    ibanAddress?: true
+    ibanPostalCode?: true
+    ibanCity?: true
     _all?: true
   }
 
@@ -2776,6 +3388,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: UserAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: UserMinAggregateInputType
@@ -2806,6 +3430,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: UserCountAggregateInputType | true
+    _avg?: UserAvgAggregateInputType
+    _sum?: UserSumAggregateInputType
     _min?: UserMinAggregateInputType
     _max?: UserMaxAggregateInputType
   }
@@ -2827,7 +3453,18 @@ export namespace Prisma {
     twoFactorEnabled: boolean
     twoFactorSecret: string | null
     isActive: boolean
+    balance: number
+    balanceEnabled: boolean
+    paymentMethod: string
+    ibanAccountHolder: string | null
+    ibanNumber: string | null
+    ibanBic: string | null
+    ibanAddress: string | null
+    ibanPostalCode: string | null
+    ibanCity: string | null
     _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
   }
@@ -2863,6 +3500,15 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: boolean
     isActive?: boolean
+    balance?: boolean
+    balanceEnabled?: boolean
+    paymentMethod?: boolean
+    ibanAccountHolder?: boolean
+    ibanNumber?: boolean
+    ibanBic?: boolean
+    ibanAddress?: boolean
+    ibanPostalCode?: boolean
+    ibanCity?: boolean
     bids?: boolean | User$bidsArgs<ExtArgs>
     leads?: boolean | User$leadsArgs<ExtArgs>
     purchasedLeads?: boolean | User$purchasedLeadsArgs<ExtArgs>
@@ -2871,6 +3517,9 @@ export namespace Prisma {
     leadTypePermissions?: boolean | User$leadTypePermissionsArgs<ExtArgs>
     activityLogs?: boolean | User$activityLogsArgs<ExtArgs>
     passwordResetTokens?: boolean | User$passwordResetTokensArgs<ExtArgs>
+    balanceTransactions?: boolean | User$balanceTransactionsArgs<ExtArgs>
+    notifications?: boolean | User$notificationsArgs<ExtArgs>
+    notificationPreferences?: boolean | User$notificationPreferencesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2891,6 +3540,15 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: boolean
     isActive?: boolean
+    balance?: boolean
+    balanceEnabled?: boolean
+    paymentMethod?: boolean
+    ibanAccountHolder?: boolean
+    ibanNumber?: boolean
+    ibanBic?: boolean
+    ibanAddress?: boolean
+    ibanPostalCode?: boolean
+    ibanCity?: boolean
     userType?: boolean | UserTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2911,6 +3569,15 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: boolean
     isActive?: boolean
+    balance?: boolean
+    balanceEnabled?: boolean
+    paymentMethod?: boolean
+    ibanAccountHolder?: boolean
+    ibanNumber?: boolean
+    ibanBic?: boolean
+    ibanAddress?: boolean
+    ibanPostalCode?: boolean
+    ibanCity?: boolean
     userType?: boolean | UserTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2931,9 +3598,18 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: boolean
     isActive?: boolean
+    balance?: boolean
+    balanceEnabled?: boolean
+    paymentMethod?: boolean
+    ibanAccountHolder?: boolean
+    ibanNumber?: boolean
+    ibanBic?: boolean
+    ibanAddress?: boolean
+    ibanPostalCode?: boolean
+    ibanCity?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "passwordHash" | "userTypeId" | "createdAt" | "updatedAt" | "firstName" | "lastName" | "username" | "profileImage" | "lastActivity" | "lastIP" | "lastUserAgent" | "twoFactorEnabled" | "twoFactorSecret" | "isActive", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "passwordHash" | "userTypeId" | "createdAt" | "updatedAt" | "firstName" | "lastName" | "username" | "profileImage" | "lastActivity" | "lastIP" | "lastUserAgent" | "twoFactorEnabled" | "twoFactorSecret" | "isActive" | "balance" | "balanceEnabled" | "paymentMethod" | "ibanAccountHolder" | "ibanNumber" | "ibanBic" | "ibanAddress" | "ibanPostalCode" | "ibanCity", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     bids?: boolean | User$bidsArgs<ExtArgs>
     leads?: boolean | User$leadsArgs<ExtArgs>
@@ -2943,6 +3619,9 @@ export namespace Prisma {
     leadTypePermissions?: boolean | User$leadTypePermissionsArgs<ExtArgs>
     activityLogs?: boolean | User$activityLogsArgs<ExtArgs>
     passwordResetTokens?: boolean | User$passwordResetTokensArgs<ExtArgs>
+    balanceTransactions?: boolean | User$balanceTransactionsArgs<ExtArgs>
+    notifications?: boolean | User$notificationsArgs<ExtArgs>
+    notificationPreferences?: boolean | User$notificationPreferencesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2963,6 +3642,9 @@ export namespace Prisma {
       leadTypePermissions: Prisma.$UserLeadTypePermissionPayload<ExtArgs>[]
       activityLogs: Prisma.$ActivityLogPayload<ExtArgs>[]
       passwordResetTokens: Prisma.$PasswordResetTokenPayload<ExtArgs>[]
+      balanceTransactions: Prisma.$BalanceTransactionPayload<ExtArgs>[]
+      notifications: Prisma.$NotificationPayload<ExtArgs>[]
+      notificationPreferences: Prisma.$NotificationPreferencePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2981,6 +3663,15 @@ export namespace Prisma {
       twoFactorEnabled: boolean
       twoFactorSecret: string | null
       isActive: boolean
+      balance: number
+      balanceEnabled: boolean
+      paymentMethod: string
+      ibanAccountHolder: string | null
+      ibanNumber: string | null
+      ibanBic: string | null
+      ibanAddress: string | null
+      ibanPostalCode: string | null
+      ibanCity: string | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -3383,6 +4074,9 @@ export namespace Prisma {
     leadTypePermissions<T extends User$leadTypePermissionsArgs<ExtArgs> = {}>(args?: Subset<T, User$leadTypePermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserLeadTypePermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     activityLogs<T extends User$activityLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$activityLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     passwordResetTokens<T extends User$passwordResetTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$passwordResetTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    balanceTransactions<T extends User$balanceTransactionsArgs<ExtArgs> = {}>(args?: Subset<T, User$balanceTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BalanceTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    notificationPreferences<T extends User$notificationPreferencesArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationPreferencesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3428,6 +4122,15 @@ export namespace Prisma {
     readonly twoFactorEnabled: FieldRef<"User", 'Boolean'>
     readonly twoFactorSecret: FieldRef<"User", 'String'>
     readonly isActive: FieldRef<"User", 'Boolean'>
+    readonly balance: FieldRef<"User", 'Float'>
+    readonly balanceEnabled: FieldRef<"User", 'Boolean'>
+    readonly paymentMethod: FieldRef<"User", 'String'>
+    readonly ibanAccountHolder: FieldRef<"User", 'String'>
+    readonly ibanNumber: FieldRef<"User", 'String'>
+    readonly ibanBic: FieldRef<"User", 'String'>
+    readonly ibanAddress: FieldRef<"User", 'String'>
+    readonly ibanPostalCode: FieldRef<"User", 'String'>
+    readonly ibanCity: FieldRef<"User", 'String'>
   }
     
 
@@ -3989,6 +4692,78 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PasswordResetTokenScalarFieldEnum | PasswordResetTokenScalarFieldEnum[]
+  }
+
+  /**
+   * User.balanceTransactions
+   */
+  export type User$balanceTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BalanceTransaction
+     */
+    select?: BalanceTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BalanceTransaction
+     */
+    omit?: BalanceTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BalanceTransactionInclude<ExtArgs> | null
+    where?: BalanceTransactionWhereInput
+    orderBy?: BalanceTransactionOrderByWithRelationInput | BalanceTransactionOrderByWithRelationInput[]
+    cursor?: BalanceTransactionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BalanceTransactionScalarFieldEnum | BalanceTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * User.notifications
+   */
+  export type User$notificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    where?: NotificationWhereInput
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    cursor?: NotificationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * User.notificationPreferences
+   */
+  export type User$notificationPreferencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationPreference
+     */
+    omit?: NotificationPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    where?: NotificationPreferenceWhereInput
+    orderBy?: NotificationPreferenceOrderByWithRelationInput | NotificationPreferenceOrderByWithRelationInput[]
+    cursor?: NotificationPreferenceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NotificationPreferenceScalarFieldEnum | NotificationPreferenceScalarFieldEnum[]
   }
 
   /**
@@ -7514,10 +8289,14 @@ export namespace Prisma {
 
   export type LeadSaleAvgAggregateOutputType = {
     amount: number | null
+    balanceBefore: number | null
+    balanceAfter: number | null
   }
 
   export type LeadSaleSumAggregateOutputType = {
     amount: number | null
+    balanceBefore: number | null
+    balanceAfter: number | null
   }
 
   export type LeadSaleMinAggregateOutputType = {
@@ -7525,6 +8304,9 @@ export namespace Prisma {
     leadId: string | null
     buyerId: string | null
     amount: number | null
+    paymentMethod: string | null
+    balanceBefore: number | null
+    balanceAfter: number | null
     soldAt: Date | null
     createdAt: Date | null
   }
@@ -7534,6 +8316,9 @@ export namespace Prisma {
     leadId: string | null
     buyerId: string | null
     amount: number | null
+    paymentMethod: string | null
+    balanceBefore: number | null
+    balanceAfter: number | null
     soldAt: Date | null
     createdAt: Date | null
   }
@@ -7543,6 +8328,9 @@ export namespace Prisma {
     leadId: number
     buyerId: number
     amount: number
+    paymentMethod: number
+    balanceBefore: number
+    balanceAfter: number
     soldAt: number
     createdAt: number
     _all: number
@@ -7551,10 +8339,14 @@ export namespace Prisma {
 
   export type LeadSaleAvgAggregateInputType = {
     amount?: true
+    balanceBefore?: true
+    balanceAfter?: true
   }
 
   export type LeadSaleSumAggregateInputType = {
     amount?: true
+    balanceBefore?: true
+    balanceAfter?: true
   }
 
   export type LeadSaleMinAggregateInputType = {
@@ -7562,6 +8354,9 @@ export namespace Prisma {
     leadId?: true
     buyerId?: true
     amount?: true
+    paymentMethod?: true
+    balanceBefore?: true
+    balanceAfter?: true
     soldAt?: true
     createdAt?: true
   }
@@ -7571,6 +8366,9 @@ export namespace Prisma {
     leadId?: true
     buyerId?: true
     amount?: true
+    paymentMethod?: true
+    balanceBefore?: true
+    balanceAfter?: true
     soldAt?: true
     createdAt?: true
   }
@@ -7580,6 +8378,9 @@ export namespace Prisma {
     leadId?: true
     buyerId?: true
     amount?: true
+    paymentMethod?: true
+    balanceBefore?: true
+    balanceAfter?: true
     soldAt?: true
     createdAt?: true
     _all?: true
@@ -7676,6 +8477,9 @@ export namespace Prisma {
     leadId: string
     buyerId: string
     amount: number
+    paymentMethod: string
+    balanceBefore: number | null
+    balanceAfter: number | null
     soldAt: Date
     createdAt: Date
     _count: LeadSaleCountAggregateOutputType | null
@@ -7704,6 +8508,9 @@ export namespace Prisma {
     leadId?: boolean
     buyerId?: boolean
     amount?: boolean
+    paymentMethod?: boolean
+    balanceBefore?: boolean
+    balanceAfter?: boolean
     soldAt?: boolean
     createdAt?: boolean
     buyer?: boolean | UserDefaultArgs<ExtArgs>
@@ -7715,6 +8522,9 @@ export namespace Prisma {
     leadId?: boolean
     buyerId?: boolean
     amount?: boolean
+    paymentMethod?: boolean
+    balanceBefore?: boolean
+    balanceAfter?: boolean
     soldAt?: boolean
     createdAt?: boolean
     buyer?: boolean | UserDefaultArgs<ExtArgs>
@@ -7726,6 +8536,9 @@ export namespace Prisma {
     leadId?: boolean
     buyerId?: boolean
     amount?: boolean
+    paymentMethod?: boolean
+    balanceBefore?: boolean
+    balanceAfter?: boolean
     soldAt?: boolean
     createdAt?: boolean
     buyer?: boolean | UserDefaultArgs<ExtArgs>
@@ -7737,11 +8550,14 @@ export namespace Prisma {
     leadId?: boolean
     buyerId?: boolean
     amount?: boolean
+    paymentMethod?: boolean
+    balanceBefore?: boolean
+    balanceAfter?: boolean
     soldAt?: boolean
     createdAt?: boolean
   }
 
-  export type LeadSaleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "leadId" | "buyerId" | "amount" | "soldAt" | "createdAt", ExtArgs["result"]["leadSale"]>
+  export type LeadSaleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "leadId" | "buyerId" | "amount" | "paymentMethod" | "balanceBefore" | "balanceAfter" | "soldAt" | "createdAt", ExtArgs["result"]["leadSale"]>
   export type LeadSaleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     buyer?: boolean | UserDefaultArgs<ExtArgs>
     lead?: boolean | LeadDefaultArgs<ExtArgs>
@@ -7766,6 +8582,9 @@ export namespace Prisma {
       leadId: string
       buyerId: string
       amount: number
+      paymentMethod: string
+      balanceBefore: number | null
+      balanceAfter: number | null
       soldAt: Date
       createdAt: Date
     }, ExtArgs["result"]["leadSale"]>
@@ -8197,6 +9016,9 @@ export namespace Prisma {
     readonly leadId: FieldRef<"LeadSale", 'String'>
     readonly buyerId: FieldRef<"LeadSale", 'String'>
     readonly amount: FieldRef<"LeadSale", 'Int'>
+    readonly paymentMethod: FieldRef<"LeadSale", 'String'>
+    readonly balanceBefore: FieldRef<"LeadSale", 'Int'>
+    readonly balanceAfter: FieldRef<"LeadSale", 'Int'>
     readonly soldAt: FieldRef<"LeadSale", 'DateTime'>
     readonly createdAt: FieldRef<"LeadSale", 'DateTime'>
   }
@@ -10477,6 +11299,7 @@ export namespace Prisma {
     leadTypePermissions?: boolean | UserType$leadTypePermissionsArgs<ExtArgs>
     users?: boolean | UserType$usersArgs<ExtArgs>
     permissions?: boolean | UserType$permissionsArgs<ExtArgs>
+    notificationRolePermissions?: boolean | UserType$notificationRolePermissionsArgs<ExtArgs>
     _count?: boolean | UserTypeCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userType"]>
 
@@ -10512,6 +11335,7 @@ export namespace Prisma {
     leadTypePermissions?: boolean | UserType$leadTypePermissionsArgs<ExtArgs>
     users?: boolean | UserType$usersArgs<ExtArgs>
     permissions?: boolean | UserType$permissionsArgs<ExtArgs>
+    notificationRolePermissions?: boolean | UserType$notificationRolePermissionsArgs<ExtArgs>
     _count?: boolean | UserTypeCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserTypeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -10523,6 +11347,7 @@ export namespace Prisma {
       leadTypePermissions: Prisma.$LeadTypePermissionPayload<ExtArgs>[]
       users: Prisma.$UserPayload<ExtArgs>[]
       permissions: Prisma.$UserTypePermissionPayload<ExtArgs>[]
+      notificationRolePermissions: Prisma.$NotificationRolePermissionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -10928,6 +11753,7 @@ export namespace Prisma {
     leadTypePermissions<T extends UserType$leadTypePermissionsArgs<ExtArgs> = {}>(args?: Subset<T, UserType$leadTypePermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadTypePermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     users<T extends UserType$usersArgs<ExtArgs> = {}>(args?: Subset<T, UserType$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     permissions<T extends UserType$permissionsArgs<ExtArgs> = {}>(args?: Subset<T, UserType$permissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTypePermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    notificationRolePermissions<T extends UserType$notificationRolePermissionsArgs<ExtArgs> = {}>(args?: Subset<T, UserType$notificationRolePermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationRolePermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11420,6 +12246,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: UserTypePermissionScalarFieldEnum | UserTypePermissionScalarFieldEnum[]
+  }
+
+  /**
+   * UserType.notificationRolePermissions
+   */
+  export type UserType$notificationRolePermissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationRolePermission
+     */
+    select?: NotificationRolePermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationRolePermission
+     */
+    omit?: NotificationRolePermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationRolePermissionInclude<ExtArgs> | null
+    where?: NotificationRolePermissionWhereInput
+    orderBy?: NotificationRolePermissionOrderByWithRelationInput | NotificationRolePermissionOrderByWithRelationInput[]
+    cursor?: NotificationRolePermissionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NotificationRolePermissionScalarFieldEnum | NotificationRolePermissionScalarFieldEnum[]
   }
 
   /**
@@ -23290,6 +24140,5699 @@ export namespace Prisma {
 
 
   /**
+   * Model BalanceTransaction
+   */
+
+  export type AggregateBalanceTransaction = {
+    _count: BalanceTransactionCountAggregateOutputType | null
+    _avg: BalanceTransactionAvgAggregateOutputType | null
+    _sum: BalanceTransactionSumAggregateOutputType | null
+    _min: BalanceTransactionMinAggregateOutputType | null
+    _max: BalanceTransactionMaxAggregateOutputType | null
+  }
+
+  export type BalanceTransactionAvgAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type BalanceTransactionSumAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type BalanceTransactionMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    amount: number | null
+    type: string | null
+    description: string | null
+    relatedId: string | null
+    adminId: string | null
+    createdAt: Date | null
+  }
+
+  export type BalanceTransactionMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    amount: number | null
+    type: string | null
+    description: string | null
+    relatedId: string | null
+    adminId: string | null
+    createdAt: Date | null
+  }
+
+  export type BalanceTransactionCountAggregateOutputType = {
+    id: number
+    userId: number
+    amount: number
+    type: number
+    description: number
+    relatedId: number
+    adminId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type BalanceTransactionAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type BalanceTransactionSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type BalanceTransactionMinAggregateInputType = {
+    id?: true
+    userId?: true
+    amount?: true
+    type?: true
+    description?: true
+    relatedId?: true
+    adminId?: true
+    createdAt?: true
+  }
+
+  export type BalanceTransactionMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    amount?: true
+    type?: true
+    description?: true
+    relatedId?: true
+    adminId?: true
+    createdAt?: true
+  }
+
+  export type BalanceTransactionCountAggregateInputType = {
+    id?: true
+    userId?: true
+    amount?: true
+    type?: true
+    description?: true
+    relatedId?: true
+    adminId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type BalanceTransactionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BalanceTransaction to aggregate.
+     */
+    where?: BalanceTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BalanceTransactions to fetch.
+     */
+    orderBy?: BalanceTransactionOrderByWithRelationInput | BalanceTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BalanceTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BalanceTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BalanceTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BalanceTransactions
+    **/
+    _count?: true | BalanceTransactionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BalanceTransactionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BalanceTransactionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BalanceTransactionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BalanceTransactionMaxAggregateInputType
+  }
+
+  export type GetBalanceTransactionAggregateType<T extends BalanceTransactionAggregateArgs> = {
+        [P in keyof T & keyof AggregateBalanceTransaction]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBalanceTransaction[P]>
+      : GetScalarType<T[P], AggregateBalanceTransaction[P]>
+  }
+
+
+
+
+  export type BalanceTransactionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BalanceTransactionWhereInput
+    orderBy?: BalanceTransactionOrderByWithAggregationInput | BalanceTransactionOrderByWithAggregationInput[]
+    by: BalanceTransactionScalarFieldEnum[] | BalanceTransactionScalarFieldEnum
+    having?: BalanceTransactionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BalanceTransactionCountAggregateInputType | true
+    _avg?: BalanceTransactionAvgAggregateInputType
+    _sum?: BalanceTransactionSumAggregateInputType
+    _min?: BalanceTransactionMinAggregateInputType
+    _max?: BalanceTransactionMaxAggregateInputType
+  }
+
+  export type BalanceTransactionGroupByOutputType = {
+    id: string
+    userId: string
+    amount: number
+    type: string
+    description: string | null
+    relatedId: string | null
+    adminId: string | null
+    createdAt: Date
+    _count: BalanceTransactionCountAggregateOutputType | null
+    _avg: BalanceTransactionAvgAggregateOutputType | null
+    _sum: BalanceTransactionSumAggregateOutputType | null
+    _min: BalanceTransactionMinAggregateOutputType | null
+    _max: BalanceTransactionMaxAggregateOutputType | null
+  }
+
+  type GetBalanceTransactionGroupByPayload<T extends BalanceTransactionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BalanceTransactionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BalanceTransactionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BalanceTransactionGroupByOutputType[P]>
+            : GetScalarType<T[P], BalanceTransactionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BalanceTransactionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    amount?: boolean
+    type?: boolean
+    description?: boolean
+    relatedId?: boolean
+    adminId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["balanceTransaction"]>
+
+  export type BalanceTransactionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    amount?: boolean
+    type?: boolean
+    description?: boolean
+    relatedId?: boolean
+    adminId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["balanceTransaction"]>
+
+  export type BalanceTransactionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    amount?: boolean
+    type?: boolean
+    description?: boolean
+    relatedId?: boolean
+    adminId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["balanceTransaction"]>
+
+  export type BalanceTransactionSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    amount?: boolean
+    type?: boolean
+    description?: boolean
+    relatedId?: boolean
+    adminId?: boolean
+    createdAt?: boolean
+  }
+
+  export type BalanceTransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "amount" | "type" | "description" | "relatedId" | "adminId" | "createdAt", ExtArgs["result"]["balanceTransaction"]>
+  export type BalanceTransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type BalanceTransactionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type BalanceTransactionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $BalanceTransactionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BalanceTransaction"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      amount: number
+      type: string
+      description: string | null
+      relatedId: string | null
+      adminId: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["balanceTransaction"]>
+    composites: {}
+  }
+
+  type BalanceTransactionGetPayload<S extends boolean | null | undefined | BalanceTransactionDefaultArgs> = $Result.GetResult<Prisma.$BalanceTransactionPayload, S>
+
+  type BalanceTransactionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BalanceTransactionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BalanceTransactionCountAggregateInputType | true
+    }
+
+  export interface BalanceTransactionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BalanceTransaction'], meta: { name: 'BalanceTransaction' } }
+    /**
+     * Find zero or one BalanceTransaction that matches the filter.
+     * @param {BalanceTransactionFindUniqueArgs} args - Arguments to find a BalanceTransaction
+     * @example
+     * // Get one BalanceTransaction
+     * const balanceTransaction = await prisma.balanceTransaction.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BalanceTransactionFindUniqueArgs>(args: SelectSubset<T, BalanceTransactionFindUniqueArgs<ExtArgs>>): Prisma__BalanceTransactionClient<$Result.GetResult<Prisma.$BalanceTransactionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BalanceTransaction that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BalanceTransactionFindUniqueOrThrowArgs} args - Arguments to find a BalanceTransaction
+     * @example
+     * // Get one BalanceTransaction
+     * const balanceTransaction = await prisma.balanceTransaction.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BalanceTransactionFindUniqueOrThrowArgs>(args: SelectSubset<T, BalanceTransactionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BalanceTransactionClient<$Result.GetResult<Prisma.$BalanceTransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BalanceTransaction that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BalanceTransactionFindFirstArgs} args - Arguments to find a BalanceTransaction
+     * @example
+     * // Get one BalanceTransaction
+     * const balanceTransaction = await prisma.balanceTransaction.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BalanceTransactionFindFirstArgs>(args?: SelectSubset<T, BalanceTransactionFindFirstArgs<ExtArgs>>): Prisma__BalanceTransactionClient<$Result.GetResult<Prisma.$BalanceTransactionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BalanceTransaction that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BalanceTransactionFindFirstOrThrowArgs} args - Arguments to find a BalanceTransaction
+     * @example
+     * // Get one BalanceTransaction
+     * const balanceTransaction = await prisma.balanceTransaction.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BalanceTransactionFindFirstOrThrowArgs>(args?: SelectSubset<T, BalanceTransactionFindFirstOrThrowArgs<ExtArgs>>): Prisma__BalanceTransactionClient<$Result.GetResult<Prisma.$BalanceTransactionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BalanceTransactions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BalanceTransactionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BalanceTransactions
+     * const balanceTransactions = await prisma.balanceTransaction.findMany()
+     * 
+     * // Get first 10 BalanceTransactions
+     * const balanceTransactions = await prisma.balanceTransaction.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const balanceTransactionWithIdOnly = await prisma.balanceTransaction.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BalanceTransactionFindManyArgs>(args?: SelectSubset<T, BalanceTransactionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BalanceTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BalanceTransaction.
+     * @param {BalanceTransactionCreateArgs} args - Arguments to create a BalanceTransaction.
+     * @example
+     * // Create one BalanceTransaction
+     * const BalanceTransaction = await prisma.balanceTransaction.create({
+     *   data: {
+     *     // ... data to create a BalanceTransaction
+     *   }
+     * })
+     * 
+     */
+    create<T extends BalanceTransactionCreateArgs>(args: SelectSubset<T, BalanceTransactionCreateArgs<ExtArgs>>): Prisma__BalanceTransactionClient<$Result.GetResult<Prisma.$BalanceTransactionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BalanceTransactions.
+     * @param {BalanceTransactionCreateManyArgs} args - Arguments to create many BalanceTransactions.
+     * @example
+     * // Create many BalanceTransactions
+     * const balanceTransaction = await prisma.balanceTransaction.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BalanceTransactionCreateManyArgs>(args?: SelectSubset<T, BalanceTransactionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BalanceTransactions and returns the data saved in the database.
+     * @param {BalanceTransactionCreateManyAndReturnArgs} args - Arguments to create many BalanceTransactions.
+     * @example
+     * // Create many BalanceTransactions
+     * const balanceTransaction = await prisma.balanceTransaction.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BalanceTransactions and only return the `id`
+     * const balanceTransactionWithIdOnly = await prisma.balanceTransaction.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BalanceTransactionCreateManyAndReturnArgs>(args?: SelectSubset<T, BalanceTransactionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BalanceTransactionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a BalanceTransaction.
+     * @param {BalanceTransactionDeleteArgs} args - Arguments to delete one BalanceTransaction.
+     * @example
+     * // Delete one BalanceTransaction
+     * const BalanceTransaction = await prisma.balanceTransaction.delete({
+     *   where: {
+     *     // ... filter to delete one BalanceTransaction
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BalanceTransactionDeleteArgs>(args: SelectSubset<T, BalanceTransactionDeleteArgs<ExtArgs>>): Prisma__BalanceTransactionClient<$Result.GetResult<Prisma.$BalanceTransactionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BalanceTransaction.
+     * @param {BalanceTransactionUpdateArgs} args - Arguments to update one BalanceTransaction.
+     * @example
+     * // Update one BalanceTransaction
+     * const balanceTransaction = await prisma.balanceTransaction.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BalanceTransactionUpdateArgs>(args: SelectSubset<T, BalanceTransactionUpdateArgs<ExtArgs>>): Prisma__BalanceTransactionClient<$Result.GetResult<Prisma.$BalanceTransactionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BalanceTransactions.
+     * @param {BalanceTransactionDeleteManyArgs} args - Arguments to filter BalanceTransactions to delete.
+     * @example
+     * // Delete a few BalanceTransactions
+     * const { count } = await prisma.balanceTransaction.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BalanceTransactionDeleteManyArgs>(args?: SelectSubset<T, BalanceTransactionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BalanceTransactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BalanceTransactionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BalanceTransactions
+     * const balanceTransaction = await prisma.balanceTransaction.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BalanceTransactionUpdateManyArgs>(args: SelectSubset<T, BalanceTransactionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BalanceTransactions and returns the data updated in the database.
+     * @param {BalanceTransactionUpdateManyAndReturnArgs} args - Arguments to update many BalanceTransactions.
+     * @example
+     * // Update many BalanceTransactions
+     * const balanceTransaction = await prisma.balanceTransaction.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more BalanceTransactions and only return the `id`
+     * const balanceTransactionWithIdOnly = await prisma.balanceTransaction.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends BalanceTransactionUpdateManyAndReturnArgs>(args: SelectSubset<T, BalanceTransactionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BalanceTransactionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one BalanceTransaction.
+     * @param {BalanceTransactionUpsertArgs} args - Arguments to update or create a BalanceTransaction.
+     * @example
+     * // Update or create a BalanceTransaction
+     * const balanceTransaction = await prisma.balanceTransaction.upsert({
+     *   create: {
+     *     // ... data to create a BalanceTransaction
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BalanceTransaction we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BalanceTransactionUpsertArgs>(args: SelectSubset<T, BalanceTransactionUpsertArgs<ExtArgs>>): Prisma__BalanceTransactionClient<$Result.GetResult<Prisma.$BalanceTransactionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BalanceTransactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BalanceTransactionCountArgs} args - Arguments to filter BalanceTransactions to count.
+     * @example
+     * // Count the number of BalanceTransactions
+     * const count = await prisma.balanceTransaction.count({
+     *   where: {
+     *     // ... the filter for the BalanceTransactions we want to count
+     *   }
+     * })
+    **/
+    count<T extends BalanceTransactionCountArgs>(
+      args?: Subset<T, BalanceTransactionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BalanceTransactionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BalanceTransaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BalanceTransactionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BalanceTransactionAggregateArgs>(args: Subset<T, BalanceTransactionAggregateArgs>): Prisma.PrismaPromise<GetBalanceTransactionAggregateType<T>>
+
+    /**
+     * Group by BalanceTransaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BalanceTransactionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BalanceTransactionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BalanceTransactionGroupByArgs['orderBy'] }
+        : { orderBy?: BalanceTransactionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BalanceTransactionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBalanceTransactionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BalanceTransaction model
+   */
+  readonly fields: BalanceTransactionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BalanceTransaction.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BalanceTransactionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BalanceTransaction model
+   */
+  interface BalanceTransactionFieldRefs {
+    readonly id: FieldRef<"BalanceTransaction", 'String'>
+    readonly userId: FieldRef<"BalanceTransaction", 'String'>
+    readonly amount: FieldRef<"BalanceTransaction", 'Float'>
+    readonly type: FieldRef<"BalanceTransaction", 'String'>
+    readonly description: FieldRef<"BalanceTransaction", 'String'>
+    readonly relatedId: FieldRef<"BalanceTransaction", 'String'>
+    readonly adminId: FieldRef<"BalanceTransaction", 'String'>
+    readonly createdAt: FieldRef<"BalanceTransaction", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BalanceTransaction findUnique
+   */
+  export type BalanceTransactionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BalanceTransaction
+     */
+    select?: BalanceTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BalanceTransaction
+     */
+    omit?: BalanceTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BalanceTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which BalanceTransaction to fetch.
+     */
+    where: BalanceTransactionWhereUniqueInput
+  }
+
+  /**
+   * BalanceTransaction findUniqueOrThrow
+   */
+  export type BalanceTransactionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BalanceTransaction
+     */
+    select?: BalanceTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BalanceTransaction
+     */
+    omit?: BalanceTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BalanceTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which BalanceTransaction to fetch.
+     */
+    where: BalanceTransactionWhereUniqueInput
+  }
+
+  /**
+   * BalanceTransaction findFirst
+   */
+  export type BalanceTransactionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BalanceTransaction
+     */
+    select?: BalanceTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BalanceTransaction
+     */
+    omit?: BalanceTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BalanceTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which BalanceTransaction to fetch.
+     */
+    where?: BalanceTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BalanceTransactions to fetch.
+     */
+    orderBy?: BalanceTransactionOrderByWithRelationInput | BalanceTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BalanceTransactions.
+     */
+    cursor?: BalanceTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BalanceTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BalanceTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BalanceTransactions.
+     */
+    distinct?: BalanceTransactionScalarFieldEnum | BalanceTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * BalanceTransaction findFirstOrThrow
+   */
+  export type BalanceTransactionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BalanceTransaction
+     */
+    select?: BalanceTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BalanceTransaction
+     */
+    omit?: BalanceTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BalanceTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which BalanceTransaction to fetch.
+     */
+    where?: BalanceTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BalanceTransactions to fetch.
+     */
+    orderBy?: BalanceTransactionOrderByWithRelationInput | BalanceTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BalanceTransactions.
+     */
+    cursor?: BalanceTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BalanceTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BalanceTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BalanceTransactions.
+     */
+    distinct?: BalanceTransactionScalarFieldEnum | BalanceTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * BalanceTransaction findMany
+   */
+  export type BalanceTransactionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BalanceTransaction
+     */
+    select?: BalanceTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BalanceTransaction
+     */
+    omit?: BalanceTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BalanceTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which BalanceTransactions to fetch.
+     */
+    where?: BalanceTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BalanceTransactions to fetch.
+     */
+    orderBy?: BalanceTransactionOrderByWithRelationInput | BalanceTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BalanceTransactions.
+     */
+    cursor?: BalanceTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BalanceTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BalanceTransactions.
+     */
+    skip?: number
+    distinct?: BalanceTransactionScalarFieldEnum | BalanceTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * BalanceTransaction create
+   */
+  export type BalanceTransactionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BalanceTransaction
+     */
+    select?: BalanceTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BalanceTransaction
+     */
+    omit?: BalanceTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BalanceTransactionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BalanceTransaction.
+     */
+    data: XOR<BalanceTransactionCreateInput, BalanceTransactionUncheckedCreateInput>
+  }
+
+  /**
+   * BalanceTransaction createMany
+   */
+  export type BalanceTransactionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BalanceTransactions.
+     */
+    data: BalanceTransactionCreateManyInput | BalanceTransactionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BalanceTransaction createManyAndReturn
+   */
+  export type BalanceTransactionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BalanceTransaction
+     */
+    select?: BalanceTransactionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BalanceTransaction
+     */
+    omit?: BalanceTransactionOmit<ExtArgs> | null
+    /**
+     * The data used to create many BalanceTransactions.
+     */
+    data: BalanceTransactionCreateManyInput | BalanceTransactionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BalanceTransactionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BalanceTransaction update
+   */
+  export type BalanceTransactionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BalanceTransaction
+     */
+    select?: BalanceTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BalanceTransaction
+     */
+    omit?: BalanceTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BalanceTransactionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BalanceTransaction.
+     */
+    data: XOR<BalanceTransactionUpdateInput, BalanceTransactionUncheckedUpdateInput>
+    /**
+     * Choose, which BalanceTransaction to update.
+     */
+    where: BalanceTransactionWhereUniqueInput
+  }
+
+  /**
+   * BalanceTransaction updateMany
+   */
+  export type BalanceTransactionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BalanceTransactions.
+     */
+    data: XOR<BalanceTransactionUpdateManyMutationInput, BalanceTransactionUncheckedUpdateManyInput>
+    /**
+     * Filter which BalanceTransactions to update
+     */
+    where?: BalanceTransactionWhereInput
+    /**
+     * Limit how many BalanceTransactions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BalanceTransaction updateManyAndReturn
+   */
+  export type BalanceTransactionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BalanceTransaction
+     */
+    select?: BalanceTransactionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BalanceTransaction
+     */
+    omit?: BalanceTransactionOmit<ExtArgs> | null
+    /**
+     * The data used to update BalanceTransactions.
+     */
+    data: XOR<BalanceTransactionUpdateManyMutationInput, BalanceTransactionUncheckedUpdateManyInput>
+    /**
+     * Filter which BalanceTransactions to update
+     */
+    where?: BalanceTransactionWhereInput
+    /**
+     * Limit how many BalanceTransactions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BalanceTransactionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BalanceTransaction upsert
+   */
+  export type BalanceTransactionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BalanceTransaction
+     */
+    select?: BalanceTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BalanceTransaction
+     */
+    omit?: BalanceTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BalanceTransactionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BalanceTransaction to update in case it exists.
+     */
+    where: BalanceTransactionWhereUniqueInput
+    /**
+     * In case the BalanceTransaction found by the `where` argument doesn't exist, create a new BalanceTransaction with this data.
+     */
+    create: XOR<BalanceTransactionCreateInput, BalanceTransactionUncheckedCreateInput>
+    /**
+     * In case the BalanceTransaction was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BalanceTransactionUpdateInput, BalanceTransactionUncheckedUpdateInput>
+  }
+
+  /**
+   * BalanceTransaction delete
+   */
+  export type BalanceTransactionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BalanceTransaction
+     */
+    select?: BalanceTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BalanceTransaction
+     */
+    omit?: BalanceTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BalanceTransactionInclude<ExtArgs> | null
+    /**
+     * Filter which BalanceTransaction to delete.
+     */
+    where: BalanceTransactionWhereUniqueInput
+  }
+
+  /**
+   * BalanceTransaction deleteMany
+   */
+  export type BalanceTransactionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BalanceTransactions to delete
+     */
+    where?: BalanceTransactionWhereInput
+    /**
+     * Limit how many BalanceTransactions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BalanceTransaction without action
+   */
+  export type BalanceTransactionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BalanceTransaction
+     */
+    select?: BalanceTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BalanceTransaction
+     */
+    omit?: BalanceTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BalanceTransactionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model NotificationType
+   */
+
+  export type AggregateNotificationType = {
+    _count: NotificationTypeCountAggregateOutputType | null
+    _min: NotificationTypeMinAggregateOutputType | null
+    _max: NotificationTypeMaxAggregateOutputType | null
+  }
+
+  export type NotificationTypeMinAggregateOutputType = {
+    id: string | null
+    code: string | null
+    name: string | null
+    description: string | null
+    category: string | null
+    defaultEnabled: boolean | null
+    emailEnabled: boolean | null
+    inAppEnabled: boolean | null
+    icon: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NotificationTypeMaxAggregateOutputType = {
+    id: string | null
+    code: string | null
+    name: string | null
+    description: string | null
+    category: string | null
+    defaultEnabled: boolean | null
+    emailEnabled: boolean | null
+    inAppEnabled: boolean | null
+    icon: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NotificationTypeCountAggregateOutputType = {
+    id: number
+    code: number
+    name: number
+    description: number
+    category: number
+    defaultEnabled: number
+    emailEnabled: number
+    inAppEnabled: number
+    icon: number
+    isActive: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type NotificationTypeMinAggregateInputType = {
+    id?: true
+    code?: true
+    name?: true
+    description?: true
+    category?: true
+    defaultEnabled?: true
+    emailEnabled?: true
+    inAppEnabled?: true
+    icon?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NotificationTypeMaxAggregateInputType = {
+    id?: true
+    code?: true
+    name?: true
+    description?: true
+    category?: true
+    defaultEnabled?: true
+    emailEnabled?: true
+    inAppEnabled?: true
+    icon?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NotificationTypeCountAggregateInputType = {
+    id?: true
+    code?: true
+    name?: true
+    description?: true
+    category?: true
+    defaultEnabled?: true
+    emailEnabled?: true
+    inAppEnabled?: true
+    icon?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type NotificationTypeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NotificationType to aggregate.
+     */
+    where?: NotificationTypeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationTypes to fetch.
+     */
+    orderBy?: NotificationTypeOrderByWithRelationInput | NotificationTypeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NotificationTypeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationTypes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationTypes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned NotificationTypes
+    **/
+    _count?: true | NotificationTypeCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NotificationTypeMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NotificationTypeMaxAggregateInputType
+  }
+
+  export type GetNotificationTypeAggregateType<T extends NotificationTypeAggregateArgs> = {
+        [P in keyof T & keyof AggregateNotificationType]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNotificationType[P]>
+      : GetScalarType<T[P], AggregateNotificationType[P]>
+  }
+
+
+
+
+  export type NotificationTypeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationTypeWhereInput
+    orderBy?: NotificationTypeOrderByWithAggregationInput | NotificationTypeOrderByWithAggregationInput[]
+    by: NotificationTypeScalarFieldEnum[] | NotificationTypeScalarFieldEnum
+    having?: NotificationTypeScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NotificationTypeCountAggregateInputType | true
+    _min?: NotificationTypeMinAggregateInputType
+    _max?: NotificationTypeMaxAggregateInputType
+  }
+
+  export type NotificationTypeGroupByOutputType = {
+    id: string
+    code: string
+    name: string
+    description: string | null
+    category: string
+    defaultEnabled: boolean
+    emailEnabled: boolean
+    inAppEnabled: boolean
+    icon: string | null
+    isActive: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: NotificationTypeCountAggregateOutputType | null
+    _min: NotificationTypeMinAggregateOutputType | null
+    _max: NotificationTypeMaxAggregateOutputType | null
+  }
+
+  type GetNotificationTypeGroupByPayload<T extends NotificationTypeGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NotificationTypeGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NotificationTypeGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NotificationTypeGroupByOutputType[P]>
+            : GetScalarType<T[P], NotificationTypeGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NotificationTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    name?: boolean
+    description?: boolean
+    category?: boolean
+    defaultEnabled?: boolean
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    icon?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    notifications?: boolean | NotificationType$notificationsArgs<ExtArgs>
+    userPreferences?: boolean | NotificationType$userPreferencesArgs<ExtArgs>
+    roleTypePermissions?: boolean | NotificationType$roleTypePermissionsArgs<ExtArgs>
+    _count?: boolean | NotificationTypeCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notificationType"]>
+
+  export type NotificationTypeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    name?: boolean
+    description?: boolean
+    category?: boolean
+    defaultEnabled?: boolean
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    icon?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["notificationType"]>
+
+  export type NotificationTypeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    name?: boolean
+    description?: boolean
+    category?: boolean
+    defaultEnabled?: boolean
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    icon?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["notificationType"]>
+
+  export type NotificationTypeSelectScalar = {
+    id?: boolean
+    code?: boolean
+    name?: boolean
+    description?: boolean
+    category?: boolean
+    defaultEnabled?: boolean
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    icon?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type NotificationTypeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "name" | "description" | "category" | "defaultEnabled" | "emailEnabled" | "inAppEnabled" | "icon" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["notificationType"]>
+  export type NotificationTypeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    notifications?: boolean | NotificationType$notificationsArgs<ExtArgs>
+    userPreferences?: boolean | NotificationType$userPreferencesArgs<ExtArgs>
+    roleTypePermissions?: boolean | NotificationType$roleTypePermissionsArgs<ExtArgs>
+    _count?: boolean | NotificationTypeCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type NotificationTypeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type NotificationTypeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $NotificationTypePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "NotificationType"
+    objects: {
+      notifications: Prisma.$NotificationPayload<ExtArgs>[]
+      userPreferences: Prisma.$NotificationPreferencePayload<ExtArgs>[]
+      roleTypePermissions: Prisma.$NotificationRolePermissionPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      code: string
+      name: string
+      description: string | null
+      category: string
+      defaultEnabled: boolean
+      emailEnabled: boolean
+      inAppEnabled: boolean
+      icon: string | null
+      isActive: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["notificationType"]>
+    composites: {}
+  }
+
+  type NotificationTypeGetPayload<S extends boolean | null | undefined | NotificationTypeDefaultArgs> = $Result.GetResult<Prisma.$NotificationTypePayload, S>
+
+  type NotificationTypeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NotificationTypeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NotificationTypeCountAggregateInputType | true
+    }
+
+  export interface NotificationTypeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NotificationType'], meta: { name: 'NotificationType' } }
+    /**
+     * Find zero or one NotificationType that matches the filter.
+     * @param {NotificationTypeFindUniqueArgs} args - Arguments to find a NotificationType
+     * @example
+     * // Get one NotificationType
+     * const notificationType = await prisma.notificationType.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NotificationTypeFindUniqueArgs>(args: SelectSubset<T, NotificationTypeFindUniqueArgs<ExtArgs>>): Prisma__NotificationTypeClient<$Result.GetResult<Prisma.$NotificationTypePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one NotificationType that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NotificationTypeFindUniqueOrThrowArgs} args - Arguments to find a NotificationType
+     * @example
+     * // Get one NotificationType
+     * const notificationType = await prisma.notificationType.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NotificationTypeFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationTypeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationTypeClient<$Result.GetResult<Prisma.$NotificationTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NotificationType that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationTypeFindFirstArgs} args - Arguments to find a NotificationType
+     * @example
+     * // Get one NotificationType
+     * const notificationType = await prisma.notificationType.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NotificationTypeFindFirstArgs>(args?: SelectSubset<T, NotificationTypeFindFirstArgs<ExtArgs>>): Prisma__NotificationTypeClient<$Result.GetResult<Prisma.$NotificationTypePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NotificationType that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationTypeFindFirstOrThrowArgs} args - Arguments to find a NotificationType
+     * @example
+     * // Get one NotificationType
+     * const notificationType = await prisma.notificationType.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NotificationTypeFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationTypeFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationTypeClient<$Result.GetResult<Prisma.$NotificationTypePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more NotificationTypes that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationTypeFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all NotificationTypes
+     * const notificationTypes = await prisma.notificationType.findMany()
+     * 
+     * // Get first 10 NotificationTypes
+     * const notificationTypes = await prisma.notificationType.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const notificationTypeWithIdOnly = await prisma.notificationType.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NotificationTypeFindManyArgs>(args?: SelectSubset<T, NotificationTypeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationTypePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a NotificationType.
+     * @param {NotificationTypeCreateArgs} args - Arguments to create a NotificationType.
+     * @example
+     * // Create one NotificationType
+     * const NotificationType = await prisma.notificationType.create({
+     *   data: {
+     *     // ... data to create a NotificationType
+     *   }
+     * })
+     * 
+     */
+    create<T extends NotificationTypeCreateArgs>(args: SelectSubset<T, NotificationTypeCreateArgs<ExtArgs>>): Prisma__NotificationTypeClient<$Result.GetResult<Prisma.$NotificationTypePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many NotificationTypes.
+     * @param {NotificationTypeCreateManyArgs} args - Arguments to create many NotificationTypes.
+     * @example
+     * // Create many NotificationTypes
+     * const notificationType = await prisma.notificationType.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NotificationTypeCreateManyArgs>(args?: SelectSubset<T, NotificationTypeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many NotificationTypes and returns the data saved in the database.
+     * @param {NotificationTypeCreateManyAndReturnArgs} args - Arguments to create many NotificationTypes.
+     * @example
+     * // Create many NotificationTypes
+     * const notificationType = await prisma.notificationType.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many NotificationTypes and only return the `id`
+     * const notificationTypeWithIdOnly = await prisma.notificationType.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends NotificationTypeCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationTypeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationTypePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a NotificationType.
+     * @param {NotificationTypeDeleteArgs} args - Arguments to delete one NotificationType.
+     * @example
+     * // Delete one NotificationType
+     * const NotificationType = await prisma.notificationType.delete({
+     *   where: {
+     *     // ... filter to delete one NotificationType
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NotificationTypeDeleteArgs>(args: SelectSubset<T, NotificationTypeDeleteArgs<ExtArgs>>): Prisma__NotificationTypeClient<$Result.GetResult<Prisma.$NotificationTypePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one NotificationType.
+     * @param {NotificationTypeUpdateArgs} args - Arguments to update one NotificationType.
+     * @example
+     * // Update one NotificationType
+     * const notificationType = await prisma.notificationType.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NotificationTypeUpdateArgs>(args: SelectSubset<T, NotificationTypeUpdateArgs<ExtArgs>>): Prisma__NotificationTypeClient<$Result.GetResult<Prisma.$NotificationTypePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more NotificationTypes.
+     * @param {NotificationTypeDeleteManyArgs} args - Arguments to filter NotificationTypes to delete.
+     * @example
+     * // Delete a few NotificationTypes
+     * const { count } = await prisma.notificationType.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NotificationTypeDeleteManyArgs>(args?: SelectSubset<T, NotificationTypeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NotificationTypes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationTypeUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many NotificationTypes
+     * const notificationType = await prisma.notificationType.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NotificationTypeUpdateManyArgs>(args: SelectSubset<T, NotificationTypeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NotificationTypes and returns the data updated in the database.
+     * @param {NotificationTypeUpdateManyAndReturnArgs} args - Arguments to update many NotificationTypes.
+     * @example
+     * // Update many NotificationTypes
+     * const notificationType = await prisma.notificationType.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more NotificationTypes and only return the `id`
+     * const notificationTypeWithIdOnly = await prisma.notificationType.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends NotificationTypeUpdateManyAndReturnArgs>(args: SelectSubset<T, NotificationTypeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationTypePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one NotificationType.
+     * @param {NotificationTypeUpsertArgs} args - Arguments to update or create a NotificationType.
+     * @example
+     * // Update or create a NotificationType
+     * const notificationType = await prisma.notificationType.upsert({
+     *   create: {
+     *     // ... data to create a NotificationType
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the NotificationType we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NotificationTypeUpsertArgs>(args: SelectSubset<T, NotificationTypeUpsertArgs<ExtArgs>>): Prisma__NotificationTypeClient<$Result.GetResult<Prisma.$NotificationTypePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of NotificationTypes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationTypeCountArgs} args - Arguments to filter NotificationTypes to count.
+     * @example
+     * // Count the number of NotificationTypes
+     * const count = await prisma.notificationType.count({
+     *   where: {
+     *     // ... the filter for the NotificationTypes we want to count
+     *   }
+     * })
+    **/
+    count<T extends NotificationTypeCountArgs>(
+      args?: Subset<T, NotificationTypeCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NotificationTypeCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a NotificationType.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationTypeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NotificationTypeAggregateArgs>(args: Subset<T, NotificationTypeAggregateArgs>): Prisma.PrismaPromise<GetNotificationTypeAggregateType<T>>
+
+    /**
+     * Group by NotificationType.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationTypeGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NotificationTypeGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NotificationTypeGroupByArgs['orderBy'] }
+        : { orderBy?: NotificationTypeGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NotificationTypeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationTypeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the NotificationType model
+   */
+  readonly fields: NotificationTypeFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for NotificationType.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NotificationTypeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    notifications<T extends NotificationType$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, NotificationType$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    userPreferences<T extends NotificationType$userPreferencesArgs<ExtArgs> = {}>(args?: Subset<T, NotificationType$userPreferencesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    roleTypePermissions<T extends NotificationType$roleTypePermissionsArgs<ExtArgs> = {}>(args?: Subset<T, NotificationType$roleTypePermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationRolePermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the NotificationType model
+   */
+  interface NotificationTypeFieldRefs {
+    readonly id: FieldRef<"NotificationType", 'String'>
+    readonly code: FieldRef<"NotificationType", 'String'>
+    readonly name: FieldRef<"NotificationType", 'String'>
+    readonly description: FieldRef<"NotificationType", 'String'>
+    readonly category: FieldRef<"NotificationType", 'String'>
+    readonly defaultEnabled: FieldRef<"NotificationType", 'Boolean'>
+    readonly emailEnabled: FieldRef<"NotificationType", 'Boolean'>
+    readonly inAppEnabled: FieldRef<"NotificationType", 'Boolean'>
+    readonly icon: FieldRef<"NotificationType", 'String'>
+    readonly isActive: FieldRef<"NotificationType", 'Boolean'>
+    readonly createdAt: FieldRef<"NotificationType", 'DateTime'>
+    readonly updatedAt: FieldRef<"NotificationType", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * NotificationType findUnique
+   */
+  export type NotificationTypeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationType
+     */
+    select?: NotificationTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationType
+     */
+    omit?: NotificationTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationTypeInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationType to fetch.
+     */
+    where: NotificationTypeWhereUniqueInput
+  }
+
+  /**
+   * NotificationType findUniqueOrThrow
+   */
+  export type NotificationTypeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationType
+     */
+    select?: NotificationTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationType
+     */
+    omit?: NotificationTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationTypeInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationType to fetch.
+     */
+    where: NotificationTypeWhereUniqueInput
+  }
+
+  /**
+   * NotificationType findFirst
+   */
+  export type NotificationTypeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationType
+     */
+    select?: NotificationTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationType
+     */
+    omit?: NotificationTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationTypeInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationType to fetch.
+     */
+    where?: NotificationTypeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationTypes to fetch.
+     */
+    orderBy?: NotificationTypeOrderByWithRelationInput | NotificationTypeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NotificationTypes.
+     */
+    cursor?: NotificationTypeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationTypes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationTypes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NotificationTypes.
+     */
+    distinct?: NotificationTypeScalarFieldEnum | NotificationTypeScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationType findFirstOrThrow
+   */
+  export type NotificationTypeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationType
+     */
+    select?: NotificationTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationType
+     */
+    omit?: NotificationTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationTypeInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationType to fetch.
+     */
+    where?: NotificationTypeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationTypes to fetch.
+     */
+    orderBy?: NotificationTypeOrderByWithRelationInput | NotificationTypeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NotificationTypes.
+     */
+    cursor?: NotificationTypeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationTypes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationTypes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NotificationTypes.
+     */
+    distinct?: NotificationTypeScalarFieldEnum | NotificationTypeScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationType findMany
+   */
+  export type NotificationTypeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationType
+     */
+    select?: NotificationTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationType
+     */
+    omit?: NotificationTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationTypeInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationTypes to fetch.
+     */
+    where?: NotificationTypeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationTypes to fetch.
+     */
+    orderBy?: NotificationTypeOrderByWithRelationInput | NotificationTypeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing NotificationTypes.
+     */
+    cursor?: NotificationTypeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationTypes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationTypes.
+     */
+    skip?: number
+    distinct?: NotificationTypeScalarFieldEnum | NotificationTypeScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationType create
+   */
+  export type NotificationTypeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationType
+     */
+    select?: NotificationTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationType
+     */
+    omit?: NotificationTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationTypeInclude<ExtArgs> | null
+    /**
+     * The data needed to create a NotificationType.
+     */
+    data: XOR<NotificationTypeCreateInput, NotificationTypeUncheckedCreateInput>
+  }
+
+  /**
+   * NotificationType createMany
+   */
+  export type NotificationTypeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many NotificationTypes.
+     */
+    data: NotificationTypeCreateManyInput | NotificationTypeCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NotificationType createManyAndReturn
+   */
+  export type NotificationTypeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationType
+     */
+    select?: NotificationTypeSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationType
+     */
+    omit?: NotificationTypeOmit<ExtArgs> | null
+    /**
+     * The data used to create many NotificationTypes.
+     */
+    data: NotificationTypeCreateManyInput | NotificationTypeCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NotificationType update
+   */
+  export type NotificationTypeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationType
+     */
+    select?: NotificationTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationType
+     */
+    omit?: NotificationTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationTypeInclude<ExtArgs> | null
+    /**
+     * The data needed to update a NotificationType.
+     */
+    data: XOR<NotificationTypeUpdateInput, NotificationTypeUncheckedUpdateInput>
+    /**
+     * Choose, which NotificationType to update.
+     */
+    where: NotificationTypeWhereUniqueInput
+  }
+
+  /**
+   * NotificationType updateMany
+   */
+  export type NotificationTypeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update NotificationTypes.
+     */
+    data: XOR<NotificationTypeUpdateManyMutationInput, NotificationTypeUncheckedUpdateManyInput>
+    /**
+     * Filter which NotificationTypes to update
+     */
+    where?: NotificationTypeWhereInput
+    /**
+     * Limit how many NotificationTypes to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NotificationType updateManyAndReturn
+   */
+  export type NotificationTypeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationType
+     */
+    select?: NotificationTypeSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationType
+     */
+    omit?: NotificationTypeOmit<ExtArgs> | null
+    /**
+     * The data used to update NotificationTypes.
+     */
+    data: XOR<NotificationTypeUpdateManyMutationInput, NotificationTypeUncheckedUpdateManyInput>
+    /**
+     * Filter which NotificationTypes to update
+     */
+    where?: NotificationTypeWhereInput
+    /**
+     * Limit how many NotificationTypes to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NotificationType upsert
+   */
+  export type NotificationTypeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationType
+     */
+    select?: NotificationTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationType
+     */
+    omit?: NotificationTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationTypeInclude<ExtArgs> | null
+    /**
+     * The filter to search for the NotificationType to update in case it exists.
+     */
+    where: NotificationTypeWhereUniqueInput
+    /**
+     * In case the NotificationType found by the `where` argument doesn't exist, create a new NotificationType with this data.
+     */
+    create: XOR<NotificationTypeCreateInput, NotificationTypeUncheckedCreateInput>
+    /**
+     * In case the NotificationType was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NotificationTypeUpdateInput, NotificationTypeUncheckedUpdateInput>
+  }
+
+  /**
+   * NotificationType delete
+   */
+  export type NotificationTypeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationType
+     */
+    select?: NotificationTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationType
+     */
+    omit?: NotificationTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationTypeInclude<ExtArgs> | null
+    /**
+     * Filter which NotificationType to delete.
+     */
+    where: NotificationTypeWhereUniqueInput
+  }
+
+  /**
+   * NotificationType deleteMany
+   */
+  export type NotificationTypeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NotificationTypes to delete
+     */
+    where?: NotificationTypeWhereInput
+    /**
+     * Limit how many NotificationTypes to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * NotificationType.notifications
+   */
+  export type NotificationType$notificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    where?: NotificationWhereInput
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    cursor?: NotificationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationType.userPreferences
+   */
+  export type NotificationType$userPreferencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationPreference
+     */
+    omit?: NotificationPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    where?: NotificationPreferenceWhereInput
+    orderBy?: NotificationPreferenceOrderByWithRelationInput | NotificationPreferenceOrderByWithRelationInput[]
+    cursor?: NotificationPreferenceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NotificationPreferenceScalarFieldEnum | NotificationPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationType.roleTypePermissions
+   */
+  export type NotificationType$roleTypePermissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationRolePermission
+     */
+    select?: NotificationRolePermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationRolePermission
+     */
+    omit?: NotificationRolePermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationRolePermissionInclude<ExtArgs> | null
+    where?: NotificationRolePermissionWhereInput
+    orderBy?: NotificationRolePermissionOrderByWithRelationInput | NotificationRolePermissionOrderByWithRelationInput[]
+    cursor?: NotificationRolePermissionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NotificationRolePermissionScalarFieldEnum | NotificationRolePermissionScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationType without action
+   */
+  export type NotificationTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationType
+     */
+    select?: NotificationTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationType
+     */
+    omit?: NotificationTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationTypeInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model NotificationPreference
+   */
+
+  export type AggregateNotificationPreference = {
+    _count: NotificationPreferenceCountAggregateOutputType | null
+    _min: NotificationPreferenceMinAggregateOutputType | null
+    _max: NotificationPreferenceMaxAggregateOutputType | null
+  }
+
+  export type NotificationPreferenceMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    notificationTypeId: string | null
+    emailEnabled: boolean | null
+    inAppEnabled: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NotificationPreferenceMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    notificationTypeId: string | null
+    emailEnabled: boolean | null
+    inAppEnabled: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NotificationPreferenceCountAggregateOutputType = {
+    id: number
+    userId: number
+    notificationTypeId: number
+    emailEnabled: number
+    inAppEnabled: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type NotificationPreferenceMinAggregateInputType = {
+    id?: true
+    userId?: true
+    notificationTypeId?: true
+    emailEnabled?: true
+    inAppEnabled?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NotificationPreferenceMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    notificationTypeId?: true
+    emailEnabled?: true
+    inAppEnabled?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NotificationPreferenceCountAggregateInputType = {
+    id?: true
+    userId?: true
+    notificationTypeId?: true
+    emailEnabled?: true
+    inAppEnabled?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type NotificationPreferenceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NotificationPreference to aggregate.
+     */
+    where?: NotificationPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationPreferences to fetch.
+     */
+    orderBy?: NotificationPreferenceOrderByWithRelationInput | NotificationPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NotificationPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned NotificationPreferences
+    **/
+    _count?: true | NotificationPreferenceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NotificationPreferenceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NotificationPreferenceMaxAggregateInputType
+  }
+
+  export type GetNotificationPreferenceAggregateType<T extends NotificationPreferenceAggregateArgs> = {
+        [P in keyof T & keyof AggregateNotificationPreference]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNotificationPreference[P]>
+      : GetScalarType<T[P], AggregateNotificationPreference[P]>
+  }
+
+
+
+
+  export type NotificationPreferenceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationPreferenceWhereInput
+    orderBy?: NotificationPreferenceOrderByWithAggregationInput | NotificationPreferenceOrderByWithAggregationInput[]
+    by: NotificationPreferenceScalarFieldEnum[] | NotificationPreferenceScalarFieldEnum
+    having?: NotificationPreferenceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NotificationPreferenceCountAggregateInputType | true
+    _min?: NotificationPreferenceMinAggregateInputType
+    _max?: NotificationPreferenceMaxAggregateInputType
+  }
+
+  export type NotificationPreferenceGroupByOutputType = {
+    id: string
+    userId: string
+    notificationTypeId: string
+    emailEnabled: boolean
+    inAppEnabled: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: NotificationPreferenceCountAggregateOutputType | null
+    _min: NotificationPreferenceMinAggregateOutputType | null
+    _max: NotificationPreferenceMaxAggregateOutputType | null
+  }
+
+  type GetNotificationPreferenceGroupByPayload<T extends NotificationPreferenceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NotificationPreferenceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NotificationPreferenceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NotificationPreferenceGroupByOutputType[P]>
+            : GetScalarType<T[P], NotificationPreferenceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NotificationPreferenceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    notificationTypeId?: boolean
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notificationPreference"]>
+
+  export type NotificationPreferenceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    notificationTypeId?: boolean
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notificationPreference"]>
+
+  export type NotificationPreferenceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    notificationTypeId?: boolean
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notificationPreference"]>
+
+  export type NotificationPreferenceSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    notificationTypeId?: boolean
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type NotificationPreferenceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "notificationTypeId" | "emailEnabled" | "inAppEnabled" | "createdAt" | "updatedAt", ExtArgs["result"]["notificationPreference"]>
+  export type NotificationPreferenceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }
+  export type NotificationPreferenceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }
+  export type NotificationPreferenceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $NotificationPreferencePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "NotificationPreference"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      notificationType: Prisma.$NotificationTypePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      notificationTypeId: string
+      emailEnabled: boolean
+      inAppEnabled: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["notificationPreference"]>
+    composites: {}
+  }
+
+  type NotificationPreferenceGetPayload<S extends boolean | null | undefined | NotificationPreferenceDefaultArgs> = $Result.GetResult<Prisma.$NotificationPreferencePayload, S>
+
+  type NotificationPreferenceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NotificationPreferenceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NotificationPreferenceCountAggregateInputType | true
+    }
+
+  export interface NotificationPreferenceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NotificationPreference'], meta: { name: 'NotificationPreference' } }
+    /**
+     * Find zero or one NotificationPreference that matches the filter.
+     * @param {NotificationPreferenceFindUniqueArgs} args - Arguments to find a NotificationPreference
+     * @example
+     * // Get one NotificationPreference
+     * const notificationPreference = await prisma.notificationPreference.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NotificationPreferenceFindUniqueArgs>(args: SelectSubset<T, NotificationPreferenceFindUniqueArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one NotificationPreference that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NotificationPreferenceFindUniqueOrThrowArgs} args - Arguments to find a NotificationPreference
+     * @example
+     * // Get one NotificationPreference
+     * const notificationPreference = await prisma.notificationPreference.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NotificationPreferenceFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationPreferenceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NotificationPreference that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationPreferenceFindFirstArgs} args - Arguments to find a NotificationPreference
+     * @example
+     * // Get one NotificationPreference
+     * const notificationPreference = await prisma.notificationPreference.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NotificationPreferenceFindFirstArgs>(args?: SelectSubset<T, NotificationPreferenceFindFirstArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NotificationPreference that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationPreferenceFindFirstOrThrowArgs} args - Arguments to find a NotificationPreference
+     * @example
+     * // Get one NotificationPreference
+     * const notificationPreference = await prisma.notificationPreference.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NotificationPreferenceFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationPreferenceFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more NotificationPreferences that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationPreferenceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all NotificationPreferences
+     * const notificationPreferences = await prisma.notificationPreference.findMany()
+     * 
+     * // Get first 10 NotificationPreferences
+     * const notificationPreferences = await prisma.notificationPreference.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const notificationPreferenceWithIdOnly = await prisma.notificationPreference.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NotificationPreferenceFindManyArgs>(args?: SelectSubset<T, NotificationPreferenceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a NotificationPreference.
+     * @param {NotificationPreferenceCreateArgs} args - Arguments to create a NotificationPreference.
+     * @example
+     * // Create one NotificationPreference
+     * const NotificationPreference = await prisma.notificationPreference.create({
+     *   data: {
+     *     // ... data to create a NotificationPreference
+     *   }
+     * })
+     * 
+     */
+    create<T extends NotificationPreferenceCreateArgs>(args: SelectSubset<T, NotificationPreferenceCreateArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many NotificationPreferences.
+     * @param {NotificationPreferenceCreateManyArgs} args - Arguments to create many NotificationPreferences.
+     * @example
+     * // Create many NotificationPreferences
+     * const notificationPreference = await prisma.notificationPreference.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NotificationPreferenceCreateManyArgs>(args?: SelectSubset<T, NotificationPreferenceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many NotificationPreferences and returns the data saved in the database.
+     * @param {NotificationPreferenceCreateManyAndReturnArgs} args - Arguments to create many NotificationPreferences.
+     * @example
+     * // Create many NotificationPreferences
+     * const notificationPreference = await prisma.notificationPreference.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many NotificationPreferences and only return the `id`
+     * const notificationPreferenceWithIdOnly = await prisma.notificationPreference.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends NotificationPreferenceCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationPreferenceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a NotificationPreference.
+     * @param {NotificationPreferenceDeleteArgs} args - Arguments to delete one NotificationPreference.
+     * @example
+     * // Delete one NotificationPreference
+     * const NotificationPreference = await prisma.notificationPreference.delete({
+     *   where: {
+     *     // ... filter to delete one NotificationPreference
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NotificationPreferenceDeleteArgs>(args: SelectSubset<T, NotificationPreferenceDeleteArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one NotificationPreference.
+     * @param {NotificationPreferenceUpdateArgs} args - Arguments to update one NotificationPreference.
+     * @example
+     * // Update one NotificationPreference
+     * const notificationPreference = await prisma.notificationPreference.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NotificationPreferenceUpdateArgs>(args: SelectSubset<T, NotificationPreferenceUpdateArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more NotificationPreferences.
+     * @param {NotificationPreferenceDeleteManyArgs} args - Arguments to filter NotificationPreferences to delete.
+     * @example
+     * // Delete a few NotificationPreferences
+     * const { count } = await prisma.notificationPreference.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NotificationPreferenceDeleteManyArgs>(args?: SelectSubset<T, NotificationPreferenceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NotificationPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationPreferenceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many NotificationPreferences
+     * const notificationPreference = await prisma.notificationPreference.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NotificationPreferenceUpdateManyArgs>(args: SelectSubset<T, NotificationPreferenceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NotificationPreferences and returns the data updated in the database.
+     * @param {NotificationPreferenceUpdateManyAndReturnArgs} args - Arguments to update many NotificationPreferences.
+     * @example
+     * // Update many NotificationPreferences
+     * const notificationPreference = await prisma.notificationPreference.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more NotificationPreferences and only return the `id`
+     * const notificationPreferenceWithIdOnly = await prisma.notificationPreference.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends NotificationPreferenceUpdateManyAndReturnArgs>(args: SelectSubset<T, NotificationPreferenceUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one NotificationPreference.
+     * @param {NotificationPreferenceUpsertArgs} args - Arguments to update or create a NotificationPreference.
+     * @example
+     * // Update or create a NotificationPreference
+     * const notificationPreference = await prisma.notificationPreference.upsert({
+     *   create: {
+     *     // ... data to create a NotificationPreference
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the NotificationPreference we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NotificationPreferenceUpsertArgs>(args: SelectSubset<T, NotificationPreferenceUpsertArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of NotificationPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationPreferenceCountArgs} args - Arguments to filter NotificationPreferences to count.
+     * @example
+     * // Count the number of NotificationPreferences
+     * const count = await prisma.notificationPreference.count({
+     *   where: {
+     *     // ... the filter for the NotificationPreferences we want to count
+     *   }
+     * })
+    **/
+    count<T extends NotificationPreferenceCountArgs>(
+      args?: Subset<T, NotificationPreferenceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NotificationPreferenceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a NotificationPreference.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationPreferenceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NotificationPreferenceAggregateArgs>(args: Subset<T, NotificationPreferenceAggregateArgs>): Prisma.PrismaPromise<GetNotificationPreferenceAggregateType<T>>
+
+    /**
+     * Group by NotificationPreference.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationPreferenceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NotificationPreferenceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NotificationPreferenceGroupByArgs['orderBy'] }
+        : { orderBy?: NotificationPreferenceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NotificationPreferenceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationPreferenceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the NotificationPreference model
+   */
+  readonly fields: NotificationPreferenceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for NotificationPreference.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NotificationPreferenceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    notificationType<T extends NotificationTypeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, NotificationTypeDefaultArgs<ExtArgs>>): Prisma__NotificationTypeClient<$Result.GetResult<Prisma.$NotificationTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the NotificationPreference model
+   */
+  interface NotificationPreferenceFieldRefs {
+    readonly id: FieldRef<"NotificationPreference", 'String'>
+    readonly userId: FieldRef<"NotificationPreference", 'String'>
+    readonly notificationTypeId: FieldRef<"NotificationPreference", 'String'>
+    readonly emailEnabled: FieldRef<"NotificationPreference", 'Boolean'>
+    readonly inAppEnabled: FieldRef<"NotificationPreference", 'Boolean'>
+    readonly createdAt: FieldRef<"NotificationPreference", 'DateTime'>
+    readonly updatedAt: FieldRef<"NotificationPreference", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * NotificationPreference findUnique
+   */
+  export type NotificationPreferenceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationPreference
+     */
+    omit?: NotificationPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationPreference to fetch.
+     */
+    where: NotificationPreferenceWhereUniqueInput
+  }
+
+  /**
+   * NotificationPreference findUniqueOrThrow
+   */
+  export type NotificationPreferenceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationPreference
+     */
+    omit?: NotificationPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationPreference to fetch.
+     */
+    where: NotificationPreferenceWhereUniqueInput
+  }
+
+  /**
+   * NotificationPreference findFirst
+   */
+  export type NotificationPreferenceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationPreference
+     */
+    omit?: NotificationPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationPreference to fetch.
+     */
+    where?: NotificationPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationPreferences to fetch.
+     */
+    orderBy?: NotificationPreferenceOrderByWithRelationInput | NotificationPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NotificationPreferences.
+     */
+    cursor?: NotificationPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NotificationPreferences.
+     */
+    distinct?: NotificationPreferenceScalarFieldEnum | NotificationPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationPreference findFirstOrThrow
+   */
+  export type NotificationPreferenceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationPreference
+     */
+    omit?: NotificationPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationPreference to fetch.
+     */
+    where?: NotificationPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationPreferences to fetch.
+     */
+    orderBy?: NotificationPreferenceOrderByWithRelationInput | NotificationPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NotificationPreferences.
+     */
+    cursor?: NotificationPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NotificationPreferences.
+     */
+    distinct?: NotificationPreferenceScalarFieldEnum | NotificationPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationPreference findMany
+   */
+  export type NotificationPreferenceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationPreference
+     */
+    omit?: NotificationPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationPreferences to fetch.
+     */
+    where?: NotificationPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationPreferences to fetch.
+     */
+    orderBy?: NotificationPreferenceOrderByWithRelationInput | NotificationPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing NotificationPreferences.
+     */
+    cursor?: NotificationPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationPreferences.
+     */
+    skip?: number
+    distinct?: NotificationPreferenceScalarFieldEnum | NotificationPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationPreference create
+   */
+  export type NotificationPreferenceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationPreference
+     */
+    omit?: NotificationPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a NotificationPreference.
+     */
+    data: XOR<NotificationPreferenceCreateInput, NotificationPreferenceUncheckedCreateInput>
+  }
+
+  /**
+   * NotificationPreference createMany
+   */
+  export type NotificationPreferenceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many NotificationPreferences.
+     */
+    data: NotificationPreferenceCreateManyInput | NotificationPreferenceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NotificationPreference createManyAndReturn
+   */
+  export type NotificationPreferenceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationPreference
+     */
+    omit?: NotificationPreferenceOmit<ExtArgs> | null
+    /**
+     * The data used to create many NotificationPreferences.
+     */
+    data: NotificationPreferenceCreateManyInput | NotificationPreferenceCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * NotificationPreference update
+   */
+  export type NotificationPreferenceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationPreference
+     */
+    omit?: NotificationPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a NotificationPreference.
+     */
+    data: XOR<NotificationPreferenceUpdateInput, NotificationPreferenceUncheckedUpdateInput>
+    /**
+     * Choose, which NotificationPreference to update.
+     */
+    where: NotificationPreferenceWhereUniqueInput
+  }
+
+  /**
+   * NotificationPreference updateMany
+   */
+  export type NotificationPreferenceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update NotificationPreferences.
+     */
+    data: XOR<NotificationPreferenceUpdateManyMutationInput, NotificationPreferenceUncheckedUpdateManyInput>
+    /**
+     * Filter which NotificationPreferences to update
+     */
+    where?: NotificationPreferenceWhereInput
+    /**
+     * Limit how many NotificationPreferences to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NotificationPreference updateManyAndReturn
+   */
+  export type NotificationPreferenceUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationPreference
+     */
+    omit?: NotificationPreferenceOmit<ExtArgs> | null
+    /**
+     * The data used to update NotificationPreferences.
+     */
+    data: XOR<NotificationPreferenceUpdateManyMutationInput, NotificationPreferenceUncheckedUpdateManyInput>
+    /**
+     * Filter which NotificationPreferences to update
+     */
+    where?: NotificationPreferenceWhereInput
+    /**
+     * Limit how many NotificationPreferences to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * NotificationPreference upsert
+   */
+  export type NotificationPreferenceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationPreference
+     */
+    omit?: NotificationPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the NotificationPreference to update in case it exists.
+     */
+    where: NotificationPreferenceWhereUniqueInput
+    /**
+     * In case the NotificationPreference found by the `where` argument doesn't exist, create a new NotificationPreference with this data.
+     */
+    create: XOR<NotificationPreferenceCreateInput, NotificationPreferenceUncheckedCreateInput>
+    /**
+     * In case the NotificationPreference was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NotificationPreferenceUpdateInput, NotificationPreferenceUncheckedUpdateInput>
+  }
+
+  /**
+   * NotificationPreference delete
+   */
+  export type NotificationPreferenceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationPreference
+     */
+    omit?: NotificationPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter which NotificationPreference to delete.
+     */
+    where: NotificationPreferenceWhereUniqueInput
+  }
+
+  /**
+   * NotificationPreference deleteMany
+   */
+  export type NotificationPreferenceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NotificationPreferences to delete
+     */
+    where?: NotificationPreferenceWhereInput
+    /**
+     * Limit how many NotificationPreferences to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * NotificationPreference without action
+   */
+  export type NotificationPreferenceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationPreference
+     */
+    omit?: NotificationPreferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Notification
+   */
+
+  export type AggregateNotification = {
+    _count: NotificationCountAggregateOutputType | null
+    _min: NotificationMinAggregateOutputType | null
+    _max: NotificationMaxAggregateOutputType | null
+  }
+
+  export type NotificationMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    notificationTypeId: string | null
+    title: string | null
+    message: string | null
+    isRead: boolean | null
+    readAt: Date | null
+    emailSent: boolean | null
+    emailSentAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type NotificationMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    notificationTypeId: string | null
+    title: string | null
+    message: string | null
+    isRead: boolean | null
+    readAt: Date | null
+    emailSent: boolean | null
+    emailSentAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type NotificationCountAggregateOutputType = {
+    id: number
+    userId: number
+    notificationTypeId: number
+    title: number
+    message: number
+    data: number
+    isRead: number
+    readAt: number
+    emailSent: number
+    emailSentAt: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type NotificationMinAggregateInputType = {
+    id?: true
+    userId?: true
+    notificationTypeId?: true
+    title?: true
+    message?: true
+    isRead?: true
+    readAt?: true
+    emailSent?: true
+    emailSentAt?: true
+    createdAt?: true
+  }
+
+  export type NotificationMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    notificationTypeId?: true
+    title?: true
+    message?: true
+    isRead?: true
+    readAt?: true
+    emailSent?: true
+    emailSentAt?: true
+    createdAt?: true
+  }
+
+  export type NotificationCountAggregateInputType = {
+    id?: true
+    userId?: true
+    notificationTypeId?: true
+    title?: true
+    message?: true
+    data?: true
+    isRead?: true
+    readAt?: true
+    emailSent?: true
+    emailSentAt?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type NotificationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Notification to aggregate.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Notifications
+    **/
+    _count?: true | NotificationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NotificationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NotificationMaxAggregateInputType
+  }
+
+  export type GetNotificationAggregateType<T extends NotificationAggregateArgs> = {
+        [P in keyof T & keyof AggregateNotification]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNotification[P]>
+      : GetScalarType<T[P], AggregateNotification[P]>
+  }
+
+
+
+
+  export type NotificationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationWhereInput
+    orderBy?: NotificationOrderByWithAggregationInput | NotificationOrderByWithAggregationInput[]
+    by: NotificationScalarFieldEnum[] | NotificationScalarFieldEnum
+    having?: NotificationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NotificationCountAggregateInputType | true
+    _min?: NotificationMinAggregateInputType
+    _max?: NotificationMaxAggregateInputType
+  }
+
+  export type NotificationGroupByOutputType = {
+    id: string
+    userId: string
+    notificationTypeId: string
+    title: string
+    message: string
+    data: JsonValue | null
+    isRead: boolean
+    readAt: Date | null
+    emailSent: boolean
+    emailSentAt: Date | null
+    createdAt: Date
+    _count: NotificationCountAggregateOutputType | null
+    _min: NotificationMinAggregateOutputType | null
+    _max: NotificationMaxAggregateOutputType | null
+  }
+
+  type GetNotificationGroupByPayload<T extends NotificationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NotificationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NotificationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NotificationGroupByOutputType[P]>
+            : GetScalarType<T[P], NotificationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NotificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    notificationTypeId?: boolean
+    title?: boolean
+    message?: boolean
+    data?: boolean
+    isRead?: boolean
+    readAt?: boolean
+    emailSent?: boolean
+    emailSentAt?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notification"]>
+
+  export type NotificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    notificationTypeId?: boolean
+    title?: boolean
+    message?: boolean
+    data?: boolean
+    isRead?: boolean
+    readAt?: boolean
+    emailSent?: boolean
+    emailSentAt?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notification"]>
+
+  export type NotificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    notificationTypeId?: boolean
+    title?: boolean
+    message?: boolean
+    data?: boolean
+    isRead?: boolean
+    readAt?: boolean
+    emailSent?: boolean
+    emailSentAt?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notification"]>
+
+  export type NotificationSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    notificationTypeId?: boolean
+    title?: boolean
+    message?: boolean
+    data?: boolean
+    isRead?: boolean
+    readAt?: boolean
+    emailSent?: boolean
+    emailSentAt?: boolean
+    createdAt?: boolean
+  }
+
+  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "notificationTypeId" | "title" | "message" | "data" | "isRead" | "readAt" | "emailSent" | "emailSentAt" | "createdAt", ExtArgs["result"]["notification"]>
+  export type NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }
+  export type NotificationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }
+  export type NotificationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $NotificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Notification"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      notificationType: Prisma.$NotificationTypePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      notificationTypeId: string
+      title: string
+      message: string
+      data: Prisma.JsonValue | null
+      isRead: boolean
+      readAt: Date | null
+      emailSent: boolean
+      emailSentAt: Date | null
+      createdAt: Date
+    }, ExtArgs["result"]["notification"]>
+    composites: {}
+  }
+
+  type NotificationGetPayload<S extends boolean | null | undefined | NotificationDefaultArgs> = $Result.GetResult<Prisma.$NotificationPayload, S>
+
+  type NotificationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NotificationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NotificationCountAggregateInputType | true
+    }
+
+  export interface NotificationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Notification'], meta: { name: 'Notification' } }
+    /**
+     * Find zero or one Notification that matches the filter.
+     * @param {NotificationFindUniqueArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NotificationFindUniqueArgs>(args: SelectSubset<T, NotificationFindUniqueArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Notification that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NotificationFindUniqueOrThrowArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NotificationFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Notification that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindFirstArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NotificationFindFirstArgs>(args?: SelectSubset<T, NotificationFindFirstArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Notification that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindFirstOrThrowArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NotificationFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Notifications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Notifications
+     * const notifications = await prisma.notification.findMany()
+     * 
+     * // Get first 10 Notifications
+     * const notifications = await prisma.notification.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const notificationWithIdOnly = await prisma.notification.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NotificationFindManyArgs>(args?: SelectSubset<T, NotificationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Notification.
+     * @param {NotificationCreateArgs} args - Arguments to create a Notification.
+     * @example
+     * // Create one Notification
+     * const Notification = await prisma.notification.create({
+     *   data: {
+     *     // ... data to create a Notification
+     *   }
+     * })
+     * 
+     */
+    create<T extends NotificationCreateArgs>(args: SelectSubset<T, NotificationCreateArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Notifications.
+     * @param {NotificationCreateManyArgs} args - Arguments to create many Notifications.
+     * @example
+     * // Create many Notifications
+     * const notification = await prisma.notification.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NotificationCreateManyArgs>(args?: SelectSubset<T, NotificationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Notifications and returns the data saved in the database.
+     * @param {NotificationCreateManyAndReturnArgs} args - Arguments to create many Notifications.
+     * @example
+     * // Create many Notifications
+     * const notification = await prisma.notification.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Notifications and only return the `id`
+     * const notificationWithIdOnly = await prisma.notification.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends NotificationCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Notification.
+     * @param {NotificationDeleteArgs} args - Arguments to delete one Notification.
+     * @example
+     * // Delete one Notification
+     * const Notification = await prisma.notification.delete({
+     *   where: {
+     *     // ... filter to delete one Notification
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NotificationDeleteArgs>(args: SelectSubset<T, NotificationDeleteArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Notification.
+     * @param {NotificationUpdateArgs} args - Arguments to update one Notification.
+     * @example
+     * // Update one Notification
+     * const notification = await prisma.notification.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NotificationUpdateArgs>(args: SelectSubset<T, NotificationUpdateArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Notifications.
+     * @param {NotificationDeleteManyArgs} args - Arguments to filter Notifications to delete.
+     * @example
+     * // Delete a few Notifications
+     * const { count } = await prisma.notification.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NotificationDeleteManyArgs>(args?: SelectSubset<T, NotificationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Notifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Notifications
+     * const notification = await prisma.notification.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NotificationUpdateManyArgs>(args: SelectSubset<T, NotificationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Notifications and returns the data updated in the database.
+     * @param {NotificationUpdateManyAndReturnArgs} args - Arguments to update many Notifications.
+     * @example
+     * // Update many Notifications
+     * const notification = await prisma.notification.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Notifications and only return the `id`
+     * const notificationWithIdOnly = await prisma.notification.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends NotificationUpdateManyAndReturnArgs>(args: SelectSubset<T, NotificationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Notification.
+     * @param {NotificationUpsertArgs} args - Arguments to update or create a Notification.
+     * @example
+     * // Update or create a Notification
+     * const notification = await prisma.notification.upsert({
+     *   create: {
+     *     // ... data to create a Notification
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Notification we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NotificationUpsertArgs>(args: SelectSubset<T, NotificationUpsertArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Notifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationCountArgs} args - Arguments to filter Notifications to count.
+     * @example
+     * // Count the number of Notifications
+     * const count = await prisma.notification.count({
+     *   where: {
+     *     // ... the filter for the Notifications we want to count
+     *   }
+     * })
+    **/
+    count<T extends NotificationCountArgs>(
+      args?: Subset<T, NotificationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NotificationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Notification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NotificationAggregateArgs>(args: Subset<T, NotificationAggregateArgs>): Prisma.PrismaPromise<GetNotificationAggregateType<T>>
+
+    /**
+     * Group by Notification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NotificationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NotificationGroupByArgs['orderBy'] }
+        : { orderBy?: NotificationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NotificationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Notification model
+   */
+  readonly fields: NotificationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Notification.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NotificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    notificationType<T extends NotificationTypeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, NotificationTypeDefaultArgs<ExtArgs>>): Prisma__NotificationTypeClient<$Result.GetResult<Prisma.$NotificationTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Notification model
+   */
+  interface NotificationFieldRefs {
+    readonly id: FieldRef<"Notification", 'String'>
+    readonly userId: FieldRef<"Notification", 'String'>
+    readonly notificationTypeId: FieldRef<"Notification", 'String'>
+    readonly title: FieldRef<"Notification", 'String'>
+    readonly message: FieldRef<"Notification", 'String'>
+    readonly data: FieldRef<"Notification", 'Json'>
+    readonly isRead: FieldRef<"Notification", 'Boolean'>
+    readonly readAt: FieldRef<"Notification", 'DateTime'>
+    readonly emailSent: FieldRef<"Notification", 'Boolean'>
+    readonly emailSentAt: FieldRef<"Notification", 'DateTime'>
+    readonly createdAt: FieldRef<"Notification", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Notification findUnique
+   */
+  export type NotificationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification findUniqueOrThrow
+   */
+  export type NotificationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification findFirst
+   */
+  export type NotificationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Notifications.
+     */
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification findFirstOrThrow
+   */
+  export type NotificationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Notifications.
+     */
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification findMany
+   */
+  export type NotificationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notifications to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification create
+   */
+  export type NotificationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Notification.
+     */
+    data: XOR<NotificationCreateInput, NotificationUncheckedCreateInput>
+  }
+
+  /**
+   * Notification createMany
+   */
+  export type NotificationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Notifications.
+     */
+    data: NotificationCreateManyInput | NotificationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Notification createManyAndReturn
+   */
+  export type NotificationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * The data used to create many Notifications.
+     */
+    data: NotificationCreateManyInput | NotificationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Notification update
+   */
+  export type NotificationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Notification.
+     */
+    data: XOR<NotificationUpdateInput, NotificationUncheckedUpdateInput>
+    /**
+     * Choose, which Notification to update.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification updateMany
+   */
+  export type NotificationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Notifications.
+     */
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which Notifications to update
+     */
+    where?: NotificationWhereInput
+    /**
+     * Limit how many Notifications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Notification updateManyAndReturn
+   */
+  export type NotificationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * The data used to update Notifications.
+     */
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which Notifications to update
+     */
+    where?: NotificationWhereInput
+    /**
+     * Limit how many Notifications to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Notification upsert
+   */
+  export type NotificationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Notification to update in case it exists.
+     */
+    where: NotificationWhereUniqueInput
+    /**
+     * In case the Notification found by the `where` argument doesn't exist, create a new Notification with this data.
+     */
+    create: XOR<NotificationCreateInput, NotificationUncheckedCreateInput>
+    /**
+     * In case the Notification was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NotificationUpdateInput, NotificationUncheckedUpdateInput>
+  }
+
+  /**
+   * Notification delete
+   */
+  export type NotificationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter which Notification to delete.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification deleteMany
+   */
+  export type NotificationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Notifications to delete
+     */
+    where?: NotificationWhereInput
+    /**
+     * Limit how many Notifications to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Notification without action
+   */
+  export type NotificationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model NotificationRolePermission
+   */
+
+  export type AggregateNotificationRolePermission = {
+    _count: NotificationRolePermissionCountAggregateOutputType | null
+    _avg: NotificationRolePermissionAvgAggregateOutputType | null
+    _sum: NotificationRolePermissionSumAggregateOutputType | null
+    _min: NotificationRolePermissionMinAggregateOutputType | null
+    _max: NotificationRolePermissionMaxAggregateOutputType | null
+  }
+
+  export type NotificationRolePermissionAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type NotificationRolePermissionSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type NotificationRolePermissionMinAggregateOutputType = {
+    id: number | null
+    userTypeId: string | null
+    notificationTypeId: string | null
+    canReceive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NotificationRolePermissionMaxAggregateOutputType = {
+    id: number | null
+    userTypeId: string | null
+    notificationTypeId: string | null
+    canReceive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NotificationRolePermissionCountAggregateOutputType = {
+    id: number
+    userTypeId: number
+    notificationTypeId: number
+    canReceive: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type NotificationRolePermissionAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type NotificationRolePermissionSumAggregateInputType = {
+    id?: true
+  }
+
+  export type NotificationRolePermissionMinAggregateInputType = {
+    id?: true
+    userTypeId?: true
+    notificationTypeId?: true
+    canReceive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NotificationRolePermissionMaxAggregateInputType = {
+    id?: true
+    userTypeId?: true
+    notificationTypeId?: true
+    canReceive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NotificationRolePermissionCountAggregateInputType = {
+    id?: true
+    userTypeId?: true
+    notificationTypeId?: true
+    canReceive?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type NotificationRolePermissionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NotificationRolePermission to aggregate.
+     */
+    where?: NotificationRolePermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationRolePermissions to fetch.
+     */
+    orderBy?: NotificationRolePermissionOrderByWithRelationInput | NotificationRolePermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NotificationRolePermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationRolePermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationRolePermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned NotificationRolePermissions
+    **/
+    _count?: true | NotificationRolePermissionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: NotificationRolePermissionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: NotificationRolePermissionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NotificationRolePermissionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NotificationRolePermissionMaxAggregateInputType
+  }
+
+  export type GetNotificationRolePermissionAggregateType<T extends NotificationRolePermissionAggregateArgs> = {
+        [P in keyof T & keyof AggregateNotificationRolePermission]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNotificationRolePermission[P]>
+      : GetScalarType<T[P], AggregateNotificationRolePermission[P]>
+  }
+
+
+
+
+  export type NotificationRolePermissionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationRolePermissionWhereInput
+    orderBy?: NotificationRolePermissionOrderByWithAggregationInput | NotificationRolePermissionOrderByWithAggregationInput[]
+    by: NotificationRolePermissionScalarFieldEnum[] | NotificationRolePermissionScalarFieldEnum
+    having?: NotificationRolePermissionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NotificationRolePermissionCountAggregateInputType | true
+    _avg?: NotificationRolePermissionAvgAggregateInputType
+    _sum?: NotificationRolePermissionSumAggregateInputType
+    _min?: NotificationRolePermissionMinAggregateInputType
+    _max?: NotificationRolePermissionMaxAggregateInputType
+  }
+
+  export type NotificationRolePermissionGroupByOutputType = {
+    id: number
+    userTypeId: string
+    notificationTypeId: string
+    canReceive: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: NotificationRolePermissionCountAggregateOutputType | null
+    _avg: NotificationRolePermissionAvgAggregateOutputType | null
+    _sum: NotificationRolePermissionSumAggregateOutputType | null
+    _min: NotificationRolePermissionMinAggregateOutputType | null
+    _max: NotificationRolePermissionMaxAggregateOutputType | null
+  }
+
+  type GetNotificationRolePermissionGroupByPayload<T extends NotificationRolePermissionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NotificationRolePermissionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NotificationRolePermissionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NotificationRolePermissionGroupByOutputType[P]>
+            : GetScalarType<T[P], NotificationRolePermissionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NotificationRolePermissionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userTypeId?: boolean
+    notificationTypeId?: boolean
+    canReceive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    userType?: boolean | UserTypeDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notificationRolePermission"]>
+
+  export type NotificationRolePermissionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userTypeId?: boolean
+    notificationTypeId?: boolean
+    canReceive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    userType?: boolean | UserTypeDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notificationRolePermission"]>
+
+  export type NotificationRolePermissionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userTypeId?: boolean
+    notificationTypeId?: boolean
+    canReceive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    userType?: boolean | UserTypeDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notificationRolePermission"]>
+
+  export type NotificationRolePermissionSelectScalar = {
+    id?: boolean
+    userTypeId?: boolean
+    notificationTypeId?: boolean
+    canReceive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type NotificationRolePermissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userTypeId" | "notificationTypeId" | "canReceive" | "createdAt" | "updatedAt", ExtArgs["result"]["notificationRolePermission"]>
+  export type NotificationRolePermissionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    userType?: boolean | UserTypeDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }
+  export type NotificationRolePermissionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    userType?: boolean | UserTypeDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }
+  export type NotificationRolePermissionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    userType?: boolean | UserTypeDefaultArgs<ExtArgs>
+    notificationType?: boolean | NotificationTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $NotificationRolePermissionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "NotificationRolePermission"
+    objects: {
+      userType: Prisma.$UserTypePayload<ExtArgs>
+      notificationType: Prisma.$NotificationTypePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      userTypeId: string
+      notificationTypeId: string
+      canReceive: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["notificationRolePermission"]>
+    composites: {}
+  }
+
+  type NotificationRolePermissionGetPayload<S extends boolean | null | undefined | NotificationRolePermissionDefaultArgs> = $Result.GetResult<Prisma.$NotificationRolePermissionPayload, S>
+
+  type NotificationRolePermissionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NotificationRolePermissionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NotificationRolePermissionCountAggregateInputType | true
+    }
+
+  export interface NotificationRolePermissionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NotificationRolePermission'], meta: { name: 'NotificationRolePermission' } }
+    /**
+     * Find zero or one NotificationRolePermission that matches the filter.
+     * @param {NotificationRolePermissionFindUniqueArgs} args - Arguments to find a NotificationRolePermission
+     * @example
+     * // Get one NotificationRolePermission
+     * const notificationRolePermission = await prisma.notificationRolePermission.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NotificationRolePermissionFindUniqueArgs>(args: SelectSubset<T, NotificationRolePermissionFindUniqueArgs<ExtArgs>>): Prisma__NotificationRolePermissionClient<$Result.GetResult<Prisma.$NotificationRolePermissionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one NotificationRolePermission that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NotificationRolePermissionFindUniqueOrThrowArgs} args - Arguments to find a NotificationRolePermission
+     * @example
+     * // Get one NotificationRolePermission
+     * const notificationRolePermission = await prisma.notificationRolePermission.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NotificationRolePermissionFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationRolePermissionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationRolePermissionClient<$Result.GetResult<Prisma.$NotificationRolePermissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NotificationRolePermission that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationRolePermissionFindFirstArgs} args - Arguments to find a NotificationRolePermission
+     * @example
+     * // Get one NotificationRolePermission
+     * const notificationRolePermission = await prisma.notificationRolePermission.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NotificationRolePermissionFindFirstArgs>(args?: SelectSubset<T, NotificationRolePermissionFindFirstArgs<ExtArgs>>): Prisma__NotificationRolePermissionClient<$Result.GetResult<Prisma.$NotificationRolePermissionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NotificationRolePermission that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationRolePermissionFindFirstOrThrowArgs} args - Arguments to find a NotificationRolePermission
+     * @example
+     * // Get one NotificationRolePermission
+     * const notificationRolePermission = await prisma.notificationRolePermission.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NotificationRolePermissionFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationRolePermissionFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationRolePermissionClient<$Result.GetResult<Prisma.$NotificationRolePermissionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more NotificationRolePermissions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationRolePermissionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all NotificationRolePermissions
+     * const notificationRolePermissions = await prisma.notificationRolePermission.findMany()
+     * 
+     * // Get first 10 NotificationRolePermissions
+     * const notificationRolePermissions = await prisma.notificationRolePermission.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const notificationRolePermissionWithIdOnly = await prisma.notificationRolePermission.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NotificationRolePermissionFindManyArgs>(args?: SelectSubset<T, NotificationRolePermissionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationRolePermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a NotificationRolePermission.
+     * @param {NotificationRolePermissionCreateArgs} args - Arguments to create a NotificationRolePermission.
+     * @example
+     * // Create one NotificationRolePermission
+     * const NotificationRolePermission = await prisma.notificationRolePermission.create({
+     *   data: {
+     *     // ... data to create a NotificationRolePermission
+     *   }
+     * })
+     * 
+     */
+    create<T extends NotificationRolePermissionCreateArgs>(args: SelectSubset<T, NotificationRolePermissionCreateArgs<ExtArgs>>): Prisma__NotificationRolePermissionClient<$Result.GetResult<Prisma.$NotificationRolePermissionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many NotificationRolePermissions.
+     * @param {NotificationRolePermissionCreateManyArgs} args - Arguments to create many NotificationRolePermissions.
+     * @example
+     * // Create many NotificationRolePermissions
+     * const notificationRolePermission = await prisma.notificationRolePermission.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NotificationRolePermissionCreateManyArgs>(args?: SelectSubset<T, NotificationRolePermissionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many NotificationRolePermissions and returns the data saved in the database.
+     * @param {NotificationRolePermissionCreateManyAndReturnArgs} args - Arguments to create many NotificationRolePermissions.
+     * @example
+     * // Create many NotificationRolePermissions
+     * const notificationRolePermission = await prisma.notificationRolePermission.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many NotificationRolePermissions and only return the `id`
+     * const notificationRolePermissionWithIdOnly = await prisma.notificationRolePermission.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends NotificationRolePermissionCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationRolePermissionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationRolePermissionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a NotificationRolePermission.
+     * @param {NotificationRolePermissionDeleteArgs} args - Arguments to delete one NotificationRolePermission.
+     * @example
+     * // Delete one NotificationRolePermission
+     * const NotificationRolePermission = await prisma.notificationRolePermission.delete({
+     *   where: {
+     *     // ... filter to delete one NotificationRolePermission
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NotificationRolePermissionDeleteArgs>(args: SelectSubset<T, NotificationRolePermissionDeleteArgs<ExtArgs>>): Prisma__NotificationRolePermissionClient<$Result.GetResult<Prisma.$NotificationRolePermissionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one NotificationRolePermission.
+     * @param {NotificationRolePermissionUpdateArgs} args - Arguments to update one NotificationRolePermission.
+     * @example
+     * // Update one NotificationRolePermission
+     * const notificationRolePermission = await prisma.notificationRolePermission.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NotificationRolePermissionUpdateArgs>(args: SelectSubset<T, NotificationRolePermissionUpdateArgs<ExtArgs>>): Prisma__NotificationRolePermissionClient<$Result.GetResult<Prisma.$NotificationRolePermissionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more NotificationRolePermissions.
+     * @param {NotificationRolePermissionDeleteManyArgs} args - Arguments to filter NotificationRolePermissions to delete.
+     * @example
+     * // Delete a few NotificationRolePermissions
+     * const { count } = await prisma.notificationRolePermission.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NotificationRolePermissionDeleteManyArgs>(args?: SelectSubset<T, NotificationRolePermissionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NotificationRolePermissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationRolePermissionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many NotificationRolePermissions
+     * const notificationRolePermission = await prisma.notificationRolePermission.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NotificationRolePermissionUpdateManyArgs>(args: SelectSubset<T, NotificationRolePermissionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NotificationRolePermissions and returns the data updated in the database.
+     * @param {NotificationRolePermissionUpdateManyAndReturnArgs} args - Arguments to update many NotificationRolePermissions.
+     * @example
+     * // Update many NotificationRolePermissions
+     * const notificationRolePermission = await prisma.notificationRolePermission.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more NotificationRolePermissions and only return the `id`
+     * const notificationRolePermissionWithIdOnly = await prisma.notificationRolePermission.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends NotificationRolePermissionUpdateManyAndReturnArgs>(args: SelectSubset<T, NotificationRolePermissionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationRolePermissionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one NotificationRolePermission.
+     * @param {NotificationRolePermissionUpsertArgs} args - Arguments to update or create a NotificationRolePermission.
+     * @example
+     * // Update or create a NotificationRolePermission
+     * const notificationRolePermission = await prisma.notificationRolePermission.upsert({
+     *   create: {
+     *     // ... data to create a NotificationRolePermission
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the NotificationRolePermission we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NotificationRolePermissionUpsertArgs>(args: SelectSubset<T, NotificationRolePermissionUpsertArgs<ExtArgs>>): Prisma__NotificationRolePermissionClient<$Result.GetResult<Prisma.$NotificationRolePermissionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of NotificationRolePermissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationRolePermissionCountArgs} args - Arguments to filter NotificationRolePermissions to count.
+     * @example
+     * // Count the number of NotificationRolePermissions
+     * const count = await prisma.notificationRolePermission.count({
+     *   where: {
+     *     // ... the filter for the NotificationRolePermissions we want to count
+     *   }
+     * })
+    **/
+    count<T extends NotificationRolePermissionCountArgs>(
+      args?: Subset<T, NotificationRolePermissionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NotificationRolePermissionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a NotificationRolePermission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationRolePermissionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NotificationRolePermissionAggregateArgs>(args: Subset<T, NotificationRolePermissionAggregateArgs>): Prisma.PrismaPromise<GetNotificationRolePermissionAggregateType<T>>
+
+    /**
+     * Group by NotificationRolePermission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationRolePermissionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NotificationRolePermissionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NotificationRolePermissionGroupByArgs['orderBy'] }
+        : { orderBy?: NotificationRolePermissionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NotificationRolePermissionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationRolePermissionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the NotificationRolePermission model
+   */
+  readonly fields: NotificationRolePermissionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for NotificationRolePermission.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NotificationRolePermissionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    userType<T extends UserTypeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserTypeDefaultArgs<ExtArgs>>): Prisma__UserTypeClient<$Result.GetResult<Prisma.$UserTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    notificationType<T extends NotificationTypeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, NotificationTypeDefaultArgs<ExtArgs>>): Prisma__NotificationTypeClient<$Result.GetResult<Prisma.$NotificationTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the NotificationRolePermission model
+   */
+  interface NotificationRolePermissionFieldRefs {
+    readonly id: FieldRef<"NotificationRolePermission", 'Int'>
+    readonly userTypeId: FieldRef<"NotificationRolePermission", 'String'>
+    readonly notificationTypeId: FieldRef<"NotificationRolePermission", 'String'>
+    readonly canReceive: FieldRef<"NotificationRolePermission", 'Boolean'>
+    readonly createdAt: FieldRef<"NotificationRolePermission", 'DateTime'>
+    readonly updatedAt: FieldRef<"NotificationRolePermission", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * NotificationRolePermission findUnique
+   */
+  export type NotificationRolePermissionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationRolePermission
+     */
+    select?: NotificationRolePermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationRolePermission
+     */
+    omit?: NotificationRolePermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationRolePermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationRolePermission to fetch.
+     */
+    where: NotificationRolePermissionWhereUniqueInput
+  }
+
+  /**
+   * NotificationRolePermission findUniqueOrThrow
+   */
+  export type NotificationRolePermissionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationRolePermission
+     */
+    select?: NotificationRolePermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationRolePermission
+     */
+    omit?: NotificationRolePermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationRolePermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationRolePermission to fetch.
+     */
+    where: NotificationRolePermissionWhereUniqueInput
+  }
+
+  /**
+   * NotificationRolePermission findFirst
+   */
+  export type NotificationRolePermissionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationRolePermission
+     */
+    select?: NotificationRolePermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationRolePermission
+     */
+    omit?: NotificationRolePermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationRolePermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationRolePermission to fetch.
+     */
+    where?: NotificationRolePermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationRolePermissions to fetch.
+     */
+    orderBy?: NotificationRolePermissionOrderByWithRelationInput | NotificationRolePermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NotificationRolePermissions.
+     */
+    cursor?: NotificationRolePermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationRolePermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationRolePermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NotificationRolePermissions.
+     */
+    distinct?: NotificationRolePermissionScalarFieldEnum | NotificationRolePermissionScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationRolePermission findFirstOrThrow
+   */
+  export type NotificationRolePermissionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationRolePermission
+     */
+    select?: NotificationRolePermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationRolePermission
+     */
+    omit?: NotificationRolePermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationRolePermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationRolePermission to fetch.
+     */
+    where?: NotificationRolePermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationRolePermissions to fetch.
+     */
+    orderBy?: NotificationRolePermissionOrderByWithRelationInput | NotificationRolePermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NotificationRolePermissions.
+     */
+    cursor?: NotificationRolePermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationRolePermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationRolePermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NotificationRolePermissions.
+     */
+    distinct?: NotificationRolePermissionScalarFieldEnum | NotificationRolePermissionScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationRolePermission findMany
+   */
+  export type NotificationRolePermissionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationRolePermission
+     */
+    select?: NotificationRolePermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationRolePermission
+     */
+    omit?: NotificationRolePermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationRolePermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationRolePermissions to fetch.
+     */
+    where?: NotificationRolePermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationRolePermissions to fetch.
+     */
+    orderBy?: NotificationRolePermissionOrderByWithRelationInput | NotificationRolePermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing NotificationRolePermissions.
+     */
+    cursor?: NotificationRolePermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationRolePermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationRolePermissions.
+     */
+    skip?: number
+    distinct?: NotificationRolePermissionScalarFieldEnum | NotificationRolePermissionScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationRolePermission create
+   */
+  export type NotificationRolePermissionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationRolePermission
+     */
+    select?: NotificationRolePermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationRolePermission
+     */
+    omit?: NotificationRolePermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationRolePermissionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a NotificationRolePermission.
+     */
+    data: XOR<NotificationRolePermissionCreateInput, NotificationRolePermissionUncheckedCreateInput>
+  }
+
+  /**
+   * NotificationRolePermission createMany
+   */
+  export type NotificationRolePermissionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many NotificationRolePermissions.
+     */
+    data: NotificationRolePermissionCreateManyInput | NotificationRolePermissionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NotificationRolePermission createManyAndReturn
+   */
+  export type NotificationRolePermissionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationRolePermission
+     */
+    select?: NotificationRolePermissionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationRolePermission
+     */
+    omit?: NotificationRolePermissionOmit<ExtArgs> | null
+    /**
+     * The data used to create many NotificationRolePermissions.
+     */
+    data: NotificationRolePermissionCreateManyInput | NotificationRolePermissionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationRolePermissionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * NotificationRolePermission update
+   */
+  export type NotificationRolePermissionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationRolePermission
+     */
+    select?: NotificationRolePermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationRolePermission
+     */
+    omit?: NotificationRolePermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationRolePermissionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a NotificationRolePermission.
+     */
+    data: XOR<NotificationRolePermissionUpdateInput, NotificationRolePermissionUncheckedUpdateInput>
+    /**
+     * Choose, which NotificationRolePermission to update.
+     */
+    where: NotificationRolePermissionWhereUniqueInput
+  }
+
+  /**
+   * NotificationRolePermission updateMany
+   */
+  export type NotificationRolePermissionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update NotificationRolePermissions.
+     */
+    data: XOR<NotificationRolePermissionUpdateManyMutationInput, NotificationRolePermissionUncheckedUpdateManyInput>
+    /**
+     * Filter which NotificationRolePermissions to update
+     */
+    where?: NotificationRolePermissionWhereInput
+    /**
+     * Limit how many NotificationRolePermissions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NotificationRolePermission updateManyAndReturn
+   */
+  export type NotificationRolePermissionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationRolePermission
+     */
+    select?: NotificationRolePermissionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationRolePermission
+     */
+    omit?: NotificationRolePermissionOmit<ExtArgs> | null
+    /**
+     * The data used to update NotificationRolePermissions.
+     */
+    data: XOR<NotificationRolePermissionUpdateManyMutationInput, NotificationRolePermissionUncheckedUpdateManyInput>
+    /**
+     * Filter which NotificationRolePermissions to update
+     */
+    where?: NotificationRolePermissionWhereInput
+    /**
+     * Limit how many NotificationRolePermissions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationRolePermissionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * NotificationRolePermission upsert
+   */
+  export type NotificationRolePermissionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationRolePermission
+     */
+    select?: NotificationRolePermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationRolePermission
+     */
+    omit?: NotificationRolePermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationRolePermissionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the NotificationRolePermission to update in case it exists.
+     */
+    where: NotificationRolePermissionWhereUniqueInput
+    /**
+     * In case the NotificationRolePermission found by the `where` argument doesn't exist, create a new NotificationRolePermission with this data.
+     */
+    create: XOR<NotificationRolePermissionCreateInput, NotificationRolePermissionUncheckedCreateInput>
+    /**
+     * In case the NotificationRolePermission was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NotificationRolePermissionUpdateInput, NotificationRolePermissionUncheckedUpdateInput>
+  }
+
+  /**
+   * NotificationRolePermission delete
+   */
+  export type NotificationRolePermissionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationRolePermission
+     */
+    select?: NotificationRolePermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationRolePermission
+     */
+    omit?: NotificationRolePermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationRolePermissionInclude<ExtArgs> | null
+    /**
+     * Filter which NotificationRolePermission to delete.
+     */
+    where: NotificationRolePermissionWhereUniqueInput
+  }
+
+  /**
+   * NotificationRolePermission deleteMany
+   */
+  export type NotificationRolePermissionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NotificationRolePermissions to delete
+     */
+    where?: NotificationRolePermissionWhereInput
+    /**
+     * Limit how many NotificationRolePermissions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * NotificationRolePermission without action
+   */
+  export type NotificationRolePermissionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationRolePermission
+     */
+    select?: NotificationRolePermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationRolePermission
+     */
+    omit?: NotificationRolePermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationRolePermissionInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -23319,7 +29862,16 @@ export namespace Prisma {
     lastUserAgent: 'lastUserAgent',
     twoFactorEnabled: 'twoFactorEnabled',
     twoFactorSecret: 'twoFactorSecret',
-    isActive: 'isActive'
+    isActive: 'isActive',
+    balance: 'balance',
+    balanceEnabled: 'balanceEnabled',
+    paymentMethod: 'paymentMethod',
+    ibanAccountHolder: 'ibanAccountHolder',
+    ibanNumber: 'ibanNumber',
+    ibanBic: 'ibanBic',
+    ibanAddress: 'ibanAddress',
+    ibanPostalCode: 'ibanPostalCode',
+    ibanCity: 'ibanCity'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -23374,6 +29926,9 @@ export namespace Prisma {
     leadId: 'leadId',
     buyerId: 'buyerId',
     amount: 'amount',
+    paymentMethod: 'paymentMethod',
+    balanceBefore: 'balanceBefore',
+    balanceAfter: 'balanceAfter',
     soldAt: 'soldAt',
     createdAt: 'createdAt'
   };
@@ -23604,6 +30159,80 @@ export namespace Prisma {
   export type PasswordResetTokenScalarFieldEnum = (typeof PasswordResetTokenScalarFieldEnum)[keyof typeof PasswordResetTokenScalarFieldEnum]
 
 
+  export const BalanceTransactionScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    amount: 'amount',
+    type: 'type',
+    description: 'description',
+    relatedId: 'relatedId',
+    adminId: 'adminId',
+    createdAt: 'createdAt'
+  };
+
+  export type BalanceTransactionScalarFieldEnum = (typeof BalanceTransactionScalarFieldEnum)[keyof typeof BalanceTransactionScalarFieldEnum]
+
+
+  export const NotificationTypeScalarFieldEnum: {
+    id: 'id',
+    code: 'code',
+    name: 'name',
+    description: 'description',
+    category: 'category',
+    defaultEnabled: 'defaultEnabled',
+    emailEnabled: 'emailEnabled',
+    inAppEnabled: 'inAppEnabled',
+    icon: 'icon',
+    isActive: 'isActive',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type NotificationTypeScalarFieldEnum = (typeof NotificationTypeScalarFieldEnum)[keyof typeof NotificationTypeScalarFieldEnum]
+
+
+  export const NotificationPreferenceScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    notificationTypeId: 'notificationTypeId',
+    emailEnabled: 'emailEnabled',
+    inAppEnabled: 'inAppEnabled',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type NotificationPreferenceScalarFieldEnum = (typeof NotificationPreferenceScalarFieldEnum)[keyof typeof NotificationPreferenceScalarFieldEnum]
+
+
+  export const NotificationScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    notificationTypeId: 'notificationTypeId',
+    title: 'title',
+    message: 'message',
+    data: 'data',
+    isRead: 'isRead',
+    readAt: 'readAt',
+    emailSent: 'emailSent',
+    emailSentAt: 'emailSentAt',
+    createdAt: 'createdAt'
+  };
+
+  export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
+  export const NotificationRolePermissionScalarFieldEnum: {
+    id: 'id',
+    userTypeId: 'userTypeId',
+    notificationTypeId: 'notificationTypeId',
+    canReceive: 'canReceive',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type NotificationRolePermissionScalarFieldEnum = (typeof NotificationRolePermissionScalarFieldEnum)[keyof typeof NotificationRolePermissionScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -23693,6 +30322,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -23717,20 +30360,6 @@ export namespace Prisma {
    * Reference to a field of type 'QueryMode'
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float'
-   */
-  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float[]'
-   */
-  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
   /**
    * Deep Input Types
@@ -23757,6 +30386,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFilter<"User"> | boolean
     twoFactorSecret?: StringNullableFilter<"User"> | string | null
     isActive?: BoolFilter<"User"> | boolean
+    balance?: FloatFilter<"User"> | number
+    balanceEnabled?: BoolFilter<"User"> | boolean
+    paymentMethod?: StringFilter<"User"> | string
+    ibanAccountHolder?: StringNullableFilter<"User"> | string | null
+    ibanNumber?: StringNullableFilter<"User"> | string | null
+    ibanBic?: StringNullableFilter<"User"> | string | null
+    ibanAddress?: StringNullableFilter<"User"> | string | null
+    ibanPostalCode?: StringNullableFilter<"User"> | string | null
+    ibanCity?: StringNullableFilter<"User"> | string | null
     bids?: BidListRelationFilter
     leads?: LeadListRelationFilter
     purchasedLeads?: LeadSaleListRelationFilter
@@ -23765,6 +30403,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionListRelationFilter
     activityLogs?: ActivityLogListRelationFilter
     passwordResetTokens?: PasswordResetTokenListRelationFilter
+    balanceTransactions?: BalanceTransactionListRelationFilter
+    notifications?: NotificationListRelationFilter
+    notificationPreferences?: NotificationPreferenceListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -23784,6 +30425,15 @@ export namespace Prisma {
     twoFactorEnabled?: SortOrder
     twoFactorSecret?: SortOrderInput | SortOrder
     isActive?: SortOrder
+    balance?: SortOrder
+    balanceEnabled?: SortOrder
+    paymentMethod?: SortOrder
+    ibanAccountHolder?: SortOrderInput | SortOrder
+    ibanNumber?: SortOrderInput | SortOrder
+    ibanBic?: SortOrderInput | SortOrder
+    ibanAddress?: SortOrderInput | SortOrder
+    ibanPostalCode?: SortOrderInput | SortOrder
+    ibanCity?: SortOrderInput | SortOrder
     bids?: BidOrderByRelationAggregateInput
     leads?: LeadOrderByRelationAggregateInput
     purchasedLeads?: LeadSaleOrderByRelationAggregateInput
@@ -23792,6 +30442,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionOrderByRelationAggregateInput
     activityLogs?: ActivityLogOrderByRelationAggregateInput
     passwordResetTokens?: PasswordResetTokenOrderByRelationAggregateInput
+    balanceTransactions?: BalanceTransactionOrderByRelationAggregateInput
+    notifications?: NotificationOrderByRelationAggregateInput
+    notificationPreferences?: NotificationPreferenceOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -23814,6 +30467,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFilter<"User"> | boolean
     twoFactorSecret?: StringNullableFilter<"User"> | string | null
     isActive?: BoolFilter<"User"> | boolean
+    balance?: FloatFilter<"User"> | number
+    balanceEnabled?: BoolFilter<"User"> | boolean
+    paymentMethod?: StringFilter<"User"> | string
+    ibanAccountHolder?: StringNullableFilter<"User"> | string | null
+    ibanNumber?: StringNullableFilter<"User"> | string | null
+    ibanBic?: StringNullableFilter<"User"> | string | null
+    ibanAddress?: StringNullableFilter<"User"> | string | null
+    ibanPostalCode?: StringNullableFilter<"User"> | string | null
+    ibanCity?: StringNullableFilter<"User"> | string | null
     bids?: BidListRelationFilter
     leads?: LeadListRelationFilter
     purchasedLeads?: LeadSaleListRelationFilter
@@ -23822,6 +30484,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionListRelationFilter
     activityLogs?: ActivityLogListRelationFilter
     passwordResetTokens?: PasswordResetTokenListRelationFilter
+    balanceTransactions?: BalanceTransactionListRelationFilter
+    notifications?: NotificationListRelationFilter
+    notificationPreferences?: NotificationPreferenceListRelationFilter
   }, "id" | "email" | "username">
 
   export type UserOrderByWithAggregationInput = {
@@ -23841,9 +30506,20 @@ export namespace Prisma {
     twoFactorEnabled?: SortOrder
     twoFactorSecret?: SortOrderInput | SortOrder
     isActive?: SortOrder
+    balance?: SortOrder
+    balanceEnabled?: SortOrder
+    paymentMethod?: SortOrder
+    ibanAccountHolder?: SortOrderInput | SortOrder
+    ibanNumber?: SortOrderInput | SortOrder
+    ibanBic?: SortOrderInput | SortOrder
+    ibanAddress?: SortOrderInput | SortOrder
+    ibanPostalCode?: SortOrderInput | SortOrder
+    ibanCity?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
+    _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
+    _sum?: UserSumOrderByAggregateInput
   }
 
   export type UserScalarWhereWithAggregatesInput = {
@@ -23866,6 +30542,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolWithAggregatesFilter<"User"> | boolean
     twoFactorSecret?: StringNullableWithAggregatesFilter<"User"> | string | null
     isActive?: BoolWithAggregatesFilter<"User"> | boolean
+    balance?: FloatWithAggregatesFilter<"User"> | number
+    balanceEnabled?: BoolWithAggregatesFilter<"User"> | boolean
+    paymentMethod?: StringWithAggregatesFilter<"User"> | string
+    ibanAccountHolder?: StringNullableWithAggregatesFilter<"User"> | string | null
+    ibanNumber?: StringNullableWithAggregatesFilter<"User"> | string | null
+    ibanBic?: StringNullableWithAggregatesFilter<"User"> | string | null
+    ibanAddress?: StringNullableWithAggregatesFilter<"User"> | string | null
+    ibanPostalCode?: StringNullableWithAggregatesFilter<"User"> | string | null
+    ibanCity?: StringNullableWithAggregatesFilter<"User"> | string | null
   }
 
   export type LeadWhereInput = {
@@ -24116,6 +30801,9 @@ export namespace Prisma {
     leadId?: StringFilter<"LeadSale"> | string
     buyerId?: StringFilter<"LeadSale"> | string
     amount?: IntFilter<"LeadSale"> | number
+    paymentMethod?: StringFilter<"LeadSale"> | string
+    balanceBefore?: IntNullableFilter<"LeadSale"> | number | null
+    balanceAfter?: IntNullableFilter<"LeadSale"> | number | null
     soldAt?: DateTimeFilter<"LeadSale"> | Date | string
     createdAt?: DateTimeFilter<"LeadSale"> | Date | string
     buyer?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -24127,6 +30815,9 @@ export namespace Prisma {
     leadId?: SortOrder
     buyerId?: SortOrder
     amount?: SortOrder
+    paymentMethod?: SortOrder
+    balanceBefore?: SortOrderInput | SortOrder
+    balanceAfter?: SortOrderInput | SortOrder
     soldAt?: SortOrder
     createdAt?: SortOrder
     buyer?: UserOrderByWithRelationInput
@@ -24141,6 +30832,9 @@ export namespace Prisma {
     NOT?: LeadSaleWhereInput | LeadSaleWhereInput[]
     buyerId?: StringFilter<"LeadSale"> | string
     amount?: IntFilter<"LeadSale"> | number
+    paymentMethod?: StringFilter<"LeadSale"> | string
+    balanceBefore?: IntNullableFilter<"LeadSale"> | number | null
+    balanceAfter?: IntNullableFilter<"LeadSale"> | number | null
     soldAt?: DateTimeFilter<"LeadSale"> | Date | string
     createdAt?: DateTimeFilter<"LeadSale"> | Date | string
     buyer?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -24152,6 +30846,9 @@ export namespace Prisma {
     leadId?: SortOrder
     buyerId?: SortOrder
     amount?: SortOrder
+    paymentMethod?: SortOrder
+    balanceBefore?: SortOrderInput | SortOrder
+    balanceAfter?: SortOrderInput | SortOrder
     soldAt?: SortOrder
     createdAt?: SortOrder
     _count?: LeadSaleCountOrderByAggregateInput
@@ -24169,6 +30866,9 @@ export namespace Prisma {
     leadId?: StringWithAggregatesFilter<"LeadSale"> | string
     buyerId?: StringWithAggregatesFilter<"LeadSale"> | string
     amount?: IntWithAggregatesFilter<"LeadSale"> | number
+    paymentMethod?: StringWithAggregatesFilter<"LeadSale"> | string
+    balanceBefore?: IntNullableWithAggregatesFilter<"LeadSale"> | number | null
+    balanceAfter?: IntNullableWithAggregatesFilter<"LeadSale"> | number | null
     soldAt?: DateTimeWithAggregatesFilter<"LeadSale"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"LeadSale"> | Date | string
   }
@@ -24500,6 +31200,7 @@ export namespace Prisma {
     leadTypePermissions?: LeadTypePermissionListRelationFilter
     users?: UserListRelationFilter
     permissions?: UserTypePermissionListRelationFilter
+    notificationRolePermissions?: NotificationRolePermissionListRelationFilter
   }
 
   export type UserTypeOrderByWithRelationInput = {
@@ -24512,6 +31213,7 @@ export namespace Prisma {
     leadTypePermissions?: LeadTypePermissionOrderByRelationAggregateInput
     users?: UserOrderByRelationAggregateInput
     permissions?: UserTypePermissionOrderByRelationAggregateInput
+    notificationRolePermissions?: NotificationRolePermissionOrderByRelationAggregateInput
   }
 
   export type UserTypeWhereUniqueInput = Prisma.AtLeast<{
@@ -24527,6 +31229,7 @@ export namespace Prisma {
     leadTypePermissions?: LeadTypePermissionListRelationFilter
     users?: UserListRelationFilter
     permissions?: UserTypePermissionListRelationFilter
+    notificationRolePermissions?: NotificationRolePermissionListRelationFilter
   }, "id">
 
   export type UserTypeOrderByWithAggregationInput = {
@@ -25294,6 +31997,397 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"PasswordResetToken"> | Date | string
   }
 
+  export type BalanceTransactionWhereInput = {
+    AND?: BalanceTransactionWhereInput | BalanceTransactionWhereInput[]
+    OR?: BalanceTransactionWhereInput[]
+    NOT?: BalanceTransactionWhereInput | BalanceTransactionWhereInput[]
+    id?: StringFilter<"BalanceTransaction"> | string
+    userId?: StringFilter<"BalanceTransaction"> | string
+    amount?: FloatFilter<"BalanceTransaction"> | number
+    type?: StringFilter<"BalanceTransaction"> | string
+    description?: StringNullableFilter<"BalanceTransaction"> | string | null
+    relatedId?: StringNullableFilter<"BalanceTransaction"> | string | null
+    adminId?: StringNullableFilter<"BalanceTransaction"> | string | null
+    createdAt?: DateTimeFilter<"BalanceTransaction"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type BalanceTransactionOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    amount?: SortOrder
+    type?: SortOrder
+    description?: SortOrderInput | SortOrder
+    relatedId?: SortOrderInput | SortOrder
+    adminId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type BalanceTransactionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: BalanceTransactionWhereInput | BalanceTransactionWhereInput[]
+    OR?: BalanceTransactionWhereInput[]
+    NOT?: BalanceTransactionWhereInput | BalanceTransactionWhereInput[]
+    userId?: StringFilter<"BalanceTransaction"> | string
+    amount?: FloatFilter<"BalanceTransaction"> | number
+    type?: StringFilter<"BalanceTransaction"> | string
+    description?: StringNullableFilter<"BalanceTransaction"> | string | null
+    relatedId?: StringNullableFilter<"BalanceTransaction"> | string | null
+    adminId?: StringNullableFilter<"BalanceTransaction"> | string | null
+    createdAt?: DateTimeFilter<"BalanceTransaction"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type BalanceTransactionOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    amount?: SortOrder
+    type?: SortOrder
+    description?: SortOrderInput | SortOrder
+    relatedId?: SortOrderInput | SortOrder
+    adminId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: BalanceTransactionCountOrderByAggregateInput
+    _avg?: BalanceTransactionAvgOrderByAggregateInput
+    _max?: BalanceTransactionMaxOrderByAggregateInput
+    _min?: BalanceTransactionMinOrderByAggregateInput
+    _sum?: BalanceTransactionSumOrderByAggregateInput
+  }
+
+  export type BalanceTransactionScalarWhereWithAggregatesInput = {
+    AND?: BalanceTransactionScalarWhereWithAggregatesInput | BalanceTransactionScalarWhereWithAggregatesInput[]
+    OR?: BalanceTransactionScalarWhereWithAggregatesInput[]
+    NOT?: BalanceTransactionScalarWhereWithAggregatesInput | BalanceTransactionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BalanceTransaction"> | string
+    userId?: StringWithAggregatesFilter<"BalanceTransaction"> | string
+    amount?: FloatWithAggregatesFilter<"BalanceTransaction"> | number
+    type?: StringWithAggregatesFilter<"BalanceTransaction"> | string
+    description?: StringNullableWithAggregatesFilter<"BalanceTransaction"> | string | null
+    relatedId?: StringNullableWithAggregatesFilter<"BalanceTransaction"> | string | null
+    adminId?: StringNullableWithAggregatesFilter<"BalanceTransaction"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"BalanceTransaction"> | Date | string
+  }
+
+  export type NotificationTypeWhereInput = {
+    AND?: NotificationTypeWhereInput | NotificationTypeWhereInput[]
+    OR?: NotificationTypeWhereInput[]
+    NOT?: NotificationTypeWhereInput | NotificationTypeWhereInput[]
+    id?: StringFilter<"NotificationType"> | string
+    code?: StringFilter<"NotificationType"> | string
+    name?: StringFilter<"NotificationType"> | string
+    description?: StringNullableFilter<"NotificationType"> | string | null
+    category?: StringFilter<"NotificationType"> | string
+    defaultEnabled?: BoolFilter<"NotificationType"> | boolean
+    emailEnabled?: BoolFilter<"NotificationType"> | boolean
+    inAppEnabled?: BoolFilter<"NotificationType"> | boolean
+    icon?: StringNullableFilter<"NotificationType"> | string | null
+    isActive?: BoolFilter<"NotificationType"> | boolean
+    createdAt?: DateTimeFilter<"NotificationType"> | Date | string
+    updatedAt?: DateTimeFilter<"NotificationType"> | Date | string
+    notifications?: NotificationListRelationFilter
+    userPreferences?: NotificationPreferenceListRelationFilter
+    roleTypePermissions?: NotificationRolePermissionListRelationFilter
+  }
+
+  export type NotificationTypeOrderByWithRelationInput = {
+    id?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    category?: SortOrder
+    defaultEnabled?: SortOrder
+    emailEnabled?: SortOrder
+    inAppEnabled?: SortOrder
+    icon?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    notifications?: NotificationOrderByRelationAggregateInput
+    userPreferences?: NotificationPreferenceOrderByRelationAggregateInput
+    roleTypePermissions?: NotificationRolePermissionOrderByRelationAggregateInput
+  }
+
+  export type NotificationTypeWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    code?: string
+    AND?: NotificationTypeWhereInput | NotificationTypeWhereInput[]
+    OR?: NotificationTypeWhereInput[]
+    NOT?: NotificationTypeWhereInput | NotificationTypeWhereInput[]
+    name?: StringFilter<"NotificationType"> | string
+    description?: StringNullableFilter<"NotificationType"> | string | null
+    category?: StringFilter<"NotificationType"> | string
+    defaultEnabled?: BoolFilter<"NotificationType"> | boolean
+    emailEnabled?: BoolFilter<"NotificationType"> | boolean
+    inAppEnabled?: BoolFilter<"NotificationType"> | boolean
+    icon?: StringNullableFilter<"NotificationType"> | string | null
+    isActive?: BoolFilter<"NotificationType"> | boolean
+    createdAt?: DateTimeFilter<"NotificationType"> | Date | string
+    updatedAt?: DateTimeFilter<"NotificationType"> | Date | string
+    notifications?: NotificationListRelationFilter
+    userPreferences?: NotificationPreferenceListRelationFilter
+    roleTypePermissions?: NotificationRolePermissionListRelationFilter
+  }, "id" | "code">
+
+  export type NotificationTypeOrderByWithAggregationInput = {
+    id?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    category?: SortOrder
+    defaultEnabled?: SortOrder
+    emailEnabled?: SortOrder
+    inAppEnabled?: SortOrder
+    icon?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: NotificationTypeCountOrderByAggregateInput
+    _max?: NotificationTypeMaxOrderByAggregateInput
+    _min?: NotificationTypeMinOrderByAggregateInput
+  }
+
+  export type NotificationTypeScalarWhereWithAggregatesInput = {
+    AND?: NotificationTypeScalarWhereWithAggregatesInput | NotificationTypeScalarWhereWithAggregatesInput[]
+    OR?: NotificationTypeScalarWhereWithAggregatesInput[]
+    NOT?: NotificationTypeScalarWhereWithAggregatesInput | NotificationTypeScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"NotificationType"> | string
+    code?: StringWithAggregatesFilter<"NotificationType"> | string
+    name?: StringWithAggregatesFilter<"NotificationType"> | string
+    description?: StringNullableWithAggregatesFilter<"NotificationType"> | string | null
+    category?: StringWithAggregatesFilter<"NotificationType"> | string
+    defaultEnabled?: BoolWithAggregatesFilter<"NotificationType"> | boolean
+    emailEnabled?: BoolWithAggregatesFilter<"NotificationType"> | boolean
+    inAppEnabled?: BoolWithAggregatesFilter<"NotificationType"> | boolean
+    icon?: StringNullableWithAggregatesFilter<"NotificationType"> | string | null
+    isActive?: BoolWithAggregatesFilter<"NotificationType"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"NotificationType"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"NotificationType"> | Date | string
+  }
+
+  export type NotificationPreferenceWhereInput = {
+    AND?: NotificationPreferenceWhereInput | NotificationPreferenceWhereInput[]
+    OR?: NotificationPreferenceWhereInput[]
+    NOT?: NotificationPreferenceWhereInput | NotificationPreferenceWhereInput[]
+    id?: StringFilter<"NotificationPreference"> | string
+    userId?: StringFilter<"NotificationPreference"> | string
+    notificationTypeId?: StringFilter<"NotificationPreference"> | string
+    emailEnabled?: BoolFilter<"NotificationPreference"> | boolean
+    inAppEnabled?: BoolFilter<"NotificationPreference"> | boolean
+    createdAt?: DateTimeFilter<"NotificationPreference"> | Date | string
+    updatedAt?: DateTimeFilter<"NotificationPreference"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    notificationType?: XOR<NotificationTypeScalarRelationFilter, NotificationTypeWhereInput>
+  }
+
+  export type NotificationPreferenceOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    notificationTypeId?: SortOrder
+    emailEnabled?: SortOrder
+    inAppEnabled?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    notificationType?: NotificationTypeOrderByWithRelationInput
+  }
+
+  export type NotificationPreferenceWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_notificationTypeId?: NotificationPreferenceUserIdNotificationTypeIdCompoundUniqueInput
+    AND?: NotificationPreferenceWhereInput | NotificationPreferenceWhereInput[]
+    OR?: NotificationPreferenceWhereInput[]
+    NOT?: NotificationPreferenceWhereInput | NotificationPreferenceWhereInput[]
+    userId?: StringFilter<"NotificationPreference"> | string
+    notificationTypeId?: StringFilter<"NotificationPreference"> | string
+    emailEnabled?: BoolFilter<"NotificationPreference"> | boolean
+    inAppEnabled?: BoolFilter<"NotificationPreference"> | boolean
+    createdAt?: DateTimeFilter<"NotificationPreference"> | Date | string
+    updatedAt?: DateTimeFilter<"NotificationPreference"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    notificationType?: XOR<NotificationTypeScalarRelationFilter, NotificationTypeWhereInput>
+  }, "id" | "userId_notificationTypeId">
+
+  export type NotificationPreferenceOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    notificationTypeId?: SortOrder
+    emailEnabled?: SortOrder
+    inAppEnabled?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: NotificationPreferenceCountOrderByAggregateInput
+    _max?: NotificationPreferenceMaxOrderByAggregateInput
+    _min?: NotificationPreferenceMinOrderByAggregateInput
+  }
+
+  export type NotificationPreferenceScalarWhereWithAggregatesInput = {
+    AND?: NotificationPreferenceScalarWhereWithAggregatesInput | NotificationPreferenceScalarWhereWithAggregatesInput[]
+    OR?: NotificationPreferenceScalarWhereWithAggregatesInput[]
+    NOT?: NotificationPreferenceScalarWhereWithAggregatesInput | NotificationPreferenceScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"NotificationPreference"> | string
+    userId?: StringWithAggregatesFilter<"NotificationPreference"> | string
+    notificationTypeId?: StringWithAggregatesFilter<"NotificationPreference"> | string
+    emailEnabled?: BoolWithAggregatesFilter<"NotificationPreference"> | boolean
+    inAppEnabled?: BoolWithAggregatesFilter<"NotificationPreference"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"NotificationPreference"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"NotificationPreference"> | Date | string
+  }
+
+  export type NotificationWhereInput = {
+    AND?: NotificationWhereInput | NotificationWhereInput[]
+    OR?: NotificationWhereInput[]
+    NOT?: NotificationWhereInput | NotificationWhereInput[]
+    id?: StringFilter<"Notification"> | string
+    userId?: StringFilter<"Notification"> | string
+    notificationTypeId?: StringFilter<"Notification"> | string
+    title?: StringFilter<"Notification"> | string
+    message?: StringFilter<"Notification"> | string
+    data?: JsonNullableFilter<"Notification">
+    isRead?: BoolFilter<"Notification"> | boolean
+    readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
+    emailSent?: BoolFilter<"Notification"> | boolean
+    emailSentAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
+    createdAt?: DateTimeFilter<"Notification"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    notificationType?: XOR<NotificationTypeScalarRelationFilter, NotificationTypeWhereInput>
+  }
+
+  export type NotificationOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    notificationTypeId?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    data?: SortOrderInput | SortOrder
+    isRead?: SortOrder
+    readAt?: SortOrderInput | SortOrder
+    emailSent?: SortOrder
+    emailSentAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    notificationType?: NotificationTypeOrderByWithRelationInput
+  }
+
+  export type NotificationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: NotificationWhereInput | NotificationWhereInput[]
+    OR?: NotificationWhereInput[]
+    NOT?: NotificationWhereInput | NotificationWhereInput[]
+    userId?: StringFilter<"Notification"> | string
+    notificationTypeId?: StringFilter<"Notification"> | string
+    title?: StringFilter<"Notification"> | string
+    message?: StringFilter<"Notification"> | string
+    data?: JsonNullableFilter<"Notification">
+    isRead?: BoolFilter<"Notification"> | boolean
+    readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
+    emailSent?: BoolFilter<"Notification"> | boolean
+    emailSentAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
+    createdAt?: DateTimeFilter<"Notification"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    notificationType?: XOR<NotificationTypeScalarRelationFilter, NotificationTypeWhereInput>
+  }, "id">
+
+  export type NotificationOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    notificationTypeId?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    data?: SortOrderInput | SortOrder
+    isRead?: SortOrder
+    readAt?: SortOrderInput | SortOrder
+    emailSent?: SortOrder
+    emailSentAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: NotificationCountOrderByAggregateInput
+    _max?: NotificationMaxOrderByAggregateInput
+    _min?: NotificationMinOrderByAggregateInput
+  }
+
+  export type NotificationScalarWhereWithAggregatesInput = {
+    AND?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
+    OR?: NotificationScalarWhereWithAggregatesInput[]
+    NOT?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Notification"> | string
+    userId?: StringWithAggregatesFilter<"Notification"> | string
+    notificationTypeId?: StringWithAggregatesFilter<"Notification"> | string
+    title?: StringWithAggregatesFilter<"Notification"> | string
+    message?: StringWithAggregatesFilter<"Notification"> | string
+    data?: JsonNullableWithAggregatesFilter<"Notification">
+    isRead?: BoolWithAggregatesFilter<"Notification"> | boolean
+    readAt?: DateTimeNullableWithAggregatesFilter<"Notification"> | Date | string | null
+    emailSent?: BoolWithAggregatesFilter<"Notification"> | boolean
+    emailSentAt?: DateTimeNullableWithAggregatesFilter<"Notification"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
+  }
+
+  export type NotificationRolePermissionWhereInput = {
+    AND?: NotificationRolePermissionWhereInput | NotificationRolePermissionWhereInput[]
+    OR?: NotificationRolePermissionWhereInput[]
+    NOT?: NotificationRolePermissionWhereInput | NotificationRolePermissionWhereInput[]
+    id?: IntFilter<"NotificationRolePermission"> | number
+    userTypeId?: StringFilter<"NotificationRolePermission"> | string
+    notificationTypeId?: StringFilter<"NotificationRolePermission"> | string
+    canReceive?: BoolFilter<"NotificationRolePermission"> | boolean
+    createdAt?: DateTimeFilter<"NotificationRolePermission"> | Date | string
+    updatedAt?: DateTimeFilter<"NotificationRolePermission"> | Date | string
+    userType?: XOR<UserTypeScalarRelationFilter, UserTypeWhereInput>
+    notificationType?: XOR<NotificationTypeScalarRelationFilter, NotificationTypeWhereInput>
+  }
+
+  export type NotificationRolePermissionOrderByWithRelationInput = {
+    id?: SortOrder
+    userTypeId?: SortOrder
+    notificationTypeId?: SortOrder
+    canReceive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    userType?: UserTypeOrderByWithRelationInput
+    notificationType?: NotificationTypeOrderByWithRelationInput
+  }
+
+  export type NotificationRolePermissionWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    userTypeId_notificationTypeId?: NotificationRolePermissionUserTypeIdNotificationTypeIdCompoundUniqueInput
+    AND?: NotificationRolePermissionWhereInput | NotificationRolePermissionWhereInput[]
+    OR?: NotificationRolePermissionWhereInput[]
+    NOT?: NotificationRolePermissionWhereInput | NotificationRolePermissionWhereInput[]
+    userTypeId?: StringFilter<"NotificationRolePermission"> | string
+    notificationTypeId?: StringFilter<"NotificationRolePermission"> | string
+    canReceive?: BoolFilter<"NotificationRolePermission"> | boolean
+    createdAt?: DateTimeFilter<"NotificationRolePermission"> | Date | string
+    updatedAt?: DateTimeFilter<"NotificationRolePermission"> | Date | string
+    userType?: XOR<UserTypeScalarRelationFilter, UserTypeWhereInput>
+    notificationType?: XOR<NotificationTypeScalarRelationFilter, NotificationTypeWhereInput>
+  }, "id" | "userTypeId_notificationTypeId">
+
+  export type NotificationRolePermissionOrderByWithAggregationInput = {
+    id?: SortOrder
+    userTypeId?: SortOrder
+    notificationTypeId?: SortOrder
+    canReceive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: NotificationRolePermissionCountOrderByAggregateInput
+    _avg?: NotificationRolePermissionAvgOrderByAggregateInput
+    _max?: NotificationRolePermissionMaxOrderByAggregateInput
+    _min?: NotificationRolePermissionMinOrderByAggregateInput
+    _sum?: NotificationRolePermissionSumOrderByAggregateInput
+  }
+
+  export type NotificationRolePermissionScalarWhereWithAggregatesInput = {
+    AND?: NotificationRolePermissionScalarWhereWithAggregatesInput | NotificationRolePermissionScalarWhereWithAggregatesInput[]
+    OR?: NotificationRolePermissionScalarWhereWithAggregatesInput[]
+    NOT?: NotificationRolePermissionScalarWhereWithAggregatesInput | NotificationRolePermissionScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"NotificationRolePermission"> | number
+    userTypeId?: StringWithAggregatesFilter<"NotificationRolePermission"> | string
+    notificationTypeId?: StringWithAggregatesFilter<"NotificationRolePermission"> | string
+    canReceive?: BoolWithAggregatesFilter<"NotificationRolePermission"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"NotificationRolePermission"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"NotificationRolePermission"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     email: string
@@ -25310,6 +32404,15 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     bids?: BidCreateNestedManyWithoutUserInput
     leads?: LeadCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
@@ -25318,6 +32421,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -25337,6 +32443,15 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
@@ -25344,6 +32459,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -25362,6 +32480,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
@@ -25370,6 +32497,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -25389,6 +32519,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
@@ -25396,6 +32535,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -25415,6 +32557,15 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -25433,6 +32584,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -25452,6 +32612,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type LeadCreateInput = {
@@ -25709,6 +32878,9 @@ export namespace Prisma {
   export type LeadSaleCreateInput = {
     id?: string
     amount: number
+    paymentMethod?: string
+    balanceBefore?: number | null
+    balanceAfter?: number | null
     soldAt?: Date | string
     createdAt?: Date | string
     buyer: UserCreateNestedOneWithoutPurchasedLeadsInput
@@ -25720,6 +32892,9 @@ export namespace Prisma {
     leadId: string
     buyerId: string
     amount: number
+    paymentMethod?: string
+    balanceBefore?: number | null
+    balanceAfter?: number | null
     soldAt?: Date | string
     createdAt?: Date | string
   }
@@ -25727,6 +32902,9 @@ export namespace Prisma {
   export type LeadSaleUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    balanceBefore?: NullableIntFieldUpdateOperationsInput | number | null
+    balanceAfter?: NullableIntFieldUpdateOperationsInput | number | null
     soldAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     buyer?: UserUpdateOneRequiredWithoutPurchasedLeadsNestedInput
@@ -25738,6 +32916,9 @@ export namespace Prisma {
     leadId?: StringFieldUpdateOperationsInput | string
     buyerId?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    balanceBefore?: NullableIntFieldUpdateOperationsInput | number | null
+    balanceAfter?: NullableIntFieldUpdateOperationsInput | number | null
     soldAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25747,6 +32928,9 @@ export namespace Prisma {
     leadId: string
     buyerId: string
     amount: number
+    paymentMethod?: string
+    balanceBefore?: number | null
+    balanceAfter?: number | null
     soldAt?: Date | string
     createdAt?: Date | string
   }
@@ -25754,6 +32938,9 @@ export namespace Prisma {
   export type LeadSaleUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    balanceBefore?: NullableIntFieldUpdateOperationsInput | number | null
+    balanceAfter?: NullableIntFieldUpdateOperationsInput | number | null
     soldAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25763,6 +32950,9 @@ export namespace Prisma {
     leadId?: StringFieldUpdateOperationsInput | string
     buyerId?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    balanceBefore?: NullableIntFieldUpdateOperationsInput | number | null
+    balanceAfter?: NullableIntFieldUpdateOperationsInput | number | null
     soldAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -26197,6 +33387,7 @@ export namespace Prisma {
     leadTypePermissions?: LeadTypePermissionCreateNestedManyWithoutUserTypeInput
     users?: UserCreateNestedManyWithoutUserTypeInput
     permissions?: UserTypePermissionCreateNestedManyWithoutUserTypeInput
+    notificationRolePermissions?: NotificationRolePermissionCreateNestedManyWithoutUserTypeInput
   }
 
   export type UserTypeUncheckedCreateInput = {
@@ -26209,6 +33400,7 @@ export namespace Prisma {
     leadTypePermissions?: LeadTypePermissionUncheckedCreateNestedManyWithoutUserTypeInput
     users?: UserUncheckedCreateNestedManyWithoutUserTypeInput
     permissions?: UserTypePermissionUncheckedCreateNestedManyWithoutUserTypeInput
+    notificationRolePermissions?: NotificationRolePermissionUncheckedCreateNestedManyWithoutUserTypeInput
   }
 
   export type UserTypeUpdateInput = {
@@ -26221,6 +33413,7 @@ export namespace Prisma {
     leadTypePermissions?: LeadTypePermissionUpdateManyWithoutUserTypeNestedInput
     users?: UserUpdateManyWithoutUserTypeNestedInput
     permissions?: UserTypePermissionUpdateManyWithoutUserTypeNestedInput
+    notificationRolePermissions?: NotificationRolePermissionUpdateManyWithoutUserTypeNestedInput
   }
 
   export type UserTypeUncheckedUpdateInput = {
@@ -26233,6 +33426,7 @@ export namespace Prisma {
     leadTypePermissions?: LeadTypePermissionUncheckedUpdateManyWithoutUserTypeNestedInput
     users?: UserUncheckedUpdateManyWithoutUserTypeNestedInput
     permissions?: UserTypePermissionUncheckedUpdateManyWithoutUserTypeNestedInput
+    notificationRolePermissions?: NotificationRolePermissionUncheckedUpdateManyWithoutUserTypeNestedInput
   }
 
   export type UserTypeCreateManyInput = {
@@ -27056,6 +34250,421 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type BalanceTransactionCreateInput = {
+    id?: string
+    amount: number
+    type: string
+    description?: string | null
+    relatedId?: string | null
+    adminId?: string | null
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutBalanceTransactionsInput
+  }
+
+  export type BalanceTransactionUncheckedCreateInput = {
+    id?: string
+    userId: string
+    amount: number
+    type: string
+    description?: string | null
+    relatedId?: string | null
+    adminId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type BalanceTransactionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    relatedId?: NullableStringFieldUpdateOperationsInput | string | null
+    adminId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutBalanceTransactionsNestedInput
+  }
+
+  export type BalanceTransactionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    relatedId?: NullableStringFieldUpdateOperationsInput | string | null
+    adminId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BalanceTransactionCreateManyInput = {
+    id?: string
+    userId: string
+    amount: number
+    type: string
+    description?: string | null
+    relatedId?: string | null
+    adminId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type BalanceTransactionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    relatedId?: NullableStringFieldUpdateOperationsInput | string | null
+    adminId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BalanceTransactionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    relatedId?: NullableStringFieldUpdateOperationsInput | string | null
+    adminId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationTypeCreateInput = {
+    id?: string
+    code: string
+    name: string
+    description?: string | null
+    category: string
+    defaultEnabled?: boolean
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    icon?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    notifications?: NotificationCreateNestedManyWithoutNotificationTypeInput
+    userPreferences?: NotificationPreferenceCreateNestedManyWithoutNotificationTypeInput
+    roleTypePermissions?: NotificationRolePermissionCreateNestedManyWithoutNotificationTypeInput
+  }
+
+  export type NotificationTypeUncheckedCreateInput = {
+    id?: string
+    code: string
+    name: string
+    description?: string | null
+    category: string
+    defaultEnabled?: boolean
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    icon?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    notifications?: NotificationUncheckedCreateNestedManyWithoutNotificationTypeInput
+    userPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutNotificationTypeInput
+    roleTypePermissions?: NotificationRolePermissionUncheckedCreateNestedManyWithoutNotificationTypeInput
+  }
+
+  export type NotificationTypeUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    defaultEnabled?: BoolFieldUpdateOperationsInput | boolean
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notifications?: NotificationUpdateManyWithoutNotificationTypeNestedInput
+    userPreferences?: NotificationPreferenceUpdateManyWithoutNotificationTypeNestedInput
+    roleTypePermissions?: NotificationRolePermissionUpdateManyWithoutNotificationTypeNestedInput
+  }
+
+  export type NotificationTypeUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    defaultEnabled?: BoolFieldUpdateOperationsInput | boolean
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notifications?: NotificationUncheckedUpdateManyWithoutNotificationTypeNestedInput
+    userPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutNotificationTypeNestedInput
+    roleTypePermissions?: NotificationRolePermissionUncheckedUpdateManyWithoutNotificationTypeNestedInput
+  }
+
+  export type NotificationTypeCreateManyInput = {
+    id?: string
+    code: string
+    name: string
+    description?: string | null
+    category: string
+    defaultEnabled?: boolean
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    icon?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationTypeUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    defaultEnabled?: BoolFieldUpdateOperationsInput | boolean
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationTypeUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    defaultEnabled?: BoolFieldUpdateOperationsInput | boolean
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationPreferenceCreateInput = {
+    id?: string
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutNotificationPreferencesInput
+    notificationType: NotificationTypeCreateNestedOneWithoutUserPreferencesInput
+  }
+
+  export type NotificationPreferenceUncheckedCreateInput = {
+    id?: string
+    userId: string
+    notificationTypeId: string
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationPreferenceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutNotificationPreferencesNestedInput
+    notificationType?: NotificationTypeUpdateOneRequiredWithoutUserPreferencesNestedInput
+  }
+
+  export type NotificationPreferenceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    notificationTypeId?: StringFieldUpdateOperationsInput | string
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationPreferenceCreateManyInput = {
+    id?: string
+    userId: string
+    notificationTypeId: string
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationPreferenceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationPreferenceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    notificationTypeId?: StringFieldUpdateOperationsInput | string
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationCreateInput = {
+    id?: string
+    title: string
+    message: string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: boolean
+    readAt?: Date | string | null
+    emailSent?: boolean
+    emailSentAt?: Date | string | null
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutNotificationsInput
+    notificationType: NotificationTypeCreateNestedOneWithoutNotificationsInput
+  }
+
+  export type NotificationUncheckedCreateInput = {
+    id?: string
+    userId: string
+    notificationTypeId: string
+    title: string
+    message: string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: boolean
+    readAt?: Date | string | null
+    emailSent?: boolean
+    emailSentAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type NotificationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailSent?: BoolFieldUpdateOperationsInput | boolean
+    emailSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutNotificationsNestedInput
+    notificationType?: NotificationTypeUpdateOneRequiredWithoutNotificationsNestedInput
+  }
+
+  export type NotificationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    notificationTypeId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailSent?: BoolFieldUpdateOperationsInput | boolean
+    emailSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationCreateManyInput = {
+    id?: string
+    userId: string
+    notificationTypeId: string
+    title: string
+    message: string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: boolean
+    readAt?: Date | string | null
+    emailSent?: boolean
+    emailSentAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type NotificationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailSent?: BoolFieldUpdateOperationsInput | boolean
+    emailSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    notificationTypeId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailSent?: BoolFieldUpdateOperationsInput | boolean
+    emailSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationRolePermissionCreateInput = {
+    canReceive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userType: UserTypeCreateNestedOneWithoutNotificationRolePermissionsInput
+    notificationType: NotificationTypeCreateNestedOneWithoutRoleTypePermissionsInput
+  }
+
+  export type NotificationRolePermissionUncheckedCreateInput = {
+    id?: number
+    userTypeId: string
+    notificationTypeId: string
+    canReceive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationRolePermissionUpdateInput = {
+    canReceive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userType?: UserTypeUpdateOneRequiredWithoutNotificationRolePermissionsNestedInput
+    notificationType?: NotificationTypeUpdateOneRequiredWithoutRoleTypePermissionsNestedInput
+  }
+
+  export type NotificationRolePermissionUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userTypeId?: StringFieldUpdateOperationsInput | string
+    notificationTypeId?: StringFieldUpdateOperationsInput | string
+    canReceive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationRolePermissionCreateManyInput = {
+    id?: number
+    userTypeId: string
+    notificationTypeId: string
+    canReceive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationRolePermissionUpdateManyMutationInput = {
+    canReceive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationRolePermissionUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userTypeId?: StringFieldUpdateOperationsInput | string
+    notificationTypeId?: StringFieldUpdateOperationsInput | string
+    canReceive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -27113,6 +34722,17 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
   export type BidListRelationFilter = {
     every?: BidWhereInput
     some?: BidWhereInput
@@ -27160,6 +34780,24 @@ export namespace Prisma {
     none?: PasswordResetTokenWhereInput
   }
 
+  export type BalanceTransactionListRelationFilter = {
+    every?: BalanceTransactionWhereInput
+    some?: BalanceTransactionWhereInput
+    none?: BalanceTransactionWhereInput
+  }
+
+  export type NotificationListRelationFilter = {
+    every?: NotificationWhereInput
+    some?: NotificationWhereInput
+    none?: NotificationWhereInput
+  }
+
+  export type NotificationPreferenceListRelationFilter = {
+    every?: NotificationPreferenceWhereInput
+    some?: NotificationPreferenceWhereInput
+    none?: NotificationPreferenceWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -27193,6 +34831,18 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type BalanceTransactionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type NotificationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type NotificationPreferenceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     email?: SortOrder
@@ -27210,6 +34860,19 @@ export namespace Prisma {
     twoFactorEnabled?: SortOrder
     twoFactorSecret?: SortOrder
     isActive?: SortOrder
+    balance?: SortOrder
+    balanceEnabled?: SortOrder
+    paymentMethod?: SortOrder
+    ibanAccountHolder?: SortOrder
+    ibanNumber?: SortOrder
+    ibanBic?: SortOrder
+    ibanAddress?: SortOrder
+    ibanPostalCode?: SortOrder
+    ibanCity?: SortOrder
+  }
+
+  export type UserAvgOrderByAggregateInput = {
+    balance?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -27229,6 +34892,15 @@ export namespace Prisma {
     twoFactorEnabled?: SortOrder
     twoFactorSecret?: SortOrder
     isActive?: SortOrder
+    balance?: SortOrder
+    balanceEnabled?: SortOrder
+    paymentMethod?: SortOrder
+    ibanAccountHolder?: SortOrder
+    ibanNumber?: SortOrder
+    ibanBic?: SortOrder
+    ibanAddress?: SortOrder
+    ibanPostalCode?: SortOrder
+    ibanCity?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -27248,6 +34920,19 @@ export namespace Prisma {
     twoFactorEnabled?: SortOrder
     twoFactorSecret?: SortOrder
     isActive?: SortOrder
+    balance?: SortOrder
+    balanceEnabled?: SortOrder
+    paymentMethod?: SortOrder
+    ibanAccountHolder?: SortOrder
+    ibanNumber?: SortOrder
+    ibanBic?: SortOrder
+    ibanAddress?: SortOrder
+    ibanPostalCode?: SortOrder
+    ibanCity?: SortOrder
+  }
+
+  export type UserSumOrderByAggregateInput = {
+    balance?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -27320,6 +35005,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -27526,12 +35227,17 @@ export namespace Prisma {
     leadId?: SortOrder
     buyerId?: SortOrder
     amount?: SortOrder
+    paymentMethod?: SortOrder
+    balanceBefore?: SortOrder
+    balanceAfter?: SortOrder
     soldAt?: SortOrder
     createdAt?: SortOrder
   }
 
   export type LeadSaleAvgOrderByAggregateInput = {
     amount?: SortOrder
+    balanceBefore?: SortOrder
+    balanceAfter?: SortOrder
   }
 
   export type LeadSaleMaxOrderByAggregateInput = {
@@ -27539,6 +35245,9 @@ export namespace Prisma {
     leadId?: SortOrder
     buyerId?: SortOrder
     amount?: SortOrder
+    paymentMethod?: SortOrder
+    balanceBefore?: SortOrder
+    balanceAfter?: SortOrder
     soldAt?: SortOrder
     createdAt?: SortOrder
   }
@@ -27548,12 +35257,17 @@ export namespace Prisma {
     leadId?: SortOrder
     buyerId?: SortOrder
     amount?: SortOrder
+    paymentMethod?: SortOrder
+    balanceBefore?: SortOrder
+    balanceAfter?: SortOrder
     soldAt?: SortOrder
     createdAt?: SortOrder
   }
 
   export type LeadSaleSumOrderByAggregateInput = {
     amount?: SortOrder
+    balanceBefore?: SortOrder
+    balanceAfter?: SortOrder
   }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -27852,6 +35566,12 @@ export namespace Prisma {
     none?: UserTypePermissionWhereInput
   }
 
+  export type NotificationRolePermissionListRelationFilter = {
+    every?: NotificationRolePermissionWhereInput
+    some?: NotificationRolePermissionWhereInput
+    none?: NotificationRolePermissionWhereInput
+  }
+
   export type LeadTypePermissionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -27861,6 +35581,10 @@ export namespace Prisma {
   }
 
   export type UserTypePermissionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type NotificationRolePermissionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -28288,6 +36012,212 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type BalanceTransactionCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    amount?: SortOrder
+    type?: SortOrder
+    description?: SortOrder
+    relatedId?: SortOrder
+    adminId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type BalanceTransactionAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type BalanceTransactionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    amount?: SortOrder
+    type?: SortOrder
+    description?: SortOrder
+    relatedId?: SortOrder
+    adminId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type BalanceTransactionMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    amount?: SortOrder
+    type?: SortOrder
+    description?: SortOrder
+    relatedId?: SortOrder
+    adminId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type BalanceTransactionSumOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type NotificationTypeCountOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    category?: SortOrder
+    defaultEnabled?: SortOrder
+    emailEnabled?: SortOrder
+    inAppEnabled?: SortOrder
+    icon?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationTypeMaxOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    category?: SortOrder
+    defaultEnabled?: SortOrder
+    emailEnabled?: SortOrder
+    inAppEnabled?: SortOrder
+    icon?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationTypeMinOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    category?: SortOrder
+    defaultEnabled?: SortOrder
+    emailEnabled?: SortOrder
+    inAppEnabled?: SortOrder
+    icon?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationTypeScalarRelationFilter = {
+    is?: NotificationTypeWhereInput
+    isNot?: NotificationTypeWhereInput
+  }
+
+  export type NotificationPreferenceUserIdNotificationTypeIdCompoundUniqueInput = {
+    userId: string
+    notificationTypeId: string
+  }
+
+  export type NotificationPreferenceCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    notificationTypeId?: SortOrder
+    emailEnabled?: SortOrder
+    inAppEnabled?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationPreferenceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    notificationTypeId?: SortOrder
+    emailEnabled?: SortOrder
+    inAppEnabled?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationPreferenceMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    notificationTypeId?: SortOrder
+    emailEnabled?: SortOrder
+    inAppEnabled?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    notificationTypeId?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    data?: SortOrder
+    isRead?: SortOrder
+    readAt?: SortOrder
+    emailSent?: SortOrder
+    emailSentAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type NotificationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    notificationTypeId?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    isRead?: SortOrder
+    readAt?: SortOrder
+    emailSent?: SortOrder
+    emailSentAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type NotificationMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    notificationTypeId?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    isRead?: SortOrder
+    readAt?: SortOrder
+    emailSent?: SortOrder
+    emailSentAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type NotificationRolePermissionUserTypeIdNotificationTypeIdCompoundUniqueInput = {
+    userTypeId: string
+    notificationTypeId: string
+  }
+
+  export type NotificationRolePermissionCountOrderByAggregateInput = {
+    id?: SortOrder
+    userTypeId?: SortOrder
+    notificationTypeId?: SortOrder
+    canReceive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationRolePermissionAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type NotificationRolePermissionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userTypeId?: SortOrder
+    notificationTypeId?: SortOrder
+    canReceive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationRolePermissionMinOrderByAggregateInput = {
+    id?: SortOrder
+    userTypeId?: SortOrder
+    notificationTypeId?: SortOrder
+    canReceive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationRolePermissionSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
   export type BidCreateNestedManyWithoutUserInput = {
     create?: XOR<BidCreateWithoutUserInput, BidUncheckedCreateWithoutUserInput> | BidCreateWithoutUserInput[] | BidUncheckedCreateWithoutUserInput[]
     connectOrCreate?: BidCreateOrConnectWithoutUserInput | BidCreateOrConnectWithoutUserInput[]
@@ -28343,6 +36273,27 @@ export namespace Prisma {
     connect?: PasswordResetTokenWhereUniqueInput | PasswordResetTokenWhereUniqueInput[]
   }
 
+  export type BalanceTransactionCreateNestedManyWithoutUserInput = {
+    create?: XOR<BalanceTransactionCreateWithoutUserInput, BalanceTransactionUncheckedCreateWithoutUserInput> | BalanceTransactionCreateWithoutUserInput[] | BalanceTransactionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BalanceTransactionCreateOrConnectWithoutUserInput | BalanceTransactionCreateOrConnectWithoutUserInput[]
+    createMany?: BalanceTransactionCreateManyUserInputEnvelope
+    connect?: BalanceTransactionWhereUniqueInput | BalanceTransactionWhereUniqueInput[]
+  }
+
+  export type NotificationCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
+  export type NotificationPreferenceCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationPreferenceCreateWithoutUserInput, NotificationPreferenceUncheckedCreateWithoutUserInput> | NotificationPreferenceCreateWithoutUserInput[] | NotificationPreferenceUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationPreferenceCreateOrConnectWithoutUserInput | NotificationPreferenceCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationPreferenceCreateManyUserInputEnvelope
+    connect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+  }
+
   export type BidUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<BidCreateWithoutUserInput, BidUncheckedCreateWithoutUserInput> | BidCreateWithoutUserInput[] | BidUncheckedCreateWithoutUserInput[]
     connectOrCreate?: BidCreateOrConnectWithoutUserInput | BidCreateOrConnectWithoutUserInput[]
@@ -28392,6 +36343,27 @@ export namespace Prisma {
     connect?: PasswordResetTokenWhereUniqueInput | PasswordResetTokenWhereUniqueInput[]
   }
 
+  export type BalanceTransactionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<BalanceTransactionCreateWithoutUserInput, BalanceTransactionUncheckedCreateWithoutUserInput> | BalanceTransactionCreateWithoutUserInput[] | BalanceTransactionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BalanceTransactionCreateOrConnectWithoutUserInput | BalanceTransactionCreateOrConnectWithoutUserInput[]
+    createMany?: BalanceTransactionCreateManyUserInputEnvelope
+    connect?: BalanceTransactionWhereUniqueInput | BalanceTransactionWhereUniqueInput[]
+  }
+
+  export type NotificationUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
+  export type NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationPreferenceCreateWithoutUserInput, NotificationPreferenceUncheckedCreateWithoutUserInput> | NotificationPreferenceCreateWithoutUserInput[] | NotificationPreferenceUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationPreferenceCreateOrConnectWithoutUserInput | NotificationPreferenceCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationPreferenceCreateManyUserInputEnvelope
+    connect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -28410,6 +36382,14 @@ export namespace Prisma {
 
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
+  }
+
+  export type FloatFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type BidUpdateManyWithoutUserNestedInput = {
@@ -28518,6 +36498,48 @@ export namespace Prisma {
     deleteMany?: PasswordResetTokenScalarWhereInput | PasswordResetTokenScalarWhereInput[]
   }
 
+  export type BalanceTransactionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<BalanceTransactionCreateWithoutUserInput, BalanceTransactionUncheckedCreateWithoutUserInput> | BalanceTransactionCreateWithoutUserInput[] | BalanceTransactionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BalanceTransactionCreateOrConnectWithoutUserInput | BalanceTransactionCreateOrConnectWithoutUserInput[]
+    upsert?: BalanceTransactionUpsertWithWhereUniqueWithoutUserInput | BalanceTransactionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: BalanceTransactionCreateManyUserInputEnvelope
+    set?: BalanceTransactionWhereUniqueInput | BalanceTransactionWhereUniqueInput[]
+    disconnect?: BalanceTransactionWhereUniqueInput | BalanceTransactionWhereUniqueInput[]
+    delete?: BalanceTransactionWhereUniqueInput | BalanceTransactionWhereUniqueInput[]
+    connect?: BalanceTransactionWhereUniqueInput | BalanceTransactionWhereUniqueInput[]
+    update?: BalanceTransactionUpdateWithWhereUniqueWithoutUserInput | BalanceTransactionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: BalanceTransactionUpdateManyWithWhereWithoutUserInput | BalanceTransactionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: BalanceTransactionScalarWhereInput | BalanceTransactionScalarWhereInput[]
+  }
+
+  export type NotificationUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationUpsertWithWhereUniqueWithoutUserInput | NotificationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
+  export type NotificationPreferenceUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationPreferenceCreateWithoutUserInput, NotificationPreferenceUncheckedCreateWithoutUserInput> | NotificationPreferenceCreateWithoutUserInput[] | NotificationPreferenceUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationPreferenceCreateOrConnectWithoutUserInput | NotificationPreferenceCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationPreferenceUpsertWithWhereUniqueWithoutUserInput | NotificationPreferenceUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationPreferenceCreateManyUserInputEnvelope
+    set?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    disconnect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    delete?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    connect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    update?: NotificationPreferenceUpdateWithWhereUniqueWithoutUserInput | NotificationPreferenceUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationPreferenceUpdateManyWithWhereWithoutUserInput | NotificationPreferenceUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationPreferenceScalarWhereInput | NotificationPreferenceScalarWhereInput[]
+  }
+
   export type BidUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<BidCreateWithoutUserInput, BidUncheckedCreateWithoutUserInput> | BidCreateWithoutUserInput[] | BidUncheckedCreateWithoutUserInput[]
     connectOrCreate?: BidCreateOrConnectWithoutUserInput | BidCreateOrConnectWithoutUserInput[]
@@ -28614,6 +36636,48 @@ export namespace Prisma {
     update?: PasswordResetTokenUpdateWithWhereUniqueWithoutUserInput | PasswordResetTokenUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: PasswordResetTokenUpdateManyWithWhereWithoutUserInput | PasswordResetTokenUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: PasswordResetTokenScalarWhereInput | PasswordResetTokenScalarWhereInput[]
+  }
+
+  export type BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<BalanceTransactionCreateWithoutUserInput, BalanceTransactionUncheckedCreateWithoutUserInput> | BalanceTransactionCreateWithoutUserInput[] | BalanceTransactionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BalanceTransactionCreateOrConnectWithoutUserInput | BalanceTransactionCreateOrConnectWithoutUserInput[]
+    upsert?: BalanceTransactionUpsertWithWhereUniqueWithoutUserInput | BalanceTransactionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: BalanceTransactionCreateManyUserInputEnvelope
+    set?: BalanceTransactionWhereUniqueInput | BalanceTransactionWhereUniqueInput[]
+    disconnect?: BalanceTransactionWhereUniqueInput | BalanceTransactionWhereUniqueInput[]
+    delete?: BalanceTransactionWhereUniqueInput | BalanceTransactionWhereUniqueInput[]
+    connect?: BalanceTransactionWhereUniqueInput | BalanceTransactionWhereUniqueInput[]
+    update?: BalanceTransactionUpdateWithWhereUniqueWithoutUserInput | BalanceTransactionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: BalanceTransactionUpdateManyWithWhereWithoutUserInput | BalanceTransactionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: BalanceTransactionScalarWhereInput | BalanceTransactionScalarWhereInput[]
+  }
+
+  export type NotificationUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationUpsertWithWhereUniqueWithoutUserInput | NotificationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
+  export type NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationPreferenceCreateWithoutUserInput, NotificationPreferenceUncheckedCreateWithoutUserInput> | NotificationPreferenceCreateWithoutUserInput[] | NotificationPreferenceUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationPreferenceCreateOrConnectWithoutUserInput | NotificationPreferenceCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationPreferenceUpsertWithWhereUniqueWithoutUserInput | NotificationPreferenceUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationPreferenceCreateManyUserInputEnvelope
+    set?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    disconnect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    delete?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    connect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    update?: NotificationPreferenceUpdateWithWhereUniqueWithoutUserInput | NotificationPreferenceUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationPreferenceUpdateManyWithWhereWithoutUserInput | NotificationPreferenceUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationPreferenceScalarWhereInput | NotificationPreferenceScalarWhereInput[]
   }
 
   export type BidCreateNestedManyWithoutLeadInput = {
@@ -28867,6 +36931,13 @@ export namespace Prisma {
     connect?: UserTypePermissionWhereUniqueInput | UserTypePermissionWhereUniqueInput[]
   }
 
+  export type NotificationRolePermissionCreateNestedManyWithoutUserTypeInput = {
+    create?: XOR<NotificationRolePermissionCreateWithoutUserTypeInput, NotificationRolePermissionUncheckedCreateWithoutUserTypeInput> | NotificationRolePermissionCreateWithoutUserTypeInput[] | NotificationRolePermissionUncheckedCreateWithoutUserTypeInput[]
+    connectOrCreate?: NotificationRolePermissionCreateOrConnectWithoutUserTypeInput | NotificationRolePermissionCreateOrConnectWithoutUserTypeInput[]
+    createMany?: NotificationRolePermissionCreateManyUserTypeInputEnvelope
+    connect?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+  }
+
   export type LeadTypePermissionUncheckedCreateNestedManyWithoutUserTypeInput = {
     create?: XOR<LeadTypePermissionCreateWithoutUserTypeInput, LeadTypePermissionUncheckedCreateWithoutUserTypeInput> | LeadTypePermissionCreateWithoutUserTypeInput[] | LeadTypePermissionUncheckedCreateWithoutUserTypeInput[]
     connectOrCreate?: LeadTypePermissionCreateOrConnectWithoutUserTypeInput | LeadTypePermissionCreateOrConnectWithoutUserTypeInput[]
@@ -28886,6 +36957,13 @@ export namespace Prisma {
     connectOrCreate?: UserTypePermissionCreateOrConnectWithoutUserTypeInput | UserTypePermissionCreateOrConnectWithoutUserTypeInput[]
     createMany?: UserTypePermissionCreateManyUserTypeInputEnvelope
     connect?: UserTypePermissionWhereUniqueInput | UserTypePermissionWhereUniqueInput[]
+  }
+
+  export type NotificationRolePermissionUncheckedCreateNestedManyWithoutUserTypeInput = {
+    create?: XOR<NotificationRolePermissionCreateWithoutUserTypeInput, NotificationRolePermissionUncheckedCreateWithoutUserTypeInput> | NotificationRolePermissionCreateWithoutUserTypeInput[] | NotificationRolePermissionUncheckedCreateWithoutUserTypeInput[]
+    connectOrCreate?: NotificationRolePermissionCreateOrConnectWithoutUserTypeInput | NotificationRolePermissionCreateOrConnectWithoutUserTypeInput[]
+    createMany?: NotificationRolePermissionCreateManyUserTypeInputEnvelope
+    connect?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
   }
 
   export type LeadTypePermissionUpdateManyWithoutUserTypeNestedInput = {
@@ -28930,6 +37008,20 @@ export namespace Prisma {
     deleteMany?: UserTypePermissionScalarWhereInput | UserTypePermissionScalarWhereInput[]
   }
 
+  export type NotificationRolePermissionUpdateManyWithoutUserTypeNestedInput = {
+    create?: XOR<NotificationRolePermissionCreateWithoutUserTypeInput, NotificationRolePermissionUncheckedCreateWithoutUserTypeInput> | NotificationRolePermissionCreateWithoutUserTypeInput[] | NotificationRolePermissionUncheckedCreateWithoutUserTypeInput[]
+    connectOrCreate?: NotificationRolePermissionCreateOrConnectWithoutUserTypeInput | NotificationRolePermissionCreateOrConnectWithoutUserTypeInput[]
+    upsert?: NotificationRolePermissionUpsertWithWhereUniqueWithoutUserTypeInput | NotificationRolePermissionUpsertWithWhereUniqueWithoutUserTypeInput[]
+    createMany?: NotificationRolePermissionCreateManyUserTypeInputEnvelope
+    set?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+    disconnect?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+    delete?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+    connect?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+    update?: NotificationRolePermissionUpdateWithWhereUniqueWithoutUserTypeInput | NotificationRolePermissionUpdateWithWhereUniqueWithoutUserTypeInput[]
+    updateMany?: NotificationRolePermissionUpdateManyWithWhereWithoutUserTypeInput | NotificationRolePermissionUpdateManyWithWhereWithoutUserTypeInput[]
+    deleteMany?: NotificationRolePermissionScalarWhereInput | NotificationRolePermissionScalarWhereInput[]
+  }
+
   export type LeadTypePermissionUncheckedUpdateManyWithoutUserTypeNestedInput = {
     create?: XOR<LeadTypePermissionCreateWithoutUserTypeInput, LeadTypePermissionUncheckedCreateWithoutUserTypeInput> | LeadTypePermissionCreateWithoutUserTypeInput[] | LeadTypePermissionUncheckedCreateWithoutUserTypeInput[]
     connectOrCreate?: LeadTypePermissionCreateOrConnectWithoutUserTypeInput | LeadTypePermissionCreateOrConnectWithoutUserTypeInput[]
@@ -28970,6 +37062,20 @@ export namespace Prisma {
     update?: UserTypePermissionUpdateWithWhereUniqueWithoutUserTypeInput | UserTypePermissionUpdateWithWhereUniqueWithoutUserTypeInput[]
     updateMany?: UserTypePermissionUpdateManyWithWhereWithoutUserTypeInput | UserTypePermissionUpdateManyWithWhereWithoutUserTypeInput[]
     deleteMany?: UserTypePermissionScalarWhereInput | UserTypePermissionScalarWhereInput[]
+  }
+
+  export type NotificationRolePermissionUncheckedUpdateManyWithoutUserTypeNestedInput = {
+    create?: XOR<NotificationRolePermissionCreateWithoutUserTypeInput, NotificationRolePermissionUncheckedCreateWithoutUserTypeInput> | NotificationRolePermissionCreateWithoutUserTypeInput[] | NotificationRolePermissionUncheckedCreateWithoutUserTypeInput[]
+    connectOrCreate?: NotificationRolePermissionCreateOrConnectWithoutUserTypeInput | NotificationRolePermissionCreateOrConnectWithoutUserTypeInput[]
+    upsert?: NotificationRolePermissionUpsertWithWhereUniqueWithoutUserTypeInput | NotificationRolePermissionUpsertWithWhereUniqueWithoutUserTypeInput[]
+    createMany?: NotificationRolePermissionCreateManyUserTypeInputEnvelope
+    set?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+    disconnect?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+    delete?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+    connect?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+    update?: NotificationRolePermissionUpdateWithWhereUniqueWithoutUserTypeInput | NotificationRolePermissionUpdateWithWhereUniqueWithoutUserTypeInput[]
+    updateMany?: NotificationRolePermissionUpdateManyWithWhereWithoutUserTypeInput | NotificationRolePermissionUpdateManyWithWhereWithoutUserTypeInput[]
+    deleteMany?: NotificationRolePermissionScalarWhereInput | NotificationRolePermissionScalarWhereInput[]
   }
 
   export type UserTypePermissionCreateNestedManyWithoutPageInput = {
@@ -29098,6 +37204,230 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPasswordResetTokensInput, UserUpdateWithoutPasswordResetTokensInput>, UserUncheckedUpdateWithoutPasswordResetTokensInput>
   }
 
+  export type UserCreateNestedOneWithoutBalanceTransactionsInput = {
+    create?: XOR<UserCreateWithoutBalanceTransactionsInput, UserUncheckedCreateWithoutBalanceTransactionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBalanceTransactionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutBalanceTransactionsNestedInput = {
+    create?: XOR<UserCreateWithoutBalanceTransactionsInput, UserUncheckedCreateWithoutBalanceTransactionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBalanceTransactionsInput
+    upsert?: UserUpsertWithoutBalanceTransactionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutBalanceTransactionsInput, UserUpdateWithoutBalanceTransactionsInput>, UserUncheckedUpdateWithoutBalanceTransactionsInput>
+  }
+
+  export type NotificationCreateNestedManyWithoutNotificationTypeInput = {
+    create?: XOR<NotificationCreateWithoutNotificationTypeInput, NotificationUncheckedCreateWithoutNotificationTypeInput> | NotificationCreateWithoutNotificationTypeInput[] | NotificationUncheckedCreateWithoutNotificationTypeInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutNotificationTypeInput | NotificationCreateOrConnectWithoutNotificationTypeInput[]
+    createMany?: NotificationCreateManyNotificationTypeInputEnvelope
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
+  export type NotificationPreferenceCreateNestedManyWithoutNotificationTypeInput = {
+    create?: XOR<NotificationPreferenceCreateWithoutNotificationTypeInput, NotificationPreferenceUncheckedCreateWithoutNotificationTypeInput> | NotificationPreferenceCreateWithoutNotificationTypeInput[] | NotificationPreferenceUncheckedCreateWithoutNotificationTypeInput[]
+    connectOrCreate?: NotificationPreferenceCreateOrConnectWithoutNotificationTypeInput | NotificationPreferenceCreateOrConnectWithoutNotificationTypeInput[]
+    createMany?: NotificationPreferenceCreateManyNotificationTypeInputEnvelope
+    connect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+  }
+
+  export type NotificationRolePermissionCreateNestedManyWithoutNotificationTypeInput = {
+    create?: XOR<NotificationRolePermissionCreateWithoutNotificationTypeInput, NotificationRolePermissionUncheckedCreateWithoutNotificationTypeInput> | NotificationRolePermissionCreateWithoutNotificationTypeInput[] | NotificationRolePermissionUncheckedCreateWithoutNotificationTypeInput[]
+    connectOrCreate?: NotificationRolePermissionCreateOrConnectWithoutNotificationTypeInput | NotificationRolePermissionCreateOrConnectWithoutNotificationTypeInput[]
+    createMany?: NotificationRolePermissionCreateManyNotificationTypeInputEnvelope
+    connect?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+  }
+
+  export type NotificationUncheckedCreateNestedManyWithoutNotificationTypeInput = {
+    create?: XOR<NotificationCreateWithoutNotificationTypeInput, NotificationUncheckedCreateWithoutNotificationTypeInput> | NotificationCreateWithoutNotificationTypeInput[] | NotificationUncheckedCreateWithoutNotificationTypeInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutNotificationTypeInput | NotificationCreateOrConnectWithoutNotificationTypeInput[]
+    createMany?: NotificationCreateManyNotificationTypeInputEnvelope
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
+  export type NotificationPreferenceUncheckedCreateNestedManyWithoutNotificationTypeInput = {
+    create?: XOR<NotificationPreferenceCreateWithoutNotificationTypeInput, NotificationPreferenceUncheckedCreateWithoutNotificationTypeInput> | NotificationPreferenceCreateWithoutNotificationTypeInput[] | NotificationPreferenceUncheckedCreateWithoutNotificationTypeInput[]
+    connectOrCreate?: NotificationPreferenceCreateOrConnectWithoutNotificationTypeInput | NotificationPreferenceCreateOrConnectWithoutNotificationTypeInput[]
+    createMany?: NotificationPreferenceCreateManyNotificationTypeInputEnvelope
+    connect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+  }
+
+  export type NotificationRolePermissionUncheckedCreateNestedManyWithoutNotificationTypeInput = {
+    create?: XOR<NotificationRolePermissionCreateWithoutNotificationTypeInput, NotificationRolePermissionUncheckedCreateWithoutNotificationTypeInput> | NotificationRolePermissionCreateWithoutNotificationTypeInput[] | NotificationRolePermissionUncheckedCreateWithoutNotificationTypeInput[]
+    connectOrCreate?: NotificationRolePermissionCreateOrConnectWithoutNotificationTypeInput | NotificationRolePermissionCreateOrConnectWithoutNotificationTypeInput[]
+    createMany?: NotificationRolePermissionCreateManyNotificationTypeInputEnvelope
+    connect?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+  }
+
+  export type NotificationUpdateManyWithoutNotificationTypeNestedInput = {
+    create?: XOR<NotificationCreateWithoutNotificationTypeInput, NotificationUncheckedCreateWithoutNotificationTypeInput> | NotificationCreateWithoutNotificationTypeInput[] | NotificationUncheckedCreateWithoutNotificationTypeInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutNotificationTypeInput | NotificationCreateOrConnectWithoutNotificationTypeInput[]
+    upsert?: NotificationUpsertWithWhereUniqueWithoutNotificationTypeInput | NotificationUpsertWithWhereUniqueWithoutNotificationTypeInput[]
+    createMany?: NotificationCreateManyNotificationTypeInputEnvelope
+    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    update?: NotificationUpdateWithWhereUniqueWithoutNotificationTypeInput | NotificationUpdateWithWhereUniqueWithoutNotificationTypeInput[]
+    updateMany?: NotificationUpdateManyWithWhereWithoutNotificationTypeInput | NotificationUpdateManyWithWhereWithoutNotificationTypeInput[]
+    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
+  export type NotificationPreferenceUpdateManyWithoutNotificationTypeNestedInput = {
+    create?: XOR<NotificationPreferenceCreateWithoutNotificationTypeInput, NotificationPreferenceUncheckedCreateWithoutNotificationTypeInput> | NotificationPreferenceCreateWithoutNotificationTypeInput[] | NotificationPreferenceUncheckedCreateWithoutNotificationTypeInput[]
+    connectOrCreate?: NotificationPreferenceCreateOrConnectWithoutNotificationTypeInput | NotificationPreferenceCreateOrConnectWithoutNotificationTypeInput[]
+    upsert?: NotificationPreferenceUpsertWithWhereUniqueWithoutNotificationTypeInput | NotificationPreferenceUpsertWithWhereUniqueWithoutNotificationTypeInput[]
+    createMany?: NotificationPreferenceCreateManyNotificationTypeInputEnvelope
+    set?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    disconnect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    delete?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    connect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    update?: NotificationPreferenceUpdateWithWhereUniqueWithoutNotificationTypeInput | NotificationPreferenceUpdateWithWhereUniqueWithoutNotificationTypeInput[]
+    updateMany?: NotificationPreferenceUpdateManyWithWhereWithoutNotificationTypeInput | NotificationPreferenceUpdateManyWithWhereWithoutNotificationTypeInput[]
+    deleteMany?: NotificationPreferenceScalarWhereInput | NotificationPreferenceScalarWhereInput[]
+  }
+
+  export type NotificationRolePermissionUpdateManyWithoutNotificationTypeNestedInput = {
+    create?: XOR<NotificationRolePermissionCreateWithoutNotificationTypeInput, NotificationRolePermissionUncheckedCreateWithoutNotificationTypeInput> | NotificationRolePermissionCreateWithoutNotificationTypeInput[] | NotificationRolePermissionUncheckedCreateWithoutNotificationTypeInput[]
+    connectOrCreate?: NotificationRolePermissionCreateOrConnectWithoutNotificationTypeInput | NotificationRolePermissionCreateOrConnectWithoutNotificationTypeInput[]
+    upsert?: NotificationRolePermissionUpsertWithWhereUniqueWithoutNotificationTypeInput | NotificationRolePermissionUpsertWithWhereUniqueWithoutNotificationTypeInput[]
+    createMany?: NotificationRolePermissionCreateManyNotificationTypeInputEnvelope
+    set?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+    disconnect?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+    delete?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+    connect?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+    update?: NotificationRolePermissionUpdateWithWhereUniqueWithoutNotificationTypeInput | NotificationRolePermissionUpdateWithWhereUniqueWithoutNotificationTypeInput[]
+    updateMany?: NotificationRolePermissionUpdateManyWithWhereWithoutNotificationTypeInput | NotificationRolePermissionUpdateManyWithWhereWithoutNotificationTypeInput[]
+    deleteMany?: NotificationRolePermissionScalarWhereInput | NotificationRolePermissionScalarWhereInput[]
+  }
+
+  export type NotificationUncheckedUpdateManyWithoutNotificationTypeNestedInput = {
+    create?: XOR<NotificationCreateWithoutNotificationTypeInput, NotificationUncheckedCreateWithoutNotificationTypeInput> | NotificationCreateWithoutNotificationTypeInput[] | NotificationUncheckedCreateWithoutNotificationTypeInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutNotificationTypeInput | NotificationCreateOrConnectWithoutNotificationTypeInput[]
+    upsert?: NotificationUpsertWithWhereUniqueWithoutNotificationTypeInput | NotificationUpsertWithWhereUniqueWithoutNotificationTypeInput[]
+    createMany?: NotificationCreateManyNotificationTypeInputEnvelope
+    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    update?: NotificationUpdateWithWhereUniqueWithoutNotificationTypeInput | NotificationUpdateWithWhereUniqueWithoutNotificationTypeInput[]
+    updateMany?: NotificationUpdateManyWithWhereWithoutNotificationTypeInput | NotificationUpdateManyWithWhereWithoutNotificationTypeInput[]
+    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
+  export type NotificationPreferenceUncheckedUpdateManyWithoutNotificationTypeNestedInput = {
+    create?: XOR<NotificationPreferenceCreateWithoutNotificationTypeInput, NotificationPreferenceUncheckedCreateWithoutNotificationTypeInput> | NotificationPreferenceCreateWithoutNotificationTypeInput[] | NotificationPreferenceUncheckedCreateWithoutNotificationTypeInput[]
+    connectOrCreate?: NotificationPreferenceCreateOrConnectWithoutNotificationTypeInput | NotificationPreferenceCreateOrConnectWithoutNotificationTypeInput[]
+    upsert?: NotificationPreferenceUpsertWithWhereUniqueWithoutNotificationTypeInput | NotificationPreferenceUpsertWithWhereUniqueWithoutNotificationTypeInput[]
+    createMany?: NotificationPreferenceCreateManyNotificationTypeInputEnvelope
+    set?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    disconnect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    delete?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    connect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    update?: NotificationPreferenceUpdateWithWhereUniqueWithoutNotificationTypeInput | NotificationPreferenceUpdateWithWhereUniqueWithoutNotificationTypeInput[]
+    updateMany?: NotificationPreferenceUpdateManyWithWhereWithoutNotificationTypeInput | NotificationPreferenceUpdateManyWithWhereWithoutNotificationTypeInput[]
+    deleteMany?: NotificationPreferenceScalarWhereInput | NotificationPreferenceScalarWhereInput[]
+  }
+
+  export type NotificationRolePermissionUncheckedUpdateManyWithoutNotificationTypeNestedInput = {
+    create?: XOR<NotificationRolePermissionCreateWithoutNotificationTypeInput, NotificationRolePermissionUncheckedCreateWithoutNotificationTypeInput> | NotificationRolePermissionCreateWithoutNotificationTypeInput[] | NotificationRolePermissionUncheckedCreateWithoutNotificationTypeInput[]
+    connectOrCreate?: NotificationRolePermissionCreateOrConnectWithoutNotificationTypeInput | NotificationRolePermissionCreateOrConnectWithoutNotificationTypeInput[]
+    upsert?: NotificationRolePermissionUpsertWithWhereUniqueWithoutNotificationTypeInput | NotificationRolePermissionUpsertWithWhereUniqueWithoutNotificationTypeInput[]
+    createMany?: NotificationRolePermissionCreateManyNotificationTypeInputEnvelope
+    set?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+    disconnect?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+    delete?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+    connect?: NotificationRolePermissionWhereUniqueInput | NotificationRolePermissionWhereUniqueInput[]
+    update?: NotificationRolePermissionUpdateWithWhereUniqueWithoutNotificationTypeInput | NotificationRolePermissionUpdateWithWhereUniqueWithoutNotificationTypeInput[]
+    updateMany?: NotificationRolePermissionUpdateManyWithWhereWithoutNotificationTypeInput | NotificationRolePermissionUpdateManyWithWhereWithoutNotificationTypeInput[]
+    deleteMany?: NotificationRolePermissionScalarWhereInput | NotificationRolePermissionScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutNotificationPreferencesInput = {
+    create?: XOR<UserCreateWithoutNotificationPreferencesInput, UserUncheckedCreateWithoutNotificationPreferencesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationPreferencesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type NotificationTypeCreateNestedOneWithoutUserPreferencesInput = {
+    create?: XOR<NotificationTypeCreateWithoutUserPreferencesInput, NotificationTypeUncheckedCreateWithoutUserPreferencesInput>
+    connectOrCreate?: NotificationTypeCreateOrConnectWithoutUserPreferencesInput
+    connect?: NotificationTypeWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutNotificationPreferencesNestedInput = {
+    create?: XOR<UserCreateWithoutNotificationPreferencesInput, UserUncheckedCreateWithoutNotificationPreferencesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationPreferencesInput
+    upsert?: UserUpsertWithoutNotificationPreferencesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationPreferencesInput, UserUpdateWithoutNotificationPreferencesInput>, UserUncheckedUpdateWithoutNotificationPreferencesInput>
+  }
+
+  export type NotificationTypeUpdateOneRequiredWithoutUserPreferencesNestedInput = {
+    create?: XOR<NotificationTypeCreateWithoutUserPreferencesInput, NotificationTypeUncheckedCreateWithoutUserPreferencesInput>
+    connectOrCreate?: NotificationTypeCreateOrConnectWithoutUserPreferencesInput
+    upsert?: NotificationTypeUpsertWithoutUserPreferencesInput
+    connect?: NotificationTypeWhereUniqueInput
+    update?: XOR<XOR<NotificationTypeUpdateToOneWithWhereWithoutUserPreferencesInput, NotificationTypeUpdateWithoutUserPreferencesInput>, NotificationTypeUncheckedUpdateWithoutUserPreferencesInput>
+  }
+
+  export type UserCreateNestedOneWithoutNotificationsInput = {
+    create?: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type NotificationTypeCreateNestedOneWithoutNotificationsInput = {
+    create?: XOR<NotificationTypeCreateWithoutNotificationsInput, NotificationTypeUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: NotificationTypeCreateOrConnectWithoutNotificationsInput
+    connect?: NotificationTypeWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
+    create?: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationsInput
+    upsert?: UserUpsertWithoutNotificationsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationsInput, UserUpdateWithoutNotificationsInput>, UserUncheckedUpdateWithoutNotificationsInput>
+  }
+
+  export type NotificationTypeUpdateOneRequiredWithoutNotificationsNestedInput = {
+    create?: XOR<NotificationTypeCreateWithoutNotificationsInput, NotificationTypeUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: NotificationTypeCreateOrConnectWithoutNotificationsInput
+    upsert?: NotificationTypeUpsertWithoutNotificationsInput
+    connect?: NotificationTypeWhereUniqueInput
+    update?: XOR<XOR<NotificationTypeUpdateToOneWithWhereWithoutNotificationsInput, NotificationTypeUpdateWithoutNotificationsInput>, NotificationTypeUncheckedUpdateWithoutNotificationsInput>
+  }
+
+  export type UserTypeCreateNestedOneWithoutNotificationRolePermissionsInput = {
+    create?: XOR<UserTypeCreateWithoutNotificationRolePermissionsInput, UserTypeUncheckedCreateWithoutNotificationRolePermissionsInput>
+    connectOrCreate?: UserTypeCreateOrConnectWithoutNotificationRolePermissionsInput
+    connect?: UserTypeWhereUniqueInput
+  }
+
+  export type NotificationTypeCreateNestedOneWithoutRoleTypePermissionsInput = {
+    create?: XOR<NotificationTypeCreateWithoutRoleTypePermissionsInput, NotificationTypeUncheckedCreateWithoutRoleTypePermissionsInput>
+    connectOrCreate?: NotificationTypeCreateOrConnectWithoutRoleTypePermissionsInput
+    connect?: NotificationTypeWhereUniqueInput
+  }
+
+  export type UserTypeUpdateOneRequiredWithoutNotificationRolePermissionsNestedInput = {
+    create?: XOR<UserTypeCreateWithoutNotificationRolePermissionsInput, UserTypeUncheckedCreateWithoutNotificationRolePermissionsInput>
+    connectOrCreate?: UserTypeCreateOrConnectWithoutNotificationRolePermissionsInput
+    upsert?: UserTypeUpsertWithoutNotificationRolePermissionsInput
+    connect?: UserTypeWhereUniqueInput
+    update?: XOR<XOR<UserTypeUpdateToOneWithWhereWithoutNotificationRolePermissionsInput, UserTypeUpdateWithoutNotificationRolePermissionsInput>, UserTypeUncheckedUpdateWithoutNotificationRolePermissionsInput>
+  }
+
+  export type NotificationTypeUpdateOneRequiredWithoutRoleTypePermissionsNestedInput = {
+    create?: XOR<NotificationTypeCreateWithoutRoleTypePermissionsInput, NotificationTypeUncheckedCreateWithoutRoleTypePermissionsInput>
+    connectOrCreate?: NotificationTypeCreateOrConnectWithoutRoleTypePermissionsInput
+    upsert?: NotificationTypeUpsertWithoutRoleTypePermissionsInput
+    connect?: NotificationTypeWhereUniqueInput
+    update?: XOR<XOR<NotificationTypeUpdateToOneWithWhereWithoutRoleTypePermissionsInput, NotificationTypeUpdateWithoutRoleTypePermissionsInput>, NotificationTypeUncheckedUpdateWithoutRoleTypePermissionsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -29151,6 +37481,17 @@ export namespace Prisma {
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
@@ -29245,6 +37586,22 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -29259,17 +37616,6 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type NestedFloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -29426,6 +37772,9 @@ export namespace Prisma {
   export type LeadSaleCreateWithoutBuyerInput = {
     id?: string
     amount: number
+    paymentMethod?: string
+    balanceBefore?: number | null
+    balanceAfter?: number | null
     soldAt?: Date | string
     createdAt?: Date | string
     lead: LeadCreateNestedOneWithoutSaleInput
@@ -29435,6 +37784,9 @@ export namespace Prisma {
     id?: string
     leadId: string
     amount: number
+    paymentMethod?: string
+    balanceBefore?: number | null
+    balanceAfter?: number | null
     soldAt?: Date | string
     createdAt?: Date | string
   }
@@ -29480,6 +37832,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     leadTypePermissions?: LeadTypePermissionCreateNestedManyWithoutUserTypeInput
     permissions?: UserTypePermissionCreateNestedManyWithoutUserTypeInput
+    notificationRolePermissions?: NotificationRolePermissionCreateNestedManyWithoutUserTypeInput
   }
 
   export type UserTypeUncheckedCreateWithoutUsersInput = {
@@ -29491,6 +37844,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     leadTypePermissions?: LeadTypePermissionUncheckedCreateNestedManyWithoutUserTypeInput
     permissions?: UserTypePermissionUncheckedCreateNestedManyWithoutUserTypeInput
+    notificationRolePermissions?: NotificationRolePermissionUncheckedCreateNestedManyWithoutUserTypeInput
   }
 
   export type UserTypeCreateOrConnectWithoutUsersInput = {
@@ -29578,6 +37932,100 @@ export namespace Prisma {
 
   export type PasswordResetTokenCreateManyUserInputEnvelope = {
     data: PasswordResetTokenCreateManyUserInput | PasswordResetTokenCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BalanceTransactionCreateWithoutUserInput = {
+    id?: string
+    amount: number
+    type: string
+    description?: string | null
+    relatedId?: string | null
+    adminId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type BalanceTransactionUncheckedCreateWithoutUserInput = {
+    id?: string
+    amount: number
+    type: string
+    description?: string | null
+    relatedId?: string | null
+    adminId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type BalanceTransactionCreateOrConnectWithoutUserInput = {
+    where: BalanceTransactionWhereUniqueInput
+    create: XOR<BalanceTransactionCreateWithoutUserInput, BalanceTransactionUncheckedCreateWithoutUserInput>
+  }
+
+  export type BalanceTransactionCreateManyUserInputEnvelope = {
+    data: BalanceTransactionCreateManyUserInput | BalanceTransactionCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NotificationCreateWithoutUserInput = {
+    id?: string
+    title: string
+    message: string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: boolean
+    readAt?: Date | string | null
+    emailSent?: boolean
+    emailSentAt?: Date | string | null
+    createdAt?: Date | string
+    notificationType: NotificationTypeCreateNestedOneWithoutNotificationsInput
+  }
+
+  export type NotificationUncheckedCreateWithoutUserInput = {
+    id?: string
+    notificationTypeId: string
+    title: string
+    message: string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: boolean
+    readAt?: Date | string | null
+    emailSent?: boolean
+    emailSentAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type NotificationCreateOrConnectWithoutUserInput = {
+    where: NotificationWhereUniqueInput
+    create: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationCreateManyUserInputEnvelope = {
+    data: NotificationCreateManyUserInput | NotificationCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NotificationPreferenceCreateWithoutUserInput = {
+    id?: string
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    notificationType: NotificationTypeCreateNestedOneWithoutUserPreferencesInput
+  }
+
+  export type NotificationPreferenceUncheckedCreateWithoutUserInput = {
+    id?: string
+    notificationTypeId: string
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationPreferenceCreateOrConnectWithoutUserInput = {
+    where: NotificationPreferenceWhereUniqueInput
+    create: XOR<NotificationPreferenceCreateWithoutUserInput, NotificationPreferenceUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationPreferenceCreateManyUserInputEnvelope = {
+    data: NotificationPreferenceCreateManyUserInput | NotificationPreferenceCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -29671,6 +38119,9 @@ export namespace Prisma {
     leadId?: StringFilter<"LeadSale"> | string
     buyerId?: StringFilter<"LeadSale"> | string
     amount?: IntFilter<"LeadSale"> | number
+    paymentMethod?: StringFilter<"LeadSale"> | string
+    balanceBefore?: IntNullableFilter<"LeadSale"> | number | null
+    balanceAfter?: IntNullableFilter<"LeadSale"> | number | null
     soldAt?: DateTimeFilter<"LeadSale"> | Date | string
     createdAt?: DateTimeFilter<"LeadSale"> | Date | string
   }
@@ -29721,6 +38172,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leadTypePermissions?: LeadTypePermissionUpdateManyWithoutUserTypeNestedInput
     permissions?: UserTypePermissionUpdateManyWithoutUserTypeNestedInput
+    notificationRolePermissions?: NotificationRolePermissionUpdateManyWithoutUserTypeNestedInput
   }
 
   export type UserTypeUncheckedUpdateWithoutUsersInput = {
@@ -29732,6 +38184,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leadTypePermissions?: LeadTypePermissionUncheckedUpdateManyWithoutUserTypeNestedInput
     permissions?: UserTypePermissionUncheckedUpdateManyWithoutUserTypeNestedInput
+    notificationRolePermissions?: NotificationRolePermissionUncheckedUpdateManyWithoutUserTypeNestedInput
   }
 
   export type UserLeadTypePermissionUpsertWithWhereUniqueWithoutUserInput = {
@@ -29821,6 +38274,98 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"PasswordResetToken"> | Date | string
   }
 
+  export type BalanceTransactionUpsertWithWhereUniqueWithoutUserInput = {
+    where: BalanceTransactionWhereUniqueInput
+    update: XOR<BalanceTransactionUpdateWithoutUserInput, BalanceTransactionUncheckedUpdateWithoutUserInput>
+    create: XOR<BalanceTransactionCreateWithoutUserInput, BalanceTransactionUncheckedCreateWithoutUserInput>
+  }
+
+  export type BalanceTransactionUpdateWithWhereUniqueWithoutUserInput = {
+    where: BalanceTransactionWhereUniqueInput
+    data: XOR<BalanceTransactionUpdateWithoutUserInput, BalanceTransactionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type BalanceTransactionUpdateManyWithWhereWithoutUserInput = {
+    where: BalanceTransactionScalarWhereInput
+    data: XOR<BalanceTransactionUpdateManyMutationInput, BalanceTransactionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type BalanceTransactionScalarWhereInput = {
+    AND?: BalanceTransactionScalarWhereInput | BalanceTransactionScalarWhereInput[]
+    OR?: BalanceTransactionScalarWhereInput[]
+    NOT?: BalanceTransactionScalarWhereInput | BalanceTransactionScalarWhereInput[]
+    id?: StringFilter<"BalanceTransaction"> | string
+    userId?: StringFilter<"BalanceTransaction"> | string
+    amount?: FloatFilter<"BalanceTransaction"> | number
+    type?: StringFilter<"BalanceTransaction"> | string
+    description?: StringNullableFilter<"BalanceTransaction"> | string | null
+    relatedId?: StringNullableFilter<"BalanceTransaction"> | string | null
+    adminId?: StringNullableFilter<"BalanceTransaction"> | string | null
+    createdAt?: DateTimeFilter<"BalanceTransaction"> | Date | string
+  }
+
+  export type NotificationUpsertWithWhereUniqueWithoutUserInput = {
+    where: NotificationWhereUniqueInput
+    update: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
+    create: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationUpdateWithWhereUniqueWithoutUserInput = {
+    where: NotificationWhereUniqueInput
+    data: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
+  }
+
+  export type NotificationUpdateManyWithWhereWithoutUserInput = {
+    where: NotificationScalarWhereInput
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type NotificationScalarWhereInput = {
+    AND?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+    OR?: NotificationScalarWhereInput[]
+    NOT?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+    id?: StringFilter<"Notification"> | string
+    userId?: StringFilter<"Notification"> | string
+    notificationTypeId?: StringFilter<"Notification"> | string
+    title?: StringFilter<"Notification"> | string
+    message?: StringFilter<"Notification"> | string
+    data?: JsonNullableFilter<"Notification">
+    isRead?: BoolFilter<"Notification"> | boolean
+    readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
+    emailSent?: BoolFilter<"Notification"> | boolean
+    emailSentAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
+    createdAt?: DateTimeFilter<"Notification"> | Date | string
+  }
+
+  export type NotificationPreferenceUpsertWithWhereUniqueWithoutUserInput = {
+    where: NotificationPreferenceWhereUniqueInput
+    update: XOR<NotificationPreferenceUpdateWithoutUserInput, NotificationPreferenceUncheckedUpdateWithoutUserInput>
+    create: XOR<NotificationPreferenceCreateWithoutUserInput, NotificationPreferenceUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationPreferenceUpdateWithWhereUniqueWithoutUserInput = {
+    where: NotificationPreferenceWhereUniqueInput
+    data: XOR<NotificationPreferenceUpdateWithoutUserInput, NotificationPreferenceUncheckedUpdateWithoutUserInput>
+  }
+
+  export type NotificationPreferenceUpdateManyWithWhereWithoutUserInput = {
+    where: NotificationPreferenceScalarWhereInput
+    data: XOR<NotificationPreferenceUpdateManyMutationInput, NotificationPreferenceUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type NotificationPreferenceScalarWhereInput = {
+    AND?: NotificationPreferenceScalarWhereInput | NotificationPreferenceScalarWhereInput[]
+    OR?: NotificationPreferenceScalarWhereInput[]
+    NOT?: NotificationPreferenceScalarWhereInput | NotificationPreferenceScalarWhereInput[]
+    id?: StringFilter<"NotificationPreference"> | string
+    userId?: StringFilter<"NotificationPreference"> | string
+    notificationTypeId?: StringFilter<"NotificationPreference"> | string
+    emailEnabled?: BoolFilter<"NotificationPreference"> | boolean
+    inAppEnabled?: BoolFilter<"NotificationPreference"> | boolean
+    createdAt?: DateTimeFilter<"NotificationPreference"> | Date | string
+    updatedAt?: DateTimeFilter<"NotificationPreference"> | Date | string
+  }
+
   export type BidCreateWithoutLeadInput = {
     id?: string
     amount: number
@@ -29861,6 +38406,15 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     bids?: BidCreateNestedManyWithoutUserInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchCreateNestedManyWithoutUserInput
@@ -29868,6 +38422,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLeadsInput = {
@@ -29887,12 +38444,24 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLeadsInput = {
@@ -29903,6 +38472,9 @@ export namespace Prisma {
   export type LeadSaleCreateWithoutLeadInput = {
     id?: string
     amount: number
+    paymentMethod?: string
+    balanceBefore?: number | null
+    balanceAfter?: number | null
     soldAt?: Date | string
     createdAt?: Date | string
     buyer: UserCreateNestedOneWithoutPurchasedLeadsInput
@@ -29912,6 +38484,9 @@ export namespace Prisma {
     id?: string
     buyerId: string
     amount: number
+    paymentMethod?: string
+    balanceBefore?: number | null
+    balanceAfter?: number | null
     soldAt?: Date | string
     createdAt?: Date | string
   }
@@ -29986,6 +38561,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUpdateManyWithoutUserNestedInput
@@ -29993,6 +38577,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLeadsInput = {
@@ -30012,12 +38599,24 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type LeadSaleUpsertWithoutLeadInput = {
@@ -30034,6 +38633,9 @@ export namespace Prisma {
   export type LeadSaleUpdateWithoutLeadInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    balanceBefore?: NullableIntFieldUpdateOperationsInput | number | null
+    balanceAfter?: NullableIntFieldUpdateOperationsInput | number | null
     soldAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     buyer?: UserUpdateOneRequiredWithoutPurchasedLeadsNestedInput
@@ -30043,6 +38645,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     buyerId?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    balanceBefore?: NullableIntFieldUpdateOperationsInput | number | null
+    balanceAfter?: NullableIntFieldUpdateOperationsInput | number | null
     soldAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -30128,6 +38733,15 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     leads?: LeadCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchCreateNestedManyWithoutUserInput
@@ -30135,6 +38749,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutBidsInput = {
@@ -30154,12 +38771,24 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutBidsInput = {
@@ -30249,6 +38878,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUpdateManyWithoutUserNestedInput
@@ -30256,6 +38894,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBidsInput = {
@@ -30275,12 +38916,24 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type LeadCreateWithoutWatchersInput = {
@@ -30348,6 +39001,15 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     bids?: BidCreateNestedManyWithoutUserInput
     leads?: LeadCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
@@ -30355,6 +39017,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutWatchingInput = {
@@ -30374,12 +39039,24 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutWatchingInput = {
@@ -30469,6 +39146,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
@@ -30476,6 +39162,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWatchingInput = {
@@ -30495,12 +39184,24 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutPurchasedLeadsInput = {
@@ -30519,6 +39220,15 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     bids?: BidCreateNestedManyWithoutUserInput
     leads?: LeadCreateNestedManyWithoutOwnerInput
     watching?: LeadWatchCreateNestedManyWithoutUserInput
@@ -30526,6 +39236,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPurchasedLeadsInput = {
@@ -30545,12 +39258,24 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPurchasedLeadsInput = {
@@ -30634,6 +39359,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     watching?: LeadWatchUpdateManyWithoutUserNestedInput
@@ -30641,6 +39375,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPurchasedLeadsInput = {
@@ -30660,12 +39397,24 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type LeadUpsertWithoutSaleInput = {
@@ -30764,6 +39513,15 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     bids?: BidCreateNestedManyWithoutUserInput
     leads?: LeadCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
@@ -30771,6 +39529,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUserTypeInput = {
@@ -30789,6 +39550,15 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
@@ -30796,6 +39566,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUserTypeInput = {
@@ -30830,6 +39603,31 @@ export namespace Prisma {
 
   export type UserTypePermissionCreateManyUserTypeInputEnvelope = {
     data: UserTypePermissionCreateManyUserTypeInput | UserTypePermissionCreateManyUserTypeInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NotificationRolePermissionCreateWithoutUserTypeInput = {
+    canReceive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    notificationType: NotificationTypeCreateNestedOneWithoutRoleTypePermissionsInput
+  }
+
+  export type NotificationRolePermissionUncheckedCreateWithoutUserTypeInput = {
+    id?: number
+    notificationTypeId: string
+    canReceive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationRolePermissionCreateOrConnectWithoutUserTypeInput = {
+    where: NotificationRolePermissionWhereUniqueInput
+    create: XOR<NotificationRolePermissionCreateWithoutUserTypeInput, NotificationRolePermissionUncheckedCreateWithoutUserTypeInput>
+  }
+
+  export type NotificationRolePermissionCreateManyUserTypeInputEnvelope = {
+    data: NotificationRolePermissionCreateManyUserTypeInput | NotificationRolePermissionCreateManyUserTypeInput[]
     skipDuplicates?: boolean
   }
 
@@ -30897,6 +39695,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFilter<"User"> | boolean
     twoFactorSecret?: StringNullableFilter<"User"> | string | null
     isActive?: BoolFilter<"User"> | boolean
+    balance?: FloatFilter<"User"> | number
+    balanceEnabled?: BoolFilter<"User"> | boolean
+    paymentMethod?: StringFilter<"User"> | string
+    ibanAccountHolder?: StringNullableFilter<"User"> | string | null
+    ibanNumber?: StringNullableFilter<"User"> | string | null
+    ibanBic?: StringNullableFilter<"User"> | string | null
+    ibanAddress?: StringNullableFilter<"User"> | string | null
+    ibanPostalCode?: StringNullableFilter<"User"> | string | null
+    ibanCity?: StringNullableFilter<"User"> | string | null
   }
 
   export type UserTypePermissionUpsertWithWhereUniqueWithoutUserTypeInput = {
@@ -30925,6 +39732,34 @@ export namespace Prisma {
     hasAccess?: BoolFilter<"UserTypePermission"> | boolean
     createdAt?: DateTimeFilter<"UserTypePermission"> | Date | string
     updatedAt?: DateTimeFilter<"UserTypePermission"> | Date | string
+  }
+
+  export type NotificationRolePermissionUpsertWithWhereUniqueWithoutUserTypeInput = {
+    where: NotificationRolePermissionWhereUniqueInput
+    update: XOR<NotificationRolePermissionUpdateWithoutUserTypeInput, NotificationRolePermissionUncheckedUpdateWithoutUserTypeInput>
+    create: XOR<NotificationRolePermissionCreateWithoutUserTypeInput, NotificationRolePermissionUncheckedCreateWithoutUserTypeInput>
+  }
+
+  export type NotificationRolePermissionUpdateWithWhereUniqueWithoutUserTypeInput = {
+    where: NotificationRolePermissionWhereUniqueInput
+    data: XOR<NotificationRolePermissionUpdateWithoutUserTypeInput, NotificationRolePermissionUncheckedUpdateWithoutUserTypeInput>
+  }
+
+  export type NotificationRolePermissionUpdateManyWithWhereWithoutUserTypeInput = {
+    where: NotificationRolePermissionScalarWhereInput
+    data: XOR<NotificationRolePermissionUpdateManyMutationInput, NotificationRolePermissionUncheckedUpdateManyWithoutUserTypeInput>
+  }
+
+  export type NotificationRolePermissionScalarWhereInput = {
+    AND?: NotificationRolePermissionScalarWhereInput | NotificationRolePermissionScalarWhereInput[]
+    OR?: NotificationRolePermissionScalarWhereInput[]
+    NOT?: NotificationRolePermissionScalarWhereInput | NotificationRolePermissionScalarWhereInput[]
+    id?: IntFilter<"NotificationRolePermission"> | number
+    userTypeId?: StringFilter<"NotificationRolePermission"> | string
+    notificationTypeId?: StringFilter<"NotificationRolePermission"> | string
+    canReceive?: BoolFilter<"NotificationRolePermission"> | boolean
+    createdAt?: DateTimeFilter<"NotificationRolePermission"> | Date | string
+    updatedAt?: DateTimeFilter<"NotificationRolePermission"> | Date | string
   }
 
   export type UserTypePermissionCreateWithoutPageInput = {
@@ -31000,6 +39835,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     leadTypePermissions?: LeadTypePermissionCreateNestedManyWithoutUserTypeInput
     users?: UserCreateNestedManyWithoutUserTypeInput
+    notificationRolePermissions?: NotificationRolePermissionCreateNestedManyWithoutUserTypeInput
   }
 
   export type UserTypeUncheckedCreateWithoutPermissionsInput = {
@@ -31011,6 +39847,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     leadTypePermissions?: LeadTypePermissionUncheckedCreateNestedManyWithoutUserTypeInput
     users?: UserUncheckedCreateNestedManyWithoutUserTypeInput
+    notificationRolePermissions?: NotificationRolePermissionUncheckedCreateNestedManyWithoutUserTypeInput
   }
 
   export type UserTypeCreateOrConnectWithoutPermissionsInput = {
@@ -31067,6 +39904,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leadTypePermissions?: LeadTypePermissionUpdateManyWithoutUserTypeNestedInput
     users?: UserUpdateManyWithoutUserTypeNestedInput
+    notificationRolePermissions?: NotificationRolePermissionUpdateManyWithoutUserTypeNestedInput
   }
 
   export type UserTypeUncheckedUpdateWithoutPermissionsInput = {
@@ -31078,6 +39916,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leadTypePermissions?: LeadTypePermissionUncheckedUpdateManyWithoutUserTypeNestedInput
     users?: UserUncheckedUpdateManyWithoutUserTypeNestedInput
+    notificationRolePermissions?: NotificationRolePermissionUncheckedUpdateManyWithoutUserTypeNestedInput
   }
 
   export type UserTypeCreateWithoutLeadTypePermissionsInput = {
@@ -31089,6 +39928,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     users?: UserCreateNestedManyWithoutUserTypeInput
     permissions?: UserTypePermissionCreateNestedManyWithoutUserTypeInput
+    notificationRolePermissions?: NotificationRolePermissionCreateNestedManyWithoutUserTypeInput
   }
 
   export type UserTypeUncheckedCreateWithoutLeadTypePermissionsInput = {
@@ -31100,6 +39940,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutUserTypeInput
     permissions?: UserTypePermissionUncheckedCreateNestedManyWithoutUserTypeInput
+    notificationRolePermissions?: NotificationRolePermissionUncheckedCreateNestedManyWithoutUserTypeInput
   }
 
   export type UserTypeCreateOrConnectWithoutLeadTypePermissionsInput = {
@@ -31127,6 +39968,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutUserTypeNestedInput
     permissions?: UserTypePermissionUpdateManyWithoutUserTypeNestedInput
+    notificationRolePermissions?: NotificationRolePermissionUpdateManyWithoutUserTypeNestedInput
   }
 
   export type UserTypeUncheckedUpdateWithoutLeadTypePermissionsInput = {
@@ -31138,6 +39980,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutUserTypeNestedInput
     permissions?: UserTypePermissionUncheckedUpdateManyWithoutUserTypeNestedInput
+    notificationRolePermissions?: NotificationRolePermissionUncheckedUpdateManyWithoutUserTypeNestedInput
   }
 
   export type UserCreateWithoutLeadTypePermissionsInput = {
@@ -31156,6 +39999,15 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     bids?: BidCreateNestedManyWithoutUserInput
     leads?: LeadCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
@@ -31163,6 +40015,9 @@ export namespace Prisma {
     userType: UserTypeCreateNestedOneWithoutUsersInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLeadTypePermissionsInput = {
@@ -31182,12 +40037,24 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLeadTypePermissionsInput = {
@@ -31222,6 +40089,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
@@ -31229,6 +40105,9 @@ export namespace Prisma {
     userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLeadTypePermissionsInput = {
@@ -31248,12 +40127,24 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutActivityLogsInput = {
@@ -31272,6 +40163,15 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     bids?: BidCreateNestedManyWithoutUserInput
     leads?: LeadCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
@@ -31279,6 +40179,9 @@ export namespace Prisma {
     userType: UserTypeCreateNestedOneWithoutUsersInput
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActivityLogsInput = {
@@ -31298,12 +40201,24 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActivityLogsInput = {
@@ -31338,6 +40253,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
@@ -31345,6 +40269,9 @@ export namespace Prisma {
     userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActivityLogsInput = {
@@ -31364,12 +40291,24 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutPasswordResetTokensInput = {
@@ -31388,6 +40327,15 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     bids?: BidCreateNestedManyWithoutUserInput
     leads?: LeadCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
@@ -31395,6 +40343,9 @@ export namespace Prisma {
     userType: UserTypeCreateNestedOneWithoutUsersInput
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
@@ -31414,12 +40365,24 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPasswordResetTokensInput = {
@@ -31454,6 +40417,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
@@ -31461,6 +40433,9 @@ export namespace Prisma {
     userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
@@ -31480,12 +40455,969 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutBalanceTransactionsInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    firstName?: string | null
+    lastName?: string | null
+    username?: string | null
+    profileImage?: string | null
+    lastActivity?: Date | string | null
+    lastIP?: string | null
+    lastUserAgent?: string | null
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
+    bids?: BidCreateNestedManyWithoutUserInput
+    leads?: LeadCreateNestedManyWithoutOwnerInput
+    purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
+    watching?: LeadWatchCreateNestedManyWithoutUserInput
+    userType: UserTypeCreateNestedOneWithoutUsersInput
+    leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
+    activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutBalanceTransactionsInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    userTypeId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    firstName?: string | null
+    lastName?: string | null
+    username?: string | null
+    profileImage?: string | null
+    lastActivity?: Date | string | null
+    lastIP?: string | null
+    lastUserAgent?: string | null
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
+    bids?: BidUncheckedCreateNestedManyWithoutUserInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
+    purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
+    watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
+    leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
+    activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutBalanceTransactionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutBalanceTransactionsInput, UserUncheckedCreateWithoutBalanceTransactionsInput>
+  }
+
+  export type UserUpsertWithoutBalanceTransactionsInput = {
+    update: XOR<UserUpdateWithoutBalanceTransactionsInput, UserUncheckedUpdateWithoutBalanceTransactionsInput>
+    create: XOR<UserCreateWithoutBalanceTransactionsInput, UserUncheckedCreateWithoutBalanceTransactionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutBalanceTransactionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutBalanceTransactionsInput, UserUncheckedUpdateWithoutBalanceTransactionsInput>
+  }
+
+  export type UserUpdateWithoutBalanceTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImage?: NullableStringFieldUpdateOperationsInput | string | null
+    lastActivity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastIP?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUserAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    bids?: BidUpdateManyWithoutUserNestedInput
+    leads?: LeadUpdateManyWithoutOwnerNestedInput
+    purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
+    watching?: LeadWatchUpdateManyWithoutUserNestedInput
+    userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
+    leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
+    activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutBalanceTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    userTypeId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImage?: NullableStringFieldUpdateOperationsInput | string | null
+    lastActivity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastIP?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUserAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    bids?: BidUncheckedUpdateManyWithoutUserNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
+    purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
+    watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
+    leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
+    activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type NotificationCreateWithoutNotificationTypeInput = {
+    id?: string
+    title: string
+    message: string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: boolean
+    readAt?: Date | string | null
+    emailSent?: boolean
+    emailSentAt?: Date | string | null
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutNotificationsInput
+  }
+
+  export type NotificationUncheckedCreateWithoutNotificationTypeInput = {
+    id?: string
+    userId: string
+    title: string
+    message: string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: boolean
+    readAt?: Date | string | null
+    emailSent?: boolean
+    emailSentAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type NotificationCreateOrConnectWithoutNotificationTypeInput = {
+    where: NotificationWhereUniqueInput
+    create: XOR<NotificationCreateWithoutNotificationTypeInput, NotificationUncheckedCreateWithoutNotificationTypeInput>
+  }
+
+  export type NotificationCreateManyNotificationTypeInputEnvelope = {
+    data: NotificationCreateManyNotificationTypeInput | NotificationCreateManyNotificationTypeInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NotificationPreferenceCreateWithoutNotificationTypeInput = {
+    id?: string
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutNotificationPreferencesInput
+  }
+
+  export type NotificationPreferenceUncheckedCreateWithoutNotificationTypeInput = {
+    id?: string
+    userId: string
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationPreferenceCreateOrConnectWithoutNotificationTypeInput = {
+    where: NotificationPreferenceWhereUniqueInput
+    create: XOR<NotificationPreferenceCreateWithoutNotificationTypeInput, NotificationPreferenceUncheckedCreateWithoutNotificationTypeInput>
+  }
+
+  export type NotificationPreferenceCreateManyNotificationTypeInputEnvelope = {
+    data: NotificationPreferenceCreateManyNotificationTypeInput | NotificationPreferenceCreateManyNotificationTypeInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NotificationRolePermissionCreateWithoutNotificationTypeInput = {
+    canReceive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userType: UserTypeCreateNestedOneWithoutNotificationRolePermissionsInput
+  }
+
+  export type NotificationRolePermissionUncheckedCreateWithoutNotificationTypeInput = {
+    id?: number
+    userTypeId: string
+    canReceive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationRolePermissionCreateOrConnectWithoutNotificationTypeInput = {
+    where: NotificationRolePermissionWhereUniqueInput
+    create: XOR<NotificationRolePermissionCreateWithoutNotificationTypeInput, NotificationRolePermissionUncheckedCreateWithoutNotificationTypeInput>
+  }
+
+  export type NotificationRolePermissionCreateManyNotificationTypeInputEnvelope = {
+    data: NotificationRolePermissionCreateManyNotificationTypeInput | NotificationRolePermissionCreateManyNotificationTypeInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NotificationUpsertWithWhereUniqueWithoutNotificationTypeInput = {
+    where: NotificationWhereUniqueInput
+    update: XOR<NotificationUpdateWithoutNotificationTypeInput, NotificationUncheckedUpdateWithoutNotificationTypeInput>
+    create: XOR<NotificationCreateWithoutNotificationTypeInput, NotificationUncheckedCreateWithoutNotificationTypeInput>
+  }
+
+  export type NotificationUpdateWithWhereUniqueWithoutNotificationTypeInput = {
+    where: NotificationWhereUniqueInput
+    data: XOR<NotificationUpdateWithoutNotificationTypeInput, NotificationUncheckedUpdateWithoutNotificationTypeInput>
+  }
+
+  export type NotificationUpdateManyWithWhereWithoutNotificationTypeInput = {
+    where: NotificationScalarWhereInput
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyWithoutNotificationTypeInput>
+  }
+
+  export type NotificationPreferenceUpsertWithWhereUniqueWithoutNotificationTypeInput = {
+    where: NotificationPreferenceWhereUniqueInput
+    update: XOR<NotificationPreferenceUpdateWithoutNotificationTypeInput, NotificationPreferenceUncheckedUpdateWithoutNotificationTypeInput>
+    create: XOR<NotificationPreferenceCreateWithoutNotificationTypeInput, NotificationPreferenceUncheckedCreateWithoutNotificationTypeInput>
+  }
+
+  export type NotificationPreferenceUpdateWithWhereUniqueWithoutNotificationTypeInput = {
+    where: NotificationPreferenceWhereUniqueInput
+    data: XOR<NotificationPreferenceUpdateWithoutNotificationTypeInput, NotificationPreferenceUncheckedUpdateWithoutNotificationTypeInput>
+  }
+
+  export type NotificationPreferenceUpdateManyWithWhereWithoutNotificationTypeInput = {
+    where: NotificationPreferenceScalarWhereInput
+    data: XOR<NotificationPreferenceUpdateManyMutationInput, NotificationPreferenceUncheckedUpdateManyWithoutNotificationTypeInput>
+  }
+
+  export type NotificationRolePermissionUpsertWithWhereUniqueWithoutNotificationTypeInput = {
+    where: NotificationRolePermissionWhereUniqueInput
+    update: XOR<NotificationRolePermissionUpdateWithoutNotificationTypeInput, NotificationRolePermissionUncheckedUpdateWithoutNotificationTypeInput>
+    create: XOR<NotificationRolePermissionCreateWithoutNotificationTypeInput, NotificationRolePermissionUncheckedCreateWithoutNotificationTypeInput>
+  }
+
+  export type NotificationRolePermissionUpdateWithWhereUniqueWithoutNotificationTypeInput = {
+    where: NotificationRolePermissionWhereUniqueInput
+    data: XOR<NotificationRolePermissionUpdateWithoutNotificationTypeInput, NotificationRolePermissionUncheckedUpdateWithoutNotificationTypeInput>
+  }
+
+  export type NotificationRolePermissionUpdateManyWithWhereWithoutNotificationTypeInput = {
+    where: NotificationRolePermissionScalarWhereInput
+    data: XOR<NotificationRolePermissionUpdateManyMutationInput, NotificationRolePermissionUncheckedUpdateManyWithoutNotificationTypeInput>
+  }
+
+  export type UserCreateWithoutNotificationPreferencesInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    firstName?: string | null
+    lastName?: string | null
+    username?: string | null
+    profileImage?: string | null
+    lastActivity?: Date | string | null
+    lastIP?: string | null
+    lastUserAgent?: string | null
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
+    bids?: BidCreateNestedManyWithoutUserInput
+    leads?: LeadCreateNestedManyWithoutOwnerInput
+    purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
+    watching?: LeadWatchCreateNestedManyWithoutUserInput
+    userType: UserTypeCreateNestedOneWithoutUsersInput
+    leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
+    activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutNotificationPreferencesInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    userTypeId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    firstName?: string | null
+    lastName?: string | null
+    username?: string | null
+    profileImage?: string | null
+    lastActivity?: Date | string | null
+    lastIP?: string | null
+    lastUserAgent?: string | null
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
+    bids?: BidUncheckedCreateNestedManyWithoutUserInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
+    purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
+    watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
+    leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
+    activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutNotificationPreferencesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutNotificationPreferencesInput, UserUncheckedCreateWithoutNotificationPreferencesInput>
+  }
+
+  export type NotificationTypeCreateWithoutUserPreferencesInput = {
+    id?: string
+    code: string
+    name: string
+    description?: string | null
+    category: string
+    defaultEnabled?: boolean
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    icon?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    notifications?: NotificationCreateNestedManyWithoutNotificationTypeInput
+    roleTypePermissions?: NotificationRolePermissionCreateNestedManyWithoutNotificationTypeInput
+  }
+
+  export type NotificationTypeUncheckedCreateWithoutUserPreferencesInput = {
+    id?: string
+    code: string
+    name: string
+    description?: string | null
+    category: string
+    defaultEnabled?: boolean
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    icon?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    notifications?: NotificationUncheckedCreateNestedManyWithoutNotificationTypeInput
+    roleTypePermissions?: NotificationRolePermissionUncheckedCreateNestedManyWithoutNotificationTypeInput
+  }
+
+  export type NotificationTypeCreateOrConnectWithoutUserPreferencesInput = {
+    where: NotificationTypeWhereUniqueInput
+    create: XOR<NotificationTypeCreateWithoutUserPreferencesInput, NotificationTypeUncheckedCreateWithoutUserPreferencesInput>
+  }
+
+  export type UserUpsertWithoutNotificationPreferencesInput = {
+    update: XOR<UserUpdateWithoutNotificationPreferencesInput, UserUncheckedUpdateWithoutNotificationPreferencesInput>
+    create: XOR<UserCreateWithoutNotificationPreferencesInput, UserUncheckedCreateWithoutNotificationPreferencesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutNotificationPreferencesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutNotificationPreferencesInput, UserUncheckedUpdateWithoutNotificationPreferencesInput>
+  }
+
+  export type UserUpdateWithoutNotificationPreferencesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImage?: NullableStringFieldUpdateOperationsInput | string | null
+    lastActivity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastIP?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUserAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    bids?: BidUpdateManyWithoutUserNestedInput
+    leads?: LeadUpdateManyWithoutOwnerNestedInput
+    purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
+    watching?: LeadWatchUpdateManyWithoutUserNestedInput
+    userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
+    leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
+    activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutNotificationPreferencesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    userTypeId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImage?: NullableStringFieldUpdateOperationsInput | string | null
+    lastActivity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastIP?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUserAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    bids?: BidUncheckedUpdateManyWithoutUserNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
+    purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
+    watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
+    leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
+    activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type NotificationTypeUpsertWithoutUserPreferencesInput = {
+    update: XOR<NotificationTypeUpdateWithoutUserPreferencesInput, NotificationTypeUncheckedUpdateWithoutUserPreferencesInput>
+    create: XOR<NotificationTypeCreateWithoutUserPreferencesInput, NotificationTypeUncheckedCreateWithoutUserPreferencesInput>
+    where?: NotificationTypeWhereInput
+  }
+
+  export type NotificationTypeUpdateToOneWithWhereWithoutUserPreferencesInput = {
+    where?: NotificationTypeWhereInput
+    data: XOR<NotificationTypeUpdateWithoutUserPreferencesInput, NotificationTypeUncheckedUpdateWithoutUserPreferencesInput>
+  }
+
+  export type NotificationTypeUpdateWithoutUserPreferencesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    defaultEnabled?: BoolFieldUpdateOperationsInput | boolean
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notifications?: NotificationUpdateManyWithoutNotificationTypeNestedInput
+    roleTypePermissions?: NotificationRolePermissionUpdateManyWithoutNotificationTypeNestedInput
+  }
+
+  export type NotificationTypeUncheckedUpdateWithoutUserPreferencesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    defaultEnabled?: BoolFieldUpdateOperationsInput | boolean
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notifications?: NotificationUncheckedUpdateManyWithoutNotificationTypeNestedInput
+    roleTypePermissions?: NotificationRolePermissionUncheckedUpdateManyWithoutNotificationTypeNestedInput
+  }
+
+  export type UserCreateWithoutNotificationsInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    firstName?: string | null
+    lastName?: string | null
+    username?: string | null
+    profileImage?: string | null
+    lastActivity?: Date | string | null
+    lastIP?: string | null
+    lastUserAgent?: string | null
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
+    bids?: BidCreateNestedManyWithoutUserInput
+    leads?: LeadCreateNestedManyWithoutOwnerInput
+    purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
+    watching?: LeadWatchCreateNestedManyWithoutUserInput
+    userType: UserTypeCreateNestedOneWithoutUsersInput
+    leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
+    activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutNotificationsInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    userTypeId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    firstName?: string | null
+    lastName?: string | null
+    username?: string | null
+    profileImage?: string | null
+    lastActivity?: Date | string | null
+    lastIP?: string | null
+    lastUserAgent?: string | null
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
+    bids?: BidUncheckedCreateNestedManyWithoutUserInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
+    purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
+    watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
+    leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
+    activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutNotificationsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
+  }
+
+  export type NotificationTypeCreateWithoutNotificationsInput = {
+    id?: string
+    code: string
+    name: string
+    description?: string | null
+    category: string
+    defaultEnabled?: boolean
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    icon?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userPreferences?: NotificationPreferenceCreateNestedManyWithoutNotificationTypeInput
+    roleTypePermissions?: NotificationRolePermissionCreateNestedManyWithoutNotificationTypeInput
+  }
+
+  export type NotificationTypeUncheckedCreateWithoutNotificationsInput = {
+    id?: string
+    code: string
+    name: string
+    description?: string | null
+    category: string
+    defaultEnabled?: boolean
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    icon?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutNotificationTypeInput
+    roleTypePermissions?: NotificationRolePermissionUncheckedCreateNestedManyWithoutNotificationTypeInput
+  }
+
+  export type NotificationTypeCreateOrConnectWithoutNotificationsInput = {
+    where: NotificationTypeWhereUniqueInput
+    create: XOR<NotificationTypeCreateWithoutNotificationsInput, NotificationTypeUncheckedCreateWithoutNotificationsInput>
+  }
+
+  export type UserUpsertWithoutNotificationsInput = {
+    update: XOR<UserUpdateWithoutNotificationsInput, UserUncheckedUpdateWithoutNotificationsInput>
+    create: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutNotificationsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutNotificationsInput, UserUncheckedUpdateWithoutNotificationsInput>
+  }
+
+  export type UserUpdateWithoutNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImage?: NullableStringFieldUpdateOperationsInput | string | null
+    lastActivity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastIP?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUserAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    bids?: BidUpdateManyWithoutUserNestedInput
+    leads?: LeadUpdateManyWithoutOwnerNestedInput
+    purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
+    watching?: LeadWatchUpdateManyWithoutUserNestedInput
+    userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
+    leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
+    activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    userTypeId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImage?: NullableStringFieldUpdateOperationsInput | string | null
+    lastActivity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastIP?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUserAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    bids?: BidUncheckedUpdateManyWithoutUserNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
+    purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
+    watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
+    leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
+    activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type NotificationTypeUpsertWithoutNotificationsInput = {
+    update: XOR<NotificationTypeUpdateWithoutNotificationsInput, NotificationTypeUncheckedUpdateWithoutNotificationsInput>
+    create: XOR<NotificationTypeCreateWithoutNotificationsInput, NotificationTypeUncheckedCreateWithoutNotificationsInput>
+    where?: NotificationTypeWhereInput
+  }
+
+  export type NotificationTypeUpdateToOneWithWhereWithoutNotificationsInput = {
+    where?: NotificationTypeWhereInput
+    data: XOR<NotificationTypeUpdateWithoutNotificationsInput, NotificationTypeUncheckedUpdateWithoutNotificationsInput>
+  }
+
+  export type NotificationTypeUpdateWithoutNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    defaultEnabled?: BoolFieldUpdateOperationsInput | boolean
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userPreferences?: NotificationPreferenceUpdateManyWithoutNotificationTypeNestedInput
+    roleTypePermissions?: NotificationRolePermissionUpdateManyWithoutNotificationTypeNestedInput
+  }
+
+  export type NotificationTypeUncheckedUpdateWithoutNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    defaultEnabled?: BoolFieldUpdateOperationsInput | boolean
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutNotificationTypeNestedInput
+    roleTypePermissions?: NotificationRolePermissionUncheckedUpdateManyWithoutNotificationTypeNestedInput
+  }
+
+  export type UserTypeCreateWithoutNotificationRolePermissionsInput = {
+    id: string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    leadTypePermissions?: LeadTypePermissionCreateNestedManyWithoutUserTypeInput
+    users?: UserCreateNestedManyWithoutUserTypeInput
+    permissions?: UserTypePermissionCreateNestedManyWithoutUserTypeInput
+  }
+
+  export type UserTypeUncheckedCreateWithoutNotificationRolePermissionsInput = {
+    id: string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    leadTypePermissions?: LeadTypePermissionUncheckedCreateNestedManyWithoutUserTypeInput
+    users?: UserUncheckedCreateNestedManyWithoutUserTypeInput
+    permissions?: UserTypePermissionUncheckedCreateNestedManyWithoutUserTypeInput
+  }
+
+  export type UserTypeCreateOrConnectWithoutNotificationRolePermissionsInput = {
+    where: UserTypeWhereUniqueInput
+    create: XOR<UserTypeCreateWithoutNotificationRolePermissionsInput, UserTypeUncheckedCreateWithoutNotificationRolePermissionsInput>
+  }
+
+  export type NotificationTypeCreateWithoutRoleTypePermissionsInput = {
+    id?: string
+    code: string
+    name: string
+    description?: string | null
+    category: string
+    defaultEnabled?: boolean
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    icon?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    notifications?: NotificationCreateNestedManyWithoutNotificationTypeInput
+    userPreferences?: NotificationPreferenceCreateNestedManyWithoutNotificationTypeInput
+  }
+
+  export type NotificationTypeUncheckedCreateWithoutRoleTypePermissionsInput = {
+    id?: string
+    code: string
+    name: string
+    description?: string | null
+    category: string
+    defaultEnabled?: boolean
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    icon?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    notifications?: NotificationUncheckedCreateNestedManyWithoutNotificationTypeInput
+    userPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutNotificationTypeInput
+  }
+
+  export type NotificationTypeCreateOrConnectWithoutRoleTypePermissionsInput = {
+    where: NotificationTypeWhereUniqueInput
+    create: XOR<NotificationTypeCreateWithoutRoleTypePermissionsInput, NotificationTypeUncheckedCreateWithoutRoleTypePermissionsInput>
+  }
+
+  export type UserTypeUpsertWithoutNotificationRolePermissionsInput = {
+    update: XOR<UserTypeUpdateWithoutNotificationRolePermissionsInput, UserTypeUncheckedUpdateWithoutNotificationRolePermissionsInput>
+    create: XOR<UserTypeCreateWithoutNotificationRolePermissionsInput, UserTypeUncheckedCreateWithoutNotificationRolePermissionsInput>
+    where?: UserTypeWhereInput
+  }
+
+  export type UserTypeUpdateToOneWithWhereWithoutNotificationRolePermissionsInput = {
+    where?: UserTypeWhereInput
+    data: XOR<UserTypeUpdateWithoutNotificationRolePermissionsInput, UserTypeUncheckedUpdateWithoutNotificationRolePermissionsInput>
+  }
+
+  export type UserTypeUpdateWithoutNotificationRolePermissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    leadTypePermissions?: LeadTypePermissionUpdateManyWithoutUserTypeNestedInput
+    users?: UserUpdateManyWithoutUserTypeNestedInput
+    permissions?: UserTypePermissionUpdateManyWithoutUserTypeNestedInput
+  }
+
+  export type UserTypeUncheckedUpdateWithoutNotificationRolePermissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    leadTypePermissions?: LeadTypePermissionUncheckedUpdateManyWithoutUserTypeNestedInput
+    users?: UserUncheckedUpdateManyWithoutUserTypeNestedInput
+    permissions?: UserTypePermissionUncheckedUpdateManyWithoutUserTypeNestedInput
+  }
+
+  export type NotificationTypeUpsertWithoutRoleTypePermissionsInput = {
+    update: XOR<NotificationTypeUpdateWithoutRoleTypePermissionsInput, NotificationTypeUncheckedUpdateWithoutRoleTypePermissionsInput>
+    create: XOR<NotificationTypeCreateWithoutRoleTypePermissionsInput, NotificationTypeUncheckedCreateWithoutRoleTypePermissionsInput>
+    where?: NotificationTypeWhereInput
+  }
+
+  export type NotificationTypeUpdateToOneWithWhereWithoutRoleTypePermissionsInput = {
+    where?: NotificationTypeWhereInput
+    data: XOR<NotificationTypeUpdateWithoutRoleTypePermissionsInput, NotificationTypeUncheckedUpdateWithoutRoleTypePermissionsInput>
+  }
+
+  export type NotificationTypeUpdateWithoutRoleTypePermissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    defaultEnabled?: BoolFieldUpdateOperationsInput | boolean
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notifications?: NotificationUpdateManyWithoutNotificationTypeNestedInput
+    userPreferences?: NotificationPreferenceUpdateManyWithoutNotificationTypeNestedInput
+  }
+
+  export type NotificationTypeUncheckedUpdateWithoutRoleTypePermissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    defaultEnabled?: BoolFieldUpdateOperationsInput | boolean
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notifications?: NotificationUncheckedUpdateManyWithoutNotificationTypeNestedInput
+    userPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutNotificationTypeNestedInput
   }
 
   export type BidCreateManyUserInput = {
@@ -31518,6 +41450,9 @@ export namespace Prisma {
     id?: string
     leadId: string
     amount: number
+    paymentMethod?: string
+    balanceBefore?: number | null
+    balanceAfter?: number | null
     soldAt?: Date | string
     createdAt?: Date | string
   }
@@ -31553,6 +41488,38 @@ export namespace Prisma {
     expiresAt: Date | string
     used?: boolean
     createdAt?: Date | string
+  }
+
+  export type BalanceTransactionCreateManyUserInput = {
+    id?: string
+    amount: number
+    type: string
+    description?: string | null
+    relatedId?: string | null
+    adminId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type NotificationCreateManyUserInput = {
+    id?: string
+    notificationTypeId: string
+    title: string
+    message: string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: boolean
+    readAt?: Date | string | null
+    emailSent?: boolean
+    emailSentAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type NotificationPreferenceCreateManyUserInput = {
+    id?: string
+    notificationTypeId: string
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type BidUpdateWithoutUserInput = {
@@ -31642,6 +41609,9 @@ export namespace Prisma {
   export type LeadSaleUpdateWithoutBuyerInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    balanceBefore?: NullableIntFieldUpdateOperationsInput | number | null
+    balanceAfter?: NullableIntFieldUpdateOperationsInput | number | null
     soldAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lead?: LeadUpdateOneRequiredWithoutSaleNestedInput
@@ -31651,6 +41621,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     leadId?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    balanceBefore?: NullableIntFieldUpdateOperationsInput | number | null
+    balanceAfter?: NullableIntFieldUpdateOperationsInput | number | null
     soldAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31659,6 +41632,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     leadId?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    balanceBefore?: NullableIntFieldUpdateOperationsInput | number | null
+    balanceAfter?: NullableIntFieldUpdateOperationsInput | number | null
     soldAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31761,6 +41737,102 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type BalanceTransactionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    relatedId?: NullableStringFieldUpdateOperationsInput | string | null
+    adminId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BalanceTransactionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    relatedId?: NullableStringFieldUpdateOperationsInput | string | null
+    adminId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BalanceTransactionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    relatedId?: NullableStringFieldUpdateOperationsInput | string | null
+    adminId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailSent?: BoolFieldUpdateOperationsInput | boolean
+    emailSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notificationType?: NotificationTypeUpdateOneRequiredWithoutNotificationsNestedInput
+  }
+
+  export type NotificationUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    notificationTypeId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailSent?: BoolFieldUpdateOperationsInput | boolean
+    emailSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    notificationTypeId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailSent?: BoolFieldUpdateOperationsInput | boolean
+    emailSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationPreferenceUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notificationType?: NotificationTypeUpdateOneRequiredWithoutUserPreferencesNestedInput
+  }
+
+  export type NotificationPreferenceUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    notificationTypeId?: StringFieldUpdateOperationsInput | string
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationPreferenceUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    notificationTypeId?: StringFieldUpdateOperationsInput | string
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type BidCreateManyLeadInput = {
     id?: string
     amount: number
@@ -31837,12 +41909,29 @@ export namespace Prisma {
     twoFactorEnabled?: boolean
     twoFactorSecret?: string | null
     isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
   }
 
   export type UserTypePermissionCreateManyUserTypeInput = {
     id?: number
     pageId: string
     hasAccess?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationRolePermissionCreateManyUserTypeInput = {
+    id?: number
+    notificationTypeId: string
+    canReceive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -31886,6 +41975,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
@@ -31893,6 +41991,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUserTypeInput = {
@@ -31911,6 +42012,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
@@ -31918,6 +42028,9 @@ export namespace Prisma {
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutUserTypeInput = {
@@ -31936,6 +42049,15 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserTypePermissionUpdateWithoutUserTypeInput = {
@@ -31957,6 +42079,29 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     pageId?: StringFieldUpdateOperationsInput | string
     hasAccess?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationRolePermissionUpdateWithoutUserTypeInput = {
+    canReceive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notificationType?: NotificationTypeUpdateOneRequiredWithoutRoleTypePermissionsNestedInput
+  }
+
+  export type NotificationRolePermissionUncheckedUpdateWithoutUserTypeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    notificationTypeId?: StringFieldUpdateOperationsInput | string
+    canReceive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationRolePermissionUncheckedUpdateManyWithoutUserTypeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    notificationTypeId?: StringFieldUpdateOperationsInput | string
+    canReceive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31988,6 +42133,125 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     userTypeId?: StringFieldUpdateOperationsInput | string
     hasAccess?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationCreateManyNotificationTypeInput = {
+    id?: string
+    userId: string
+    title: string
+    message: string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: boolean
+    readAt?: Date | string | null
+    emailSent?: boolean
+    emailSentAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type NotificationPreferenceCreateManyNotificationTypeInput = {
+    id?: string
+    userId: string
+    emailEnabled?: boolean
+    inAppEnabled?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationRolePermissionCreateManyNotificationTypeInput = {
+    id?: number
+    userTypeId: string
+    canReceive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationUpdateWithoutNotificationTypeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailSent?: BoolFieldUpdateOperationsInput | boolean
+    emailSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutNotificationsNestedInput
+  }
+
+  export type NotificationUncheckedUpdateWithoutNotificationTypeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailSent?: BoolFieldUpdateOperationsInput | boolean
+    emailSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUncheckedUpdateManyWithoutNotificationTypeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailSent?: BoolFieldUpdateOperationsInput | boolean
+    emailSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationPreferenceUpdateWithoutNotificationTypeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutNotificationPreferencesNestedInput
+  }
+
+  export type NotificationPreferenceUncheckedUpdateWithoutNotificationTypeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationPreferenceUncheckedUpdateManyWithoutNotificationTypeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    inAppEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationRolePermissionUpdateWithoutNotificationTypeInput = {
+    canReceive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userType?: UserTypeUpdateOneRequiredWithoutNotificationRolePermissionsNestedInput
+  }
+
+  export type NotificationRolePermissionUncheckedUpdateWithoutNotificationTypeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userTypeId?: StringFieldUpdateOperationsInput | string
+    canReceive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationRolePermissionUncheckedUpdateManyWithoutNotificationTypeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userTypeId?: StringFieldUpdateOperationsInput | string
+    canReceive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

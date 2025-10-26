@@ -3,6 +3,7 @@ import { RouterLink, RouterView, useRouter } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import UserProfile from './components/UserProfile.vue'
 import GlobalAlert from './components/GlobalAlert.vue'
+import NotificationDropdown from './components/NotificationDropdown.vue'
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { checkPageAccess } from './utils/permissions.js'
 import defaultLogo from '@/assets/images/logo.png'
@@ -343,17 +344,39 @@ function closeAdminDropdown() {
       
       <!-- Desktop Navigation -->
       <div class="nav-links desktop-nav">
-        <RouterLink to="/">Anasayfa</RouterLink>
-        <RouterLink to="/leads">Leadler</RouterLink>
-        <RouterLink v-if="canAccessAbout" to="/about">Hakkında</RouterLink>
-        <RouterLink v-if="canAccessFAQ" to="/faq">FAQ</RouterLink>
-        <RouterLink v-if="isAuthed" to="/dashboard">Dashboard</RouterLink>
-        <RouterLink v-if="isAuthed && canAccessPurchased" to="/purchased-leads">Satın Aldıklarım</RouterLink>
-        <RouterLink v-if="!isAuthed" to="/login">Giriş</RouterLink>
+        <RouterLink to="/">
+          <Icon icon="mdi:home-outline" width="16" height="16" />
+          <span>Anasayfa</span>
+        </RouterLink>
+        <RouterLink to="/leads">
+          <Icon icon="mdi:briefcase-outline" width="16" height="16" />
+          <span>Leadler</span>
+        </RouterLink>
+        <RouterLink v-if="canAccessAbout" to="/about">
+          <Icon icon="mdi:information-outline" width="16" height="16" />
+          <span>Hakkında</span>
+        </RouterLink>
+        <RouterLink v-if="canAccessFAQ" to="/faq">
+          <Icon icon="mdi:help-circle-outline" width="16" height="16" />
+          <span>FAQ</span>
+        </RouterLink>
+        <RouterLink v-if="isAuthed" to="/dashboard">
+          <Icon icon="mdi:view-dashboard-outline" width="16" height="16" />
+          <span>Dashboard</span>
+        </RouterLink>
+        <RouterLink v-if="isAuthed && canAccessPurchased" to="/purchased-leads">
+          <Icon icon="mdi:shopping-outline" width="16" height="16" />
+          <span>Satın Aldıklarım</span>
+        </RouterLink>
+        <RouterLink v-if="!isAuthed" to="/login">
+          <Icon icon="mdi:login-variant" width="16" height="16" />
+          <span>Giriş</span>
+        </RouterLink>
         
         <!-- Admin Dropdown -->
         <div v-if="isAuthed && (userTypeId === 'ADMIN' || userTypeId === 'SUPERADMIN')" class="admin-dropdown" @mouseenter="openAdminDropdown" @mouseleave="closeAdminDropdown">
           <button class="admin-trigger">
+          <Icon icon="mdi:account" width="16" height="16" />
             Admin
             <Icon icon="mdi:chevron-down" width="12" height="12" />
           </button>
@@ -380,6 +403,10 @@ function closeAdminDropdown() {
                 <Icon icon="mdi:history" width="16" height="16" />
                 Aktivite Geçmişi
               </RouterLink>
+              <RouterLink to="/admin/balance" class="menu-item">
+                <Icon icon="mdi:wallet-outline" width="16" height="16" />
+                Bakiye Yönetimi
+              </RouterLink>
             </div>
 
             <!-- Ayarlar Kategorisi -->
@@ -395,6 +422,10 @@ function closeAdminDropdown() {
               <RouterLink to="/admin/email-sms-settings" class="menu-item">
                 <Icon icon="mdi:email-outline" width="16" height="16" />
                 Mail/SMS Ayarları
+              </RouterLink>
+              <RouterLink to="/admin/notification-settings" class="menu-item">
+                <Icon icon="mdi:bell-outline" width="16" height="16" />
+                Bildirim Ayarları
               </RouterLink>
             </div>
 
@@ -435,9 +466,10 @@ function closeAdminDropdown() {
             </div>
           </div>
         </div>
-        <UserProfile 
-          v-if="isAuthed" 
-          :user="currentUser" 
+        <NotificationDropdown v-if="isAuthed" />
+        <UserProfile
+          v-if="isAuthed"
+          :user="currentUser"
           :role="role" 
           :userType="userType"
         />
@@ -530,6 +562,11 @@ function closeAdminDropdown() {
             <span>Aktivite Geçmişi</span>
           </RouterLink>
 
+          <RouterLink to="/admin/balance" @click="closeMobileMenu" class="mobile-nav-link">
+            <Icon icon="mdi:wallet-outline" width="20" height="20" />
+            <span>Bakiye Yönetimi</span>
+          </RouterLink>
+
           <!-- Ayarlar Kategorisi -->
           <div class="mobile-category-label">
             <Icon icon="mdi:cog-outline" width="16" height="16" />
@@ -545,6 +582,11 @@ function closeAdminDropdown() {
           <RouterLink to="/admin/email-sms-settings" @click="closeMobileMenu" class="mobile-nav-link">
             <Icon icon="mdi:email-outline" width="20" height="20" />
             <span>Mail/SMS Ayarları</span>
+          </RouterLink>
+
+          <RouterLink to="/admin/notification-settings" @click="closeMobileMenu" class="mobile-nav-link">
+            <Icon icon="mdi:bell-outline" width="20" height="20" />
+            <span>Bildirim Ayarları</span>
           </RouterLink>
 
           <!-- Yetkiler Kategorisi -->
@@ -713,9 +755,45 @@ nav a.router-link-exact-active:hover {
 }
 
 nav a {
-  display: inline-block;
-  padding: 0 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
   border-left: 1px solid var(--color-border);
+  text-decoration: none;
+  color: #374151;
+  transition: all 0.2s ease;
+  border-radius: 0.375rem;
+  margin: 0 0.125rem;
+  height: 2.5rem;
+  box-sizing: border-box;
+}
+
+nav a:hover {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  color: #1f2937;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+nav a.router-link-exact-active {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+  font-weight: 500;
+}
+
+nav a.router-link-exact-active:hover {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+}
+
+nav a svg {
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+nav a:hover svg {
+  transform: scale(1.1);
 }
 
 nav a:first-of-type {
@@ -839,7 +917,7 @@ nav a:first-of-type {
 .menu-item:hover {
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   color: #1f2937;
-  box-shadow: inset 3px 0 0 var(--text);
+  box-shadow: inset 3px 0px 0px var(--text);
 }
 
 .menu-item svg {

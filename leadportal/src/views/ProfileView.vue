@@ -220,6 +220,226 @@
           </div>
         </div>
 
+        <!-- IBAN Bilgileri -->
+        <div class="profile-section">
+          <div class="section-header">
+            <h2>IBAN Bilgileri</h2>
+            <p class="section-description">
+              SEPA-Lastschrift: Satın alımlarınız için otomatik ödeme yöntemi
+            </p>
+          </div>
+
+          <!-- IBAN Kayıtlı - Özet Görünüm -->
+          <div v-if="ibanData.hasIban && !isEditingIban" class="iban-summary">
+            <div class="iban-info-grid">
+              <div class="iban-info-item">
+                <label>Hesap Sahibi</label>
+                <span>{{ ibanData.ibanAccountHolder }}</span>
+              </div>
+              <div class="iban-info-item">
+                <label>IBAN</label>
+                <span class="iban-masked">{{ ibanData.ibanNumber }}</span>
+              </div>
+              <div class="iban-info-item" v-if="ibanData.ibanBic">
+                <label>BIC (opsiyonel)</label>
+                <span>{{ ibanData.ibanBic }}</span>
+              </div>
+              <div class="iban-info-item">
+                <label>Adres</label>
+                <span>{{ ibanData.ibanAddress }}</span>
+              </div>
+              <div class="iban-info-item">
+                <label>Posta Kodu</label>
+                <span>{{ ibanData.ibanPostalCode }}</span>
+              </div>
+              <div class="iban-info-item">
+                <label>Şehir</label>
+                <span>{{ ibanData.ibanCity }}</span>
+              </div>
+            </div>
+            <div class="iban-actions">
+              <button class="btn btn-secondary" @click="startEditIban" :disabled="isLoadingIban">
+                <Icon icon="mdi:pencil" width="18" />
+                Düzenle
+              </button>
+              <button class="btn btn-danger" @click="confirmDeleteIban" :disabled="isLoadingIban">
+                <Icon icon="mdi:delete" width="18" />
+                Sil
+              </button>
+            </div>
+
+            <div class="iban-consent">
+              <Icon icon="mdi:information-outline" width="20" />
+              <p>SEPA-Lastschrift için onay verdiniz. Satın alımlarınız otomatik olarak hesabınızdan çekilecektir.</p>
+            </div>
+          </div>
+
+          <!-- IBAN Ekleme/Düzenleme Formu -->
+          <form v-else @submit.prevent="saveIban" class="profile-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="ibanAccountHolder">Hesap Sahibi *</label>
+                <input
+                  type="text"
+                  id="ibanAccountHolder"
+                  v-model="ibanForm.ibanAccountHolder"
+                  class="form-input"
+                  placeholder="Ad Soyad"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="ibanNumber">IBAN *</label>
+                <input
+                  type="text"
+                  id="ibanNumber"
+                  v-model="ibanForm.ibanNumber"
+                  class="form-input"
+                  placeholder="DE89 3704 0044 0532 0130 00"
+                  required
+                  maxlength="34"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="ibanBic">BIC (opsiyonel)</label>
+              <input
+                type="text"
+                id="ibanBic"
+                v-model="ibanForm.ibanBic"
+                class="form-input"
+                placeholder="COBADEFFXXX"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="ibanAddress">Adres *</label>
+              <input
+                type="text"
+                id="ibanAddress"
+                v-model="ibanForm.ibanAddress"
+                class="form-input"
+                placeholder="Musterstraße 123"
+                required
+              />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="ibanPostalCode">Posta Kodu *</label>
+                <input
+                  type="text"
+                  id="ibanPostalCode"
+                  v-model="ibanForm.ibanPostalCode"
+                  class="form-input"
+                  placeholder="10115"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="ibanCity">Şehir *</label>
+                <input
+                  type="text"
+                  id="ibanCity"
+                  v-model="ibanForm.ibanCity"
+                  class="form-input"
+                  placeholder="Berlin"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="iban-consent-checkbox">
+              <input
+                type="checkbox"
+                id="ibanConsent"
+                v-model="ibanConsent"
+                required
+              />
+              <label for="ibanConsent">
+                SEPA-Lastschrift için Einzugsermächtigung'u kabul ediyorum ve
+                <a href="#" class="consent-link">Geschäftsbedingungen</a>'e uygun hareket edeceğimi onaylıyorum.
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" @click="cancelEditIban" v-if="ibanData.hasIban">
+                İptal
+              </button>
+              <button type="submit" class="btn btn-primary" :disabled="isLoadingIban || !ibanConsent">
+                <Icon icon="mdi:content-save" width="18" />
+                <span v-if="isLoadingIban">Kaydediliyor...</span>
+                <span v-else>{{ ibanData.hasIban ? 'Güncelle' : 'IBAN Bilgilerini Kaydet' }}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Ödeme Ayarları -->
+        <div v-if="user.balanceEnabled" class="profile-section">
+          <div class="section-header">
+            <h2>Ödeme Ayarları</h2>
+            <p class="section-description">
+              Varsayılan ödeme yönteminizi seçin
+            </p>
+          </div>
+          <form @submit.prevent="updatePaymentMethod" class="profile-form">
+            <div class="payment-options">
+              <label class="payment-option" :class="{ selected: form.paymentMethod === 'balance' }">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="balance"
+                  v-model="form.paymentMethod"
+                  class="radio-input"
+                />
+                <div class="option-content">
+                  <Icon icon="mdi:wallet-outline" width="24" />
+                  <div>
+                    <div class="option-title">Bakiyemden Düş</div>
+                    <div class="option-description">Satın alımlar otomatik olarak bakiyenizden düşülür</div>
+                  </div>
+                </div>
+              </label>
+
+              <label class="payment-option" :class="{ selected: form.paymentMethod === 'iban' }" :title="ibanData.hasIban ? '' : 'Önce IBAN bilgilerinizi ekleyin'">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="iban"
+                  v-model="form.paymentMethod"
+                  class="radio-input"
+                  :disabled="!ibanData.hasIban"
+                />
+                <div class="option-content">
+                  <Icon icon="mdi:bank-outline" width="24" />
+                  <div>
+                    <div class="option-title">
+                      IBAN'dan Çek
+                      <span v-if="!ibanData.hasIban" class="coming-soon">IBAN Ekleyin</span>
+                    </div>
+                    <div class="option-description">IBAN ile manuel ödeme yapın</div>
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            <div class="balance-display">
+              <Icon icon="mdi:cash-multiple" width="20" />
+              <span>Mevcut Bakiye:</span>
+              <strong>{{ formatCurrency(user.balance || 0) }}</strong>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" :disabled="isLoading">
+                <span v-if="isLoading">Kaydediliyor...</span>
+                <span v-else>Ödeme Yöntemini Güncelle</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
         <!-- Hesap Bilgileri -->
         <div class="profile-section">
           <div class="section-header">
@@ -356,6 +576,7 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { Icon } from '@iconify/vue'
 import api from '@/utils/axios.js'
 import { useAlert } from '../composables/useAlert'
 
@@ -371,7 +592,8 @@ const form = reactive({
   firstName: '',
   lastName: '',
   username: '',
-  email: ''
+  email: '',
+  paymentMethod: 'balance'
 })
 
 const passwordForm = reactive({
@@ -390,6 +612,31 @@ const secretKey = ref('')
 const verificationCode = ref('')
 const disable2FACode = ref('')
 const disable2FAPassword = ref('')
+
+// IBAN state
+const ibanData = ref({
+  hasIban: false,
+  ibanAccountHolder: '',
+  ibanNumber: '',
+  ibanNumberFull: '',
+  ibanBic: '',
+  ibanAddress: '',
+  ibanPostalCode: '',
+  ibanCity: ''
+})
+
+const ibanForm = reactive({
+  ibanAccountHolder: '',
+  ibanNumber: '',
+  ibanBic: '',
+  ibanAddress: '',
+  ibanPostalCode: '',
+  ibanCity: ''
+})
+
+const isEditingIban = ref(false)
+const isLoadingIban = ref(false)
+const ibanConsent = ref(false)
 
 const displayName = computed(() => {
   if (user.value?.firstName && user.value?.lastName) {
@@ -424,6 +671,7 @@ async function loadUserProfile() {
     form.lastName = user.value.lastName || ''
     form.username = user.value.username || ''
     form.email = user.value.email || ''
+    form.paymentMethod = user.value.paymentMethod || 'balance'
   } catch (err) {
     console.error('Profil yüklenemedi:', err)
     error('Profil bilgileri yüklenemedi')
@@ -433,7 +681,8 @@ async function loadUserProfile() {
 async function updateProfile() {
   isLoading.value = true
   try {
-    await api.put('/auth/profile', form)
+    const { paymentMethod, ...profileData } = form
+    await api.put('/auth/profile', profileData)
     await loadUserProfile()
     success('Profil başarıyla güncellendi')
   } catch (err) {
@@ -442,6 +691,27 @@ async function updateProfile() {
   } finally {
     isLoading.value = false
   }
+}
+
+async function updatePaymentMethod() {
+  isLoading.value = true
+  try {
+    await api.put('/auth/profile', { paymentMethod: form.paymentMethod })
+    await loadUserProfile()
+    success('Ödeme yöntemi başarıyla güncellendi')
+  } catch (err) {
+    console.error('Ödeme yöntemi güncellenemedi:', err)
+    error('Ödeme yöntemi güncellenirken hata oluştu')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+function formatCurrency(amount) {
+  return new Intl.NumberFormat('de-DE', {
+    style: 'currency',
+    currency: 'EUR'
+  }).format(amount || 0)
 }
 
 async function changePassword() {
@@ -610,9 +880,96 @@ async function confirmDisable2FA() {
   }
 }
 
+// IBAN Functions
+async function loadIbanData() {
+  try {
+    const response = await api.get('/auth/iban')
+    ibanData.value = response.data
+
+    // Eğer IBAN varsa form'a doldur (düzenleme için)
+    if (ibanData.value.hasIban) {
+      ibanForm.ibanAccountHolder = ibanData.value.ibanAccountHolder || ''
+      ibanForm.ibanNumber = ibanData.value.ibanNumberFull || ''
+      ibanForm.ibanBic = ibanData.value.ibanBic || ''
+      ibanForm.ibanAddress = ibanData.value.ibanAddress || ''
+      ibanForm.ibanPostalCode = ibanData.value.ibanPostalCode || ''
+      ibanForm.ibanCity = ibanData.value.ibanCity || ''
+    }
+  } catch (err) {
+    console.error('IBAN bilgileri yüklenemedi:', err)
+  }
+}
+
+async function saveIban() {
+  if (!ibanConsent.value) {
+    error('Lütfen SEPA-Lastschrift onayını kabul edin')
+    return
+  }
+
+  isLoadingIban.value = true
+  try {
+    await api.put('/auth/iban', ibanForm)
+    await loadIbanData()
+    isEditingIban.value = false
+    ibanConsent.value = false
+    success('IBAN bilgileri başarıyla kaydedildi')
+  } catch (err) {
+    console.error('IBAN kaydedilemedi:', err)
+    error(err.response?.data?.error || 'IBAN bilgileri kaydedilirken hata oluştu')
+  } finally {
+    isLoadingIban.value = false
+  }
+}
+
+function startEditIban() {
+  isEditingIban.value = true
+  ibanConsent.value = true // Zaten kayıtlı IBAN varsa onay verilmiş demektir
+}
+
+function cancelEditIban() {
+  isEditingIban.value = false
+  ibanConsent.value = false
+  // Form'u tekrar doldur
+  if (ibanData.value.hasIban) {
+    ibanForm.ibanAccountHolder = ibanData.value.ibanAccountHolder || ''
+    ibanForm.ibanNumber = ibanData.value.ibanNumberFull || ''
+    ibanForm.ibanBic = ibanData.value.ibanBic || ''
+    ibanForm.ibanAddress = ibanData.value.ibanAddress || ''
+    ibanForm.ibanPostalCode = ibanData.value.ibanPostalCode || ''
+    ibanForm.ibanCity = ibanData.value.ibanCity || ''
+  }
+}
+
+async function confirmDeleteIban() {
+  if (!confirm('IBAN bilgilerinizi silmek istediğinizden emin misiniz?')) {
+    return
+  }
+
+  isLoadingIban.value = true
+  try {
+    await api.delete('/auth/iban')
+    await loadIbanData()
+    // Form'u temizle
+    ibanForm.ibanAccountHolder = ''
+    ibanForm.ibanNumber = ''
+    ibanForm.ibanBic = ''
+    ibanForm.ibanAddress = ''
+    ibanForm.ibanPostalCode = ''
+    ibanForm.ibanCity = ''
+    ibanConsent.value = false
+    success('IBAN bilgileri başarıyla silindi')
+  } catch (err) {
+    console.error('IBAN silinemedi:', err)
+    error(err.response?.data?.error || 'IBAN bilgileri silinirken hata oluştu')
+  } finally {
+    isLoadingIban.value = false
+  }
+}
+
 onMounted(() => {
   loadUserProfile()
   load2FAStatus()
+  loadIbanData()
 })
 </script>
 
@@ -1004,9 +1361,279 @@ onMounted(() => {
   font-weight: 600;
 }
 
+/* Payment Options Styles */
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.payment-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 1.25rem;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.payment-option:hover:not(:has(input:disabled)) {
+  border-color: #3b82f6;
+  background: #f9fafb;
+}
+
+.payment-option.selected {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.payment-option:has(input:disabled) {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.radio-input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.option-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.option-content svg {
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.option-title {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+}
+
+.option-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.coming-soon {
+  font-size: 0.75rem;
+  color: #f59e0b;
+  font-weight: 500;
+  padding: 0.125rem 0.5rem;
+  background: #fef3c7;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+}
+
+.balance-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.balance-display svg {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.balance-display span {
+  color: #6b7280;
+  font-size: 0.9375rem;
+}
+
+.balance-display strong {
+  color: #1f2937;
+  font-size: 1.125rem;
+  margin-left: auto;
+}
+
+/* IBAN Styles */
+.iban-summary {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.iban-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.iban-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.iban-info-item label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.iban-info-item span {
+  font-size: 0.9375rem;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.iban-masked {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.05em;
+}
+
+.iban-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9375rem;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-danger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: white;
+  color: #dc2626;
+  border: 1px solid #dc2626;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9375rem;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #dc2626;
+  color: white;
+}
+
+.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.iban-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+}
+
+.iban-consent svg {
+  color: #3b82f6;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.iban-consent p {
+  font-size: 0.875rem;
+  color: #1e40af;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.iban-consent-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.iban-consent-checkbox input[type="checkbox"] {
+  margin-top: 0.25rem;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.iban-consent-checkbox label {
+  font-size: 0.875rem;
+  color: #374151;
+  line-height: 1.6;
+  cursor: pointer;
+}
+
+.consent-link {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+.consent-link:hover {
+  color: #2563eb;
+}
+
 @media (max-width: 768px) {
   .profile-container {
     padding: 0 0.5rem;
+  }
+
+  .iban-info-grid,
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .iban-actions {
+    flex-direction: column;
   }
 
   .profile-header h1 {

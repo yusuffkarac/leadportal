@@ -4,6 +4,9 @@ import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { io } from 'socket.io-client'
 import { formatPrice, getCurrencySymbol } from '@/utils/currency.js'
+import { useAlert } from '../composables/useAlert'
+
+const { success, error } = useAlert()
 
 const route = useRoute()
 const leadId = route.params.id
@@ -106,15 +109,32 @@ async function confirmInstantBuy() {
 
   try {
     const response = await axios.post(`/api/leads/${leadId}/instant-buy`, {}, { headers: authHeaders() })
-    
+
     if (response.data.success) {
       closeInstantBuyModal()
       // Lead'i yeniden yükle
       await loadLead()
+
+      // Başarı mesajı göster
+      const paymentInfo = response.data.paymentMethod === 'balance'
+        ? `Bakiyenizden ${formatPrice(response.data.sale.amount, settings.value.defaultCurrency)} düşüldü.`
+        : 'IBAN üzerinden ödeme yapılacaktır.'
+
+      success(`Lead başarıyla satın alındı!\n\n${paymentInfo}`)
     }
-  } catch (error) {
-    const errorData = error.response?.data
-    errorMessage.value = errorData?.error || 'Anında satın alma işlemi başarısız'
+  } catch (err) {
+    const errorData = err.response?.data
+
+    closeInstantBuyModal()
+
+    // Hata tipine göre mesaj göster
+    if (errorData?.errorType === 'INSUFFICIENT_BALANCE') {
+      error(`Yetersiz bakiye!\n\nGerekli: ${formatPrice(errorData.required, settings.value.defaultCurrency)}\nMevcut: ${formatPrice(errorData.available, settings.value.defaultCurrency)}\n\n${errorData.error}`)
+    } else if (errorData?.errorType === 'IBAN_NOT_FOUND') {
+      error(errorData.error + '\n\nProfil sayfanızdan IBAN bilgilerinizi ekleyebilirsiniz.')
+    } else {
+      error(errorData?.error || 'Anında satın alma işlemi başarısız')
+    }
   } finally {
     isProcessingInstantBuy.value = false
   }

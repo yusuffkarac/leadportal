@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { sendAppEmail } from '../utils/mailer.js'
 import { renderEmailTemplate } from '../utils/emailTemplateRenderer.js'
 import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activityLogger.js'
+import { createNotification } from '../services/notificationService.js'
 
 // User bilgilerini anonim hale getir (kendi teklifi değilse)
 function anonymizeUser(user, currentUserId = null) {
@@ -75,6 +76,34 @@ export default function bidsRouter(prisma, io) {
 
     io.to(`lead:${leadId}`).emit('bid:new', { leadId, bid: anonymizedBid })
 
+    // Bildirim 1: Teklif veren kullanıcıya
+    try {
+      await createNotification(
+        req.user.id,
+        'BID_PLACED',
+        'Teklifiniz Alındı',
+        `${lead.title} için ${amount} TL teklif verdiniz.`,
+        { leadId, bidId: bid.id, amount }
+      )
+    } catch (e) {
+      console.error('Notification error (BID_PLACED):', e.message)
+    }
+
+    // Bildirim 2: Lead sahibine
+    try {
+      if (lead.ownerId !== req.user.id) {
+        await createNotification(
+          lead.ownerId,
+          'BID_RECEIVED',
+          'Yeni Teklif Geldi',
+          `"${lead.title}" için ${amount} TL teklif geldi.`,
+          { leadId, bidId: bid.id, amount }
+        )
+      }
+    } catch (e) {
+      console.error('Notification error (BID_RECEIVED):', e.message)
+    }
+
     // E-posta: Teklif verene bilgilendirme gönder
     try {
       const user = await prisma.user.findUnique({ where: { id: req.user.id } })
@@ -99,6 +128,21 @@ export default function bidsRouter(prisma, io) {
       }
     } catch (e) {
       console.error('Bid email send error:', e.message)
+    }
+
+    // Bildirim 3: Önceki en yüksek teklifi veren kullanıcıya (outbid)
+    try {
+      if (previousTopBid && previousTopBid.userId !== req.user.id) {
+        await createNotification(
+          previousTopBid.userId,
+          'BID_OUTBID',
+          'Teklifiniz Geçildi',
+          `"${lead.title}" için teklifiniz geçildi. Yeni teklif: ${amount} TL`,
+          { leadId, bidId: bid.id, amount, previousAmount: previousTopBid.amount }
+        )
+      }
+    } catch (e) {
+      console.error('Notification error (BID_OUTBID):', e.message)
     }
 
     // Outbid: önceki en yüksek teklifi veren kullanıcıya haber ver

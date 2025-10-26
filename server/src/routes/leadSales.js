@@ -49,7 +49,9 @@ router.get('/admin/all', async (req, res) => {
         buyer: {
           select: {
             id: true,
-            email: true
+            email: true,
+            firstName: true,
+            lastName: true
           }
         },
         lead: {

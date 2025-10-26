@@ -136,7 +136,16 @@ exports.Prisma.UserScalarFieldEnum = {
   lastUserAgent: 'lastUserAgent',
   twoFactorEnabled: 'twoFactorEnabled',
   twoFactorSecret: 'twoFactorSecret',
-  isActive: 'isActive'
+  isActive: 'isActive',
+  balance: 'balance',
+  balanceEnabled: 'balanceEnabled',
+  paymentMethod: 'paymentMethod',
+  ibanAccountHolder: 'ibanAccountHolder',
+  ibanNumber: 'ibanNumber',
+  ibanBic: 'ibanBic',
+  ibanAddress: 'ibanAddress',
+  ibanPostalCode: 'ibanPostalCode',
+  ibanCity: 'ibanCity'
 };
 
 exports.Prisma.LeadScalarFieldEnum = {
@@ -179,6 +188,9 @@ exports.Prisma.LeadSaleScalarFieldEnum = {
   leadId: 'leadId',
   buyerId: 'buyerId',
   amount: 'amount',
+  paymentMethod: 'paymentMethod',
+  balanceBefore: 'balanceBefore',
+  balanceAfter: 'balanceAfter',
   soldAt: 'soldAt',
   createdAt: 'createdAt'
 };
@@ -367,6 +379,65 @@ exports.Prisma.PasswordResetTokenScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.BalanceTransactionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  amount: 'amount',
+  type: 'type',
+  description: 'description',
+  relatedId: 'relatedId',
+  adminId: 'adminId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.NotificationTypeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  description: 'description',
+  category: 'category',
+  defaultEnabled: 'defaultEnabled',
+  emailEnabled: 'emailEnabled',
+  inAppEnabled: 'inAppEnabled',
+  icon: 'icon',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NotificationPreferenceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  notificationTypeId: 'notificationTypeId',
+  emailEnabled: 'emailEnabled',
+  inAppEnabled: 'inAppEnabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  notificationTypeId: 'notificationTypeId',
+  title: 'title',
+  message: 'message',
+  data: 'data',
+  isRead: 'isRead',
+  readAt: 'readAt',
+  emailSent: 'emailSent',
+  emailSentAt: 'emailSentAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.NotificationRolePermissionScalarFieldEnum = {
+  id: 'id',
+  userTypeId: 'userTypeId',
+  notificationTypeId: 'notificationTypeId',
+  canReceive: 'canReceive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -416,7 +487,12 @@ exports.Prisma.ModelName = {
   EmailTemplate: 'EmailTemplate',
   SMSTemplate: 'SMSTemplate',
   ActivityLog: 'ActivityLog',
-  PasswordResetToken: 'PasswordResetToken'
+  PasswordResetToken: 'PasswordResetToken',
+  BalanceTransaction: 'BalanceTransaction',
+  NotificationType: 'NotificationType',
+  NotificationPreference: 'NotificationPreference',
+  Notification: 'Notification',
+  NotificationRolePermission: 'NotificationRolePermission'
 };
 
 /**

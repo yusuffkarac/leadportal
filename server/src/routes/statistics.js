@@ -756,7 +756,8 @@ router.get('/user', authenticateToken, async (req, res) => {
           select: { 
             id: true, 
             title: true, 
-            isSold: true, 
+            isSold: true,
+            endsAt: true,
             sale: { select: { buyerId: true, amount: true } }
           }
         }
@@ -891,22 +892,51 @@ router.get('/user', authenticateToken, async (req, res) => {
       // Son aktiviteler
       recentPurchases: recentPurchases.map(sale => ({
         id: sale.id,
+        leadId: sale.lead.id,
         leadTitle: sale.lead.title,
         amount: sale.amount,
         soldAt: sale.soldAt,
         seller: sale.lead.owner.email
       })),
       
-      recentBids: recentBids.map(bid => ({
-        id: bid.id,
-        leadTitle: bid.lead.title,
-        amount: bid.amount,
-        createdAt: bid.createdAt,
-        won: bid.lead.isSold && bid.lead.sale?.buyerId === userId
-      })),
+      recentBids: recentBids.map(bid => {
+        const now = new Date();
+        const leadEndsAt = new Date(bid.lead.endsAt);
+        const isLeadExpired = leadEndsAt <= now;
+        
+        let status = 'waiting'; // Varsayılan durum - teklif bekliyor
+        
+        // Lead satılmışsa (isSold = true)
+        if (bid.lead.isSold) {
+          if (bid.lead.sale?.buyerId === userId) {
+            status = 'won'; // Ben kazandım
+          } else {
+            status = 'lost'; // Başkası kazandı
+          }
+        } 
+        // Lead henüz satılmamış ama süresi dolmuşsa
+        else if (isLeadExpired) {
+          status = 'lost'; // Süre doldu, kimse kazanmadı
+        }
+        // Lead hala aktif ve süresi dolmamışsa
+        else {
+          status = 'waiting'; // Hala bekliyor
+        }
+        
+        return {
+          id: bid.id,
+          leadId: bid.lead.id,
+          leadTitle: bid.lead.title,
+          amount: bid.amount,
+          createdAt: bid.createdAt,
+          won: status === 'won',
+          status: status
+        };
+      }),
       
       recentWatchlist: recentWatchlist.map(watch => ({
         id: watch.id,
+        leadId: watch.lead.id,
         leadTitle: watch.lead.title,
         watchedAt: watch.createdAt,
         purchased: watch.lead.isSold && watch.lead.sale?.buyerId === userId
@@ -921,6 +951,142 @@ router.get('/user', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Kullanıcı istatistik hatası:', error);
     res.status(500).json({ error: 'İstatistikler yüklenirken bir hata oluştu' });
+  }
+});
+
+/**
+ * GET /api/statistics/user/purchases
+ * Kullanıcının tüm satın almalarını getir
+ */
+router.get('/user/purchases', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const purchasedLeads = await prisma.leadSale.findMany({
+      where: { buyerId: userId },
+      include: {
+        lead: {
+          include: {
+            owner: {
+              select: { email: true, firstName: true, lastName: true }
+            }
+          }
+        }
+      },
+      orderBy: { soldAt: 'desc' }
+    });
+
+    res.json(purchasedLeads.map(sale => ({
+      id: sale.id,
+      leadId: sale.lead.id,
+      leadTitle: sale.lead.title,
+      amount: sale.amount,
+      soldAt: sale.soldAt,
+      paymentMethod: sale.paymentMethod,
+      balanceBefore: sale.balanceBefore,
+      balanceAfter: sale.balanceAfter,
+      seller: sale.lead.owner.firstName
+        ? `${sale.lead.owner.firstName} ${sale.lead.owner.lastName || ''}`.trim()
+        : sale.lead.owner.email
+    })));
+  } catch (error) {
+    console.error('Satın alma listesi hatası:', error);
+    res.status(500).json({ error: 'Satın alma listesi yüklenirken bir hata oluştu' });
+  }
+});
+
+/**
+ * GET /api/statistics/user/bids
+ * Kullanıcının tüm tekliflerini getir
+ */
+router.get('/user/bids', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const userBids = await prisma.bid.findMany({
+      where: { userId },
+      include: {
+        lead: {
+          select: {
+            id: true,
+            title: true,
+            isSold: true,
+            endsAt: true,
+            sale: { select: { buyerId: true, amount: true } }
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json(userBids.map(bid => {
+      const now = new Date();
+      const leadEndsAt = new Date(bid.lead.endsAt);
+      const isLeadExpired = leadEndsAt <= now;
+
+      let status = 'waiting';
+
+      if (bid.lead.isSold) {
+        if (bid.lead.sale?.buyerId === userId) {
+          status = 'won';
+        } else {
+          status = 'lost';
+        }
+      } else if (isLeadExpired) {
+        status = 'lost';
+      } else {
+        status = 'waiting';
+      }
+
+      return {
+        id: bid.id,
+        leadId: bid.lead.id,
+        leadTitle: bid.lead.title,
+        amount: bid.amount,
+        createdAt: bid.createdAt,
+        won: status === 'won',
+        status: status
+      };
+    }));
+  } catch (error) {
+    console.error('Teklif listesi hatası:', error);
+    res.status(500).json({ error: 'Teklif listesi yüklenirken bir hata oluştu' });
+  }
+});
+
+/**
+ * GET /api/statistics/user/watchlist
+ * Kullanıcının tüm watchlist öğelerini getir
+ */
+router.get('/user/watchlist', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const watchlist = await prisma.leadWatch.findMany({
+      where: { userId },
+      include: {
+        lead: {
+          select: {
+            id: true,
+            title: true,
+            isSold: true,
+            sale: { select: { buyerId: true } }
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json(watchlist.map(watch => ({
+      id: watch.id,
+      leadId: watch.lead.id,
+      leadTitle: watch.lead.title,
+      watchedAt: watch.createdAt,
+      purchased: watch.lead.isSold && watch.lead.sale?.buyerId === userId
+    })));
+  } catch (error) {
+    console.error('Watchlist hatası:', error);
+    res.status(500).json({ error: 'Watchlist yüklenirken bir hata oluştu' });
   }
 });
 
