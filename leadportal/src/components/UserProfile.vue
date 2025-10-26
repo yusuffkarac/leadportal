@@ -29,6 +29,22 @@
         <Icon icon="mdi:account" width="16" height="16" />
         <span>Profil</span>
       </div>
+      
+      <div v-if="canAccessAbout" class="dropdown-item" @click="goToAbout">
+        <Icon icon="mdi:information-outline" width="16" height="16" />
+        <span>Hakkında</span>
+      </div>
+      
+      <div v-if="canAccessFAQ" class="dropdown-item" @click="goToFAQ">
+        <Icon icon="mdi:help-circle-outline" width="16" height="16" />
+        <span>FAQ</span>
+      </div>
+      
+      <div v-if="canAccessPurchased" class="dropdown-item" @click="goToPurchased">
+        <Icon icon="mdi:shopping-outline" width="16" height="16" />
+        <span>Satın Aldıklarım</span>
+      </div>
+      
       <div class="dropdown-item logout" @click="logout">
         <Icon icon="mdi:logout" width="16" height="16" />
         <span>Çıkış Yap</span>
@@ -55,6 +71,18 @@ const props = defineProps({
   userType: {
     type: Object,
     default: () => ({})
+  },
+  canAccessAbout: {
+    type: Boolean,
+    default: false
+  },
+  canAccessFAQ: {
+    type: Boolean,
+    default: false
+  },
+  canAccessPurchased: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -104,6 +132,22 @@ function closeDropdown() {
 
 function goToProfile() {
   router.push('/profile')
+  isDropdownOpen.value = false
+}
+
+function goToAbout() {
+  router.push('/about')
+  isDropdownOpen.value = false
+}
+
+function goToFAQ() {
+  router.push('/faq')
+  isDropdownOpen.value = false
+}
+
+function goToPurchased() {
+  router.push('/purchased-leads')
+  isDropdownOpen.value = false
 }
 
 function logout() {
@@ -111,6 +155,7 @@ function logout() {
   window.dispatchEvent(new CustomEvent('user-logout'))
   // Success alert göster
   success('Başarıyla çıkış yapıldı')
+  isDropdownOpen.value = false
 }
 </script>
 

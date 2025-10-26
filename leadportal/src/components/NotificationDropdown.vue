@@ -11,22 +11,31 @@ const unreadCount = ref(0)
 const isLoading = ref(false)
 const hasMore = ref(true)
 const page = ref(1)
+const hoverTimeout = ref(null)
 
-// Bildirim dropdown toggle
-function toggleDropdown() {
-  isOpen.value = !isOpen.value
-  if (isOpen.value && notifications.value.length === 0) {
+// Bildirim dropdown açma
+function openDropdown() {
+  // Eğer kapatma timeout'u varsa iptal et
+  if (hoverTimeout.value) {
+    clearTimeout(hoverTimeout.value)
+    hoverTimeout.value = null
+  }
+  
+  isOpen.value = true
+  if (notifications.value.length === 0) {
     loadNotifications()
   }
 }
 
-// Dışarı tıklandığında dropdown'u kapat
-function handleClickOutside(event) {
-  const dropdown = document.querySelector('.notification-dropdown')
-  if (dropdown && !dropdown.contains(event.target)) {
+// Bildirim dropdown kapatma (delay ile)
+function closeDropdown() {
+  // Kısa bir delay ekle ki mouse dropdown'a geçerken kapanmasın
+  hoverTimeout.value = setTimeout(() => {
     isOpen.value = false
-  }
+    hoverTimeout.value = null
+  }, 150)
 }
+
 
 // Bildirimleri yükle
 async function loadNotifications() {
@@ -196,16 +205,15 @@ onMounted(() => {
   pollingInterval = setInterval(() => {
     loadUnreadCount()
   }, 30000)
-
-  // Dışarı tıklama event listener
-  document.addEventListener('click', handleClickOutside)
 })
 
 onUnmounted(() => {
   if (pollingInterval) {
     clearInterval(pollingInterval)
   }
-  document.removeEventListener('click', handleClickOutside)
+  if (hoverTimeout.value) {
+    clearTimeout(hoverTimeout.value)
+  }
 })
 </script>
 
@@ -213,7 +221,8 @@ onUnmounted(() => {
   <div class="notification-dropdown">
     <button
       class="notification-button"
-      @click="toggleDropdown"
+      @mouseenter="openDropdown"
+      @mouseleave="closeDropdown"
       :aria-label="`${unreadCount} okunmamış bildirim`"
     >
       <Icon icon="mdi:bell-outline" width="20" height="20" />
@@ -221,7 +230,7 @@ onUnmounted(() => {
     </button>
 
     <transition name="dropdown">
-      <div v-if="isOpen" class="dropdown-menu">
+      <div v-if="isOpen" class="dropdown-menu" @mouseenter="openDropdown" @mouseleave="closeDropdown">
         <div class="dropdown-header">
           <h3>Bildirimler</h3>
           <button

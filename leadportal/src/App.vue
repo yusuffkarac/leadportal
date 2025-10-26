@@ -352,21 +352,9 @@ function closeAdminDropdown() {
           <Icon icon="mdi:briefcase-outline" width="16" height="16" />
           <span>Leadler</span>
         </RouterLink>
-        <RouterLink v-if="canAccessAbout" to="/about">
-          <Icon icon="mdi:information-outline" width="16" height="16" />
-          <span>Hakkında</span>
-        </RouterLink>
-        <RouterLink v-if="canAccessFAQ" to="/faq">
-          <Icon icon="mdi:help-circle-outline" width="16" height="16" />
-          <span>FAQ</span>
-        </RouterLink>
         <RouterLink v-if="isAuthed" to="/dashboard">
           <Icon icon="mdi:view-dashboard-outline" width="16" height="16" />
           <span>Dashboard</span>
-        </RouterLink>
-        <RouterLink v-if="isAuthed && canAccessPurchased" to="/purchased-leads">
-          <Icon icon="mdi:shopping-outline" width="16" height="16" />
-          <span>Satın Aldıklarım</span>
         </RouterLink>
         <RouterLink v-if="!isAuthed" to="/login">
           <Icon icon="mdi:login-variant" width="16" height="16" />
@@ -472,6 +460,9 @@ function closeAdminDropdown() {
           :user="currentUser"
           :role="role" 
           :userType="userType"
+          :canAccessAbout="canAccessAbout"
+          :canAccessFAQ="canAccessFAQ"
+          :canAccessPurchased="canAccessPurchased"
         />
       </div>
 
@@ -509,25 +500,12 @@ function closeAdminDropdown() {
           <span>Leadler</span>
         </RouterLink>
         
-        <RouterLink v-if="canAccessAbout" to="/about" @click="closeMobileMenu" class="mobile-nav-link">
-          <Icon icon="mdi:information-outline" width="20" height="20" />
-          <span>Hakkında</span>
-        </RouterLink>
-        
-        <RouterLink v-if="canAccessFAQ" to="/faq" @click="closeMobileMenu" class="mobile-nav-link">
-          <Icon icon="mdi:help-circle-outline" width="20" height="20" />
-          <span>FAQ</span>
-        </RouterLink>
         
         <RouterLink v-if="isAuthed" to="/dashboard" @click="closeMobileMenu" class="mobile-nav-link">
           <Icon icon="mdi:view-dashboard-outline" width="20" height="20" />
           <span>Dashboard</span>
         </RouterLink>
         
-        <RouterLink v-if="isAuthed && canAccessPurchased" to="/purchased-leads" @click="closeMobileMenu" class="mobile-nav-link">
-          <Icon icon="mdi:shopping-outline" width="20" height="20" />
-          <span>Satın Aldıklarım</span>
-        </RouterLink>
         
         <RouterLink v-if="!isAuthed" to="/login" @click="closeMobileMenu" class="mobile-nav-link">
           <Icon icon="mdi:login-variant" width="20" height="20" />
@@ -632,6 +610,9 @@ function closeAdminDropdown() {
             :user="currentUser" 
             :role="role" 
             :userType="userType"
+            :canAccessAbout="canAccessAbout"
+            :canAccessFAQ="canAccessFAQ"
+            :canAccessPurchased="canAccessPurchased"
           />
           <button class="mobile-logout-btn" @click="logout">
             <Icon icon="mdi:logout-variant" width="20" height="20" />
