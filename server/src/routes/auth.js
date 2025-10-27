@@ -9,7 +9,6 @@ import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activit
 import speakeasy from 'speakeasy'
 import crypto from 'crypto'
 import { sendPasswordResetEmail } from '../utils/emailSender.js'
-import { getServerTime, getServerTimestamp } from '../utils/serverTime.js'
 
 const registerSchema = z.object({
   email: z.string().email(),
@@ -54,7 +53,7 @@ const storage = multer.diskStorage({
     cb(null, uploadDir)
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = getServerTimestamp() + '-' + Math.round(Math.random() * 1E9)
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
     cb(null, 'profile-' + uniqueSuffix + path.extname(file.originalname))
   }
 })
@@ -537,7 +536,7 @@ export default function authRouter(prisma) {
 
       // Yeni token oluştur
       const resetToken = crypto.randomBytes(32).toString('hex')
-      const expiresAt = new Date(getServerTimestamp() + 3600000) // 1 saat
+      const expiresAt = new Date(Date.now() + 3600000) // 1 saat
 
       await prisma.passwordResetToken.create({
         data: {
@@ -585,7 +584,7 @@ export default function authRouter(prisma) {
         return res.status(400).json({ error: 'Bu token daha önce kullanılmış' })
       }
 
-      if (getServerTime() > resetToken.expiresAt) {
+      if (new Date() > resetToken.expiresAt) {
         return res.status(400).json({ error: 'Token süresi dolmuş' })
       }
 
@@ -626,7 +625,7 @@ export default function authRouter(prisma) {
         return res.status(400).json({ error: 'Bu token daha önce kullanılmış' })
       }
 
-      if (getServerTime() > resetToken.expiresAt) {
+      if (new Date() > resetToken.expiresAt) {
         return res.status(400).json({ error: 'Token süresi dolmuş' })
       }
 

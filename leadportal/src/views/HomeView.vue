@@ -3,9 +3,6 @@ import { ref, onMounted, computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import api from '@/utils/axios.js'
 import { formatPrice } from '@/utils/currency.js'
-import { useServerTime } from '@/composables/useServerTime.js'
-
-const { getServerTime, getServerTimestamp } = useServerTime()
 
 const showcaseLeads = ref([])
 const isLoadingShowcase = ref(false)
@@ -136,7 +133,7 @@ async function loadShowcaseLeads() {
 
   try {
     const { data } = await api.get('/leads', { params: { showcase: true } })
-    const now = getServerTimestamp()
+    const now = Date.now()
     showcaseLeads.value = data.map(lead => {
       const endTime = new Date(lead.endsAt).getTime()
       return {
@@ -159,7 +156,7 @@ function getInsuranceTypeIcon(typeName) {
 }
 
 function formatTimeRemaining(endsAt) {
-  const now = getServerTime()
+  const now = new Date()
   const endTime = new Date(endsAt)
   const diff = endTime - now
 

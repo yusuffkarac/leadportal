@@ -5,10 +5,8 @@ import api from '@/utils/axios.js'
 import { io } from 'socket.io-client'
 import { formatPrice, getCurrencySymbol } from '@/utils/currency.js'
 import { useAlert } from '../composables/useAlert'
-import { useServerTime } from '../composables/useServerTime.js'
 
 const { success, error } = useAlert()
-const { getServerTime, getServerTimestamp } = useServerTime()
 
 const leads = ref([])
 const allLeads = ref([]) // Tüm lead'ler
@@ -68,7 +66,7 @@ function toggleMapVisibility() {
 
 // Zaman hesaplama fonksiyonu
 function formatTimeRemaining(endsAt) {
-  const now = getServerTime()
+  const now = new Date()
   const endTime = new Date(endsAt)
   const diff = endTime - now
   
@@ -214,7 +212,7 @@ async function fetchLeads() {
   const { data } = await api.get('/leads')
   // Lead'lerin aktif durumunu endsAt tarihine göre güncelle
   allLeads.value = data.map(lead => {
-    const now = getServerTime()
+    const now = new Date()
     const endDate = new Date(lead.endsAt)
     const isExpired = endDate < now
     

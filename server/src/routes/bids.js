@@ -4,7 +4,6 @@ import { sendAppEmail } from '../utils/mailer.js'
 import { renderEmailTemplate } from '../utils/emailTemplateRenderer.js'
 import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activityLogger.js'
 import { createNotification } from '../services/notificationService.js'
-import { getServerTime, getServerTimestamp } from '../utils/serverTime.js'
 
 // User bilgilerini anonim hale getir (kendi teklifi değilse)
 function anonymizeUser(user, currentUserId = null) {
@@ -119,7 +118,7 @@ export default function bidsRouter(prisma, io) {
           amount,
           currency: 'TL',
           leadUrl,
-          year: getServerTime().getFullYear(),
+          year: new Date().getFullYear(),
           userName: user.username || user.firstName || user.email.split('@')[0],
           userEmail: user.email,
           newAmount: amount
@@ -162,7 +161,7 @@ export default function bidsRouter(prisma, io) {
             newAmount: amount,
             currency: 'TL',
             leadUrl,
-            year: getServerTime().getFullYear(),
+            year: new Date().getFullYear(),
             userName: outbidUser.username || outbidUser.firstName || outbidUser.email.split('@')[0],
             userEmail: outbidUser.email
           })
@@ -194,7 +193,7 @@ export default function bidsRouter(prisma, io) {
               newAmount: amount,
               currency: 'TL',
               leadUrl,
-              year: getServerTime().getFullYear(),
+              year: new Date().getFullYear(),
               userName: w.user.username || w.user.firstName || w.user.email.split('@')[0],
               userEmail: w.user.email
             })

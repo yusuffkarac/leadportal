@@ -2,23 +2,6 @@
 // Bu dosya farklı formatlarda lead ID'leri oluşturmak için kullanılır
 
 /**
- * Server saatini almak için API çağrısı yapar
- * @returns {Promise<Date>} Server saati
- */
-async function getServerTime() {
-  try {
-    const response = await fetch('/api/server-time')
-    const data = await response.json()
-    if (data.success) {
-      return new Date(data.serverTime)
-    }
-  } catch (error) {
-    console.warn('Server saati alınamadı, client saati kullanılıyor:', error)
-  }
-  return new Date()
-}
-
-/**
  * Lead ID oluşturucu sınıfı
  */
 export class LeadIdGenerator {
@@ -35,11 +18,11 @@ export class LeadIdGenerator {
   /**
    * Yeni bir lead ID oluşturur
    * @param {number} sequenceNumber - Sıra numarası
-   * @returns {Promise<string>} Oluşturulan ID
+   * @returns {string} Oluşturulan ID
    */
-  async generateId(sequenceNumber) {
+  generateId(sequenceNumber) {
     const num = this.settings.startingNumber + sequenceNumber - 1
-    const now = await getServerTime()
+    const now = new Date()
     const year = now.getFullYear()
     const month = String(now.getMonth() + 1).padStart(2, '0')
     const day = String(now.getDate()).padStart(2, '0')
