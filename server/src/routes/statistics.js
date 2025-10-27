@@ -1,6 +1,7 @@
 import express from 'express';
 import { PrismaClient } from '../prismaClient.js';
 import jwt from 'jsonwebtoken';
+import { getServerTime, getServerTimestamp } from '../utils/serverTime.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -31,7 +32,7 @@ function requireAdmin(req, res, next) {
  */
 router.get('/', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const now = new Date();
+    const now = getServerTime();
     const oneDayAgo = new Date(now);
     oneDayAgo.setDate(oneDayAgo.getDate() - 1);
 
@@ -41,17 +42,17 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
     const thirtyDaysAgo = new Date(now);
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const today = new Date();
+    const today = new Date(now);
     today.setHours(0, 0, 0, 0);
 
-    const thisMonthStart = new Date();
+    const thisMonthStart = new Date(now);
     thisMonthStart.setDate(1);
     thisMonthStart.setHours(0, 0, 0, 0);
 
     const lastMonthStart = new Date(thisMonthStart);
     lastMonthStart.setMonth(lastMonthStart.getMonth() - 1);
 
-    const thisWeekStart = new Date();
+    const thisWeekStart = new Date(now);
     thisWeekStart.setDate(thisWeekStart.getDate() - thisWeekStart.getDay());
     thisWeekStart.setHours(0, 0, 0, 0);
 
@@ -689,7 +690,7 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
 router.get('/user', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
-    const now = new Date();
+    const now = getServerTime();
     
     // Zaman aralıkları
     const oneDayAgo = new Date(now);
@@ -701,7 +702,7 @@ router.get('/user', authenticateToken, async (req, res) => {
     const thirtyDaysAgo = new Date(now);
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     
-    const thisMonthStart = new Date();
+    const thisMonthStart = new Date(now);
     thisMonthStart.setDate(1);
     thisMonthStart.setHours(0, 0, 0, 0);
     
@@ -900,7 +901,7 @@ router.get('/user', authenticateToken, async (req, res) => {
       })),
       
       recentBids: recentBids.map(bid => {
-        const now = new Date();
+        const now = getServerTime();
         const leadEndsAt = new Date(bid.lead.endsAt);
         const isLeadExpired = leadEndsAt <= now;
         
@@ -1020,7 +1021,7 @@ router.get('/user/bids', authenticateToken, async (req, res) => {
     });
 
     res.json(userBids.map(bid => {
-      const now = new Date();
+      const now = getServerTime();
       const leadEndsAt = new Date(bid.lead.endsAt);
       const isLeadExpired = leadEndsAt <= now;
 
@@ -1092,7 +1093,7 @@ router.get('/user/watchlist', authenticateToken, async (req, res) => {
 
 // Zaman farkını hesaplayan yardımcı fonksiyon
 function formatTimeAgo(date) {
-  const now = new Date();
+  const now = getServerTime();
   const diff = now - new Date(date);
   const minutes = Math.floor(diff / 60000);
   const hours = Math.floor(diff / 3600000);

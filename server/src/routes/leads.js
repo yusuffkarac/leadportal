@@ -3,6 +3,7 @@ import { z } from 'zod'
 import jwt from 'jsonwebtoken'
 import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activityLogger.js'
 import { createNotification } from '../services/notificationService.js'
+import { getServerTime, getServerTimestamp } from '../utils/serverTime.js'
 
 // Lead tipi yetkilendirmesini kontrol eden helper fonksiyon
 async function filterLeadsByPermission(prisma, leads, userId, userTypeId) {
@@ -102,7 +103,7 @@ const createLeadSchema = z.object({
 // Süresi dolmuş lead'leri kontrol et ve en yüksek teklifi veren kişiye sat
 async function checkAndSellExpiredLeads(prisma, io) {
   try {
-    const now = new Date()
+    const now = getServerTime()
     
     // Süresi dolmuş ve henüz satılmamış lead'leri bul
     const expiredLeads = await prisma.lead.findMany({
@@ -400,7 +401,7 @@ export default function leadsRouter(prisma, io) {
     const leadCount = await prisma.lead.count()
     
     // Yeni ID oluştur
-    const now = new Date()
+    const now = getServerTime()
     const year = now.getFullYear()
     const month = String(now.getMonth() + 1).padStart(2, '0')
     const day = String(now.getDate()).padStart(2, '0')
@@ -850,7 +851,7 @@ export default function leadsRouter(prisma, io) {
       const token = jwt.sign(
         { 
           source: 'leadportal',
-          timestamp: Date.now()
+          timestamp: getServerTimestamp()
         },
         jwtSecret,
         { expiresIn: '1h' }

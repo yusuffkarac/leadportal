@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import axios from 'axios'
 import { getCurrencySymbol, formatPrice } from '@/utils/currency.js'
 import { useMap } from '@/composables/useMap.js'
+import { useServerTime } from '@/composables/useServerTime.js'
 import { Icon } from '@iconify/vue'
 function getInsuranceTypeIconifyName(typeName) {
   if (!typeName) return 'mdi:file'
@@ -13,6 +14,8 @@ function getInsuranceTypeIconifyName(typeName) {
   if (raw.includes(':')) return raw
   return `mdi:${raw}`
 }
+
+const { getServerTime, addToServerTime } = useServerTime()
 
 const leads = ref([])
 const showLeadModal = ref(false)
@@ -389,9 +392,9 @@ async function openLeadModal(mode, lead = null) {
       const settingsResponse = await axios.get('/api/settings', { headers: authHeaders() })
       const settings = settingsResponse.data
 
-      // Varsayılan bitiş tarihini hesapla (şu an + varsayılan gün sayısı)
-      const now = new Date()
-      const defaultEndDate = new Date(now.getTime() + (settings.defaultAuctionDays || 7) * 24 * 60 * 60 * 1000)
+      // Varsayılan bitiş tarihini hesapla (server saati + varsayılan gün sayısı)
+      const now = getServerTime()
+      const defaultEndDate = addToServerTime((settings.defaultAuctionDays || 7) * 24 * 60 * 60 * 1000)
       const formattedEndDate = defaultEndDate.toISOString().slice(0, 16)
 
       leadForm.value = {
@@ -411,8 +414,8 @@ async function openLeadModal(mode, lead = null) {
       postalCodeResults.value = []
     } catch (error) {
       // Hata durumunda varsayılan değerleri kullan
-      const now = new Date()
-      const defaultEndDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+      const now = getServerTime()
+      const defaultEndDate = addToServerTime(7 * 24 * 60 * 60 * 1000)
       const formattedEndDate = defaultEndDate.toISOString().slice(0, 16)
 
       leadForm.value = {
