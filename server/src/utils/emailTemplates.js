@@ -1,3 +1,5 @@
+import { currentYear } from './dateTimeUtils.js'
+
 export function bidReceivedTemplate({ companyName = 'LeadPortal', leadTitle, amount, currency = 'TL', leadUrl }) {
   const subject = `Teklifiniz alındı: ${leadTitle}`
   const amountText = `${amount} ${currency}`
@@ -22,7 +24,7 @@ export function bidReceivedTemplate({ companyName = 'LeadPortal', leadTitle, amo
       </tr>
       <tr>
         <td style="background:#f9fafb;color:#6b7280;padding:16px 24px;font-size:12px;text-align:center;">
-          © ${new Date().getFullYear()} ${companyName}
+          © ${currentYear()} ${companyName}
         </td>
       </tr>
     </table>
@@ -50,7 +52,7 @@ export function outbidTemplate({ companyName = 'LeadPortal', leadTitle, newAmoun
           <p style="margin:16px 0 0 0;color:#6b7280;font-size:12px;">Bu e-posta otomatik gönderildi.</p>
         </td>
       </tr>
-      <tr><td style="background:#f9fafb;color:#6b7280;padding:16px 24px;font-size:12px;text-align:center;">© ${new Date().getFullYear()} ${companyName}</td></tr>
+      <tr><td style="background:#f9fafb;color:#6b7280;padding:16px 24px;font-size:12px;text-align:center;">© ${currentYear()} ${companyName}</td></tr>
     </table>
   </div>`
   const text = `Teklifiniz geçildi\n\n${leadTitle} ilanında yeni teklif: ${amountText}.${leadUrl ? `\n\nİlan: ${leadUrl}` : ''}\n\n${companyName}`

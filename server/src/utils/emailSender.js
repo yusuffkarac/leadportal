@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer'
 import { PrismaClient } from '../prismaClient.js'
+import { currentYear } from './dateTimeUtils.js'
 
 const prisma = new PrismaClient()
 
@@ -270,7 +271,7 @@ export async function sendPasswordResetEmail({ email, resetToken, userName }) {
           </div>
           <div class="footer">
             <p>Bu email otomatik olarak gönderilmiştir. Lütfen yanıtlamayın.</p>
-            <p>&copy; ${new Date().getFullYear()} LeadPortal. Tüm hakları saklıdır.</p>
+            <p>&copy; ${currentYear()} LeadPortal. Tüm hakları saklıdır.</p>
           </div>
         </div>
       </div>

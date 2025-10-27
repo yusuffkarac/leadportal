@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { z } from 'zod'
 import bcrypt from 'bcrypt'
 import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activityLogger.js'
+import { subtractMinutes, createDate } from '../utils/dateTimeUtils.js'
 
 const createSchema = z.object({
   email: z.string().email('Geçerli bir email adresi giriniz'),
@@ -31,12 +32,11 @@ export default function usersRouter(prisma) {
     })
 
     // Online durumunu hesapla (son 5 dakika içinde aktivite)
-    const fiveMinutesAgo = new Date()
-    fiveMinutesAgo.setMinutes(fiveMinutesAgo.getMinutes() - 5)
+    const fiveMinutesAgo = subtractMinutes(5)
 
     const usersWithOnlineStatus = users.map(user => ({
       ...user,
-      isOnline: user.lastActivity ? new Date(user.lastActivity) >= fiveMinutesAgo : false
+      isOnline: user.lastActivity ? createDate(user.lastActivity) >= fiveMinutesAgo : false
     }))
 
     res.json(usersWithOnlineStatus)

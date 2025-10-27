@@ -4,6 +4,7 @@ import { sendAppEmail } from '../utils/mailer.js'
 import { renderEmailTemplate } from '../utils/emailTemplateRenderer.js'
 import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activityLogger.js'
 import { createNotification } from '../services/notificationService.js'
+import { now, currentYear } from '../utils/dateTimeUtils.js'
 
 // User bilgilerini anonim hale getir (kendi teklifi değilse)
 function anonymizeUser(user, currentUserId = null) {
@@ -42,6 +43,12 @@ export default function bidsRouter(prisma, io) {
 
     const lead = await prisma.lead.findUnique({ where: { id: leadId }, include: { bids: { orderBy: { createdAt: 'desc' }, take: 1 } } })
     if (!lead || !lead.isActive) return res.status(400).json({ error: 'Lead ist nicht aktiv' })
+
+    // Check if lead has expired using server time
+    const currentTime = now()
+    if (lead.endsAt < currentTime) {
+      return res.status(400).json({ error: 'Bu lead\'in süresi dolmuştur' })
+    }
 
     const current = lead.bids[0]?.amount ?? lead.startPrice
     const minNext = current + lead.minIncrement
@@ -118,7 +125,7 @@ export default function bidsRouter(prisma, io) {
           amount,
           currency: 'TL',
           leadUrl,
-          year: new Date().getFullYear(),
+          year: currentYear(),
           userName: user.username || user.firstName || user.email.split('@')[0],
           userEmail: user.email,
           newAmount: amount
@@ -161,7 +168,7 @@ export default function bidsRouter(prisma, io) {
             newAmount: amount,
             currency: 'TL',
             leadUrl,
-            year: new Date().getFullYear(),
+            year: currentYear(),
             userName: outbidUser.username || outbidUser.firstName || outbidUser.email.split('@')[0],
             userEmail: outbidUser.email
           })
@@ -193,7 +200,7 @@ export default function bidsRouter(prisma, io) {
               newAmount: amount,
               currency: 'TL',
               leadUrl,
-              year: new Date().getFullYear(),
+              year: currentYear(),
               userName: w.user.username || w.user.firstName || w.user.email.split('@')[0],
               userEmail: w.user.email
             })

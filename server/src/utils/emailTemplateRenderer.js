@@ -1,4 +1,5 @@
 import { PrismaClient } from '../prismaClient.js'
+import { currentYear } from './dateTimeUtils.js'
 
 const prisma = new PrismaClient()
 
@@ -74,7 +75,7 @@ function getFallbackTemplate(templateType, variables) {
             <h2 style="margin:0 0 16px 0;">Teklifiniz alındı</h2>
             <p><strong>${leadTitle}</strong> ilanına <strong>${amount} ${currency}</strong> teklif verdiniz.</p>
             ${leadUrl ? `<a href="${leadUrl}" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 24px;text-decoration:none;border-radius:8px;margin-top:16px;">İlanı Gör</a>` : ''}
-            <p style="margin-top:24px;color:#6b7280;font-size:12px;">© ${new Date().getFullYear()} ${companyName}</p>
+            <p style="margin-top:24px;color:#6b7280;font-size:12px;">© ${currentYear()} ${companyName}</p>
           </div>
         </div>
       `,
@@ -89,7 +90,7 @@ function getFallbackTemplate(templateType, variables) {
             <h2 style="margin:0 0 16px 0;">Teklifiniz geçildi</h2>
             <p><strong>${leadTitle}</strong> ilanında yeni teklif: <strong>${newAmount} ${currency}</strong></p>
             ${leadUrl ? `<a href="${leadUrl}" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 24px;text-decoration:none;border-radius:8px;margin-top:16px;">Yeni Teklif Ver</a>` : ''}
-            <p style="margin-top:24px;color:#6b7280;font-size:12px;">© ${new Date().getFullYear()} ${companyName}</p>
+            <p style="margin-top:24px;color:#6b7280;font-size:12px;">© ${currentYear()} ${companyName}</p>
           </div>
         </div>
       `,
