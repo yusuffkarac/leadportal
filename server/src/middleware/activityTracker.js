@@ -1,5 +1,6 @@
 import { PrismaClient } from '../../generated/prisma/index.js'
 import jwt from 'jsonwebtoken'
+import { now, timestamp } from '../utils/dateTimeUtils.js'
 
 const prisma = new PrismaClient()
 
@@ -23,9 +24,9 @@ export const trackUserActivity = async (req, res, next) => {
 
         // Debounce kontrolü - aynı kullanıcı için sık güncelleme yapma
         const lastUpdate = activityCache.get(userId)
-        const now = Date.now()
+        const currentTimestamp = timestamp()
 
-        if (!lastUpdate || (now - lastUpdate) > DEBOUNCE_TIME) {
+        if (!lastUpdate || (currentTimestamp - lastUpdate) > DEBOUNCE_TIME) {
           // IP adresini al (proxy arkasındaysa gerçek IP'yi al)
           const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
                      req.headers['x-real-ip'] ||
@@ -39,7 +40,7 @@ export const trackUserActivity = async (req, res, next) => {
           prisma.user.update({
             where: { id: userId },
             data: {
-              lastActivity: new Date(),
+              lastActivity: now(),
               lastIP: ip,
               lastUserAgent: userAgent
             }
@@ -49,7 +50,7 @@ export const trackUserActivity = async (req, res, next) => {
           })
 
           // Cache'i güncelle
-          activityCache.set(userId, now)
+          activityCache.set(userId, currentTimestamp)
         }
       } catch (error) {
         // Token decode hatası - önemseme, sadece aktivite takibi yapamayız
@@ -67,9 +68,9 @@ export const trackUserActivity = async (req, res, next) => {
 
 // Cache'i periyodik olarak temizle (memory leak önlemi)
 setInterval(() => {
-  const now = Date.now()
+  const currentTimestamp = timestamp()
   for (const [userId, lastUpdate] of activityCache.entries()) {
-    if (now - lastUpdate > DEBOUNCE_TIME * 10) { // 10 dakika
+    if (currentTimestamp - lastUpdate > DEBOUNCE_TIME * 10) { // 10 dakika
       activityCache.delete(userId)
     }
   }

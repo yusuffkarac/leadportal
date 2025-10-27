@@ -5,6 +5,7 @@ import axios from 'axios'
 import { io } from 'socket.io-client'
 import { formatPrice, getCurrencySymbol } from '@/utils/currency.js'
 import { useAlert } from '../composables/useAlert'
+import { now, createDate } from '@/utils/serverTime.js'
 
 const { success, error } = useAlert()
 
@@ -53,10 +54,10 @@ async function loadSettings() {
 async function loadLead() {
   const { data } = await axios.get(`/api/leads/${leadId}`, { headers: authHeaders() })
   // Lead'in aktif durumunu endsAt tarihine göre güncelle
-  const now = new Date()
-  const endDate = new Date(data.endsAt)
-  const isExpired = endDate < now
-  
+  const currentTime = now()
+  const endDate = createDate(data.endsAt)
+  const isExpired = endDate < currentTime
+
   lead.value = {
     ...data,
     isActive: data.isActive && !isExpired

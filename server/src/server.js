@@ -149,7 +149,9 @@ import activityLogRouter from './routes/activityLog.js'
 import twoFactorRouter from './routes/twoFactor.js'
 import balanceRouter from './routes/balance.js'
 import notificationsRouter from './routes/notifications.js'
+import serverTimeRouter from './routes/serverTime.js'
 
+app.use('/api/server-time', serverTimeRouter)
 app.use('/api/auth', authRouter(prisma))
 app.use('/api/leads', (req, res, next) => requireAuth(req, res, next), leadsRouter(prisma, io))
 app.use('/api/bids', (req, res, next) => requireAuth(req, res, next), bidsRouter(prisma, io))

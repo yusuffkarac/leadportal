@@ -3,6 +3,7 @@ import { z } from 'zod'
 import jwt from 'jsonwebtoken'
 import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activityLogger.js'
 import { createNotification } from '../services/notificationService.js'
+import { now, createDate } from '../utils/dateTimeUtils.js'
 
 // Lead tipi yetkilendirmesini kontrol eden helper fonksiyon
 async function filterLeadsByPermission(prisma, leads, userId, userTypeId) {
@@ -95,14 +96,14 @@ const createLeadSchema = z.object({
   minIncrement: z.number().int().positive(),
   instantBuyPrice: z.number().int().positive().nullable().optional(),
   insuranceType: z.string().optional().nullable(),
-  endsAt: z.string().min(1, 'Endzeit ist erforderlich').transform((v) => new Date(v)),
+  endsAt: z.string().min(1, 'Endzeit ist erforderlich').transform((v) => createDate(v)),
   isShowcase: z.boolean().optional()
 })
 
 // Süresi dolmuş lead'leri kontrol et ve en yüksek teklifi veren kişiye sat
 async function checkAndSellExpiredLeads(prisma, io) {
   try {
-    const now = new Date()
+    const currentTime = now()
     
     // Süresi dolmuş ve henüz satılmamış lead'leri bul
     const expiredLeads = await prisma.lead.findMany({
@@ -110,7 +111,7 @@ async function checkAndSellExpiredLeads(prisma, io) {
         isActive: true,
         isSold: false,
         endsAt: {
-          lte: now
+          lte: currentTime
         }
       },
       include: {
@@ -400,10 +401,10 @@ export default function leadsRouter(prisma, io) {
     const leadCount = await prisma.lead.count()
     
     // Yeni ID oluştur
-    const now = new Date()
-    const year = now.getFullYear()
-    const month = String(now.getMonth() + 1).padStart(2, '0')
-    const day = String(now.getDate()).padStart(2, '0')
+    const currentTime = now()
+    const year = currentTime.getFullYear()
+    const month = String(currentTime.getMonth() + 1).padStart(2, '0')
+    const day = String(currentTime.getDate()).padStart(2, '0')
     
     let num
     if (settings.numberType === 'random') {

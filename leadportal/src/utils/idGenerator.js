@@ -1,6 +1,8 @@
 // Lead ID Generator Utility
 // Bu dosya farklı formatlarda lead ID'leri oluşturmak için kullanılır
 
+import { now } from './serverTime.js'
+
 /**
  * Lead ID oluşturucu sınıfı
  */
@@ -22,10 +24,10 @@ export class LeadIdGenerator {
    */
   generateId(sequenceNumber) {
     const num = this.settings.startingNumber + sequenceNumber - 1
-    const now = new Date()
-    const year = now.getFullYear()
-    const month = String(now.getMonth() + 1).padStart(2, '0')
-    const day = String(now.getDate()).padStart(2, '0')
+    const currentTime = now()
+    const year = currentTime.getFullYear()
+    const month = String(currentTime.getMonth() + 1).padStart(2, '0')
+    const day = String(currentTime.getDate()).padStart(2, '0')
     
     switch (this.settings.leadIdFormat) {
       case 'numeric':

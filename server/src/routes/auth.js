@@ -8,6 +8,7 @@ import fs from 'fs'
 import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activityLogger.js'
 import speakeasy from 'speakeasy'
 import crypto from 'crypto'
+import { now, addMilliseconds } from '../utils/dateTimeUtils.js'
 import { sendPasswordResetEmail } from '../utils/emailSender.js'
 
 const registerSchema = z.object({
@@ -536,7 +537,7 @@ export default function authRouter(prisma) {
 
       // Yeni token oluştur
       const resetToken = crypto.randomBytes(32).toString('hex')
-      const expiresAt = new Date(Date.now() + 3600000) // 1 saat
+      const expiresAt = addMilliseconds(3600000) // 1 saat
 
       await prisma.passwordResetToken.create({
         data: {
@@ -584,7 +585,7 @@ export default function authRouter(prisma) {
         return res.status(400).json({ error: 'Bu token daha önce kullanılmış' })
       }
 
-      if (new Date() > resetToken.expiresAt) {
+      if (now() > resetToken.expiresAt) {
         return res.status(400).json({ error: 'Token süresi dolmuş' })
       }
 
@@ -625,7 +626,7 @@ export default function authRouter(prisma) {
         return res.status(400).json({ error: 'Bu token daha önce kullanılmış' })
       }
 
-      if (new Date() > resetToken.expiresAt) {
+      if (now() > resetToken.expiresAt) {
         return res.status(400).json({ error: 'Token süresi dolmuş' })
       }
 
