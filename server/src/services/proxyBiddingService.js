@@ -128,6 +128,14 @@ export async function processProxyBid(prisma, leadId, userId, maxBid, lead) {
     result
   })
 
+  // If bid is equal to current leader's max, reject it
+  if (!result.newLeader && maxBid === currentLeaderMaxBid) {
+    return {
+      success: false,
+      message: `Teklifiniz alındı, ancak başka bir kullanıcının maksimumu daha yüksek. Lider olmak için daha yüksek bir maksimum teklif verin.`
+    }
+  }
+
   // Create the user's bid record
   const userBid = await prisma.bid.create({
     data: {

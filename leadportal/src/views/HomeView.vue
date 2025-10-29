@@ -296,13 +296,18 @@ async function submitQuickBid(lead, amount) {
   try {
     const response = await api.post(`/bids`, {
       leadId: lead.id,
-      amount: Math.round(Number(amount))
+      maxBid: Math.round(Number(amount))
     }, { headers: authHeaders() })
 
-    if (response.data.success) {
-      // Lead'leri yeniden yükle
+    if (response.status === 201) {
+      const data = response.data || {}
       await loadShowcaseLeads()
-      success('Teklif başarıyla verildi!')
+      if (data.isLeader) {
+        const currency = settings.value?.defaultCurrency || 'EUR'
+        success(`Tebrikler! Şu anda lidersiniz. Görünür fiyat: ${formatPrice(data.visiblePrice, currency)}`)
+      } else {
+        error('Teklifiniz alındı, ancak başka bir kullanıcının maksimumu daha yüksek. Lider olmak için daha yüksek bir maksimum teklif verin.')
+      }
     }
   } catch (err) {
     const errorData = err.response?.data

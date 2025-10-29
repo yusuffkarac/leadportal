@@ -206,7 +206,7 @@ const minBidAmount = computed(() => {
           :disabled="isSubmittingBid"
         >
           <span v-if="isSubmittingBid">...</span>
-          <span v-else>Teklif Ver</span>
+          <span class="teklif-ver-btn"  v-else>Teklif Ver         <Icon icon="mdi:gavel" width="20" height="20" /></span>
         </button>
       </div>
       <div class="quick-bid-suggestions">
@@ -244,7 +244,7 @@ const minBidAmount = computed(() => {
         @click.stop="handleClick"
         :disabled="lead.isExpired"
       >
-        <Icon icon="mdi:gavel" width="20" height="20" />
+
         Detaylı Görünüm
       </button>
       <button
@@ -274,6 +274,12 @@ const minBidAmount = computed(() => {
   cursor: pointer;
 }
 
+.teklif-ver-btn{
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+}
 
 
 .auction-card.expired {
