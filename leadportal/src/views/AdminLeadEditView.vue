@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 
@@ -9,6 +9,10 @@ const lead = ref(null)
 const ok = ref('')
 const err = ref('')
 const insuranceTypes = ref([])
+const serverTime = ref('')
+const serverTimestamp = ref(0)
+const serverTimezoneAbbr = ref('UTC')
+let timeInterval = null
 
 function authHeaders() {
   const token = localStorage.getItem('token')
@@ -17,8 +21,22 @@ function authHeaders() {
 
 async function load() {
   const { data } = await axios.get(`/api/leads/${leadId}`, { headers: authHeaders() })
+  // datetime-local input için endsAt'i lokal timezone'a çevir
+  // ISO string'den timezone bilgisini kaldır
+  let endsAtLocal = data.endsAt
+  if (data.endsAt) {
+    const date = new Date(data.endsAt)
+    // datetime-local format: "YYYY-MM-DDTHH:mm"
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    endsAtLocal = `${year}-${month}-${day}T${hours}:${minutes}`
+  }
   lead.value = {
     ...data,
+    endsAt: endsAtLocal,
     isShowcase: !!data.isShowcase
   }
 }
@@ -61,6 +79,8 @@ async function save() {
   ok.value = ''
   err.value = ''
   try {
+    // endsAt datetime-local formatında ("2025-10-29T14:00")
+    // Backend'e gönderirken bu formatı koruyalım
     const payload = {
       title: lead.value.title,
       description: lead.value.description,
@@ -69,7 +89,7 @@ async function save() {
       minIncrement: lead.value.minIncrement,
       instantBuyPrice: lead.value.instantBuyPrice,
       insuranceType: lead.value.insuranceType || undefined,
-      endsAt: lead.value.endsAt,
+      endsAt: lead.value.endsAt, // datetime-local formatında gönder
       isActive: lead.value.isActive,
       isShowcase: !!lead.value.isShowcase
     }
@@ -80,16 +100,60 @@ async function save() {
   }
 }
 
-onMounted(() => {
+async function fetchServerTime() {
+  try {
+    const { data } = await axios.get('/api/settings/server-time')
+    serverTimestamp.value = data.timestamp
+    serverTimezoneAbbr.value = data.timezoneAbbr || 'UTC'
+    updateServerTimeDisplay()
+  } catch (error) {
+    console.error('Server time fetch error:', error)
+    // Fallback to local time
+    serverTimestamp.value = Date.now()
+    updateServerTimeDisplay()
+  }
+}
+
+function updateServerTimeDisplay() {
+  // Her saniye sunucu timestamp'ini artır
+  serverTimestamp.value += 1000
+
+  const now = new Date(serverTimestamp.value)
+  // Sunucunun lokal saatini göster
+  const hours = String(now.getHours()).padStart(2, '0')
+  const minutes = String(now.getMinutes()).padStart(2, '0')
+  const seconds = String(now.getSeconds()).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const year = now.getFullYear()
+
+  serverTime.value = `${day}.${month}.${year} ${hours}:${minutes}:${seconds} ${serverTimezoneAbbr.value}`
+}
+
+onMounted(async () => {
   load()
   loadInsuranceTypes()
+  await fetchServerTime()
+  timeInterval = setInterval(updateServerTimeDisplay, 1000)
+})
+
+onUnmounted(() => {
+  if (timeInterval) {
+    clearInterval(timeInterval)
+  }
 })
 </script>
 
 <template>
   <section v-if="lead" class="grid" style="grid-template-columns: 1fr 1fr; gap: 16px;">
     <div class="section">
-      <h2>Lead Düzenle</h2>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 style="margin: 0;">Lead Düzenle</h2>
+        <div class="server-time">
+          <span style="font-size: 11px; color: #6b7280; font-weight: 500;">Sunucu Saati:</span>
+          <span style="font-size: 12px; color: #374151; font-weight: 600; margin-left: 4px;">{{ serverTime }}</span>
+        </div>
+      </div>
       <div class="stack">
         <label>Başlık</label>
         <input class="input" v-model="lead.title" />

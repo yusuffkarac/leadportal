@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import axios from 'axios'
 
 const title = ref('')
@@ -15,6 +15,10 @@ const error = ref('')
 const ok = ref('')
 const insuranceTypes = ref([])
 const isShowcase = ref(false)
+const serverTime = ref('')
+const serverTimestamp = ref(0)
+const serverTimezoneAbbr = ref('UTC')
+let timeInterval = null
 
 // Formleadport entegrasyonu için yeni değişkenler
 const formleadportFormId = ref('')
@@ -61,8 +65,6 @@ async function loadInsuranceTypes() {
     ] // Fallback
   }
 }
-
-onMounted(loadInsuranceTypes)
 
 // Formleadport'tan form verilerini çek
 async function fetchFormleadportData() {
@@ -197,11 +199,59 @@ async function submit() {
     else error.value = data?.error || 'Geçersiz veri: lütfen alanları kontrol edin.'
   }
 }
+
+async function fetchServerTime() {
+  try {
+    const { data } = await axios.get('/api/settings/server-time')
+    serverTimestamp.value = data.timestamp
+    serverTimezoneAbbr.value = data.timezoneAbbr || 'UTC'
+    updateServerTimeDisplay()
+  } catch (error) {
+    console.error('Server time fetch error:', error)
+    // Fallback to local time
+    serverTimestamp.value = Date.now()
+    updateServerTimeDisplay()
+  }
+}
+
+function updateServerTimeDisplay() {
+  // Her saniye sunucu timestamp'ini artır
+  serverTimestamp.value += 1000
+
+  const now = new Date(serverTimestamp.value)
+  // Sunucunun lokal saatini göster
+  const hours = String(now.getHours()).padStart(2, '0')
+  const minutes = String(now.getMinutes()).padStart(2, '0')
+  const seconds = String(now.getSeconds()).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const year = now.getFullYear()
+
+  serverTime.value = `${day}.${month}.${year} ${hours}:${minutes}:${seconds} ${serverTimezoneAbbr.value}`
+}
+
+onMounted(async () => {
+  loadInsuranceTypes()
+  await fetchServerTime()
+  timeInterval = setInterval(updateServerTimeDisplay, 1000)
+})
+
+onUnmounted(() => {
+  if (timeInterval) {
+    clearInterval(timeInterval)
+  }
+})
 </script>
 
 <template>
   <section class="section" style="max-width:720px">
-    <h2>Yeni Lead Oluştur</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <h2 style="margin: 0;">Yeni Lead Oluştur</h2>
+      <div class="server-time">
+        <span style="font-size: 11px; color: #6b7280; font-weight: 500;">Sunucu Saati:</span>
+        <span style="font-size: 12px; color: #374151; font-weight: 600; margin-left: 4px;">{{ serverTime }}</span>
+      </div>
+    </div>
     <div v-if="error" style="color:#ef4444">{{ error }}</div>
     <div v-if="ok" style="color:#16a34a">{{ ok }}</div>
     
