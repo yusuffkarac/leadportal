@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activityLogger.js'
 import { createNotification } from '../services/notificationService.js'
 import { now, createDate } from '../utils/dateTimeUtils.js'
+import { calculateFinalPrice, meetsReservePrice } from '../services/proxyBiddingService.js'
 
 // Lead tipi yetkilendirmesini kontrol eden helper fonksiyon
 async function filterLeadsByPermission(prisma, leads, userId, userTypeId) {
@@ -79,12 +80,18 @@ function anonymizeUser(user, currentUserId = null) {
 }
 
 // Bids array'ini anonim hale getir
+// IMPORTANT: Hide maxBid from all users except the bid owner
 function anonymizeBids(bids, currentUserId = null) {
   if (!bids) return []
-  return bids.map(bid => ({
-    ...bid,
-    user: anonymizeUser(bid.user, currentUserId)
-  }))
+  return bids.map(bid => {
+    const isOwnBid = currentUserId && bid.userId === currentUserId
+    return {
+      ...bid,
+      // Hide maxBid from everyone except the bid owner
+      maxBid: isOwnBid ? bid.maxBid : undefined,
+      user: anonymizeUser(bid.user, currentUserId)
+    }
+  })
 }
 
 const createLeadSchema = z.object({
@@ -101,10 +108,11 @@ const createLeadSchema = z.object({
 })
 
 // Süresi dolmuş lead'leri kontrol et ve en yüksek teklifi veren kişiye sat
+// UPDATED FOR PROXY BIDDING: Winner pays visible price, not their maximum
 async function checkAndSellExpiredLeads(prisma, io) {
   try {
     const currentTime = now()
-    
+
     // Süresi dolmuş ve henüz satılmamış lead'leri bul
     const expiredLeads = await prisma.lead.findMany({
       where: {
@@ -116,8 +124,7 @@ async function checkAndSellExpiredLeads(prisma, io) {
       },
       include: {
         bids: {
-          orderBy: { amount: 'desc' },
-          take: 1,
+          orderBy: { createdAt: 'desc' },
           include: { user: true }
         }
       }
@@ -125,12 +132,52 @@ async function checkAndSellExpiredLeads(prisma, io) {
 
     for (const lead of expiredLeads) {
       if (lead.bids.length > 0) {
-        const highestBid = lead.bids[0]
-        
+        // Calculate final price using proxy bidding logic
+        const finalPriceResult = await calculateFinalPrice(prisma, lead.id)
+
+        if (!finalPriceResult.hasWinner) {
+          // No valid bids, mark as inactive
+          await prisma.lead.update({
+            where: { id: lead.id },
+            data: { isActive: false }
+          })
+          continue
+        }
+
+        // Check reserve price
+        const reserveMet = meetsReservePrice(finalPriceResult.finalPrice, lead.reservePrice)
+
+        if (!reserveMet) {
+          // Reserve price not met, mark as inactive (not sold)
+          await prisma.lead.update({
+            where: { id: lead.id },
+            data: {
+              isActive: false,
+              isSold: false
+            }
+          })
+
+          // Notify owner that reserve was not met
+          await createNotification(
+            lead.ownerId,
+            'LEAD_NOT_SOLD',
+            'Lead Rezerv Fiyatına Ulaşmadı',
+            `"${lead.title}" için rezerv fiyata ulaşılamadığı için lead satılmadı. En yüksek teklif: ${finalPriceResult.finalPrice} TL`,
+            { leadId: lead.id, highestBid: finalPriceResult.finalPrice, reservePrice: lead.reservePrice }
+          )
+
+          console.log(`Lead not sold (reserve not met): ${lead.title} - highest bid: ${finalPriceResult.finalPrice}, reserve: ${lead.reservePrice}`)
+          continue
+        }
+
+        // Winner pays the VISIBLE price (not their max bid)
+        const saleAmount = finalPriceResult.finalPrice
+        const winnerId = finalPriceResult.winnerId
+
         // Lead'i satış olarak işaretle
         await prisma.lead.update({
           where: { id: lead.id },
-          data: { 
+          data: {
             isActive: false,
             isSold: true
           }
@@ -138,19 +185,19 @@ async function checkAndSellExpiredLeads(prisma, io) {
 
         // Önce mevcut bakiyeyi al
         const currentUser = await prisma.user.findUnique({
-          where: { id: highestBid.userId },
-          select: { balance: true }
+          where: { id: winnerId },
+          select: { balance: true, email: true }
         })
-        
+
         const balanceBefore = currentUser.balance
-        const balanceAfter = balanceBefore - highestBid.amount
+        const balanceAfter = balanceBefore - saleAmount
 
         // LeadSale kaydı oluştur
         await prisma.leadSale.create({
           data: {
             leadId: lead.id,
-            buyerId: highestBid.userId,
-            amount: highestBid.amount,
+            buyerId: winnerId,
+            amount: saleAmount, // Visible price, not max bid
             paymentMethod: 'balance',
             balanceBefore: balanceBefore,
             balanceAfter: balanceAfter
@@ -159,10 +206,10 @@ async function checkAndSellExpiredLeads(prisma, io) {
 
         // Bakiyeyi düş
         await prisma.user.update({
-          where: { id: highestBid.userId },
+          where: { id: winnerId },
           data: {
             balance: {
-              decrement: highestBid.amount
+              decrement: saleAmount
             }
           }
         })
@@ -170,8 +217,8 @@ async function checkAndSellExpiredLeads(prisma, io) {
         // Bakiye transaction kaydı oluştur
         await prisma.balanceTransaction.create({
           data: {
-            userId: highestBid.userId,
-            amount: -highestBid.amount,
+            userId: winnerId,
+            amount: -saleAmount,
             type: 'PURCHASE_DEDUCT',
             description: `Lead satın alma: ${lead.title}`,
             relatedId: lead.id
@@ -181,12 +228,13 @@ async function checkAndSellExpiredLeads(prisma, io) {
         // Socket ile bildirim gönder
         io.emit('lead:sold', {
           leadId: lead.id,
-          buyerId: highestBid.userId,
-          amount: highestBid.amount,
-          title: lead.title
+          buyerId: winnerId,
+          amount: saleAmount,
+          title: lead.title,
+          savedAmount: finalPriceResult.savedAmount // How much winner saved
         })
 
-        console.log(`Lead sold: ${lead.title} to ${highestBid.user.email} for ${highestBid.amount}`)
+        console.log(`Lead sold: ${lead.title} to ${currentUser.email} for ${saleAmount} TL (max bid: ${finalPriceResult.winnerMaxBid} TL, saved: ${finalPriceResult.savedAmount} TL)`)
       } else {
         // Teklif yoksa lead'i pasif yap
         await prisma.lead.update({

@@ -4801,12 +4801,16 @@ export namespace Prisma {
     startPrice: number | null
     minIncrement: number | null
     instantBuyPrice: number | null
+    reservePrice: number | null
+    antiSnipeSeconds: number | null
   }
 
   export type LeadSumAggregateOutputType = {
     startPrice: number | null
     minIncrement: number | null
     instantBuyPrice: number | null
+    reservePrice: number | null
+    antiSnipeSeconds: number | null
   }
 
   export type LeadMinAggregateOutputType = {
@@ -4818,6 +4822,8 @@ export namespace Prisma {
     startPrice: number | null
     minIncrement: number | null
     instantBuyPrice: number | null
+    reservePrice: number | null
+    antiSnipeSeconds: number | null
     insuranceType: string | null
     isActive: boolean | null
     isShowcase: boolean | null
@@ -4838,6 +4844,8 @@ export namespace Prisma {
     startPrice: number | null
     minIncrement: number | null
     instantBuyPrice: number | null
+    reservePrice: number | null
+    antiSnipeSeconds: number | null
     insuranceType: string | null
     isActive: boolean | null
     isShowcase: boolean | null
@@ -4858,6 +4866,8 @@ export namespace Prisma {
     startPrice: number
     minIncrement: number
     instantBuyPrice: number
+    reservePrice: number
+    antiSnipeSeconds: number
     insuranceType: number
     isActive: number
     isShowcase: number
@@ -4875,12 +4885,16 @@ export namespace Prisma {
     startPrice?: true
     minIncrement?: true
     instantBuyPrice?: true
+    reservePrice?: true
+    antiSnipeSeconds?: true
   }
 
   export type LeadSumAggregateInputType = {
     startPrice?: true
     minIncrement?: true
     instantBuyPrice?: true
+    reservePrice?: true
+    antiSnipeSeconds?: true
   }
 
   export type LeadMinAggregateInputType = {
@@ -4892,6 +4906,8 @@ export namespace Prisma {
     startPrice?: true
     minIncrement?: true
     instantBuyPrice?: true
+    reservePrice?: true
+    antiSnipeSeconds?: true
     insuranceType?: true
     isActive?: true
     isShowcase?: true
@@ -4912,6 +4928,8 @@ export namespace Prisma {
     startPrice?: true
     minIncrement?: true
     instantBuyPrice?: true
+    reservePrice?: true
+    antiSnipeSeconds?: true
     insuranceType?: true
     isActive?: true
     isShowcase?: true
@@ -4932,6 +4950,8 @@ export namespace Prisma {
     startPrice?: true
     minIncrement?: true
     instantBuyPrice?: true
+    reservePrice?: true
+    antiSnipeSeconds?: true
     insuranceType?: true
     isActive?: true
     isShowcase?: true
@@ -5039,6 +5059,8 @@ export namespace Prisma {
     startPrice: number
     minIncrement: number
     instantBuyPrice: number | null
+    reservePrice: number | null
+    antiSnipeSeconds: number
     insuranceType: string | null
     isActive: boolean
     isShowcase: boolean
@@ -5078,6 +5100,8 @@ export namespace Prisma {
     startPrice?: boolean
     minIncrement?: boolean
     instantBuyPrice?: boolean
+    reservePrice?: boolean
+    antiSnipeSeconds?: boolean
     insuranceType?: boolean
     isActive?: boolean
     isShowcase?: boolean
@@ -5103,6 +5127,8 @@ export namespace Prisma {
     startPrice?: boolean
     minIncrement?: boolean
     instantBuyPrice?: boolean
+    reservePrice?: boolean
+    antiSnipeSeconds?: boolean
     insuranceType?: boolean
     isActive?: boolean
     isShowcase?: boolean
@@ -5124,6 +5150,8 @@ export namespace Prisma {
     startPrice?: boolean
     minIncrement?: boolean
     instantBuyPrice?: boolean
+    reservePrice?: boolean
+    antiSnipeSeconds?: boolean
     insuranceType?: boolean
     isActive?: boolean
     isShowcase?: boolean
@@ -5145,6 +5173,8 @@ export namespace Prisma {
     startPrice?: boolean
     minIncrement?: boolean
     instantBuyPrice?: boolean
+    reservePrice?: boolean
+    antiSnipeSeconds?: boolean
     insuranceType?: boolean
     isActive?: boolean
     isShowcase?: boolean
@@ -5156,7 +5186,7 @@ export namespace Prisma {
     ownerId?: boolean
   }
 
-  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "privateDetails" | "postalCode" | "startPrice" | "minIncrement" | "instantBuyPrice" | "insuranceType" | "isActive" | "isShowcase" | "isSold" | "featured" | "endsAt" | "createdAt" | "updatedAt" | "ownerId", ExtArgs["result"]["lead"]>
+  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "privateDetails" | "postalCode" | "startPrice" | "minIncrement" | "instantBuyPrice" | "reservePrice" | "antiSnipeSeconds" | "insuranceType" | "isActive" | "isShowcase" | "isSold" | "featured" | "endsAt" | "createdAt" | "updatedAt" | "ownerId", ExtArgs["result"]["lead"]>
   export type LeadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     bids?: boolean | Lead$bidsArgs<ExtArgs>
     owner?: boolean | UserDefaultArgs<ExtArgs>
@@ -5188,6 +5218,8 @@ export namespace Prisma {
       startPrice: number
       minIncrement: number
       instantBuyPrice: number | null
+      reservePrice: number | null
+      antiSnipeSeconds: number
       insuranceType: string | null
       isActive: boolean
       isShowcase: boolean
@@ -5632,6 +5664,8 @@ export namespace Prisma {
     readonly startPrice: FieldRef<"Lead", 'Int'>
     readonly minIncrement: FieldRef<"Lead", 'Int'>
     readonly instantBuyPrice: FieldRef<"Lead", 'Int'>
+    readonly reservePrice: FieldRef<"Lead", 'Int'>
+    readonly antiSnipeSeconds: FieldRef<"Lead", 'Int'>
     readonly insuranceType: FieldRef<"Lead", 'String'>
     readonly isActive: FieldRef<"Lead", 'Boolean'>
     readonly isShowcase: FieldRef<"Lead", 'Boolean'>
@@ -6136,15 +6170,19 @@ export namespace Prisma {
 
   export type BidAvgAggregateOutputType = {
     amount: number | null
+    maxBid: number | null
   }
 
   export type BidSumAggregateOutputType = {
     amount: number | null
+    maxBid: number | null
   }
 
   export type BidMinAggregateOutputType = {
     id: string | null
     amount: number | null
+    maxBid: number | null
+    isAutoBid: boolean | null
     createdAt: Date | null
     leadId: string | null
     userId: string | null
@@ -6153,6 +6191,8 @@ export namespace Prisma {
   export type BidMaxAggregateOutputType = {
     id: string | null
     amount: number | null
+    maxBid: number | null
+    isAutoBid: boolean | null
     createdAt: Date | null
     leadId: string | null
     userId: string | null
@@ -6161,6 +6201,8 @@ export namespace Prisma {
   export type BidCountAggregateOutputType = {
     id: number
     amount: number
+    maxBid: number
+    isAutoBid: number
     createdAt: number
     leadId: number
     userId: number
@@ -6170,15 +6212,19 @@ export namespace Prisma {
 
   export type BidAvgAggregateInputType = {
     amount?: true
+    maxBid?: true
   }
 
   export type BidSumAggregateInputType = {
     amount?: true
+    maxBid?: true
   }
 
   export type BidMinAggregateInputType = {
     id?: true
     amount?: true
+    maxBid?: true
+    isAutoBid?: true
     createdAt?: true
     leadId?: true
     userId?: true
@@ -6187,6 +6233,8 @@ export namespace Prisma {
   export type BidMaxAggregateInputType = {
     id?: true
     amount?: true
+    maxBid?: true
+    isAutoBid?: true
     createdAt?: true
     leadId?: true
     userId?: true
@@ -6195,6 +6243,8 @@ export namespace Prisma {
   export type BidCountAggregateInputType = {
     id?: true
     amount?: true
+    maxBid?: true
+    isAutoBid?: true
     createdAt?: true
     leadId?: true
     userId?: true
@@ -6290,6 +6340,8 @@ export namespace Prisma {
   export type BidGroupByOutputType = {
     id: string
     amount: number
+    maxBid: number
+    isAutoBid: boolean
     createdAt: Date
     leadId: string
     userId: string
@@ -6317,6 +6369,8 @@ export namespace Prisma {
   export type BidSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     amount?: boolean
+    maxBid?: boolean
+    isAutoBid?: boolean
     createdAt?: boolean
     leadId?: boolean
     userId?: boolean
@@ -6327,6 +6381,8 @@ export namespace Prisma {
   export type BidSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     amount?: boolean
+    maxBid?: boolean
+    isAutoBid?: boolean
     createdAt?: boolean
     leadId?: boolean
     userId?: boolean
@@ -6337,6 +6393,8 @@ export namespace Prisma {
   export type BidSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     amount?: boolean
+    maxBid?: boolean
+    isAutoBid?: boolean
     createdAt?: boolean
     leadId?: boolean
     userId?: boolean
@@ -6347,12 +6405,14 @@ export namespace Prisma {
   export type BidSelectScalar = {
     id?: boolean
     amount?: boolean
+    maxBid?: boolean
+    isAutoBid?: boolean
     createdAt?: boolean
     leadId?: boolean
     userId?: boolean
   }
 
-  export type BidOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "amount" | "createdAt" | "leadId" | "userId", ExtArgs["result"]["bid"]>
+  export type BidOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "amount" | "maxBid" | "isAutoBid" | "createdAt" | "leadId" | "userId", ExtArgs["result"]["bid"]>
   export type BidInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     lead?: boolean | LeadDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -6375,6 +6435,8 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       amount: number
+      maxBid: number
+      isAutoBid: boolean
       createdAt: Date
       leadId: string
       userId: string
@@ -6805,6 +6867,8 @@ export namespace Prisma {
   interface BidFieldRefs {
     readonly id: FieldRef<"Bid", 'String'>
     readonly amount: FieldRef<"Bid", 'Int'>
+    readonly maxBid: FieldRef<"Bid", 'Int'>
+    readonly isAutoBid: FieldRef<"Bid", 'Boolean'>
     readonly createdAt: FieldRef<"Bid", 'DateTime'>
     readonly leadId: FieldRef<"Bid", 'String'>
     readonly userId: FieldRef<"Bid", 'String'>
@@ -29886,6 +29950,8 @@ export namespace Prisma {
     startPrice: 'startPrice',
     minIncrement: 'minIncrement',
     instantBuyPrice: 'instantBuyPrice',
+    reservePrice: 'reservePrice',
+    antiSnipeSeconds: 'antiSnipeSeconds',
     insuranceType: 'insuranceType',
     isActive: 'isActive',
     isShowcase: 'isShowcase',
@@ -29903,6 +29969,8 @@ export namespace Prisma {
   export const BidScalarFieldEnum: {
     id: 'id',
     amount: 'amount',
+    maxBid: 'maxBid',
+    isAutoBid: 'isAutoBid',
     createdAt: 'createdAt',
     leadId: 'leadId',
     userId: 'userId'
@@ -30565,6 +30633,8 @@ export namespace Prisma {
     startPrice?: IntFilter<"Lead"> | number
     minIncrement?: IntFilter<"Lead"> | number
     instantBuyPrice?: IntNullableFilter<"Lead"> | number | null
+    reservePrice?: IntNullableFilter<"Lead"> | number | null
+    antiSnipeSeconds?: IntFilter<"Lead"> | number
     insuranceType?: StringNullableFilter<"Lead"> | string | null
     isActive?: BoolFilter<"Lead"> | boolean
     isShowcase?: BoolFilter<"Lead"> | boolean
@@ -30589,6 +30659,8 @@ export namespace Prisma {
     startPrice?: SortOrder
     minIncrement?: SortOrder
     instantBuyPrice?: SortOrderInput | SortOrder
+    reservePrice?: SortOrderInput | SortOrder
+    antiSnipeSeconds?: SortOrder
     insuranceType?: SortOrderInput | SortOrder
     isActive?: SortOrder
     isShowcase?: SortOrder
@@ -30616,6 +30688,8 @@ export namespace Prisma {
     startPrice?: IntFilter<"Lead"> | number
     minIncrement?: IntFilter<"Lead"> | number
     instantBuyPrice?: IntNullableFilter<"Lead"> | number | null
+    reservePrice?: IntNullableFilter<"Lead"> | number | null
+    antiSnipeSeconds?: IntFilter<"Lead"> | number
     insuranceType?: StringNullableFilter<"Lead"> | string | null
     isActive?: BoolFilter<"Lead"> | boolean
     isShowcase?: BoolFilter<"Lead"> | boolean
@@ -30640,6 +30714,8 @@ export namespace Prisma {
     startPrice?: SortOrder
     minIncrement?: SortOrder
     instantBuyPrice?: SortOrderInput | SortOrder
+    reservePrice?: SortOrderInput | SortOrder
+    antiSnipeSeconds?: SortOrder
     insuranceType?: SortOrderInput | SortOrder
     isActive?: SortOrder
     isShowcase?: SortOrder
@@ -30668,6 +30744,8 @@ export namespace Prisma {
     startPrice?: IntWithAggregatesFilter<"Lead"> | number
     minIncrement?: IntWithAggregatesFilter<"Lead"> | number
     instantBuyPrice?: IntNullableWithAggregatesFilter<"Lead"> | number | null
+    reservePrice?: IntNullableWithAggregatesFilter<"Lead"> | number | null
+    antiSnipeSeconds?: IntWithAggregatesFilter<"Lead"> | number
     insuranceType?: StringNullableWithAggregatesFilter<"Lead"> | string | null
     isActive?: BoolWithAggregatesFilter<"Lead"> | boolean
     isShowcase?: BoolWithAggregatesFilter<"Lead"> | boolean
@@ -30685,6 +30763,8 @@ export namespace Prisma {
     NOT?: BidWhereInput | BidWhereInput[]
     id?: StringFilter<"Bid"> | string
     amount?: IntFilter<"Bid"> | number
+    maxBid?: IntFilter<"Bid"> | number
+    isAutoBid?: BoolFilter<"Bid"> | boolean
     createdAt?: DateTimeFilter<"Bid"> | Date | string
     leadId?: StringFilter<"Bid"> | string
     userId?: StringFilter<"Bid"> | string
@@ -30695,6 +30775,8 @@ export namespace Prisma {
   export type BidOrderByWithRelationInput = {
     id?: SortOrder
     amount?: SortOrder
+    maxBid?: SortOrder
+    isAutoBid?: SortOrder
     createdAt?: SortOrder
     leadId?: SortOrder
     userId?: SortOrder
@@ -30708,6 +30790,8 @@ export namespace Prisma {
     OR?: BidWhereInput[]
     NOT?: BidWhereInput | BidWhereInput[]
     amount?: IntFilter<"Bid"> | number
+    maxBid?: IntFilter<"Bid"> | number
+    isAutoBid?: BoolFilter<"Bid"> | boolean
     createdAt?: DateTimeFilter<"Bid"> | Date | string
     leadId?: StringFilter<"Bid"> | string
     userId?: StringFilter<"Bid"> | string
@@ -30718,6 +30802,8 @@ export namespace Prisma {
   export type BidOrderByWithAggregationInput = {
     id?: SortOrder
     amount?: SortOrder
+    maxBid?: SortOrder
+    isAutoBid?: SortOrder
     createdAt?: SortOrder
     leadId?: SortOrder
     userId?: SortOrder
@@ -30734,6 +30820,8 @@ export namespace Prisma {
     NOT?: BidScalarWhereWithAggregatesInput | BidScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Bid"> | string
     amount?: IntWithAggregatesFilter<"Bid"> | number
+    maxBid?: IntWithAggregatesFilter<"Bid"> | number
+    isAutoBid?: BoolWithAggregatesFilter<"Bid"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Bid"> | Date | string
     leadId?: StringWithAggregatesFilter<"Bid"> | string
     userId?: StringWithAggregatesFilter<"Bid"> | string
@@ -32632,6 +32720,8 @@ export namespace Prisma {
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
+    reservePrice?: number | null
+    antiSnipeSeconds?: number
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
@@ -32655,6 +32745,8 @@ export namespace Prisma {
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
+    reservePrice?: number | null
+    antiSnipeSeconds?: number
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
@@ -32678,6 +32770,8 @@ export namespace Prisma {
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    reservePrice?: NullableIntFieldUpdateOperationsInput | number | null
+    antiSnipeSeconds?: IntFieldUpdateOperationsInput | number
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
@@ -32701,6 +32795,8 @@ export namespace Prisma {
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    reservePrice?: NullableIntFieldUpdateOperationsInput | number | null
+    antiSnipeSeconds?: IntFieldUpdateOperationsInput | number
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
@@ -32724,6 +32820,8 @@ export namespace Prisma {
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
+    reservePrice?: number | null
+    antiSnipeSeconds?: number
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
@@ -32744,6 +32842,8 @@ export namespace Prisma {
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    reservePrice?: NullableIntFieldUpdateOperationsInput | number | null
+    antiSnipeSeconds?: IntFieldUpdateOperationsInput | number
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
@@ -32763,6 +32863,8 @@ export namespace Prisma {
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    reservePrice?: NullableIntFieldUpdateOperationsInput | number | null
+    antiSnipeSeconds?: IntFieldUpdateOperationsInput | number
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
@@ -32777,6 +32879,8 @@ export namespace Prisma {
   export type BidCreateInput = {
     id?: string
     amount: number
+    maxBid: number
+    isAutoBid?: boolean
     createdAt?: Date | string
     lead: LeadCreateNestedOneWithoutBidsInput
     user: UserCreateNestedOneWithoutBidsInput
@@ -32785,6 +32889,8 @@ export namespace Prisma {
   export type BidUncheckedCreateInput = {
     id?: string
     amount: number
+    maxBid: number
+    isAutoBid?: boolean
     createdAt?: Date | string
     leadId: string
     userId: string
@@ -32793,6 +32899,8 @@ export namespace Prisma {
   export type BidUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    maxBid?: IntFieldUpdateOperationsInput | number
+    isAutoBid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lead?: LeadUpdateOneRequiredWithoutBidsNestedInput
     user?: UserUpdateOneRequiredWithoutBidsNestedInput
@@ -32801,6 +32909,8 @@ export namespace Prisma {
   export type BidUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    maxBid?: IntFieldUpdateOperationsInput | number
+    isAutoBid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leadId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -32809,6 +32919,8 @@ export namespace Prisma {
   export type BidCreateManyInput = {
     id?: string
     amount: number
+    maxBid: number
+    isAutoBid?: boolean
     createdAt?: Date | string
     leadId: string
     userId: string
@@ -32817,12 +32929,16 @@ export namespace Prisma {
   export type BidUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    maxBid?: IntFieldUpdateOperationsInput | number
+    isAutoBid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type BidUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    maxBid?: IntFieldUpdateOperationsInput | number
+    isAutoBid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leadId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -35064,6 +35180,8 @@ export namespace Prisma {
     startPrice?: SortOrder
     minIncrement?: SortOrder
     instantBuyPrice?: SortOrder
+    reservePrice?: SortOrder
+    antiSnipeSeconds?: SortOrder
     insuranceType?: SortOrder
     isActive?: SortOrder
     isShowcase?: SortOrder
@@ -35079,6 +35197,8 @@ export namespace Prisma {
     startPrice?: SortOrder
     minIncrement?: SortOrder
     instantBuyPrice?: SortOrder
+    reservePrice?: SortOrder
+    antiSnipeSeconds?: SortOrder
   }
 
   export type LeadMaxOrderByAggregateInput = {
@@ -35090,6 +35210,8 @@ export namespace Prisma {
     startPrice?: SortOrder
     minIncrement?: SortOrder
     instantBuyPrice?: SortOrder
+    reservePrice?: SortOrder
+    antiSnipeSeconds?: SortOrder
     insuranceType?: SortOrder
     isActive?: SortOrder
     isShowcase?: SortOrder
@@ -35110,6 +35232,8 @@ export namespace Prisma {
     startPrice?: SortOrder
     minIncrement?: SortOrder
     instantBuyPrice?: SortOrder
+    reservePrice?: SortOrder
+    antiSnipeSeconds?: SortOrder
     insuranceType?: SortOrder
     isActive?: SortOrder
     isShowcase?: SortOrder
@@ -35125,6 +35249,8 @@ export namespace Prisma {
     startPrice?: SortOrder
     minIncrement?: SortOrder
     instantBuyPrice?: SortOrder
+    reservePrice?: SortOrder
+    antiSnipeSeconds?: SortOrder
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -35167,6 +35293,8 @@ export namespace Prisma {
   export type BidCountOrderByAggregateInput = {
     id?: SortOrder
     amount?: SortOrder
+    maxBid?: SortOrder
+    isAutoBid?: SortOrder
     createdAt?: SortOrder
     leadId?: SortOrder
     userId?: SortOrder
@@ -35174,11 +35302,14 @@ export namespace Prisma {
 
   export type BidAvgOrderByAggregateInput = {
     amount?: SortOrder
+    maxBid?: SortOrder
   }
 
   export type BidMaxOrderByAggregateInput = {
     id?: SortOrder
     amount?: SortOrder
+    maxBid?: SortOrder
+    isAutoBid?: SortOrder
     createdAt?: SortOrder
     leadId?: SortOrder
     userId?: SortOrder
@@ -35187,6 +35318,8 @@ export namespace Prisma {
   export type BidMinOrderByAggregateInput = {
     id?: SortOrder
     amount?: SortOrder
+    maxBid?: SortOrder
+    isAutoBid?: SortOrder
     createdAt?: SortOrder
     leadId?: SortOrder
     userId?: SortOrder
@@ -35194,6 +35327,7 @@ export namespace Prisma {
 
   export type BidSumOrderByAggregateInput = {
     amount?: SortOrder
+    maxBid?: SortOrder
   }
 
   export type LeadWatchLeadIdUserIdCompoundUniqueInput = {
@@ -37694,6 +37828,8 @@ export namespace Prisma {
   export type BidCreateWithoutUserInput = {
     id?: string
     amount: number
+    maxBid: number
+    isAutoBid?: boolean
     createdAt?: Date | string
     lead: LeadCreateNestedOneWithoutBidsInput
   }
@@ -37701,6 +37837,8 @@ export namespace Prisma {
   export type BidUncheckedCreateWithoutUserInput = {
     id?: string
     amount: number
+    maxBid: number
+    isAutoBid?: boolean
     createdAt?: Date | string
     leadId: string
   }
@@ -37724,6 +37862,8 @@ export namespace Prisma {
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
+    reservePrice?: number | null
+    antiSnipeSeconds?: number
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
@@ -37746,6 +37886,8 @@ export namespace Prisma {
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
+    reservePrice?: number | null
+    antiSnipeSeconds?: number
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
@@ -38051,6 +38193,8 @@ export namespace Prisma {
     NOT?: BidScalarWhereInput | BidScalarWhereInput[]
     id?: StringFilter<"Bid"> | string
     amount?: IntFilter<"Bid"> | number
+    maxBid?: IntFilter<"Bid"> | number
+    isAutoBid?: BoolFilter<"Bid"> | boolean
     createdAt?: DateTimeFilter<"Bid"> | Date | string
     leadId?: StringFilter<"Bid"> | string
     userId?: StringFilter<"Bid"> | string
@@ -38084,6 +38228,8 @@ export namespace Prisma {
     startPrice?: IntFilter<"Lead"> | number
     minIncrement?: IntFilter<"Lead"> | number
     instantBuyPrice?: IntNullableFilter<"Lead"> | number | null
+    reservePrice?: IntNullableFilter<"Lead"> | number | null
+    antiSnipeSeconds?: IntFilter<"Lead"> | number
     insuranceType?: StringNullableFilter<"Lead"> | string | null
     isActive?: BoolFilter<"Lead"> | boolean
     isShowcase?: BoolFilter<"Lead"> | boolean
@@ -38369,6 +38515,8 @@ export namespace Prisma {
   export type BidCreateWithoutLeadInput = {
     id?: string
     amount: number
+    maxBid: number
+    isAutoBid?: boolean
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutBidsInput
   }
@@ -38376,6 +38524,8 @@ export namespace Prisma {
   export type BidUncheckedCreateWithoutLeadInput = {
     id?: string
     amount: number
+    maxBid: number
+    isAutoBid?: boolean
     createdAt?: Date | string
     userId: string
   }
@@ -38677,6 +38827,8 @@ export namespace Prisma {
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
+    reservePrice?: number | null
+    antiSnipeSeconds?: number
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
@@ -38699,6 +38851,8 @@ export namespace Prisma {
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
+    reservePrice?: number | null
+    antiSnipeSeconds?: number
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
@@ -38816,6 +38970,8 @@ export namespace Prisma {
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    reservePrice?: NullableIntFieldUpdateOperationsInput | number | null
+    antiSnipeSeconds?: IntFieldUpdateOperationsInput | number
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
@@ -38838,6 +38994,8 @@ export namespace Prisma {
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    reservePrice?: NullableIntFieldUpdateOperationsInput | number | null
+    antiSnipeSeconds?: IntFieldUpdateOperationsInput | number
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
@@ -38945,6 +39103,8 @@ export namespace Prisma {
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
+    reservePrice?: number | null
+    antiSnipeSeconds?: number
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
@@ -38967,6 +39127,8 @@ export namespace Prisma {
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
+    reservePrice?: number | null
+    antiSnipeSeconds?: number
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
@@ -39084,6 +39246,8 @@ export namespace Prisma {
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    reservePrice?: NullableIntFieldUpdateOperationsInput | number | null
+    antiSnipeSeconds?: IntFieldUpdateOperationsInput | number
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
@@ -39106,6 +39270,8 @@ export namespace Prisma {
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    reservePrice?: NullableIntFieldUpdateOperationsInput | number | null
+    antiSnipeSeconds?: IntFieldUpdateOperationsInput | number
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
@@ -39292,6 +39458,8 @@ export namespace Prisma {
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
+    reservePrice?: number | null
+    antiSnipeSeconds?: number
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
@@ -39314,6 +39482,8 @@ export namespace Prisma {
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
+    reservePrice?: number | null
+    antiSnipeSeconds?: number
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
@@ -39437,6 +39607,8 @@ export namespace Prisma {
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    reservePrice?: NullableIntFieldUpdateOperationsInput | number | null
+    antiSnipeSeconds?: IntFieldUpdateOperationsInput | number
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
@@ -39459,6 +39631,8 @@ export namespace Prisma {
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    reservePrice?: NullableIntFieldUpdateOperationsInput | number | null
+    antiSnipeSeconds?: IntFieldUpdateOperationsInput | number
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
@@ -41423,6 +41597,8 @@ export namespace Prisma {
   export type BidCreateManyUserInput = {
     id?: string
     amount: number
+    maxBid: number
+    isAutoBid?: boolean
     createdAt?: Date | string
     leadId: string
   }
@@ -41436,6 +41612,8 @@ export namespace Prisma {
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
+    reservePrice?: number | null
+    antiSnipeSeconds?: number
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
@@ -41525,6 +41703,8 @@ export namespace Prisma {
   export type BidUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    maxBid?: IntFieldUpdateOperationsInput | number
+    isAutoBid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lead?: LeadUpdateOneRequiredWithoutBidsNestedInput
   }
@@ -41532,6 +41712,8 @@ export namespace Prisma {
   export type BidUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    maxBid?: IntFieldUpdateOperationsInput | number
+    isAutoBid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leadId?: StringFieldUpdateOperationsInput | string
   }
@@ -41539,6 +41721,8 @@ export namespace Prisma {
   export type BidUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    maxBid?: IntFieldUpdateOperationsInput | number
+    isAutoBid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leadId?: StringFieldUpdateOperationsInput | string
   }
@@ -41552,6 +41736,8 @@ export namespace Prisma {
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    reservePrice?: NullableIntFieldUpdateOperationsInput | number | null
+    antiSnipeSeconds?: IntFieldUpdateOperationsInput | number
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
@@ -41574,6 +41760,8 @@ export namespace Prisma {
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    reservePrice?: NullableIntFieldUpdateOperationsInput | number | null
+    antiSnipeSeconds?: IntFieldUpdateOperationsInput | number
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
@@ -41596,6 +41784,8 @@ export namespace Prisma {
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    reservePrice?: NullableIntFieldUpdateOperationsInput | number | null
+    antiSnipeSeconds?: IntFieldUpdateOperationsInput | number
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
@@ -41836,6 +42026,8 @@ export namespace Prisma {
   export type BidCreateManyLeadInput = {
     id?: string
     amount: number
+    maxBid: number
+    isAutoBid?: boolean
     createdAt?: Date | string
     userId: string
   }
@@ -41849,6 +42041,8 @@ export namespace Prisma {
   export type BidUpdateWithoutLeadInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    maxBid?: IntFieldUpdateOperationsInput | number
+    isAutoBid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutBidsNestedInput
   }
@@ -41856,6 +42050,8 @@ export namespace Prisma {
   export type BidUncheckedUpdateWithoutLeadInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    maxBid?: IntFieldUpdateOperationsInput | number
+    isAutoBid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
   }
@@ -41863,6 +42059,8 @@ export namespace Prisma {
   export type BidUncheckedUpdateManyWithoutLeadInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    maxBid?: IntFieldUpdateOperationsInput | number
+    isAutoBid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
   }

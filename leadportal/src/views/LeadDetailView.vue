@@ -13,16 +13,32 @@ const { success, error } = useAlert()
 const route = useRoute()
 const leadId = route.params.id
 const lead = ref(null)
-const amount = ref('')
+const currentUser = ref(null)
+const maxBid = ref('') // Changed: Now users enter their MAXIMUM bid
 const errorMessage = ref('')
+const successMessage = ref('')
 const isSubmitting = ref(false)
 const showInstantBuyModal = ref(false)
 const isProcessingInstantBuy = ref(false)
 const settings = ref({ defaultCurrency: 'EUR' })
+let pollingInterval = null
 const socket = io('/', {
   path: '/socket.io',
   transports: ['websocket'],
   auth: { token: localStorage.getItem('token') }
+})
+
+// Debug logging
+socket.on('connect', () => {
+  console.log('[Socket] Connected:', socket.id)
+})
+
+socket.on('connect_error', (error) => {
+  console.error('[Socket] Connection error:', error.message)
+})
+
+socket.on('disconnect', (reason) => {
+  console.log('[Socket] Disconnected:', reason)
 })
 
 // Watch (çan) durumu
@@ -64,6 +80,30 @@ async function loadLead() {
     isActive: data.isActive && !isExpired
   }
 }
+
+// Mevcut kullanıcıyı yükle
+async function loadCurrentUser() {
+  try {
+    const res = await axios.get('/api/auth/profile', { headers: authHeaders() })
+    currentUser.value = res.data?.user || null
+  } catch (e) {
+    currentUser.value = null
+  }
+}
+
+// Kullanıcının bu lead için verdiği maksimum teklif (varsa)
+const myMaxBid = computed(() => {
+  if (!lead.value?.bids || !currentUser.value?.id) return null
+  const myBids = lead.value.bids.filter(b => b?.user?.id === currentUser.value.id && typeof b?.maxBid === 'number')
+  if (!myBids.length) return null
+  return Math.max(...myBids.map(b => b.maxBid))
+})
+
+// Şu an lider miyim? (görünür en üst teklif bana mı ait)
+const amILeader = computed(() => {
+  if (!lead.value?.bids?.length || !currentUser.value?.id) return false
+  return lead.value.bids[0]?.user?.id === currentUser.value.id
+})
 
 function authHeaders() {
   const token = localStorage.getItem('token')
@@ -113,12 +153,13 @@ function setQuickBid(multiplier) {
   const current = lead.value?.bids?.[0]?.amount ?? lead.value?.startPrice ?? 0
   const increment = lead.value?.minIncrement ?? 1
   const quickAmount = current + (increment * multiplier)
-  amount.value = quickAmount.toString()
+  maxBid.value = quickAmount.toString()
 }
 
 async function placeBid() {
   errorMessage.value = ''
-  const numeric = Number(amount.value)
+  successMessage.value = ''
+  const numeric = Number(maxBid.value)
   if (!numeric || Number.isNaN(numeric)) {
     errorMessage.value = 'Lütfen geçerli bir sayı girin.'
     return
@@ -126,17 +167,31 @@ async function placeBid() {
   const current = lead.value?.bids?.[0]?.amount ?? lead.value?.startPrice ?? 0
   const minNext = current + (lead.value?.minIncrement ?? 1)
   if (numeric < minNext) {
-    errorMessage.value = `Minimum teklif ${minNext} olmalı.`
+    errorMessage.value = `Minimum maksimum teklif ${minNext} olmalı.`
     return
   }
   try {
     isSubmitting.value = true
-    await axios.post('/api/bids', { leadId, amount: numeric }, { headers: authHeaders() })
-    // Socket yayınını bekle; optimistik ekleme yok → çift kayıt önlenir
-    amount.value = ''
+    const response = await axios.post('/api/bids', { leadId, maxBid: numeric }, { headers: authHeaders() })
+
+    // Show success message based on result
+    if (response.data.isLeader) {
+      successMessage.value = `Tebrikler! Şu anda lidersiniz. Görünür fiyat: ${formatPrice(response.data.visiblePrice, settings.value.defaultCurrency)}`
+      success(successMessage.value)
+    } else {
+      successMessage.value = `Teklifiniz alındı, ancak başka bir kullanıcının maksimumu daha yüksek. Lider olmak için daha yüksek bir maksimum teklif verin.`
+      error(successMessage.value)
+    }
+
+    // Clear input after successful bid
+    maxBid.value = ''
+
+    // Reload lead to get updated bids
+    await loadLead()
   } catch (e) {
     const msg = e?.response?.data?.error || 'Teklif verilemedi'
     errorMessage.value = msg
+    error(msg)
   } finally {
     isSubmitting.value = false
   }
@@ -144,26 +199,63 @@ async function placeBid() {
 
 onMounted(async () => {
   await loadSettings()
-  await loadLead()
+  await Promise.all([loadLead(), loadCurrentUser()])
   await loadWatching()
+
+  console.log('[Socket] Emitting join-lead for:', leadId)
   socket.emit('join-lead', leadId)
+
   socket.on('bid:new', (payload) => {
+    console.log('[Socket] Received bid:new event:', payload)
     if (payload.leadId !== leadId) return
-    const exists = lead.value?.bids?.some(b => b.id === payload.bid.id)
-    if (!exists) {
-      lead.value?.bids?.unshift(payload.bid)
+
+    // Update lead bids array
+    if (lead.value) {
+      // Check if bid already exists
+      const exists = lead.value.bids?.some(b => b.id === payload.bid.id)
+      if (!exists) {
+        console.log('[Socket] Adding new bid to UI:', payload.bid)
+        // Add new bid to the beginning of the array
+        lead.value.bids = [payload.bid, ...(lead.value.bids || [])]
+      } else {
+        console.log('[Socket] Bid already exists, skipping')
+      }
+    }
+
+    // Show reserve price notification if needed
+    if (payload.reserveMet === false) {
+      error('Not: Rezerv fiyat henüz karşılanmadı.')
     }
   })
+
   socket.on('lead:update', (payload) => {
+    console.log('[Socket] Received lead:update event:', payload)
     if (payload.leadId !== leadId) return
     // Lead temel bilgilerini güncelle (bids server tarafında dahil değilse koru)
     const currentBids = lead.value?.bids || []
     lead.value = { ...lead.value, ...payload.lead, bids: currentBids }
   })
+
+  socket.on('lead:extended', (payload) => {
+    console.log('[Socket] Received lead:extended event:', payload)
+    if (payload.leadId !== leadId) return
+    // Anti-sniping: Auction time extended
+    lead.value.endsAt = payload.newEndsAt
+    success(`Açık artırma süresi ${payload.extensionSeconds} saniye uzatıldı!`)
+  })
+
+  // Polling mechanism as fallback - reload lead every 10 seconds
+  pollingInterval = setInterval(async () => {
+    console.log('[Polling] Refreshing lead data...')
+    await loadLead()
+  }, 3000) // 10 seconds
 })
 
 onUnmounted(() => {
   socket.close()
+  if (pollingInterval) {
+    clearInterval(pollingInterval)
+  }
 })
 </script>
 
@@ -238,17 +330,37 @@ onUnmounted(() => {
         <div class="bid-form-panel">
           <div class="form-header">
             <h2>Teklif Ver</h2>
-            <p>En yüksek teklifi sen ver ve kazan!</p>
+            <p>Maksimum tutarınızı girin - sistem sizin için otomatik olarak artırır!</p>
+            <div v-if="myMaxBid" class="my-bid-info" role="status" aria-live="polite">
+              <div class="my-bid-left">
+                <span class="my-max-label">Maksimum teklifiniz</span>
+                <span class="my-max-value">{{ formatPrice(myMaxBid, settings.defaultCurrency) }}</span>
+              </div>
+              <div v-if="amILeader" class="leader-badge" title="Şu an en yüksek teklif sizde">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+                <span>Şu an siz öndesiniz</span>
+              </div>
+            </div>
           </div>
-          
+
           <div class="form-content">
+            <div class="proxy-info-box d-none">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4M12 8h.01"/>
+              </svg>
+              <span>Maksimum tutarınızı girin. Sistem, lider olmanız için gerekli minimum tutarı otomatik olarak teklif eder. Başkaları sizi geçmeye çalışırsa, maksimumunuza kadar otomatik olarak artırır.</span>
+            </div>
+
             <div class="input-group">
-              <label class="input-label">Teklif Miktarı</label>
+              <label class="input-label">Maksimum Teklifiniz</label>
               <div class="amount-input">
                 <span class="currency">{{ getCurrencySymbol(settings.defaultCurrency) }}</span>
-                <input 
-                  type="number" 
-                  v-model="amount" 
+                <input
+                  type="number"
+                  v-model="maxBid"
                   :placeholder="`${(lead.bids?.[0]?.amount ?? lead.startPrice) + lead.minIncrement}`"
                   class="amount-field"
                   @keyup.enter="placeBid"
@@ -359,10 +471,16 @@ onUnmounted(() => {
               <div class="bid-info">
                 <div class="bid-amount">{{ formatPrice(bid.amount, settings.defaultCurrency) }}</div>
                 <div class="bid-user">{{ bid.user?.email || 'Anonim' }}</div>
+               <!-- <div v-if="index === 0" class="winning-indicator">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
+                   <span>Şu an kazanan</span>
+                </div> -->
               </div>
               <div class="bid-time">
                 <div class="time-text">{{ new Date(bid.createdAt).toLocaleDateString('tr-TR') }}</div>
-                <div class="time-detail">{{ new Date(bid.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) }}</div>
+                <div class="time-detail">{{ new Date(bid.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) }}</div>
               </div>
             </div>
           </div>
@@ -387,6 +505,35 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* Proxy Bidding Info Box */
+.proxy-info-box {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: #dbeafe;
+  border: 1px solid #93c5fd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  align-items: flex-start;
+}
+
+.proxy-info-box svg {
+  flex-shrink: 0;
+  color: #1e40af;
+  margin-top: 2px;
+}
+
+.proxy-info-box span {
+  color: #1e3a8a;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.input-info .info-text {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
 /* Page Layout */
 .page-content {
   max-width: 1400px;
@@ -493,6 +640,34 @@ onUnmounted(() => {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   border: 1px solid #e5e7eb;
   height: 100%;
+}
+
+.my-bid-info {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.my-bid-left { display: flex; align-items: baseline; gap: 8px; align-items:center; flex-direction: column; }
+.my-max-label { color: #6b7280; font-size: 0.875rem; }
+.my-max-value { color: #111827; font-size: 1.125rem; font-weight: 700; }
+
+.leader-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.85rem;
 }
 
 .bid-form-section{
@@ -726,6 +901,19 @@ onUnmounted(() => {
   }
 }
 
+.winning-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #065f46;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  margin-top: 4px;
+}
+
 /* Modal Stilleri */
 .modal-backdrop {
   position: fixed;
@@ -945,6 +1133,9 @@ onUnmounted(() => {
     margin: 8px;
     max-width: calc(100vw - 16px);
   }
+}
+.d-none{
+  display: none;
 }
 </style>
 

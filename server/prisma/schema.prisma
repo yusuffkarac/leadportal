@@ -57,6 +57,8 @@ model Lead {
   startPrice      Int
   minIncrement    Int
   instantBuyPrice Int?
+  reservePrice    Int?        // Minimum winning price (hidden)
+  antiSnipeSeconds Int        @default(120) // Time extension for anti-sniping
   insuranceType   String?     // Sigorta türü
   isActive        Boolean     @default(true)
   isShowcase      Boolean     @default(false)
@@ -74,7 +76,9 @@ model Lead {
 
 model Bid {
   id        String   @id @default(cuid())
-  amount    Int
+  amount    Int      // Visible current bid amount
+  maxBid    Int      // Hidden maximum bid (for proxy bidding)
+  isAutoBid Boolean  @default(false) // True if automatically placed by system
   createdAt DateTime @default(now())
   leadId    String
   userId    String

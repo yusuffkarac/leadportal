@@ -49,32 +49,36 @@ model User {
 }
 
 model Lead {
-  id              String      @id @default(cuid())
-  title           String
-  description     String
-  privateDetails  String?     @db.Text
-  postalCode      String? // Posta kodu (örn. 85309)
-  startPrice      Int
-  minIncrement    Int
-  instantBuyPrice Int?
-  insuranceType   String? // Sigorta türü
-  isActive        Boolean     @default(true)
-  isShowcase      Boolean     @default(false)
-  isSold          Boolean     @default(false)
-  featured        Boolean     @default(false) // Öne çıkan lead
-  endsAt          DateTime
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  ownerId         String
-  bids            Bid[]
-  owner           User        @relation("LeadOwner", fields: [ownerId], references: [id])
-  sale            LeadSale?
-  watchers        LeadWatch[]
+  id               String      @id @default(cuid())
+  title            String
+  description      String
+  privateDetails   String?     @db.Text
+  postalCode       String? // Posta kodu (örn. 85309)
+  startPrice       Int
+  minIncrement     Int
+  instantBuyPrice  Int?
+  reservePrice     Int? // Minimum winning price (hidden)
+  antiSnipeSeconds Int         @default(120) // Time extension for anti-sniping
+  insuranceType    String? // Sigorta türü
+  isActive         Boolean     @default(true)
+  isShowcase       Boolean     @default(false)
+  isSold           Boolean     @default(false)
+  featured         Boolean     @default(false) // Öne çıkan lead
+  endsAt           DateTime
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  ownerId          String
+  bids             Bid[]
+  owner            User        @relation("LeadOwner", fields: [ownerId], references: [id])
+  sale             LeadSale?
+  watchers         LeadWatch[]
 }
 
 model Bid {
   id        String   @id @default(cuid())
-  amount    Int
+  amount    Int // Visible current bid amount
+  maxBid    Int // Hidden maximum bid (for proxy bidding)
+  isAutoBid Boolean  @default(false) // True if automatically placed by system
   createdAt DateTime @default(now())
   leadId    String
   userId    String

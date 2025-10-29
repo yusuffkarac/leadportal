@@ -157,6 +157,8 @@ exports.Prisma.LeadScalarFieldEnum = {
   startPrice: 'startPrice',
   minIncrement: 'minIncrement',
   instantBuyPrice: 'instantBuyPrice',
+  reservePrice: 'reservePrice',
+  antiSnipeSeconds: 'antiSnipeSeconds',
   insuranceType: 'insuranceType',
   isActive: 'isActive',
   isShowcase: 'isShowcase',
@@ -171,6 +173,8 @@ exports.Prisma.LeadScalarFieldEnum = {
 exports.Prisma.BidScalarFieldEnum = {
   id: 'id',
   amount: 'amount',
+  maxBid: 'maxBid',
+  isAutoBid: 'isAutoBid',
   createdAt: 'createdAt',
   leadId: 'leadId',
   userId: 'userId'
