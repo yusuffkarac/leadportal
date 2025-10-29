@@ -72,6 +72,11 @@ export default function bidsRouter(prisma, io) {
         return res.status(400).json({ error: 'Bu lead\'in süresi dolmuştur' })
       }
 
+      // Check if lead is scheduled for future start
+      if (lead.startsAt && lead.startsAt > currentTime) {
+        return res.status(400).json({ error: 'Bu lead henüz başlamamıştır. Açık artırma başladığında teklif verebilirsiniz.' })
+      }
+
       // Validate minimum bid requirement
       const currentVisibleBid = lead.bids[0]?.amount ?? lead.startPrice
       const minRequired = currentVisibleBid + lead.minIncrement

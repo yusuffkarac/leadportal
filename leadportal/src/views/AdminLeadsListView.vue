@@ -31,6 +31,7 @@ const leadForm = ref({
   minIncrement: '',
   buyNowPrice: '',
   insuranceType: '',
+  startsAt: '',
   endsAt: '',
   isActive: true,
   isShowcase: false
@@ -401,6 +402,7 @@ async function openLeadModal(mode, lead = null) {
         startPrice: '',
         minIncrement: settings.defaultMinIncrement || 10,
         buyNowPrice: '',
+        startsAt: '',
         endsAt: formattedEndDate,
         postalCode: '',
         insuranceType: '',
@@ -422,6 +424,7 @@ async function openLeadModal(mode, lead = null) {
         startPrice: '',
         minIncrement: 10,
         buyNowPrice: '',
+        startsAt: '',
         endsAt: formattedEndDate,
         postalCode: '',
         insuranceType: '',
@@ -441,6 +444,7 @@ async function openLeadModal(mode, lead = null) {
       startPrice: lead.startPrice.toString(),
       minIncrement: lead.minIncrement.toString(),
       buyNowPrice: lead.instantBuyPrice ? lead.instantBuyPrice.toString() : '',
+      startsAt: lead.startsAt ? new Date(lead.startsAt).toISOString().slice(0, 16) : '',
       endsAt: lead.endsAt ? new Date(lead.endsAt).toISOString().slice(0, 16) : '',
       isActive: lead.isActive,
       postalCode: lead.postalCode || '',
@@ -481,6 +485,16 @@ async function saveLead() {
       return
     }
 
+    // Başlangıç tarihi kontrolü: eğer verilmişse bitiş tarihinden önce olmalı
+    if (leadForm.value.startsAt && leadForm.value.endsAt) {
+      const start = new Date(leadForm.value.startsAt)
+      const end = new Date(leadForm.value.endsAt)
+      if (start >= end) {
+        errorMessage.value = 'Başlangıç tarihi bitiş tarihinden önce olmalıdır.'
+        return
+      }
+    }
+
     // datetime-local input'u lokal saati verir, biz de onu olduğu gibi backend'e göndermeliyiz
     // Backend'de createDate() ile parse edildiğinde doğru timezone'da yorumlanacak
     const leadData = {
@@ -491,6 +505,7 @@ async function saveLead() {
       minIncrement: parseFloat(leadForm.value.minIncrement),
       instantBuyPrice: leadForm.value.buyNowPrice ? parseFloat(leadForm.value.buyNowPrice) : null,
       insuranceType: leadForm.value.insuranceType || undefined,
+      startsAt: leadForm.value.startsAt || undefined,
       endsAt: leadForm.value.endsAt, // datetime-local değerini olduğu gibi gönder
       isShowcase: !!leadForm.value.isShowcase
     }
@@ -1074,7 +1089,7 @@ watch(showMap, (newValue) => {
             </div>
           </div>
 
-          <!-- İki sütun: Anında Al ve Bitiş Tarihi -->
+          <!-- İki sütun: Anında Al ve Başlangıç Tarihi -->
           <div class="form-row">
             <div class="form-group">
               <label>Anında Satın Alma Fiyatı ({{ getCurrencySymbol(settings.defaultCurrency) }})</label>
@@ -1082,9 +1097,16 @@ watch(showMap, (newValue) => {
               <small class="form-help">Anında satın alma fiyatı</small>
             </div>
             <div class="form-group">
-              <label>Bitiş Tarihi *</label>
-              <input v-model="leadForm.endsAt" type="datetime-local" class="form-input" required />
+              <label>Başlangıç Tarihi (Opsiyonel)</label>
+              <input v-model="leadForm.startsAt" type="datetime-local" class="form-input" />
+              <small class="form-help">Boş bırakırsanız lead hemen aktif olur</small>
             </div>
+          </div>
+
+          <!-- Tek sütun: Bitiş Tarihi -->
+          <div class="form-group full-width">
+            <label>Bitiş Tarihi *</label>
+            <input v-model="leadForm.endsAt" type="datetime-local" class="form-input" required />
           </div>
 
           <!-- Edit modunda: İki sütun: Vitrin ve Aktif Durumu -->

@@ -60,6 +60,17 @@ async function loadInsuranceTypes() {
 async function save() {
   ok.value = ''
   err.value = ''
+
+  // Başlangıç tarihi kontrolü: eğer verilmişse bitiş tarihinden önce olmalı
+  if (lead.value.startsAt && lead.value.endsAt) {
+    const start = new Date(lead.value.startsAt)
+    const end = new Date(lead.value.endsAt)
+    if (start >= end) {
+      err.value = 'Başlangıç tarihi bitiş tarihinden önce olmalıdır.'
+      return
+    }
+  }
+
   try {
     const payload = {
       title: lead.value.title,
@@ -69,6 +80,7 @@ async function save() {
       minIncrement: lead.value.minIncrement,
       instantBuyPrice: lead.value.instantBuyPrice,
       insuranceType: lead.value.insuranceType || undefined,
+      startsAt: lead.value.startsAt || undefined,
       endsAt: lead.value.endsAt,
       isActive: lead.value.isActive,
       isShowcase: !!lead.value.isShowcase
@@ -119,6 +131,9 @@ onMounted(() => {
             <option v-for="type in insuranceTypes" :key="type.name" :value="type.name">{{ type.name }}</option>
           </select>
         </div>
+        <label>Başlangıç (Opsiyonel)</label>
+        <input class="input" type="datetime-local" v-model="lead.startsAt" />
+        <small style="color: var(--primary); font-size: 0.875rem;">Boş bırakırsanız lead hemen aktif olur. İleri tarih seçerseniz belirlenen zamanda aktif olur.</small>
         <label>Bitiş</label>
         <input class="input" type="datetime-local" v-model="lead.endsAt" />
         <div class="row">

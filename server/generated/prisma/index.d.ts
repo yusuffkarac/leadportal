@@ -4829,6 +4829,7 @@ export namespace Prisma {
     isShowcase: boolean | null
     isSold: boolean | null
     featured: boolean | null
+    startsAt: Date | null
     endsAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -4851,6 +4852,7 @@ export namespace Prisma {
     isShowcase: boolean | null
     isSold: boolean | null
     featured: boolean | null
+    startsAt: Date | null
     endsAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -4873,6 +4875,7 @@ export namespace Prisma {
     isShowcase: number
     isSold: number
     featured: number
+    startsAt: number
     endsAt: number
     createdAt: number
     updatedAt: number
@@ -4913,6 +4916,7 @@ export namespace Prisma {
     isShowcase?: true
     isSold?: true
     featured?: true
+    startsAt?: true
     endsAt?: true
     createdAt?: true
     updatedAt?: true
@@ -4935,6 +4939,7 @@ export namespace Prisma {
     isShowcase?: true
     isSold?: true
     featured?: true
+    startsAt?: true
     endsAt?: true
     createdAt?: true
     updatedAt?: true
@@ -4957,6 +4962,7 @@ export namespace Prisma {
     isShowcase?: true
     isSold?: true
     featured?: true
+    startsAt?: true
     endsAt?: true
     createdAt?: true
     updatedAt?: true
@@ -5066,6 +5072,7 @@ export namespace Prisma {
     isShowcase: boolean
     isSold: boolean
     featured: boolean
+    startsAt: Date | null
     endsAt: Date
     createdAt: Date
     updatedAt: Date
@@ -5107,6 +5114,7 @@ export namespace Prisma {
     isShowcase?: boolean
     isSold?: boolean
     featured?: boolean
+    startsAt?: boolean
     endsAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -5134,6 +5142,7 @@ export namespace Prisma {
     isShowcase?: boolean
     isSold?: boolean
     featured?: boolean
+    startsAt?: boolean
     endsAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -5157,6 +5166,7 @@ export namespace Prisma {
     isShowcase?: boolean
     isSold?: boolean
     featured?: boolean
+    startsAt?: boolean
     endsAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -5180,13 +5190,14 @@ export namespace Prisma {
     isShowcase?: boolean
     isSold?: boolean
     featured?: boolean
+    startsAt?: boolean
     endsAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     ownerId?: boolean
   }
 
-  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "privateDetails" | "postalCode" | "startPrice" | "minIncrement" | "instantBuyPrice" | "reservePrice" | "antiSnipeSeconds" | "insuranceType" | "isActive" | "isShowcase" | "isSold" | "featured" | "endsAt" | "createdAt" | "updatedAt" | "ownerId", ExtArgs["result"]["lead"]>
+  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "privateDetails" | "postalCode" | "startPrice" | "minIncrement" | "instantBuyPrice" | "reservePrice" | "antiSnipeSeconds" | "insuranceType" | "isActive" | "isShowcase" | "isSold" | "featured" | "startsAt" | "endsAt" | "createdAt" | "updatedAt" | "ownerId", ExtArgs["result"]["lead"]>
   export type LeadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     bids?: boolean | Lead$bidsArgs<ExtArgs>
     owner?: boolean | UserDefaultArgs<ExtArgs>
@@ -5225,6 +5236,7 @@ export namespace Prisma {
       isShowcase: boolean
       isSold: boolean
       featured: boolean
+      startsAt: Date | null
       endsAt: Date
       createdAt: Date
       updatedAt: Date
@@ -5671,6 +5683,7 @@ export namespace Prisma {
     readonly isShowcase: FieldRef<"Lead", 'Boolean'>
     readonly isSold: FieldRef<"Lead", 'Boolean'>
     readonly featured: FieldRef<"Lead", 'Boolean'>
+    readonly startsAt: FieldRef<"Lead", 'DateTime'>
     readonly endsAt: FieldRef<"Lead", 'DateTime'>
     readonly createdAt: FieldRef<"Lead", 'DateTime'>
     readonly updatedAt: FieldRef<"Lead", 'DateTime'>
@@ -29957,6 +29970,7 @@ export namespace Prisma {
     isShowcase: 'isShowcase',
     isSold: 'isSold',
     featured: 'featured',
+    startsAt: 'startsAt',
     endsAt: 'endsAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -30640,6 +30654,7 @@ export namespace Prisma {
     isShowcase?: BoolFilter<"Lead"> | boolean
     isSold?: BoolFilter<"Lead"> | boolean
     featured?: BoolFilter<"Lead"> | boolean
+    startsAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
     endsAt?: DateTimeFilter<"Lead"> | Date | string
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
@@ -30666,6 +30681,7 @@ export namespace Prisma {
     isShowcase?: SortOrder
     isSold?: SortOrder
     featured?: SortOrder
+    startsAt?: SortOrderInput | SortOrder
     endsAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -30695,6 +30711,7 @@ export namespace Prisma {
     isShowcase?: BoolFilter<"Lead"> | boolean
     isSold?: BoolFilter<"Lead"> | boolean
     featured?: BoolFilter<"Lead"> | boolean
+    startsAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
     endsAt?: DateTimeFilter<"Lead"> | Date | string
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
@@ -30721,6 +30738,7 @@ export namespace Prisma {
     isShowcase?: SortOrder
     isSold?: SortOrder
     featured?: SortOrder
+    startsAt?: SortOrderInput | SortOrder
     endsAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -30751,6 +30769,7 @@ export namespace Prisma {
     isShowcase?: BoolWithAggregatesFilter<"Lead"> | boolean
     isSold?: BoolWithAggregatesFilter<"Lead"> | boolean
     featured?: BoolWithAggregatesFilter<"Lead"> | boolean
+    startsAt?: DateTimeNullableWithAggregatesFilter<"Lead"> | Date | string | null
     endsAt?: DateTimeWithAggregatesFilter<"Lead"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"Lead"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Lead"> | Date | string
@@ -32727,6 +32746,7 @@ export namespace Prisma {
     isShowcase?: boolean
     isSold?: boolean
     featured?: boolean
+    startsAt?: Date | string | null
     endsAt: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -32752,6 +32772,7 @@ export namespace Prisma {
     isShowcase?: boolean
     isSold?: boolean
     featured?: boolean
+    startsAt?: Date | string | null
     endsAt: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -32777,6 +32798,7 @@ export namespace Prisma {
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32802,6 +32824,7 @@ export namespace Prisma {
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32827,6 +32850,7 @@ export namespace Prisma {
     isShowcase?: boolean
     isSold?: boolean
     featured?: boolean
+    startsAt?: Date | string | null
     endsAt: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -32849,6 +32873,7 @@ export namespace Prisma {
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32870,6 +32895,7 @@ export namespace Prisma {
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35187,6 +35213,7 @@ export namespace Prisma {
     isShowcase?: SortOrder
     isSold?: SortOrder
     featured?: SortOrder
+    startsAt?: SortOrder
     endsAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -35217,6 +35244,7 @@ export namespace Prisma {
     isShowcase?: SortOrder
     isSold?: SortOrder
     featured?: SortOrder
+    startsAt?: SortOrder
     endsAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -35239,6 +35267,7 @@ export namespace Prisma {
     isShowcase?: SortOrder
     isSold?: SortOrder
     featured?: SortOrder
+    startsAt?: SortOrder
     endsAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -37869,6 +37898,7 @@ export namespace Prisma {
     isShowcase?: boolean
     isSold?: boolean
     featured?: boolean
+    startsAt?: Date | string | null
     endsAt: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37893,6 +37923,7 @@ export namespace Prisma {
     isShowcase?: boolean
     isSold?: boolean
     featured?: boolean
+    startsAt?: Date | string | null
     endsAt: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -38235,6 +38266,7 @@ export namespace Prisma {
     isShowcase?: BoolFilter<"Lead"> | boolean
     isSold?: BoolFilter<"Lead"> | boolean
     featured?: BoolFilter<"Lead"> | boolean
+    startsAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
     endsAt?: DateTimeFilter<"Lead"> | Date | string
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
@@ -38834,6 +38866,7 @@ export namespace Prisma {
     isShowcase?: boolean
     isSold?: boolean
     featured?: boolean
+    startsAt?: Date | string | null
     endsAt: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -38858,6 +38891,7 @@ export namespace Prisma {
     isShowcase?: boolean
     isSold?: boolean
     featured?: boolean
+    startsAt?: Date | string | null
     endsAt: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -38977,6 +39011,7 @@ export namespace Prisma {
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -39001,6 +39036,7 @@ export namespace Prisma {
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -39110,6 +39146,7 @@ export namespace Prisma {
     isShowcase?: boolean
     isSold?: boolean
     featured?: boolean
+    startsAt?: Date | string | null
     endsAt: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -39134,6 +39171,7 @@ export namespace Prisma {
     isShowcase?: boolean
     isSold?: boolean
     featured?: boolean
+    startsAt?: Date | string | null
     endsAt: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -39253,6 +39291,7 @@ export namespace Prisma {
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -39277,6 +39316,7 @@ export namespace Prisma {
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -39465,6 +39505,7 @@ export namespace Prisma {
     isShowcase?: boolean
     isSold?: boolean
     featured?: boolean
+    startsAt?: Date | string | null
     endsAt: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -39489,6 +39530,7 @@ export namespace Prisma {
     isShowcase?: boolean
     isSold?: boolean
     featured?: boolean
+    startsAt?: Date | string | null
     endsAt: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -39614,6 +39656,7 @@ export namespace Prisma {
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -39638,6 +39681,7 @@ export namespace Prisma {
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -41619,6 +41663,7 @@ export namespace Prisma {
     isShowcase?: boolean
     isSold?: boolean
     featured?: boolean
+    startsAt?: Date | string | null
     endsAt: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -41743,6 +41788,7 @@ export namespace Prisma {
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -41767,6 +41813,7 @@ export namespace Prisma {
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -41791,6 +41838,7 @@ export namespace Prisma {
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

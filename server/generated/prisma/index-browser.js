@@ -164,6 +164,7 @@ exports.Prisma.LeadScalarFieldEnum = {
   isShowcase: 'isShowcase',
   isSold: 'isSold',
   featured: 'featured',
+  startsAt: 'startsAt',
   endsAt: 'endsAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

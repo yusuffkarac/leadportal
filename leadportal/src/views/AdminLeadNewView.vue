@@ -8,6 +8,7 @@ const postalCode = ref('')
 const startPrice = ref('0')
 const minIncrement = ref('1')
 const instantBuyPrice = ref('')
+const startsAt = ref('')
 const endsAt = ref('')
 const privateDetails = ref('')
 const insuranceType = ref('')
@@ -165,6 +166,17 @@ async function submit() {
     error.value = 'Bitiş zamanı zorunludur.'
     return
   }
+
+  // Başlangıç tarihi kontrolü: eğer verilmişse bitiş tarihinden önce olmalı
+  if (startsAt.value && endsAt.value) {
+    const start = new Date(startsAt.value)
+    const end = new Date(endsAt.value)
+    if (start >= end) {
+      error.value = 'Başlangıç tarihi bitiş tarihinden önce olmalıdır.'
+      return
+    }
+  }
+
   try {
     await axios.post('/api/leads', {
       title: title.value,
@@ -175,6 +187,7 @@ async function submit() {
       minIncrement: Number(minIncrement.value),
       instantBuyPrice: instantBuyPrice.value ? Number(instantBuyPrice.value) : undefined,
       insuranceType: insuranceType.value || undefined,
+      startsAt: startsAt.value || undefined,
       endsAt: endsAt.value,
       isShowcase: isShowcase.value
     }, { headers: authHeaders() })
@@ -187,6 +200,7 @@ async function submit() {
     minIncrement.value = '1'
     instantBuyPrice.value = ''
     insuranceType.value = ''
+    startsAt.value = ''
     endsAt.value = ''
     isShowcase.value = false
   } catch (e) {
@@ -266,6 +280,11 @@ async function submit() {
           <option value="">Sigorta türü seçin</option>
           <option v-for="type in insuranceTypes" :key="type.name" :value="type.name">{{ type.name }}</option>
         </select>
+      </div>
+      <div class="stack">
+        <label>Başlangıç Zamanı (Opsiyonel)</label>
+        <input class="input" v-model="startsAt" type="datetime-local" />
+        <small style="color: var(--primary); font-size: 0.875rem;">Boş bırakırsanız lead hemen aktif olur. İleri tarih seçerseniz belirlenen zamanda aktif olur.</small>
       </div>
       <div class="stack">
         <label>Bitiş Zamanı</label>

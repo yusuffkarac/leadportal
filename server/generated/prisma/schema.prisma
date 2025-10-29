@@ -64,6 +64,7 @@ model Lead {
   isShowcase       Boolean     @default(false)
   isSold           Boolean     @default(false)
   featured         Boolean     @default(false) // Öne çıkan lead
+  startsAt         DateTime? // Açık artırmanın başlangıç zamanı (opsiyonel, boşsa hemen başlar)
   endsAt           DateTime
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt

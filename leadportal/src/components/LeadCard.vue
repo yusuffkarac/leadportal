@@ -126,7 +126,13 @@ const minBidAmount = computed(() => {
 </script>
 
 <template>
-  <div class="auction-card" @click="handleClick" :class="{ 'expired': lead.isExpired }">
+  <div class="auction-card" @click="handleClick" :class="{ 'expired': lead.isExpired, 'scheduled': lead.isScheduled }">
+    <!-- Scheduled Badge -->
+    <div v-if="lead.isScheduled" class="scheduled-badge">
+      <Icon icon="mdi:calendar-clock" width="18" height="18" />
+      <span>Zamanlanmış - {{ new Date(lead.startsAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) }} tarihinde başlayacak</span>
+    </div>
+
     <!-- Card Top Header -->
     <div class="card-top-header">
       <div class="card-top-left">
@@ -248,7 +254,7 @@ const minBidAmount = computed(() => {
         Detaylı Görünüm
       </button>
       <button
-        v-if="lead.instantBuyPrice && !lead.isExpired && lead.isActive"
+        v-if="lead.instantBuyPrice && !lead.isExpired && lead.isActive && !lead.isScheduled"
         class="instant-buy-action-btn"
         @click="handleInstantBuy"
       >
@@ -601,6 +607,33 @@ const minBidAmount = computed(() => {
   background: #f59e0b;
 }
 
+/* Scheduled Badge */
+.scheduled-badge {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid #fcd34d;
+  box-shadow: 0 2px 4px rgba(251, 191, 36, 0.1);
+}
+
+.auction-card.scheduled {
+  opacity: 0.85;
+  border-color: #fbbf24;
+  background: linear-gradient(to bottom, #fffbeb, #ffffff);
+}
+
+.auction-card.scheduled:hover {
+  opacity: 1;
+  border-color: #f59e0b;
+}
+
 @media (max-width: 768px) {
   .card-top-left {
     flex-direction: column;
@@ -609,6 +642,11 @@ const minBidAmount = computed(() => {
 
   .quick-bid-suggestions {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .scheduled-badge {
+    padding: 10px 12px;
+    font-size: 0.8rem;
   }
 }
 

@@ -103,6 +103,7 @@ const createLeadSchema = z.object({
   minIncrement: z.number().int().positive(),
   instantBuyPrice: z.number().int().positive().nullable().optional(),
   insuranceType: z.string().optional().nullable(),
+  startsAt: z.string().optional().nullable().transform((v) => v ? createDate(v) : null),
   endsAt: z.string().min(1, 'Endzeit ist erforderlich').transform((v) => createDate(v)),
   isShowcase: z.boolean().optional()
 })
@@ -262,23 +263,40 @@ export default function leadsRouter(prisma, io) {
     if (showcaseOnly) {
       where.isShowcase = true
     }
-    
+
     const leads = await prisma.lead.findMany({
       where,
       orderBy: { createdAt: 'desc' },
       include: { bids: { orderBy: { createdAt: 'desc' }, take: 1, include: { user: true } } }
     })
-    
+
     // Lead tipi yetkilendirmesine göre filtrele
     const filteredLeads = await filterLeadsByPermission(
-      prisma, 
-      leads, 
-      req.user?.id, 
+      prisma,
+      leads,
+      req.user?.id,
       req.user?.userTypeId
     )
-    
+
+    // Zamanlanmış leadleri belirle ve sırala
+    const currentTime = now()
+    const activeLeads = []
+    const scheduledLeads = []
+
+    filteredLeads.forEach(lead => {
+      const isScheduled = lead.startsAt && new Date(lead.startsAt) > currentTime
+      if (isScheduled) {
+        scheduledLeads.push({ ...lead, isScheduled: true })
+      } else {
+        activeLeads.push({ ...lead, isScheduled: false })
+      }
+    })
+
+    // Aktif leadleri en yeni önce, zamanlanmış leadleri en sona
+    const sortedLeads = [...activeLeads, ...scheduledLeads]
+
     // Bids'leri anonim hale getir (kendi teklifleri hariç)
-    const anonymizedLeads = filteredLeads.map(lead => {
+    const anonymizedLeads = sortedLeads.map(lead => {
       const { privateDetails, ...rest } = lead
       return {
         ...rest,
@@ -287,7 +305,7 @@ export default function leadsRouter(prisma, io) {
         bids: anonymizeBids(lead.bids, req.user?.id)
       }
     })
-    
+
     res.json(anonymizedLeads)
   })
 
@@ -425,7 +443,7 @@ export default function leadsRouter(prisma, io) {
       const issues = parsed.error.issues.map((i) => ({ path: i.path.join('.'), message: i.message }))
       return res.status(400).json({ error: 'Validierung fehlgeschlagen', issues })
     }
-    const { title, description, privateDetails, postalCode, startPrice, minIncrement, instantBuyPrice, insuranceType, endsAt, isShowcase = false } = parsed.data
+    const { title, description, privateDetails, postalCode, startPrice, minIncrement, instantBuyPrice, insuranceType, startsAt, endsAt, isShowcase = false } = parsed.data
     
     // Ayarlardan ID formatını ve varsayılan değerleri al
     let settings = await prisma.settings.findUnique({
@@ -497,6 +515,7 @@ export default function leadsRouter(prisma, io) {
         minIncrement: finalMinIncrement, // Varsayılan değeri kullan
         instantBuyPrice,
         insuranceType: insuranceType || null,
+        startsAt: startsAt || null,
         endsAt,
         isShowcase,
         ownerId: req.user.id
@@ -619,6 +638,12 @@ export default function leadsRouter(prisma, io) {
 
       if (lead.isSold) {
         return res.status(400).json({ error: 'Dieser Lead wurde bereits verkauft' })
+      }
+
+      // Check if lead is scheduled for future start
+      const currentTime = now()
+      if (lead.startsAt && lead.startsAt > currentTime) {
+        return res.status(400).json({ error: 'Bu lead henüz başlamamıştır. Açık artırma başladığında satın alabilirsiniz.' })
       }
 
       if (!lead.instantBuyPrice) {
