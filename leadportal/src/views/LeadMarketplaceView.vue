@@ -5,6 +5,7 @@ import api from '@/utils/axios.js'
 import { io } from 'socket.io-client'
 import { formatPrice, getCurrencySymbol } from '@/utils/currency.js'
 import { useAlert } from '../composables/useAlert'
+import InstantBuyModal from '@/components/InstantBuyModal.vue'
 
 const { success, error } = useAlert()
 
@@ -17,6 +18,8 @@ const isProcessing = ref(false)
 const settings = ref({ defaultCurrency: 'EUR', insuranceTypes: [] })
 const quickBidAmounts = ref({})
 const isSubmittingBid = ref({})
+const showDescriptionModal = ref(false)
+const selectedDescription = ref(null)
 
 // Filtre state'leri
 const filters = ref({
@@ -69,13 +72,14 @@ function formatTimeRemaining(endsAt) {
   const now = new Date()
   const endTime = new Date(endsAt)
   const diff = endTime - now
-  
+
   if (diff <= 0) return 'Süresi doldu'
-  
+
   const days = Math.floor(diff / (1000 * 60 * 60 * 24))
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-  
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000)
+
   if (days > 0) {
     if (hours > 0) {
       return `${days} gün ${hours} saat`
@@ -88,8 +92,12 @@ function formatTimeRemaining(endsAt) {
     } else {
       return `${hours} saat`
     }
+  } else if (minutes > 0) {
+    // 1 saatten az kaldığında dakika ve saniye göster
+    return `${minutes}d ${seconds}s`
   } else {
-    return `${minutes} dakika`
+    // 1 dakikadan az kaldığında sadece saniye göster
+    return `${seconds}s`
   }
 }
 
@@ -276,47 +284,11 @@ function openInstantBuyModal(lead, event) {
 function closeInstantBuyModal() {
   showInstantBuyModal.value = false
   selectedLead.value = null
-  isProcessing.value = false
 }
 
-async function confirmInstantBuy() {
-  if (!selectedLead.value) return
-
-  isProcessing.value = true
-
-  try {
-    const response = await api.post(`/leads/${selectedLead.value.id}/instant-buy`, {}, { headers: authHeaders() })
-
-    if (response.data.success) {
-      closeInstantBuyModal()
-      // Lead'leri yeniden yükle
-      await fetchLeads()
-
-      // Başarı mesajı göster
-      const paymentInfo = response.data.paymentMethod === 'balance'
-        ? `Bakiyenizden ${formatPrice(response.data.sale.amount, settings.value.defaultCurrency)} düşüldü.`
-        : 'IBAN üzerinden ödeme yapılacaktır.'
-
-      success(`Lead başarıyla satın alındı!\n\n${paymentInfo}`)
-    }
-  } catch (err) {
-    const errorData = err.response?.data
-
-    closeInstantBuyModal()
-
-    // Hata tipine göre mesaj göster
-    if (errorData?.errorType === 'INSUFFICIENT_BALANCE') {
-      error(`Yetersiz bakiye!\n\nGerekli: ${formatPrice(errorData.required, settings.value.defaultCurrency)}\nMevcut: ${formatPrice(errorData.available, settings.value.defaultCurrency)}\n\n${errorData.error}`)
-    } else if (errorData?.errorType === 'IBAN_NOT_FOUND') {
-      error(errorData.error + '\n\nProfil sayfanızdan IBAN bilgilerinizi ekleyebilirsiniz.')
-    } else {
-      error(errorData?.error || 'Anında satın alma işlemi başarısız')
-    }
-
-    console.error('Anında satın alma hatası:', errorData?.error)
-  } finally {
-    isProcessing.value = false
-  }
+async function handleInstantBuySuccess() {
+  // Lead'leri yeniden yükle
+  await fetchLeads()
 }
 
 async function submitQuickBid(lead, event) {
@@ -351,6 +323,24 @@ async function submitQuickBid(lead, event) {
 
 function setQuickBidAmount(lead, amount) {
   quickBidAmounts.value[lead.id] = amount
+}
+
+function showDescription(lead, event) {
+  event.stopPropagation()
+  selectedDescription.value = lead
+  showDescriptionModal.value = true
+}
+
+function closeDescriptionModal() {
+  showDescriptionModal.value = false
+  selectedDescription.value = null
+}
+
+// Posta kodundan şehir adını getir
+function getCityFromPostalCode(postalCode) {
+  if (!postalCode) return ''
+  const info = zipcodeIndex.value.get(String(postalCode))
+  return info?.name || ''
 }
 
 // Harita ve Posta Kodu İşlemleri
@@ -444,12 +434,12 @@ onMounted(async () => {
     }
   })
 
-  // Her dakika zamanı güncelle
+  // Her saniye zamanı güncelle (geri sayım için)
   const timeInterval = setInterval(() => {
     // Vue reactivity için leads array'ini güncelle
     leads.value = [...leads.value]
     allLeads.value = [...allLeads.value]
-  }, 60000)
+  }, 1000) // 1 saniyede bir güncelle
 
   onUnmounted(() => {
     clearInterval(timeInterval)
@@ -703,125 +693,131 @@ onMounted(async () => {
       <!-- Grid Görünümü -->
       <div v-else class="auctions-grid">
       <div class="auction-card" v-for="lead in leads" :key="lead.id" @click="navigateToLead(lead)">
-        <div class="card-header">
-          <div class="card-title">
-            <div class="title-with-icon">
-              <Icon v-if="lead.insuranceType" :icon="getInsuranceTypeIcon(lead.insuranceType)" class="insurance-iconify" width="18" height="18" />
-              <h3>{{ lead.title }}</h3>
-            </div>
-            <span class="status-badge" :class="lead.isExpired ? 'expired' : 'active'">
-              {{ lead.isExpired ? 'Geçmiş' : 'Aktif' }}
+        <!-- Card Top Header -->
+        <div class="card-top-header">
+          <div class="card-top-left">
+            <span class="insurance-type-badge" v-if="lead.insuranceType">
+              <Icon :icon="getInsuranceTypeIcon(lead.insuranceType)" width="16" height="16" />
+              {{ lead.insuranceType }}
             </span>
-          </div>
-          <div class="current-bid">
-            <div class="price-container">
-              <div class="bid-info-container">
-                <div class="bid-amount">
-                  <span v-if="lead.bids && lead.bids.length">{{ formatPrice(lead.bids[0].amount, settings.defaultCurrency) }}</span>
-                  <span v-else>{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
-                </div>
-                <div class="bid-label">Güncel Teklif</div>
-              </div>
-              <div v-if="lead.instantBuyPrice" class="instant-buy-price">
-                <div class="instant-amount">{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</div>
-                <div class="instant-label">Anında Satın Al</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="card-description">
-          {{ lead.description || 'Açıklama bulunmuyor' }}
-        </div>
-        
-        <div class="card-details">
-          <div class="detail-item">
-            <Icon icon="mdi:clock-outline" class="detail-icon" width="16" height="16" />
-            <span class="detail-text">{{ formatTimeRemaining(lead.endsAt) }}</span>
-          </div>
-          <div class="detail-item">
-            <Icon icon="mdi:account-multiple" class="detail-icon" width="16" height="16" />
-            <span class="detail-text">{{ lead.bids ? lead.bids.length : 0 }} teklif</span>
-          </div>
-          <div class="detail-item">
-            <Icon icon="mdi:currency-eur" class="detail-icon" width="16" height="16" />
-            <span class="detail-text">+{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement }}</span>
-          </div>
-          <button class="share-btn-small" @click="shareLead(lead, $event)" title="Paylaş">
-            <Icon icon="mdi:share-variant" width="14" height="14" />
-          </button>
-        </div>
-        
-        <div class="card-footer">
-          <!-- Hızlı Teklif Alanı -->
-          <div v-if="!lead.isExpired && lead.isActive" class="quick-bid-section" @click.stop>
-            <div class="quick-bid-input-group">
-              <div class="currency-symbol">{{ getCurrencySymbol(settings.defaultCurrency) }}</div>
-              <input 
-                type="number" 
-                class="quick-bid-input"
-                :placeholder="lead.bids && lead.bids.length ? (lead.bids[0].amount + lead.minIncrement).toString() : (lead.startPrice + lead.minIncrement).toString()"
-                v-model="quickBidAmounts[lead.id]"
-                @click="$event.stopPropagation()"
-                :min="lead.bids && lead.bids.length ? lead.bids[0].amount + lead.minIncrement : lead.startPrice + lead.minIncrement"
-                step="0.01"
-              />
-              <button 
-                class="quick-bid-submit-btn"
-                @click="submitQuickBid(lead, $event)"
-                :disabled="isSubmittingBid[lead.id]"
-              >
-                <span v-if="isSubmittingBid[lead.id]">Gönderiliyor...</span>
-                <span v-else>Teklif Ver</span>
-              </button>
-            </div>
-            <div class="quick-bid-suggestions">
-              <button 
-                class="quick-bid-suggestion"
-                @click.stop="setQuickBidAmount(lead, lead.bids && lead.bids.length ? lead.bids[0].amount + lead.minIncrement : lead.startPrice + lead.minIncrement)"
-              >
-                +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement }}
-              </button>
-              <button 
-                class="quick-bid-suggestion"
-                @click.stop="setQuickBidAmount(lead, (lead.bids && lead.bids.length ? lead.bids[0].amount : lead.startPrice) + lead.minIncrement * 2)"
-              >
-                +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement * 2 }}
-              </button>
-              <button 
-                class="quick-bid-suggestion"
-                @click.stop="setQuickBidAmount(lead, (lead.bids && lead.bids.length ? lead.bids[0].amount : lead.startPrice) + lead.minIncrement * 3)"
-              >
-                +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement * 3 }}
-              </button>
-              <button 
-                class="quick-bid-suggestion"
-                @click.stop="setQuickBidAmount(lead, (lead.bids && lead.bids.length ? lead.bids[0].amount : lead.startPrice) + lead.minIncrement * 5)"
-              >
-                +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement * 5 }}
-              </button>
-            </div>
-          </div>
-          
-          <div class="footer-buttons">
-            <router-link 
-              class="bid-btn" 
-              :class="{ 'bid-btn-disabled': lead.isExpired }"
-              :to="lead.isExpired ? '#' : `/lead/${lead.id}`"
-              @click="lead.isExpired ? $event.preventDefault() : $event.stopPropagation()"
-            >
-              {{ lead.isExpired ? 'Süresi Doldu' : 'Detaylı Görünüm' }}
-            </router-link>
-            
-            <button 
-              v-if="lead.instantBuyPrice && !lead.isExpired && lead.isActive"
-              class="instant-buy-btn-small"
-              @click="openInstantBuyModal(lead, $event)"
-            >
-              <Icon icon="mdi:currency-eur" width="16" height="16" />
-              Anında Al
+            <span class="time-badge">
+              <Icon icon="mdi:clock-outline" width="16" height="16" />
+              {{ formatTimeRemaining(lead.endsAt) }}
+            </span>
+            <button class="info-btn" @click="showDescription(lead, $event)" title="Beschreibung anzeigen">
+              <Icon icon="mdi:information-outline" width="16" height="16" />
             </button>
           </div>
+          <div class="card-top-right">
+            <span class="lead-id">{{ lead.id }}</span>
+          </div>
+        </div>
+
+        <!-- Location and Quality -->
+        <div class="card-meta">
+          <div class="location-info">
+            <Icon icon="mdi:map-marker" width="16" height="16" />
+            <span v-if="lead.postalCode">
+              {{ lead.postalCode }}{{ getCityFromPostalCode(lead.postalCode) ? ' ' + getCityFromPostalCode(lead.postalCode) : '' }}
+            </span>
+            <span v-else>Keine Angabe</span>
+          </div>
+          <div v-if="lead.isShowcase" class="quality-badge">
+            <Icon icon="mdi:star" width="16" height="16" />
+            <span>Qualität: Premium</span>
+          </div>
+        </div>
+
+        <!-- Lead Title -->
+        <h3 class="lead-title">{{ lead.title }}</h3>
+
+        <!-- Price and Bidder Info -->
+        <div class="price-bidder-section">
+          <div class="price-row">
+            <div class="price-amount-large">
+              <span style= "font-weight:bolder" v-if="lead.bids && lead.bids.length">{{ formatPrice(lead.bids[0].amount, settings.defaultCurrency) }}</span>
+              <span v-else>{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
+            </div>
+            <!-- <div v-if="lead.instantBuyPrice " class="instant-buy-badge">
+              <Icon icon="mdi:lightning-bolt" width="14" height="14" />
+              <span>{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</span>
+            </div> -->
+          </div>
+          <div class="bidder-info-line">
+            <span class="bidder-label">Höchstes Gebot von:</span>
+            <span class="bidder-name">{{ lead.bids && lead.bids.length ? (lead.bids[0].user?.name ? lead.bids[0].user.name.substring(0, 2) + '************' : '****') : '-' }}</span>
+            <span class="bids-count-small">{{ lead.bids ? lead.bids.length : 0 }} Gebote </span> <Icon icon="mdi:gavel" width="20" height="20" />
+          </div>
+        </div>
+
+        <!-- Quick Bid Section -->
+        <div v-if="!lead.isExpired && lead.isActive" class="quick-bid-section" @click.stop>
+          <div class="quick-bid-input-group">
+            <div class="currency-symbol">{{ getCurrencySymbol(settings.defaultCurrency) }}</div>
+            <input
+              type="number"
+              class="quick-bid-input"
+              :placeholder="lead.bids && lead.bids.length ? (lead.bids[0].amount + lead.minIncrement).toString() : (lead.startPrice + lead.minIncrement).toString()"
+              v-model="quickBidAmounts[lead.id]"
+              @click="$event.stopPropagation()"
+              :min="lead.bids && lead.bids.length ? lead.bids[0].amount + lead.minIncrement : lead.startPrice + lead.minIncrement"
+              step="0.01"
+            />
+            <button
+              class="quick-bid-submit-btn"
+              @click="submitQuickBid(lead, $event)"
+              :disabled="isSubmittingBid[lead.id]"
+            >
+              <span v-if="isSubmittingBid[lead.id]">...</span>
+              <span v-else>Teklif Ver</span>
+            </button>
+          </div>
+          <div class="quick-bid-suggestions">
+            <button
+              class="quick-bid-suggestion"
+              @click.stop="setQuickBidAmount(lead, lead.bids && lead.bids.length ? lead.bids[0].amount + lead.minIncrement : lead.startPrice + lead.minIncrement)"
+            >
+              +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement }}
+            </button>
+            <button
+              class="quick-bid-suggestion"
+              @click.stop="setQuickBidAmount(lead, (lead.bids && lead.bids.length ? lead.bids[0].amount : lead.startPrice) + lead.minIncrement * 2)"
+            >
+              +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement * 2 }}
+            </button>
+            <button
+              class="quick-bid-suggestion"
+              @click.stop="setQuickBidAmount(lead, (lead.bids && lead.bids.length ? lead.bids[0].amount : lead.startPrice) + lead.minIncrement * 3)"
+            >
+              +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement * 3 }}
+            </button>
+            <button
+              class="quick-bid-suggestion"
+              @click.stop="setQuickBidAmount(lead, (lead.bids && lead.bids.length ? lead.bids[0].amount : lead.startPrice) + lead.minIncrement * 5)"
+            >
+              +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement * 5 }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button
+            class="bid-action-btn"
+            @click.stop="navigateToLead(lead)"
+            :disabled="lead.isExpired"
+          >
+            <Icon icon="mdi:gavel" width="20" height="20" />
+            Detaylı Görünüm
+          </button>
+          <button
+            v-if="lead.instantBuyPrice && !lead.isExpired && lead.isActive"
+            class="instant-buy-action-btn"
+            @click="openInstantBuyModal(lead, $event)"
+          >
+            <Icon icon="mdi:lightning-bolt" width="20" height="20" />
+            Sofort Kaufen   <span style="font-weight: bolder">{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</span>
+          </button>
         </div>
       </div>
     </div>
@@ -847,38 +843,40 @@ onMounted(async () => {
     </section>
     -->
 
-    <!-- Instant Buy Modal -->
-    <div v-if="showInstantBuyModal" class="modal-backdrop" @click="closeInstantBuyModal">
+    <!-- Description Modal -->
+    <div v-if="showDescriptionModal" class="modal-backdrop" @click="closeDescriptionModal">
       <div class="modal" @click.stop>
         <div class="modal-header">
-          <h3>Anında Satın Al</h3>
-          <button class="modal-close" @click="closeInstantBuyModal">×</button>
+          <h3>Lead Beschreibung</h3>
+          <button class="modal-close" @click="closeDescriptionModal">×</button>
         </div>
-        
+
         <div class="modal-body">
-          <div class="instant-buy-info">
-            <div class="lead-title">{{ selectedLead?.title }}</div>
-            <div class="price-display">
-              <div class="price-label">Anında Satın Alma Fiyatı</div>
-              <div class="price-amount">{{ formatPrice(selectedLead?.instantBuyPrice, settings.defaultCurrency) }}</div>
-            </div>
-            <div class="confirmation-text">
-              Bu lead'i anında satın almak istediğinizden emin misiniz?
+          <div class="description-info">
+            <div class="lead-title-modal">{{ selectedDescription?.title }}</div>
+            <div class="lead-id-modal">LP-{{ selectedDescription?.id }}</div>
+            <div class="description-text">
+              {{ selectedDescription?.description || 'Keine Beschreibung verfügbar' }}
             </div>
           </div>
         </div>
-        
+
         <div class="modal-footer">
-          <button class="btn btn-secondary" @click="closeInstantBuyModal" :disabled="isProcessing">
-            İptal
-          </button>
-          <button class="btn btn-primary" @click="confirmInstantBuy" :disabled="isProcessing">
-            <span v-if="isProcessing">İşleniyor...</span>
-            <span v-else>Satın Al</span>
+          <button class="btn btn-secondary" @click="closeDescriptionModal">
+            Schließen
           </button>
         </div>
       </div>
     </div>
+
+    <!-- Instant Buy Modal -->
+    <InstantBuyModal
+      :show="showInstantBuyModal"
+      :lead="selectedLead"
+      :currency="settings.defaultCurrency"
+      @close="closeInstantBuyModal"
+      @success="handleInstantBuySuccess"
+    />
   </section>
 </template>
 
@@ -1465,131 +1463,6 @@ onMounted(async () => {
   font-weight: 500;
 }
 
-/* Lead Tipi Icon */
-.title-with-icon {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.title-with-icon h3{
-  margin: 0;
-}
-
-.insurance-icon {
-  font-size: 1.1rem;
-  color: var(--primary);
-  opacity: 0.8;
-}
-
-/* Fiyat Container - Yan Yana Düzen */
-.price-container {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-/* Güncel Teklif Container */
-.bid-info-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-}
-
-.bid-amount {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #111827;
-  line-height: 1;
-}
-
-.bid-label {
-  font-size: 0.75rem;
-  color: #6b7280;
-  font-weight: 500;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-/* Anında Satın Alma Stilleri */
-.instant-buy-price {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  padding: 6px 12px;
-  background: #10b981;
-  border-radius: 6px;
-}
-
-.instant-amount {
-  font-size: 1rem;
-  font-weight: 700;
-  color: white;
-  line-height: 1;
-}
-
-.instant-label {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 500;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.footer-buttons {
-  display: flex;
-  gap: 10px;
-  flex-direction: row;
-}
-
-.bid-btn {
-  flex: 1;
-  background: #1f2937;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 20px;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 0.875rem;
-  text-align: center;
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-
-.bid-btn:hover {
-  background: #111827;
-}
-
-.bid-btn-disabled {
-  background: #9ca3af;
-  cursor: not-allowed;
-}
-
-.bid-btn-disabled:hover {
-  background: #9ca3af;
-}
-
-.share-btn-small {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  padding: 5px 6px;
-  cursor: pointer;
-  color: var(--primary);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
-
-.share-btn-small:hover {
-  background: #f9fafb;
-  border-color: var(--primary);
-  color: #1d4ed8;
-}
 
 /* Hero Section Styles */
 .hero-section {
@@ -1640,29 +1513,364 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
+  width:80%;
 }
 
 .auction-card {
   background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 18px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 2px solid #0f172a;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .auction-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: #d1d5db;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
 }
 
-.auction-card h3 {
+/* Card Top Header */
+.card-top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.card-top-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.insurance-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: #0f172a;
+  color: white;
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.time-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 8px;
+  background: #f1f5f9;
+  color: #475569;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+
+.info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.info-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.card-top-right {
+  margin-left: auto;
+}
+
+.lead-id {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: 0.05em;
+}
+
+/* Card Meta */
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.location-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #64748b;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.location-info svg {
+  color: #64748b;
+  width: 14px;
+  height: 14px;
+}
+
+.quality-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #f59e0b;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.quality-badge svg {
+  color: #f59e0b;
+  width: 14px;
+  height: 14px;
+}
+
+/* Lead Title */
+.lead-title {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+}
+
+/* Lead Description */
+.lead-description {
+  margin: 0;
+  color: #475569;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Price and Bidder Section */
+.price-bidder-section {
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.price-amount-large {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #10b981;
+  line-height: 1;
+}
+
+.instant-buy-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: #fbbf24;
+  color: #78350f;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.bidder-info-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 0.6875rem;
+  color: #64748b;
+}
+
+.bidder-label {
+  font-weight: 500;
+}
+
+.bidder-name {
+  font-weight: 500;
+  color: #475569;
+}
+
+.bids-count-small {
+  font-weight: 600;
+  color: #0f172a;
+  margin-left: auto;
+  font-size:1.0rem
+}
+
+/* Quick Bid Section */
+.quick-bid-section {
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.quick-bid-input-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.currency-symbol {
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 0.8125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+}
+
+.quick-bid-input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: white;
+  transition: border-color 0.2s ease;
+  color: #0f172a;
+}
+
+.quick-bid-input:focus {
+  outline: none;
+  border-color: #0f172a;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1);
+}
+
+.quick-bid-submit-btn {
+  flex: 0 0 auto;
+  padding: 8px 16px;
+  background: #0f172a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.quick-bid-submit-btn:hover:not(:disabled) {
+  background: #1e293b;
+}
+
+.quick-bid-submit-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.quick-bid-suggestions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.quick-bid-suggestion {
+  padding: 6px 8px;
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  min-width: 0;
+  text-align: center;
+}
+
+.quick-bid-suggestion:hover {
+  background: #0f172a;
+  color: white;
+  border-color: #0f172a;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.bid-action-btn {
+  flex: 1;
+  padding: 10px 16px;
+  background: #0f172a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.bid-action-btn:hover:not(:disabled) {
+  background: #1e293b;
+}
+
+.bid-action-btn:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.instant-buy-action-btn {
+  flex: 1;
+  padding: 10px 16px;
+  background: #fbbf24;
+  color: #78350f;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.instant-buy-action-btn:hover {
+  background: #f59e0b;
 }
 
 .status-badge {
@@ -1688,146 +1896,8 @@ onMounted(async () => {
   color: #b91c1c;
 }
 
-.card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.card-title {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
 .insurance-iconify {
   color: var(--primary);
-}
-
-.card-description {
-  color: #4b5563;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin: 0;
-}
-
-.card-details {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  align-items: center;
-  color: #4b5563;
-}
-
-.detail-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: #0f172a;
-}
-
-.detail-icon {
-  color: #6366f1;
-}
-
-.detail-text {
-  font-weight: 600;
-}
-
-.quick-bid-section {
-  margin-bottom: 14px;
-  padding: 0;
-  background: transparent;
-  border-radius: 0;
-  border: none;
-}
-
-.quick-bid-input-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.currency-symbol {
-  font-weight: 600;
-  color: #111827;
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-}
-
-.quick-bid-input {
-  flex: 1;
-  min-width: 0;
-  padding: 8px 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  background: white;
-  transition: border-color 0.2s ease;
-}
-
-.quick-bid-input:focus {
-  outline: none;
-  border-color: #111827;
-  box-shadow: 0 0 0 2px rgba(31, 41, 55, 0.1);
-}
-
-.quick-bid-submit-btn {
-  flex: 0.75;
-  padding: 10px 20px;
-  background: #1f2937;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.quick-bid-submit-btn:hover:not(:disabled) {
-  background: #111827;
-}
-
-.quick-bid-submit-btn:disabled {
-  background: #9ca3af;
-  cursor: not-allowed;
-}
-
-.quick-bid-suggestions {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 6px;
-}
-
-.quick-bid-suggestion {
-  padding: 6px 8px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #111827;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  width: 100%;
-  min-width: 0;
-  text-align: center;
-}
-
-.quick-bid-suggestion:hover {
-  background: #111827;
-  color: white;
-  border-color: #111827;
 }
 
 @media (max-width: 1024px) {
@@ -1835,8 +1905,12 @@ onMounted(async () => {
     grid-template-columns: 1fr;
   }
 
-  .card-details {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .auction-card {
+    padding: 16px;
+  }
+
+  .price-amount-large {
+    font-size: 1.25rem;
   }
 }
 
@@ -1850,46 +1924,101 @@ onMounted(async () => {
     font-size: 1.5rem;
   }
 
-  .card-details {
-    grid-template-columns: 1fr;
-  }
-
-  .quick-bid-suggestions {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .hero-section {
     padding: 28px;
   }
 
   .auction-card {
     padding: 16px;
+    gap: 12px;
   }
-}
 
-@media (max-width: 480px) {
-  .card-details {
-    grid-template-columns: 1fr;
+  .card-top-left {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .lead-title {
+    font-size: 1rem;
+  }
+
+  .price-bidder-section {
+    padding: 10px;
+  }
+
+  .quick-bid-section {
+    padding: 12px;
   }
 
   .quick-bid-suggestions {
     grid-template-columns: repeat(2, 1fr);
   }
+}
 
-  .footer-buttons {
-    flex-direction: column;
-    gap: 8px;
+@media (max-width: 480px) {
+  .auction-card {
+    padding: 14px;
   }
 
-  .price-container {
+  .card-top-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .card-top-right {
+    margin-left: 0;
+    align-self: flex-end;
+  }
+
+  .lead-title {
+    font-size: 0.9375rem;
+  }
+
+  .price-amount-large {
+    font-size: 1.125rem;
+  }
+
+  .bidder-info-line {
+    font-size: 0.625rem;
+  }
+
+  .quick-bid-section {
+    padding: 10px;
+  }
+
+  .quick-bid-input-group {
+    flex-wrap: wrap;
+  }
+
+  .quick-bid-submit-btn {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  .quick-bid-suggestions {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+  }
+
+  .quick-bid-suggestion {
+    padding: 6px 8px;
+    font-size: 0.6875rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
     gap: 6px;
   }
 
-  .bid-info-container,
-  .instant-buy-price {
-    align-items: flex-start;
+  .bid-action-btn,
+  .instant-buy-action-btn {
+    padding: 10px 14px;
+    font-size: 0.8125rem;
+  }
+
+  .instant-buy-badge {
+    padding: 4px 8px;
+    font-size: 0.75rem;
   }
 }
 
@@ -2040,6 +2169,36 @@ onMounted(async () => {
 
 .instant-buy-info {
   text-align: center;
+}
+
+.description-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lead-title-modal {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+.lead-id-modal {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: 0.05em;
+}
+
+.description-text {
+  font-size: 0.9375rem;
+  color: #475569;
+  line-height: 1.6;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
 }
 
 .lead-title {

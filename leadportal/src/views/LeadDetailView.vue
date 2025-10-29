@@ -6,6 +6,7 @@ import { io } from 'socket.io-client'
 import { formatPrice, getCurrencySymbol } from '@/utils/currency.js'
 import { useAlert } from '../composables/useAlert'
 import { now, createDate } from '@/utils/serverTime.js'
+import InstantBuyModal from '@/components/InstantBuyModal.vue'
 
 const { success, error } = useAlert()
 
@@ -101,44 +102,11 @@ function openInstantBuyModal() {
 
 function closeInstantBuyModal() {
   showInstantBuyModal.value = false
-  isProcessingInstantBuy.value = false
 }
 
-async function confirmInstantBuy() {
-  isProcessingInstantBuy.value = true
-  errorMessage.value = ''
-
-  try {
-    const response = await axios.post(`/api/leads/${leadId}/instant-buy`, {}, { headers: authHeaders() })
-
-    if (response.data.success) {
-      closeInstantBuyModal()
-      // Lead'i yeniden yükle
-      await loadLead()
-
-      // Başarı mesajı göster
-      const paymentInfo = response.data.paymentMethod === 'balance'
-        ? `Bakiyenizden ${formatPrice(response.data.sale.amount, settings.value.defaultCurrency)} düşüldü.`
-        : 'IBAN üzerinden ödeme yapılacaktır.'
-
-      success(`Lead başarıyla satın alındı!\n\n${paymentInfo}`)
-    }
-  } catch (err) {
-    const errorData = err.response?.data
-
-    closeInstantBuyModal()
-
-    // Hata tipine göre mesaj göster
-    if (errorData?.errorType === 'INSUFFICIENT_BALANCE') {
-      error(`Yetersiz bakiye!\n\nGerekli: ${formatPrice(errorData.required, settings.value.defaultCurrency)}\nMevcut: ${formatPrice(errorData.available, settings.value.defaultCurrency)}\n\n${errorData.error}`)
-    } else if (errorData?.errorType === 'IBAN_NOT_FOUND') {
-      error(errorData.error + '\n\nProfil sayfanızdan IBAN bilgilerinizi ekleyebilirsiniz.')
-    } else {
-      error(errorData?.error || 'Anında satın alma işlemi başarısız')
-    }
-  } finally {
-    isProcessingInstantBuy.value = false
-  }
+async function handleInstantBuySuccess() {
+  // Lead'i yeniden yükle
+  await loadLead()
 }
 
 function setQuickBid(multiplier) {
@@ -409,37 +377,13 @@ onUnmounted(() => {
   </div>
 
   <!-- Instant Buy Modal -->
-  <div v-if="showInstantBuyModal" class="modal-backdrop" @click="closeInstantBuyModal">
-    <div class="modal" @click.stop>
-      <div class="modal-header">
-        <h3>Anında Satın Al</h3>
-        <button class="modal-close" @click="closeInstantBuyModal">×</button>
-      </div>
-      
-      <div class="modal-body">
-        <div class="instant-buy-info">
-          <div class="lead-title">{{ lead?.title }}</div>
-          <div class="price-display">
-            <div class="price-label">Anında Satın Alma Fiyatı</div>
-            <div class="price-amount">{{ formatPrice(lead?.instantBuyPrice, settings.defaultCurrency) }}</div>
-          </div>
-          <div class="confirmation-text">
-            Bu lead'i anında satın almak istediğinizden emin misiniz?
-          </div>
-        </div>
-      </div>
-      
-      <div class="modal-footer">
-        <button class="btn btn-secondary" @click="closeInstantBuyModal" :disabled="isProcessingInstantBuy">
-          İptal
-        </button>
-        <button class="btn btn-primary" @click="confirmInstantBuy" :disabled="isProcessingInstantBuy">
-          <span v-if="isProcessingInstantBuy">İşleniyor...</span>
-          <span v-else>Satın Al</span>
-        </button>
-      </div>
-    </div>
-  </div>
+  <InstantBuyModal
+    :show="showInstantBuyModal"
+    :lead="lead"
+    :currency="settings.defaultCurrency"
+    @close="closeInstantBuyModal"
+    @success="handleInstantBuySuccess"
+  />
 </template>
 
 <style scoped>
