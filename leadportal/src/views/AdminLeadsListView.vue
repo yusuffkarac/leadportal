@@ -481,6 +481,8 @@ async function saveLead() {
       return
     }
 
+    // datetime-local input'u lokal saati verir, biz de onu olduğu gibi backend'e göndermeliyiz
+    // Backend'de createDate() ile parse edildiğinde doğru timezone'da yorumlanacak
     const leadData = {
       ...leadForm.value,
       privateDetails: leadForm.value.privateDetails || undefined,
@@ -489,7 +491,7 @@ async function saveLead() {
       minIncrement: parseFloat(leadForm.value.minIncrement),
       instantBuyPrice: leadForm.value.buyNowPrice ? parseFloat(leadForm.value.buyNowPrice) : null,
       insuranceType: leadForm.value.insuranceType || undefined,
-      endsAt: new Date(leadForm.value.endsAt).toISOString(),
+      endsAt: leadForm.value.endsAt, // datetime-local değerini olduğu gibi gönder
       isShowcase: !!leadForm.value.isShowcase
     }
 

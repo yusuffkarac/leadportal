@@ -560,7 +560,7 @@ export default function authRouter(prisma) {
         return res.status(500).json({ error: 'Email gönderilemedi. Lütfen daha sonra tekrar deneyin.' })
       }
 
-      res.json({ message: 'Şifre sıfırlama linki email adresinize gönderildi3.', emailResult: emailResult.messageId })
+      res.json({ message: 'Şifre sıfırlama linki email adresinize gönderildi.', emailResult: emailResult.messageId })
     } catch (error) {
       console.error('Forgot password error:', error)
       res.status(500).json({ error: 'Bir hata oluştu. Lütfen daha sonra tekrar deneyin.' })

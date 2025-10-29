@@ -22,10 +22,37 @@ export function timestamp() {
 
 /**
  * Create a Date object from various inputs
+ * Handles datetime-local format (YYYY-MM-DDTHH:mm) correctly by treating it as local time
  * @param {string|number|Date} value - Date string, timestamp, or Date object
  * @returns {Date}
  */
 export function createDate(value) {
+  if (typeof value === 'string') {
+    // datetime-local format'ı tespit et: YYYY-MM-DDTHH:mm veya YYYY-MM-DDTHH:mm:ss
+    // Z veya timezone offset'i yoksa lokal saat olarak kabul et
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(value)) {
+      // Lokal saat olarak parse et, sonra UTC'ye çevir
+      // Örnek: "2025-01-15T14:00" -> local time 14:00 -> UTC time
+      const date = new Date(value)
+      // Eğer bu bir lokal saat ise, timezone offset'ini çıkararak UTC'ye çevirelim
+      // Ancak burada problem var: new Date("2025-01-15T14:00") zaten lokal saat olarak parse ediyor
+      // ve biz bunu UTC olarak saklamak istiyoruz
+      // Çözüm: Tarihi parçalayıp UTC olarak oluşturalım
+      const parts = value.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/)
+      if (parts) {
+        const [, year, month, day, hour, minute, second = '0'] = parts
+        // UTC olarak oluştur
+        return new Date(Date.UTC(
+          parseInt(year),
+          parseInt(month) - 1, // Month is 0-indexed
+          parseInt(day),
+          parseInt(hour),
+          parseInt(minute),
+          parseInt(second)
+        ))
+      }
+    }
+  }
   return new Date(value)
 }
 

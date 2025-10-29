@@ -71,7 +71,8 @@ async function loadBranding() {
   try {
     const CACHE_KEY = 'branding_cache'
     const CACHE_TIMESTAMP_KEY = 'branding_cache_timestamp'
-    const CACHE_DURATION = 3 * 24 * 60 * 60 * 1000 // 3 gün (milliseconds)
+    const CACHE_DURATION = 2 * 60 * 60 * 1000 // 2 saat (milliseconds)
+
     
     // Cache'den kontrol et
     const cachedData = localStorage.getItem(CACHE_KEY)
