@@ -7,13 +7,15 @@
       </div>
 
       <div class="profile-content">
-        <!-- Profil Fotoğrafı Bölümü -->
+
+        <!-- Kişisel Bilgiler -->
         <div class="profile-section">
           <div class="section-header">
-            <h2>Profil Fotoğrafı</h2>
+            <h2>Kişisel Bilgiler</h2>
           </div>
-          <div class="profile-photo-section">
-            <div class="current-photo">
+          <!-- Profil Fotoğrafı satır içi -->
+          <div class="profile-photo-inline">
+            <div class="current-photo current-photo--inline">
               <img 
                 v-if="user.profileImage" 
                 :src="user.profileImage" 
@@ -24,7 +26,7 @@
                 {{ initials }}
               </div>
             </div>
-            <div class="photo-actions">
+            <div class="photo-actions photo-actions--inline">
               <input 
                 type="file" 
                 ref="fileInput" 
@@ -47,19 +49,13 @@
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="3,6 5,6 21,6"/>
-                  <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"/>
+                  <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0 1 2,2v2"/>
                 </svg>
                 Kaldır
               </button>
             </div>
           </div>
-        </div>
 
-        <!-- Kişisel Bilgiler -->
-        <div class="profile-section">
-          <div class="section-header">
-            <h2>Kişisel Bilgiler</h2>
-          </div>
           <form @submit.prevent="updateProfile" class="profile-form">
             <div class="form-row">
               <div class="form-group">
@@ -169,56 +165,7 @@
           </form>
         </div>
 
-        <!-- İki Faktörlü Kimlik Doğrulama (2FA) -->
-        <div class="profile-section">
-          <div class="section-header">
-            <h2>İki Faktörlü Kimlik Doğrulama (2FA)</h2>
-            <p class="section-description">
-              Hesabınızı ekstra bir güvenlik katmanı ile koruyun
-            </p>
-          </div>
-
-          <!-- 2FA Aktif Değil -->
-          <div v-if="!twoFactorEnabled" class="twofa-disabled">
-            <div class="twofa-info">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-              <p>2FA şu anda aktif değil. Hesabınızı korumak için 2FA'yı etkinleştirin.</p>
-            </div>
-            <button
-              class="btn btn-primary"
-              @click="initiate2FA"
-              :disabled="is2FALoading"
-            >
-              <span v-if="is2FALoading">Yükleniyor...</span>
-              <span v-else>2FA'yı Etkinleştir</span>
-            </button>
-          </div>
-
-          <!-- 2FA Aktif -->
-          <div v-else class="twofa-enabled">
-            <div class="twofa-status">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="check-icon">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-              <div>
-                <h3>2FA Aktif</h3>
-                <p>Hesabınız iki faktörlü kimlik doğrulama ile korunuyor</p>
-              </div>
-            </div>
-            <button
-              class="btn btn-danger"
-              @click="disable2FA"
-              :disabled="is2FALoading"
-            >
-              <span v-if="is2FALoading">Devre Dışı Bırakılıyor...</span>
-              <span v-else>2FA'yı Devre Dışı Bırak</span>
-            </button>
-          </div>
-        </div>
+        
 
         <!-- IBAN Bilgileri -->
         <div class="profile-section">
@@ -439,7 +386,56 @@
             </div>
           </form>
         </div>
+        <!-- İki Faktörlü Kimlik Doğrulama (2FA) -->
+        <div class="profile-section">
+          <div class="section-header">
+            <h2>İki Faktörlü Kimlik Doğrulama (2FA)</h2>
+            <p class="section-description">
+              Hesabınızı ekstra bir güvenlik katmanı ile koruyun
+            </p>
+          </div>
 
+          <!-- 2FA Aktif Değil -->
+          <div v-if="!twoFactorEnabled" class="twofa-disabled">
+            <div class="twofa-info">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <p>2FA şu anda aktif değil. Hesabınızı korumak için 2FA'yı etkinleştirin.</p>
+            </div>
+            <button
+              class="btn btn-primary"
+              @click="initiate2FA"
+              :disabled="is2FALoading"
+            >
+              <span v-if="is2FALoading">Yükleniyor...</span>
+              <span v-else>2FA'yı Etkinleştir</span>
+            </button>
+          </div>
+
+          <!-- 2FA Aktif -->
+          <div v-else class="twofa-enabled">
+            <div class="twofa-status">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="check-icon">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              <div>
+                <h3>2FA Aktif</h3>
+                <p>Hesabınız iki faktörlü kimlik doğrulama ile korunuyor</p>
+              </div>
+            </div>
+            <button
+              class="btn btn-danger"
+              @click="disable2FA"
+              :disabled="is2FALoading"
+            >
+              <span v-if="is2FALoading">Devre Dışı Bırakılıyor...</span>
+              <span v-else>2FA'yı Devre Dışı Bırak</span>
+            </button>
+          </div>
+        </div>
         <!-- Hesap Bilgileri -->
         <div class="profile-section">
           <div class="section-header">
@@ -981,7 +977,7 @@ onMounted(() => {
 }
 
 .profile-container {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -1004,9 +1000,10 @@ onMounted(() => {
 }
 
 .profile-content {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 2rem;
+  align-items: stretch;
 }
 
 .profile-section {
@@ -1015,6 +1012,9 @@ onMounted(() => {
   padding: 2rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border: 1px solid #e5e7eb;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .section-header {
@@ -1032,6 +1032,24 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 2rem;
+}
+
+/* Inline foto alanı (Kişisel Bilgiler üstü) */
+.profile-photo-inline {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.current-photo--inline {
+  width: 72px;
+  height: 72px;
+  border-width: 3px;
+}
+
+.photo-actions--inline {
+  flex-direction: row;
 }
 
 .current-photo {
@@ -1682,6 +1700,13 @@ onMounted(() => {
   .modal-content {
     max-width: 100%;
     margin: 0;
+  }
+}
+
+/* Tablet kırılımı: 2 kolondan 1 kolona geçişi biraz daha geç yapalım */
+@media (max-width: 1024px) {
+  .profile-content {
+    grid-template-columns: 1fr;
   }
 }
 </style>

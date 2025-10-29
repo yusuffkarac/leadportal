@@ -601,7 +601,7 @@ export default function leadsRouter(prisma, io) {
         } else {
           // Bakiye yetersiz ve IBAN yok
           return res.status(400).json({
-            error: 'Lütfen IBAN bilgilerinizi ekleyin veya bakiyenizi yükleyin.',
+            error: 'Lütfen IBAN bilgilerinizi ekleyin veya bakiye yükleyin.',
             errorType: 'INSUFFICIENT_BALANCE',
             required: lead.instantBuyPrice,
             available: buyer.balance

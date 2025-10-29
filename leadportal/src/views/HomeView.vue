@@ -1,8 +1,24 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import api from '@/utils/axios.js'
 import { formatPrice } from '@/utils/currency.js'
+import { useAlert } from '../composables/useAlert'
+import { io } from 'socket.io-client'
+import LeadCard from '@/components/LeadCard.vue'
+import InstantBuyModal from '@/components/InstantBuyModal.vue'
+
+const { success, error } = useAlert()
+
+// Socket.IO bağlantısı
+const socket = io('/', { path: '/socket.io' })
+
+// Instant Buy Modal
+const showInstantBuyModal = ref(false)
+const selectedLead = ref(null)
+
+// Posta kodu -> { lat, lon, name } eşlemesi için Map tutulur
+const zipcodeIndex = ref(new Map())
 
 const showcaseLeads = ref([])
 const isLoadingShowcase = ref(false)
@@ -136,16 +152,39 @@ async function loadShowcaseLeads() {
     const now = Date.now()
     showcaseLeads.value = data.map(lead => {
       const endTime = new Date(lead.endsAt).getTime()
+      const isExpired = Number.isFinite(endTime) ? endTime < now : false
       return {
         ...lead,
-        isExpired: Number.isFinite(endTime) ? endTime < now : false
+        isExpired: isExpired,
+        isActive: lead.isActive && !isExpired
       }
     })
+
+    // Tüm vitrin lead'lerin odalarına katıl (canlı güncellemeler için)
+    for (const lead of showcaseLeads.value) {
+      socket.emit('join-lead', lead.id)
+    }
   } catch (error) {
     console.error('Vitrin leadleri alınamadı:', error)
     showcaseError.value = 'Vitrin leadleri yüklenirken bir hata oluştu.'
   } finally {
     isLoadingShowcase.value = false
+  }
+}
+
+// Zipcode verisini public/zipcodes.json üzerinden yükler ve Map'e dönüştürür
+async function ensureZipcodesLoaded() {
+  if (zipcodeIndex.value.size > 0) return
+  try {
+    const res = await fetch('/zipcodes.json')
+    const arr = await res.json()
+    const m = new Map()
+    for (const z of arr) {
+      if (z.postal) m.set(String(z.postal), { lat: Number(z.lat), lon: Number(z.lon), name: z.name })
+    }
+    zipcodeIndex.value = m
+  } catch (e) {
+    console.error('Zipcodes yüklenemedi', e)
   }
 }
 
@@ -160,19 +199,32 @@ function formatTimeRemaining(endsAt) {
   const endTime = new Date(endsAt)
   const diff = endTime - now
 
-  if (Number.isNaN(diff) || diff <= 0) return 'Süresi doldu'
+  if (diff <= 0) return 'Süresi doldu'
 
   const days = Math.floor(diff / (1000 * 60 * 60 * 24))
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000)
 
   if (days > 0) {
-    return hours > 0 ? `${days} gün ${hours} saat` : `${days} gün`
+    if (hours > 0) {
+      return `${days} gün ${hours} saat`
+    } else {
+      return `${days} gün`
+    }
+  } else if (hours > 0) {
+    if (minutes > 0) {
+      return `${hours} saat ${minutes} dakika`
+    } else {
+      return `${hours} saat`
+    }
+  } else if (minutes > 0) {
+    // 1 saatten az kaldığında dakika ve saniye göster
+    return `${minutes}d ${seconds}s`
+  } else {
+    // 1 dakikadan az kaldığında sadece saniye göster
+    return `${seconds}s`
   }
-  if (hours > 0) {
-    return minutes > 0 ? `${hours} saat ${minutes} dakika` : `${hours} saat`
-  }
-  return `${minutes} dakika`
 }
 
 const hasShowcaseLeads = computed(() => showcaseLeads.value.length > 0)
@@ -200,9 +252,91 @@ function openLeadDetail(leadId) {
   window.open(`/lead/${leadId}`, '_blank')
 }
 
-onMounted(async () => {
-  await loadHomepageSettings()
+function navigateToLead(lead) {
+  window.location.href = `/lead/${lead.id}`
+}
+
+// Placeholder functions for LeadCard component events
+function showDescription(lead, event) {
+  event?.stopPropagation()
+  // Description modal could be implemented here if needed
+  console.log('Show description for lead:', lead.id)
+}
+
+function openInstantBuyModal(lead, event) {
+  event?.stopPropagation()
+  if (!lead.instantBuyPrice) {
+    return
+  }
+  selectedLead.value = lead
+  showInstantBuyModal.value = true
+}
+
+function closeInstantBuyModal() {
+  showInstantBuyModal.value = false
+  selectedLead.value = null
+}
+
+async function handleInstantBuySuccess() {
+  // Lead'leri yeniden yükle
   await loadShowcaseLeads()
+}
+
+function authHeaders() {
+  const token = localStorage.getItem('token')
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
+async function submitQuickBid(lead, amount) {
+  if (!amount || amount <= 0) {
+    error('Lütfen geçerli bir teklif miktarı girin')
+    return
+  }
+
+  try {
+    const response = await api.post(`/bids`, {
+      leadId: lead.id,
+      amount: Math.round(Number(amount))
+    }, { headers: authHeaders() })
+
+    if (response.data.success) {
+      // Lead'leri yeniden yükle
+      await loadShowcaseLeads()
+      success('Teklif başarıyla verildi!')
+    }
+  } catch (err) {
+    const errorData = err.response?.data
+    error(errorData?.error || 'Teklif verme işlemi başarısız')
+  }
+}
+
+onMounted(async () => {
+  await Promise.all([
+    loadHomepageSettings(),
+    ensureZipcodesLoaded()
+  ])
+  await loadShowcaseLeads()
+
+  // Her yeni teklifte ilgili kartı anında güncelle
+  socket.on('bid:new', ({ leadId, bid }) => {
+    const idx = showcaseLeads.value.findIndex(l => l.id === leadId)
+    if (idx !== -1) {
+      const current = showcaseLeads.value[idx]
+      const existing = current.bids || []
+      showcaseLeads.value[idx] = { ...current, bids: [bid, ...existing] }
+    }
+  })
+
+  // Her saniye zamanı güncelle (geri sayım için)
+  const timeInterval = setInterval(() => {
+    // Vue reactivity için leads array'ini güncelle
+    showcaseLeads.value = [...showcaseLeads.value]
+  }, 1000) // 1 saniyede bir güncelle
+
+  onUnmounted(() => {
+    clearInterval(timeInterval)
+    socket.close()
+  })
 })
 </script>
 
@@ -270,77 +404,20 @@ onMounted(async () => {
       <div v-else-if="hasShowcaseLeads" class="showcase-wrapper">
         <div class="showcase-scroll-container" @scroll="handleScroll">
           <div class="showcase-grid">
-          <article
-            v-for="lead in displayShowcaseLeads"
-            :key="lead.id"
-            class="showcase-card"
-          >
-            <header class="showcase-card-header">
-              <div class="showcase-tags">
-                <span class="tag">Aktif</span>
-                <span v-if="lead.instantBuyPrice" class="tag success">Hemen Al</span>
-              </div>
-              <button class="card-link" type="button" @click="openLeadDetail(lead.id)">
-                Detaya git
-                <Icon icon="mdi:arrow-top-right" height="18" />
-              </button>
-            </header>
-
-            <div class="showcase-title">
-              <Icon
-                v-if="lead.insuranceType"
-                class="insurance-icon"
-                :icon="getInsuranceTypeIcon(lead.insuranceType)"
-                height="20"
-                width="20"
-              />
-              <div>
-                <h3>{{ lead.title }}</h3>
-                <p class="muted-text">
-                  {{ lead.insuranceType || 'Sigorta türü belirtilmedi' }}
-                </p>
-              </div>
-            </div>
-
-            <p class="showcase-description">
-              {{ lead.description || 'Bu lead için açıklama henüz eklenmedi.' }}
-            </p>
-
-            <dl class="showcase-meta">
-              <div>
-                <dt>Güncel Teklif</dt>
-                <dd>
-                  <strong>
-                    <span v-if="lead.bids && lead.bids.length">
-                      {{ formatPrice(lead.bids[0].amount, settings.defaultCurrency) }}
-                    </span>
-                    <span v-else>{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
-                  </strong>
-                </dd>
-              </div>
-              <div>
-                <dt>Teklif</dt>
-                <dd>{{ lead.bids ? lead.bids.length : 0 }}</dd>
-              </div>
-              <div>
-                <dt>Kalan Süre</dt>
-                <dd>{{ formatTimeRemaining(lead.endsAt) }}</dd>
-              </div>
-            </dl>
-
-            <footer class="showcase-footer">
-              <div v-if="lead.instantBuyPrice" class="instant-buy">
-                <span>Anında satın al</span>
-                <strong>{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</strong>
-              </div>
-              <a class="ghost-link" :href="`/lead/${lead.id}`">
-                Teklif ver
-                <Icon icon="mdi:arrow-right" height="18" />
-              </a>
-            </footer>
-          </article>
+            <LeadCard
+              v-for="lead in displayShowcaseLeads"
+              :key="lead.id"
+              :lead="lead"
+              :settings="settings"
+              :show-quick-bid="!lead.isExpired && lead.isActive"
+              :zipcode-index="zipcodeIndex"
+              @click="navigateToLead"
+              @show-description="showDescription"
+              @instant-buy="openInstantBuyModal"
+              @submit-bid="submitQuickBid"
+            />
+          </div>
         </div>
-      </div>
       <div v-if="hasMoreThanThreeLeads && showScrollIndicator" class="scroll-indicator">
         <Icon icon="mdi:chevron-right" height="32" width="32" />
       </div>
@@ -381,6 +458,15 @@ onMounted(async () => {
         </div>
       </div>
     </section>
+
+    <!-- Instant Buy Modal -->
+    <InstantBuyModal
+      :show="showInstantBuyModal"
+      :lead="selectedLead"
+      :currency="settings.defaultCurrency"
+      @close="closeInstantBuyModal"
+      @success="handleInstantBuySuccess"
+    />
   </div>
 </template>
 
@@ -669,169 +755,6 @@ onMounted(async () => {
   gap: 24px;
   grid-auto-flow: column;
   grid-auto-columns: minmax(360px, 1fr);
-}
-
-.showcase-card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
-}
-
-.showcase-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  border-color: #d1d5db;
-}
-
-.showcase-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.showcase-tags {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  background: #f0fdf4;
-  color: #166534;
-  border: 1px solid #bbf7d0;
-}
-
-.tag.success {
-  background: #fef3c7;
-  color: #92400e;
-  border: 1px solid #fde68a;
-}
-
-.card-link {
-  border: none;
-  background: transparent;
-  color: #1d4ed8;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-
-.showcase-title {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.insurance-icon {
-  color: #1d4ed8;
-}
-
-.showcase-title h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  color: #0f172a;
-}
-
-.muted-text {
-  color: #64748b;
-  font-size: 0.85rem;
-  margin: 4px 0 0;
-}
-
-.showcase-description {
-  margin: 0;
-  color: #475569;
-  line-height: 1.5;
-}
-
-.showcase-meta {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin: 0;
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 16px;
-  border: 1px solid #f1f5f9;
-}
-
-.showcase-meta dt {
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.7rem;
-  margin-bottom: 6px;
-  color: #64748b;
-  font-weight: 600;
-}
-
-.showcase-meta dd {
-  margin: 0;
-  font-weight: 700;
-  color: #1e293b;
-  font-size: 0.95rem;
-}
-
-.showcase-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.instant-buy {
-  background: #f1f5f9;
-  padding: 10px 16px;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.instant-buy span {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #64748b;
-}
-
-.instant-buy strong {
-  color: #0f172a;
-  font-size: 1rem;
-}
-
-.ghost-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: #1d4ed8;
-  font-weight: 600;
-  text-decoration: none;
-  padding: 10px 16px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  background: #fff;
-  transition: all 0.2s ease;
-}
-
-.ghost-link:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
-  transform: translateY(-1px);
 }
 
 .stats {
@@ -1157,10 +1080,6 @@ onMounted(async () => {
   .scroll-indicator :deep(svg) {
     width: 24px;
     height: 24px;
-  }
-
-  .showcase-meta {
-    grid-template-columns: 1fr;
   }
 
   .stats-grid {

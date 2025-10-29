@@ -29,17 +29,17 @@
         <Icon icon="mdi:account" width="16" height="16" />
         <span>Profil</span>
       </div>
-      
+       <!-- 
       <div v-if="canAccessAbout" class="dropdown-item" @click="goToAbout">
         <Icon icon="mdi:information-outline" width="16" height="16" />
         <span>Hakkında</span>
       </div>
-      
+   
       <div v-if="canAccessFAQ" class="dropdown-item" @click="goToFAQ">
         <Icon icon="mdi:help-circle-outline" width="16" height="16" />
         <span>FAQ</span>
       </div>
-      
+      -->
       <div v-if="canAccessPurchased" class="dropdown-item" @click="goToPurchased">
         <Icon icon="mdi:shopping-outline" width="16" height="16" />
         <span>Satın Aldıklarım</span>
