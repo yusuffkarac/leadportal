@@ -14,13 +14,8 @@ const SYNC_INTERVAL = 5 * 60 * 1000 // Re-sync every 5 minutes
 export async function syncServerTime() {
   try {
     const clientRequestTime = Date.now()
-    console.log('clientRequestTime: ', clientRequestTime)
-    // Build API base url safely: use relative path in dev if not provided
-    const rawBase = import.meta.env.VITE_API_BASE_URL || ''
-    const base = rawBase.endsWith('/') ? rawBase.slice(0, -1) : rawBase
-    const url = `${base}/api/server-time`
 
-    const response = await fetch(url, { headers: { Accept: 'application/json' } })
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/server-time`)
 
     if (!response.ok) {
       console.error('Failed to sync server time:', response.statusText)
@@ -28,14 +23,7 @@ export async function syncServerTime() {
     }
 
     const clientReceiveTime = Date.now()
-    let data
-    try {
-      data = await response.json()
-    } catch (e) {
-      const text = await response.text()
-      console.error('Server time response was not valid JSON. URL:', url, 'Body preview:', text?.slice(0, 200))
-      return false
-    }
+    const data = await response.json()
 
     // Estimate network latency and calculate offset
     const networkLatency = (clientReceiveTime - clientRequestTime) / 2

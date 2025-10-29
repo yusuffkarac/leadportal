@@ -4,7 +4,6 @@ import axios from 'axios'
 import { getCurrencySymbol, formatPrice } from '@/utils/currency.js'
 import { useMap } from '@/composables/useMap.js'
 import { Icon } from '@iconify/vue'
-import { syncServerTime as syncServerClock, timestamp as serverTimestampNow } from '@/utils/serverTime.js'
 function getInsuranceTypeIconifyName(typeName) {
   if (!typeName) return 'mdi:file'
   const list = insuranceTypes.value || []
@@ -40,9 +39,6 @@ const leadForm = ref({
 const errorMessage = ref('')
 const successMessage = ref('')
 const insuranceTypes = ref([])
-const serverTime = ref('')
-let timeInterval = null
-const serverTimeZone = ref('UTC')
 
 // Formleadport entegrasyonu için yeni değişkenler
 const formleadportFormId = ref('')
@@ -396,13 +392,7 @@ async function openLeadModal(mode, lead = null) {
       // Varsayılan bitiş tarihini hesapla (şu an + varsayılan gün sayısı)
       const now = new Date()
       const defaultEndDate = new Date(now.getTime() + (settings.defaultAuctionDays || 7) * 24 * 60 * 60 * 1000)
-      // datetime-local format: "YYYY-MM-DDTHH:mm" (lokal timezone'da)
-      const year = defaultEndDate.getFullYear()
-      const month = String(defaultEndDate.getMonth() + 1).padStart(2, '0')
-      const day = String(defaultEndDate.getDate()).padStart(2, '0')
-      const hours = String(defaultEndDate.getHours()).padStart(2, '0')
-      const minutes = String(defaultEndDate.getMinutes()).padStart(2, '0')
-      const formattedEndDate = `${year}-${month}-${day}T${hours}:${minutes}`
+      const formattedEndDate = defaultEndDate.toISOString().slice(0, 16)
 
       leadForm.value = {
         title: '',
@@ -423,13 +413,7 @@ async function openLeadModal(mode, lead = null) {
       // Hata durumunda varsayılan değerleri kullan
       const now = new Date()
       const defaultEndDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
-      // datetime-local format: "YYYY-MM-DDTHH:mm" (lokal timezone'da)
-      const year = defaultEndDate.getFullYear()
-      const month = String(defaultEndDate.getMonth() + 1).padStart(2, '0')
-      const day = String(defaultEndDate.getDate()).padStart(2, '0')
-      const hours = String(defaultEndDate.getHours()).padStart(2, '0')
-      const minutes = String(defaultEndDate.getMinutes()).padStart(2, '0')
-      const formattedEndDate = `${year}-${month}-${day}T${hours}:${minutes}`
+      const formattedEndDate = defaultEndDate.toISOString().slice(0, 16)
 
       leadForm.value = {
         title: '',
@@ -450,20 +434,6 @@ async function openLeadModal(mode, lead = null) {
   } else if (mode === 'edit' && lead) {
     // Edit için mevcut lead verilerini yükle
     editingLead.value = lead
-
-    // datetime-local input için endsAt'i lokal timezone'a çevir
-    let endsAtLocal = ''
-    if (lead.endsAt) {
-      const date = new Date(lead.endsAt)
-      // datetime-local format: "YYYY-MM-DDTHH:mm"
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const day = String(date.getDate()).padStart(2, '0')
-      const hours = String(date.getHours()).padStart(2, '0')
-      const minutes = String(date.getMinutes()).padStart(2, '0')
-      endsAtLocal = `${year}-${month}-${day}T${hours}:${minutes}`
-    }
-
     leadForm.value = {
       title: lead.title,
       description: lead.description || '',
@@ -471,7 +441,7 @@ async function openLeadModal(mode, lead = null) {
       startPrice: lead.startPrice.toString(),
       minIncrement: lead.minIncrement.toString(),
       buyNowPrice: lead.instantBuyPrice ? lead.instantBuyPrice.toString() : '',
-      endsAt: endsAtLocal,
+      endsAt: lead.endsAt ? new Date(lead.endsAt).toISOString().slice(0, 16) : '',
       isActive: lead.isActive,
       postalCode: lead.postalCode || '',
       insuranceType: lead.insuranceType || '',
@@ -519,7 +489,7 @@ async function saveLead() {
       minIncrement: parseFloat(leadForm.value.minIncrement),
       instantBuyPrice: leadForm.value.buyNowPrice ? parseFloat(leadForm.value.buyNowPrice) : null,
       insuranceType: leadForm.value.insuranceType || undefined,
-      endsAt: leadForm.value.endsAt, // datetime-local formatında gönder (timezone bilgisi yok)
+      endsAt: new Date(leadForm.value.endsAt).toISOString(),
       isShowcase: !!leadForm.value.isShowcase
     }
 
@@ -651,49 +621,18 @@ const filteredLeads = computed(() => {
 
 let resizeHandler = null
 
-async function fetchServerTime() {
-  try {
-    // Zaman dilimini öğren (IANA timezone ismi)
-    const res = await fetch('/api/server-time', { headers: { Accept: 'application/json' } })
-    if (res.ok) {
-      const data = await res.json()
-      serverTimeZone.value = data.timezone || 'UTC'
-    } else {
-      serverTimeZone.value = 'UTC'
-    }
-
-    // Sunucu saatine senkronize ol
-    await syncServerClock()
-    updateServerTimeDisplay()
-  } catch (error) {
-    console.error('Server time fetch error:', error)
-    serverTimeZone.value = 'UTC'
-    updateServerTimeDisplay()
-  }
-}
-
-function updateServerTimeDisplay() {
-  // Sunucu saatini lokalize ETME: ISO formatıyla (UTC, Z) ham değer göster
-  const nowMs = serverTimestampNow()
-  serverTime.value = new Date(nowMs).toISOString()
-}
-
 onMounted(async () => {
   await loadSettings()
   await fetchMine()
   await ensureZipcodesLoaded()
   initMap()
   updateMapMarkers(filteredLeads.value, settings.value, getInsuranceTypeIconifyName, formatPrice)
-
-  // Sunucu saatini başlat
-  await fetchServerTime()
-  timeInterval = setInterval(updateServerTimeDisplay, 1000)
-
+  
   // Ekran boyutu değişikliklerini dinle
   resizeHandler = () => {
     const wasMobile = isMobile.value
     isMobile.value = window.innerWidth <= 768
-
+    
     // Mobil'den desktop'a geçişte filtreleri aç
     if (wasMobile && !isMobile.value) {
       showFilters.value = true
@@ -703,7 +642,7 @@ onMounted(async () => {
       showFilters.value = false
     }
   }
-
+  
   window.addEventListener('resize', resizeHandler)
   document.addEventListener('click', handleClickOutside)
 })
@@ -714,11 +653,6 @@ onUnmounted(() => {
   }
   document.removeEventListener('click', handleClickOutside)
   cleanup()
-
-  // Sunucu saati interval'ini temizle
-  if (timeInterval) {
-    clearInterval(timeInterval)
-  }
 })
 
 // Harita güncellemelerini izle
@@ -1038,13 +972,7 @@ watch(showMap, (newValue) => {
     <div v-if="showLeadModal" class="modal-backdrop" @click="closeLeadModal">
       <div class="modal" @click.stop>
         <div class="modal-header">
-          <div style="flex: 1;">
-            <h3 style="margin: 0;">{{ modalMode === 'new' ? 'Yeni Lead Oluştur' : 'Lead Düzenle' }}</h3>
-            <div class="server-time-modal">
-              <span style="font-size: 11px; color: #6b7280; font-weight: 500;">Sunucu Saati:</span>
-              <span style="font-size: 12px; color: #374151; font-weight: 600; margin-left: 4px;">{{ serverTime }}</span>
-            </div>
-          </div>
+          <h3>{{ modalMode === 'new' ? 'Yeni Lead Oluştur' : 'Lead Düzenle' }}</h3>
           <button class="modal-close" @click="closeLeadModal">×</button>
         </div>
 
@@ -2387,13 +2315,5 @@ watch(showMap, (newValue) => {
 .balance-after {
   color: #059669;
   font-weight: 600;
-}
-
-/* Sunucu saati stili */
-.server-time-modal {
-  margin-top: 4px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 </style>

@@ -24,17 +24,8 @@ export function timestamp() {
  * Create a Date object from various inputs
  * @param {string|number|Date} value - Date string, timestamp, or Date object
  * @returns {Date}
- *
- * IMPORTANT: If the input is a datetime-local format (e.g., "2025-10-29T14:00"),
- * it will be treated as local server time, not UTC.
  */
 export function createDate(value) {
-  if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/)) {
-    // This is a datetime-local format without timezone info (e.g., "2025-10-29T14:00")
-    // Parse it as local time by appending seconds if missing and using Date constructor
-    const dateStr = value.includes(':') && value.split(':').length === 2 ? `${value}:00` : value
-    return new Date(dateStr)
-  }
   return new Date(value)
 }
 

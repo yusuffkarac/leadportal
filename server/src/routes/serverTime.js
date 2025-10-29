@@ -11,7 +11,7 @@ const router = express.Router()
 router.get('/', (req, res) => {
   try {
     const serverTime = new Date()
-    
+
     res.json({
       timestamp: serverTime.getTime(), // Unix timestamp in milliseconds
       iso: serverTime.toISOString(),   // ISO 8601 format

@@ -702,60 +702,63 @@ onMounted(async () => {
 
       <!-- Grid Görünümü -->
       <div v-else class="auctions-grid">
-        <div class="auction-card" v-for="lead in leads" :key="lead.id" @click="navigateToLead(lead)">
-          <!-- Card Header: Badge, Time, LP Number -->
-          <div class="card-top-row">
-            <div class="card-left-info">
-              <span class="insurance-type-badge">{{ lead.insuranceType || 'KV VOLL' }}</span>
-              <div class="time-info">
-                <Icon icon="mdi:clock-outline" width="16" height="16" />
-                <span>{{ formatTimeRemaining(lead.endsAt) }}</span>
+      <div class="auction-card" v-for="lead in leads" :key="lead.id" @click="navigateToLead(lead)">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="title-with-icon">
+              <Icon v-if="lead.insuranceType" :icon="getInsuranceTypeIcon(lead.insuranceType)" class="insurance-iconify" width="18" height="18" />
+              <h3>{{ lead.title }}</h3>
+            </div>
+            <span class="status-badge" :class="lead.isExpired ? 'expired' : 'active'">
+              {{ lead.isExpired ? 'Geçmiş' : 'Aktif' }}
+            </span>
+          </div>
+          <div class="current-bid">
+            <div class="price-container">
+              <div class="bid-info-container">
+                <div class="bid-amount">
+                  <span v-if="lead.bids && lead.bids.length">{{ formatPrice(lead.bids[0].amount, settings.defaultCurrency) }}</span>
+                  <span v-else>{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
+                </div>
+                <div class="bid-label">Güncel Teklif</div>
+              </div>
+              <div v-if="lead.instantBuyPrice" class="instant-buy-price">
+                <div class="instant-amount">{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</div>
+                <div class="instant-label">Anında Satın Al</div>
               </div>
             </div>
-            <div class="card-lp-number">LP-{{ lead.id }}</div>
           </div>
-
-          <!-- Location and Quality -->
-          <div class="card-location-quality">
-            <div class="location-info">
-              <Icon icon="mdi:map-marker" width="18" height="18" />
-              <span>{{ lead.postalCode || '10115' }} Berlin</span>
-            </div>
-            <div v-if="lead.isShowcase" class="quality-info">
-              <Icon icon="mdi:star" width="18" height="18" class="quality-star" />
-              <span>Qualität: Premium</span>
-            </div>
+        </div>
+        
+        <div class="card-description">
+          {{ lead.description || 'Açıklama bulunmuyor' }}
+        </div>
+        
+        <div class="card-details">
+          <div class="detail-item">
+            <Icon icon="mdi:clock-outline" class="detail-icon" width="16" height="16" />
+            <span class="detail-text">{{ formatTimeRemaining(lead.endsAt) }}</span>
           </div>
-
-          <!-- Lead Title -->
-          <h3 class="card-lead-title">{{ lead.title }}</h3>
-
-          <!-- Lead Description -->
-          <p class="card-lead-description">{{ lead.description || 'Krankenversicherung - Vollzeit Angestellter' }}</p>
-
-          <!-- Price Section -->
-          <div class="card-price-section">
-            <div class="current-price-block">
-              <div class="price-label">Aktuelles Gebot</div>
-              <div class="price-value">
-                <span v-if="lead.bids && lead.bids.length">{{ formatPrice(lead.bids[0].amount, settings.defaultCurrency) }}</span>
-                <span v-else>{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
-              </div>
-              <div class="highest-bidder">Höchstes Gebot von: ma***********</div>
-            </div>
-            <div class="bid-count-block">
-              <div class="bid-count-label">Gebote</div>
-              <div class="bid-count-value">{{ lead.bids ? lead.bids.length : 0 }}</div>
-            </div>
+          <div class="detail-item">
+            <Icon icon="mdi:account-multiple" class="detail-icon" width="16" height="16" />
+            <span class="detail-text">{{ lead.bids ? lead.bids.length : 0 }} teklif</span>
           </div>
-
-          <!-- Quick Bid Section -->
+          <div class="detail-item">
+            <Icon icon="mdi:currency-eur" class="detail-icon" width="16" height="16" />
+            <span class="detail-text">+{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement }}</span>
+          </div>
+          <button class="share-btn-small" @click="shareLead(lead, $event)" title="Paylaş">
+            <Icon icon="mdi:share-variant" width="14" height="14" />
+          </button>
+        </div>
+        
+        <div class="card-footer">
+          <!-- Hızlı Teklif Alanı -->
           <div v-if="!lead.isExpired && lead.isActive" class="quick-bid-section" @click.stop>
-            <div class="quick-bid-label">Schnell bieten</div>
             <div class="quick-bid-input-group">
-              <span class="currency-symbol">{{ getCurrencySymbol(settings.defaultCurrency) }}</span>
-              <input
-                type="number"
+              <div class="currency-symbol">{{ getCurrencySymbol(settings.defaultCurrency) }}</div>
+              <input 
+                type="number" 
                 class="quick-bid-input"
                 :placeholder="lead.bids && lead.bids.length ? (lead.bids[0].amount + lead.minIncrement).toString() : (lead.startPrice + lead.minIncrement).toString()"
                 v-model="quickBidAmounts[lead.id]"
@@ -763,35 +766,35 @@ onMounted(async () => {
                 :min="lead.bids && lead.bids.length ? lead.bids[0].amount + lead.minIncrement : lead.startPrice + lead.minIncrement"
                 step="0.01"
               />
-              <button
+              <button 
                 class="quick-bid-submit-btn"
                 @click="submitQuickBid(lead, $event)"
                 :disabled="isSubmittingBid[lead.id]"
               >
-                <span v-if="isSubmittingBid[lead.id]">Wird gesendet...</span>
-                <span v-else>Bieten</span>
+                <span v-if="isSubmittingBid[lead.id]">Gönderiliyor...</span>
+                <span v-else>Teklif Ver</span>
               </button>
             </div>
             <div class="quick-bid-suggestions">
-              <button
+              <button 
                 class="quick-bid-suggestion"
                 @click.stop="setQuickBidAmount(lead, lead.bids && lead.bids.length ? lead.bids[0].amount + lead.minIncrement : lead.startPrice + lead.minIncrement)"
               >
                 +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement }}
               </button>
-              <button
+              <button 
                 class="quick-bid-suggestion"
                 @click.stop="setQuickBidAmount(lead, (lead.bids && lead.bids.length ? lead.bids[0].amount : lead.startPrice) + lead.minIncrement * 2)"
               >
                 +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement * 2 }}
               </button>
-              <button
+              <button 
                 class="quick-bid-suggestion"
                 @click.stop="setQuickBidAmount(lead, (lead.bids && lead.bids.length ? lead.bids[0].amount : lead.startPrice) + lead.minIncrement * 3)"
               >
                 +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement * 3 }}
               </button>
-              <button
+              <button 
                 class="quick-bid-suggestion"
                 @click.stop="setQuickBidAmount(lead, (lead.bids && lead.bids.length ? lead.bids[0].amount : lead.startPrice) + lead.minIncrement * 5)"
               >
@@ -799,28 +802,29 @@ onMounted(async () => {
               </button>
             </div>
           </div>
-
-          <!-- Action Buttons -->
-          <div class="card-action-section">
-            <button
+          
+          <div class="footer-buttons">
+            <router-link 
+              class="bid-btn" 
+              :class="{ 'bid-btn-disabled': lead.isExpired }"
+              :to="lead.isExpired ? '#' : `/lead/${lead.id}`"
+              @click="lead.isExpired ? $event.preventDefault() : $event.stopPropagation()"
+            >
+              {{ lead.isExpired ? 'Süresi Doldu' : 'Detaylı Görünüm' }}
+            </router-link>
+            
+            <button 
               v-if="lead.instantBuyPrice && !lead.isExpired && lead.isActive"
-              class="btn-instant-buy"
+              class="instant-buy-btn-small"
               @click="openInstantBuyModal(lead, $event)"
             >
-              <Icon icon="mdi:shopping" width="18" height="18" />
-              Sofort kaufen
-            </button>
-            <button
-              class="btn-bid-action"
-              @click.stop="navigateToLead(lead)"
-              :disabled="lead.isExpired"
-            >
-              <Icon icon="mdi:gavel" width="18" height="18" />
-              Bieten
+              <Icon icon="mdi:currency-eur" width="16" height="16" />
+              Anında Al
             </button>
           </div>
         </div>
       </div>
+    </div>
   </div>
 
     <!-- 
@@ -1461,110 +1465,130 @@ onMounted(async () => {
   font-weight: 500;
 }
 
-/* Quick Bid Section */
-.quick-bid-section {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.quick-bid-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #475569;
-  margin-bottom: 2px;
-}
-
-.quick-bid-input-group {
+/* Lead Tipi Icon */
+.title-with-icon {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+}
+.title-with-icon h3{
+  margin: 0;
 }
 
-.currency-symbol {
+.insurance-icon {
+  font-size: 1.1rem;
+  color: var(--primary);
+  opacity: 0.8;
+}
+
+/* Fiyat Container - Yan Yana Düzen */
+.price-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Güncel Teklif Container */
+.bid-info-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.bid-amount {
+  font-size: 1.125rem;
   font-weight: 700;
-  color: #0f172a;
-  font-size: 0.9375rem;
-  min-width: 24px;
-  text-align: center;
+  color: #111827;
+  line-height: 1;
 }
 
-.quick-bid-input {
-  flex: 1;
-  padding: 10px 14px;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: #0f172a;
-  background: white;
-  transition: all 0.2s ease;
-}
-
-.quick-bid-input:focus {
-  outline: none;
-  border-color: #0f172a;
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
-}
-
-.quick-bid-input::placeholder {
-  color: #94a3b8;
+.bid-label {
+  font-size: 0.75rem;
+  color: #6b7280;
   font-weight: 500;
-}
-
-.quick-bid-submit-btn {
-  padding: 10px 20px;
-  background: #0f172a;
-  color: white;
-  border: 2px solid #0f172a;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  line-height: 1;
   white-space: nowrap;
 }
 
-.quick-bid-submit-btn:hover:not(:disabled) {
-  background: #1e293b;
-  border-color: #1e293b;
+/* Anında Satın Alma Stilleri */
+.instant-buy-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 6px 12px;
+  background: #10b981;
+  border-radius: 6px;
 }
 
-.quick-bid-submit-btn:disabled {
-  background: #cbd5e1;
-  border-color: #cbd5e1;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.quick-bid-suggestions {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
-
-.quick-bid-suggestion {
-  padding: 8px 12px;
-  background: white;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #475569;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
-}
-
-.quick-bid-suggestion:hover {
-  background: #0f172a;
+.instant-amount {
+  font-size: 1rem;
+  font-weight: 700;
   color: white;
-  border-color: #0f172a;
-  transform: translateY(-1px);
+  line-height: 1;
+}
+
+.instant-label {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.footer-buttons {
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
+}
+
+.bid-btn {
+  flex: 1;
+  background: #1f2937;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.875rem;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.bid-btn:hover {
+  background: #111827;
+}
+
+.bid-btn-disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.bid-btn-disabled:hover {
+  background: #9ca3af;
+}
+
+.share-btn-small {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 5px 6px;
+  cursor: pointer;
+  color: var(--primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.share-btn-small:hover {
+  background: #f9fafb;
+  border-color: var(--primary);
+  color: #1d4ed8;
 }
 
 /* Hero Section Styles */
@@ -1614,246 +1638,205 @@ onMounted(async () => {
 
 .auctions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
 }
 
 .auction-card {
   background: white;
-  border: 2px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  transition: all 0.3s ease;
+  gap: 14px;
+  transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .auction-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border-color: #0f172a;
-  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
 }
 
-/* Card Top Row: Badge, Time, LP Number */
-.card-top-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-
-.card-left-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.insurance-type-badge {
-  background: #0f172a;
-  color: white;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-}
-
-.time-info {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #64748b;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.time-info svg {
-  color: #64748b;
-}
-
-.card-lp-number {
-  color: #0f172a;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-}
-
-/* Location and Quality Row */
-.card-location-quality {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.location-info,
-.quality-info {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.875rem;
-  color: #475569;
-  font-weight: 500;
-}
-
-.location-info svg {
-  color: #64748b;
-}
-
-.quality-star {
-  color: #f59e0b;
-}
-
-/* Lead Title */
-.card-lead-title {
-  margin: 4px 0 0 0;
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #0f172a;
-  line-height: 1.4;
-}
-
-/* Lead Description */
-.card-lead-description {
+.auction-card h3 {
   margin: 0;
-  font-size: 0.9375rem;
-  color: #475569;
-  line-height: 1.5;
+  font-size: 1.1rem;
 }
 
-/* Price Section */
-.card-price-section {
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  width: 10%
+}
+
+.status-badge.active {
+  background: #dcfce7;
+  color: #047857;
+}
+
+.status-badge.expired {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.card-header {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  align-items: flex-end;
-  gap: 16px;
-  padding: 16px 0;
-  border-top: 1px solid #f1f5f9;
-  border-bottom: 1px solid #f1f5f9;
+  gap: 12px;
 }
 
-.current-price-block {
-  flex: 1;
+.card-title {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.price-label {
-  font-size: 0.875rem;
-  color: #64748b;
-  margin-bottom: 6px;
-  font-weight: 500;
+.insurance-iconify {
+  color: var(--primary);
 }
 
-.price-value {
-  font-size: 1.875rem;
-  font-weight: 700;
+.card-description {
+  color: #4b5563;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.card-details {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  align-items: center;
+  color: #4b5563;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
   color: #0f172a;
-  line-height: 1;
+}
+
+.detail-icon {
+  color: #6366f1;
+}
+
+.detail-text {
+  font-weight: 600;
+}
+
+.quick-bid-section {
+  margin-bottom: 14px;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  border: none;
+}
+
+.quick-bid-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 8px;
 }
 
-.highest-bidder {
-  font-size: 0.8125rem;
-  color: #94a3b8;
-  font-weight: 500;
+.currency-symbol {
+  font-weight: 600;
+  color: #111827;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
 }
 
-.bid-count-block {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+.quick-bid-input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: white;
+  transition: border-color 0.2s ease;
+}
+
+.quick-bid-input:focus {
+  outline: none;
+  border-color: #111827;
+  box-shadow: 0 0 0 2px rgba(31, 41, 55, 0.1);
+}
+
+.quick-bid-submit-btn {
+  flex: 0.75;
+  padding: 10px 20px;
+  background: #1f2937;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.quick-bid-submit-btn:hover:not(:disabled) {
+  background: #111827;
+}
+
+.quick-bid-submit-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.quick-bid-suggestions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 6px;
 }
 
-.bid-count-label {
-  font-size: 0.875rem;
-  color: #64748b;
-  font-weight: 500;
-}
-
-.bid-count-value {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: #0f172a;
-  line-height: 1;
-}
-
-/* Action Section */
-.card-action-section {
-  display: flex;
-  gap: 12px;
-  margin-top: 4px;
-}
-
-.btn-instant-buy {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 14px 20px;
-  background: white;
-  color: #0f172a;
-  border: 2px solid #e5e7eb;
-  border-radius: 10px;
-  font-size: 0.9375rem;
+.quick-bid-suggestion {
+  padding: 6px 8px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.8rem;
   font-weight: 600;
+  color: #111827;
   cursor: pointer;
   transition: all 0.2s ease;
+  width: 100%;
+  min-width: 0;
+  text-align: center;
 }
 
-.btn-instant-buy:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
-}
-
-.btn-bid-action {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 14px 20px;
-  background: #0f172a;
+.quick-bid-suggestion:hover {
+  background: #111827;
   color: white;
-  border: 2px solid #0f172a;
-  border-radius: 10px;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  border-color: #111827;
 }
-
-.btn-bid-action:hover:not(:disabled) {
-  background: #1e293b;
-  border-color: #1e293b;
-}
-
-.btn-bid-action:disabled {
-  background: #cbd5e1;
-  border-color: #cbd5e1;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-/* Old styles removed - using new card design */
 
 @media (max-width: 1024px) {
   .auctions-grid {
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    grid-template-columns: 1fr;
   }
 
-  .auction-card {
-    padding: 20px;
-  }
-
-  .price-value,
-  .bid-count-value {
-    font-size: 1.5rem;
+  .card-details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1867,8 +1850,12 @@ onMounted(async () => {
     font-size: 1.5rem;
   }
 
-  .auctions-grid {
+  .card-details {
     grid-template-columns: 1fr;
+  }
+
+  .quick-bid-suggestions {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .hero-section {
@@ -1876,93 +1863,33 @@ onMounted(async () => {
   }
 
   .auction-card {
-    padding: 18px;
+    padding: 16px;
   }
+}
 
-  .card-top-row {
-    flex-wrap: wrap;
-  }
-
-  .card-lead-title {
-    font-size: 1rem;
-  }
-
-  .card-lead-description {
-    font-size: 0.875rem;
-  }
-
-  .price-value,
-  .bid-count-value {
-    font-size: 1.5rem;
-  }
-
-  .card-action-section {
-    flex-direction: column;
-  }
-
-  .btn-instant-buy,
-  .btn-bid-action {
-    width: 100%;
+@media (max-width: 480px) {
+  .card-details {
+    grid-template-columns: 1fr;
   }
 
   .quick-bid-suggestions {
     grid-template-columns: repeat(2, 1fr);
   }
-}
 
-@media (max-width: 480px) {
-  .auction-card {
-    padding: 16px;
-    gap: 14px;
-  }
-
-  .insurance-type-badge {
-    font-size: 0.75rem;
-    padding: 5px 12px;
-  }
-
-  .time-info {
-    font-size: 0.8125rem;
-  }
-
-  .card-lp-number {
-    font-size: 0.875rem;
-  }
-
-  .card-location-quality {
+  .footer-buttons {
     flex-direction: column;
-    align-items: flex-start;
     gap: 8px;
   }
 
-  .card-lead-title {
-    font-size: 0.9375rem;
+  .price-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
 
-  .price-value,
-  .bid-count-value {
-    font-size: 1.25rem;
-  }
-
-  .card-price-section {
-    padding: 12px 0;
-  }
-
-  .quick-bid-section {
-    padding: 12px;
-  }
-
-  .quick-bid-input-group {
-    flex-wrap: wrap;
-  }
-
-  .currency-symbol {
-    min-width: 20px;
-  }
-
-  .quick-bid-submit-btn {
-    width: 100%;
-    margin-top: 4px;
+  .bid-info-container,
+  .instant-buy-price {
+    align-items: flex-start;
   }
 }
 
@@ -2031,7 +1958,27 @@ onMounted(async () => {
   }
 }
 
-/* Instant buy button styles moved to .btn-instant-buy */
+.instant-buy-btn-small {
+  padding: 12px 20px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.instant-buy-btn-small:hover {
+  background: #059669;
+}
 
 /* Modal Stilleri */
 .modal-backdrop {

@@ -645,35 +645,6 @@ router.post('/homepage', requireAdmin, async (req, res) => {
   }
 })
 
-// Get server time
-router.get('/server-time', async (req, res) => {
-  try {
-    const now = new Date()
-
-    // Sunucunun lokal timezone'ında formatla
-    const year = now.getFullYear()
-    const month = String(now.getMonth() + 1).padStart(2, '0')
-    const day = String(now.getDate()).padStart(2, '0')
-    const hours = String(now.getHours()).padStart(2, '0')
-    const minutes = String(now.getMinutes()).padStart(2, '0')
-    const seconds = String(now.getSeconds()).padStart(2, '0')
-
-    // Timezone abbreviation'ı al (CET, CEST, vb.)
-    const tzString = now.toLocaleString('en-US', { timeZoneName: 'short' })
-    const tzAbbr = tzString.split(' ').pop()
-
-    res.json({
-      timestamp: now.getTime(),
-      formatted: `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      timezoneAbbr: tzAbbr
-    })
-  } catch (error) {
-    console.error('Server time error:', error)
-    res.status(500).json({ message: 'Sunucu saati alınamadı' })
-  }
-})
-
 // Get next lead ID
 router.get('/next-lead-id', requireAdmin, async (req, res) => {
   try {
