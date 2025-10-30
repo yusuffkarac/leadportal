@@ -91,35 +91,70 @@
           </div>
         </div>
 
-        <div class="add-balance-form">
-          <h3>Bakiye Ekle</h3>
-          <form @submit.prevent="addBalance">
-            <div class="form-group">
-              <label>Miktar (€)</label>
-              <input
-                type="number"
-                v-model.number="balanceAmount"
-                placeholder="Örn: 100"
-                min="0.01"
-                step="0.01"
-                required
-                class="form-input"
-              />
-            </div>
-            <div class="form-group">
-              <label>Açıklama (Opsiyonel)</label>
-              <input
-                type="text"
-                v-model="balanceDescription"
-                placeholder="Örn: Aylık bakiye yüklemesi"
-                class="form-input"
-              />
-            </div>
-            <button type="submit" class="btn-primary" :disabled="isProcessing || !balanceAmount">
-              <Icon icon="mdi:plus-circle" width="20" />
-              {{ isProcessing ? 'Ekleniyor...' : 'Bakiye Ekle' }}
-            </button>
-          </form>
+        <div class="balance-operations">
+          <div class="operation-form">
+            <h3>Bakiye Ekle</h3>
+            <form @submit.prevent="addBalance">
+              <div class="form-group">
+                <label>Miktar (€)</label>
+                <input
+                  type="number"
+                  v-model.number="balanceAmount"
+                  placeholder="Örn: 100"
+                  min="0.01"
+                  step="0.01"
+                  required
+                  class="form-input"
+                />
+              </div>
+              <div class="form-group">
+                <label>Açıklama *</label>
+                <input
+                  type="text"
+                  v-model="balanceDescription"
+                  placeholder="Örn: Aylık bakiye yüklemesi"
+                  required
+                  class="form-input"
+                />
+              </div>
+              <button type="submit" class="btn-primary" :disabled="isProcessing || !balanceAmount || !balanceDescription">
+                <Icon icon="mdi:plus-circle" width="20" />
+                {{ isProcessing ? 'Ekleniyor...' : 'Bakiye Ekle' }}
+              </button>
+            </form>
+          </div>
+
+          <div class="operation-form deduct">
+            <h3>Bakiye Sil</h3>
+            <form @submit.prevent="deductBalance">
+              <div class="form-group">
+                <label>Miktar (€)</label>
+                <input
+                  type="number"
+                  v-model.number="deductAmount"
+                  placeholder="Örn: 50"
+                  min="0.01"
+                  step="0.01"
+                  required
+                  class="form-input"
+                />
+              </div>
+              <div class="form-group">
+                <label>Açıklama *</label>
+                <input
+                  type="text"
+                  v-model="deductDescription"
+                  placeholder="Örn: Düzeltme işlemi"
+                  required
+                  class="form-input"
+                />
+              </div>
+              <button type="submit" class="btn-danger" :disabled="isProcessing || !deductAmount || !deductDescription">
+                <Icon icon="mdi:minus-circle" width="20" />
+                {{ isProcessing ? 'Siliniyor...' : 'Bakiye Sil' }}
+              </button>
+            </form>
+          </div>
         </div>
 
         <div class="transaction-history">
@@ -174,6 +209,8 @@ const transactions = ref([])
 const searchQuery = ref('')
 const balanceAmount = ref(null)
 const balanceDescription = ref('')
+const deductAmount = ref(null)
+const deductDescription = ref('')
 const isLoading = ref(false)
 const isLoadingHistory = ref(false)
 const isProcessing = ref(false)
@@ -207,6 +244,8 @@ async function selectUser(user) {
   selectedUser.value = user
   balanceAmount.value = null
   balanceDescription.value = ''
+  deductAmount.value = null
+  deductDescription.value = ''
   await loadTransactionHistory(user.id)
 }
 
@@ -229,12 +268,17 @@ async function addBalance() {
     return
   }
 
+  if (!balanceDescription.value || balanceDescription.value.trim() === '') {
+    error('Açıklama zorunludur')
+    return
+  }
+
   isProcessing.value = true
   try {
     const response = await api.post('/balance/admin/add', {
       userId: selectedUser.value.id,
       amount: balanceAmount.value,
-      description: balanceDescription.value || undefined
+      description: balanceDescription.value
     })
 
     // Kullanıcının bakiyesini güncelle
@@ -255,6 +299,53 @@ async function addBalance() {
   } catch (err) {
     console.error('Bakiye eklenemedi:', err)
     error(err.response?.data?.error || 'Bakiye eklenirken hata oluştu')
+  } finally {
+    isProcessing.value = false
+  }
+}
+
+async function deductBalance() {
+  if (!deductAmount.value || deductAmount.value <= 0) {
+    error('Geçerli bir miktar girin')
+    return
+  }
+
+  if (!deductDescription.value || deductDescription.value.trim() === '') {
+    error('Açıklama zorunludur')
+    return
+  }
+
+  if (deductAmount.value > selectedUser.value.balance) {
+    error('Silmek istediğiniz miktar kullanıcının bakiyesinden fazla')
+    return
+  }
+
+  isProcessing.value = true
+  try {
+    const response = await api.post('/balance/admin/deduct', {
+      userId: selectedUser.value.id,
+      amount: deductAmount.value,
+      description: deductDescription.value
+    })
+
+    // Kullanıcının bakiyesini güncelle
+    const userIndex = users.value.findIndex(u => u.id === selectedUser.value.id)
+    if (userIndex !== -1) {
+      users.value[userIndex].balance = response.data.newBalance
+      selectedUser.value.balance = response.data.newBalance
+    }
+
+    // İşlem geçmişini yenile
+    await loadTransactionHistory(selectedUser.value.id)
+
+    // Formu temizle
+    deductAmount.value = null
+    deductDescription.value = ''
+
+    success(`${formatCurrency(deductAmount.value)} bakiye silindi`)
+  } catch (err) {
+    console.error('Bakiye silinemedi:', err)
+    error(err.response?.data?.error || 'Bakiye silinirken hata oluştu')
   } finally {
     isProcessing.value = false
   }
@@ -553,15 +644,26 @@ onMounted(() => {
   color: #1f2937;
 }
 
-.add-balance-form {
+.balance-operations {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
   margin-bottom: 2rem;
+}
+
+.operation-form {
   padding: 1.5rem;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
 }
 
-.add-balance-form h3 {
+.operation-form.deduct {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.operation-form h3 {
   font-size: 1.125rem;
   font-weight: 600;
   color: #1f2937;
@@ -619,6 +721,30 @@ onMounted(() => {
 }
 
 .btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-danger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-size: 0.9375rem;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.btn-danger:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -742,6 +868,10 @@ onMounted(() => {
   }
 
   .balance-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .balance-operations {
     grid-template-columns: 1fr;
   }
 

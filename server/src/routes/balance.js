@@ -9,6 +9,12 @@ const addBalanceSchema = z.object({
   description: z.string().optional()
 })
 
+const deductBalanceSchema = z.object({
+  userId: z.string().min(1, 'Kullanıcı ID gereklidir'),
+  amount: z.number().positive('Miktar pozitif olmalıdır'),
+  description: z.string().min(1, 'Açıklama gereklidir')
+})
+
 const updateBalanceEnabledSchema = z.object({
   userId: z.string().min(1, 'Kullanıcı ID gereklidir'),
   enabled: z.boolean()
@@ -110,6 +116,111 @@ export default function balanceRouter(prisma) {
     } catch (error) {
       console.error('Add balance error:', error)
       res.status(500).json({ error: 'Bakiye eklenirken bir hata oluştu' })
+    }
+  })
+
+  // Admin: Kullanıcıdan bakiye sil
+  router.post('/admin/deduct', async (req, res) => {
+    if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') {
+      return res.status(403).json({ error: 'Bu işlem için yetkiniz yok' })
+    }
+
+    const parsed = deductBalanceSchema.safeParse(req.body)
+    if (!parsed.success) {
+      const errors = parsed.error?.errors?.map(e => e.message).join(', ') || 'Geçersiz veri'
+      return res.status(400).json({ error: errors })
+    }
+
+    const { userId, amount, description } = parsed.data
+
+    try {
+      // Kullanıcının mevcut durumunu kontrol et
+      const user = await prisma.user.findUnique({
+        where: { id: userId }
+      })
+
+      if (!user) {
+        return res.status(404).json({ error: 'Kullanıcı bulunamadı' })
+      }
+
+      // Kullanıcının bakiyesinin yeterli olup olmadığını kontrol et
+      if (user.balance < amount) {
+        return res.status(400).json({
+          error: 'Kullanıcının bakiyesi yetersiz',
+          currentBalance: user.balance,
+          requestedAmount: amount
+        })
+      }
+
+      // Bakiye düş ve transaction kaydı oluştur
+      const [updatedUser, transaction] = await prisma.$transaction([
+        prisma.user.update({
+          where: { id: userId },
+          data: {
+            balance: {
+              decrement: amount
+            }
+          }
+        }),
+        prisma.balanceTransaction.create({
+          data: {
+            userId,
+            amount: -amount,
+            type: 'ADMIN_DEDUCT',
+            description,
+            adminId: req.user.id
+          }
+        })
+      ])
+
+      // Activity log
+      try {
+        const { ipAddress, userAgent } = extractRequestInfo(req)
+        await logActivity({
+          userId: req.user.id,
+          action: ActivityTypes.DEDUCT_BALANCE,
+          details: {
+            targetUserId: userId,
+            targetUserEmail: user.email,
+            amount,
+            newBalance: updatedUser.balance,
+            description
+          },
+          entityType: 'balance',
+          entityId: transaction.id,
+          ipAddress,
+          userAgent
+        })
+      } catch (e) {
+        console.error('Activity log error:', e.message)
+      }
+
+      // Bildirim: Kullanıcıya bakiye silindi bildirimi
+      try {
+        await createNotification(
+          userId,
+          'BALANCE_DEDUCTED',
+          'Bakiye Düşürüldü',
+          `Hesabınızdan ${amount}€ bakiye düşürüldü. Yeni bakiyeniz: ${updatedUser.balance}€`,
+          {
+            amount,
+            newBalance: updatedUser.balance,
+            transactionId: transaction.id,
+            description
+          }
+        )
+      } catch (e) {
+        console.error('Notification error (BALANCE_DEDUCTED):', e.message)
+      }
+
+      res.json({
+        ok: true,
+        newBalance: updatedUser.balance,
+        transaction
+      })
+    } catch (error) {
+      console.error('Deduct balance error:', error)
+      res.status(500).json({ error: 'Bakiye düşürülürken bir hata oluştu' })
     }
   })
 
