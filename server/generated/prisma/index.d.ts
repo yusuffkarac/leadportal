@@ -9570,6 +9570,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink: string | null
     homepageCtaSecondaryText: string | null
     homepageCtaSecondaryLink: string | null
+    enableBiddingHours: boolean | null
+    biddingStartHour: string | null
+    biddingEndHour: string | null
     maintenanceMode: boolean | null
     maintenanceMessage: string | null
     smtpHost: string | null
@@ -9623,6 +9626,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink: string | null
     homepageCtaSecondaryText: string | null
     homepageCtaSecondaryLink: string | null
+    enableBiddingHours: boolean | null
+    biddingStartHour: string | null
+    biddingEndHour: string | null
     maintenanceMode: boolean | null
     maintenanceMessage: string | null
     smtpHost: string | null
@@ -9678,6 +9684,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink: number
     homepageCtaSecondaryText: number
     homepageCtaSecondaryLink: number
+    enableBiddingHours: number
+    biddingStartHour: number
+    biddingEndHour: number
     maintenanceMode: number
     maintenanceMessage: number
     smtpHost: number
@@ -9752,6 +9761,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: true
     homepageCtaSecondaryText?: true
     homepageCtaSecondaryLink?: true
+    enableBiddingHours?: true
+    biddingStartHour?: true
+    biddingEndHour?: true
     maintenanceMode?: true
     maintenanceMessage?: true
     smtpHost?: true
@@ -9805,6 +9817,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: true
     homepageCtaSecondaryText?: true
     homepageCtaSecondaryLink?: true
+    enableBiddingHours?: true
+    biddingStartHour?: true
+    biddingEndHour?: true
     maintenanceMode?: true
     maintenanceMessage?: true
     smtpHost?: true
@@ -9860,6 +9875,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: true
     homepageCtaSecondaryText?: true
     homepageCtaSecondaryLink?: true
+    enableBiddingHours?: true
+    biddingStartHour?: true
+    biddingEndHour?: true
     maintenanceMode?: true
     maintenanceMessage?: true
     smtpHost?: true
@@ -10007,6 +10025,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink: string
     homepageCtaSecondaryText: string
     homepageCtaSecondaryLink: string
+    enableBiddingHours: boolean
+    biddingStartHour: string
+    biddingEndHour: string
     maintenanceMode: boolean
     maintenanceMessage: string
     smtpHost: string
@@ -10086,6 +10107,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: boolean
     homepageCtaSecondaryText?: boolean
     homepageCtaSecondaryLink?: boolean
+    enableBiddingHours?: boolean
+    biddingStartHour?: boolean
+    biddingEndHour?: boolean
     maintenanceMode?: boolean
     maintenanceMessage?: boolean
     smtpHost?: boolean
@@ -10146,6 +10170,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: boolean
     homepageCtaSecondaryText?: boolean
     homepageCtaSecondaryLink?: boolean
+    enableBiddingHours?: boolean
+    biddingStartHour?: boolean
+    biddingEndHour?: boolean
     maintenanceMode?: boolean
     maintenanceMessage?: boolean
     smtpHost?: boolean
@@ -10206,6 +10233,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: boolean
     homepageCtaSecondaryText?: boolean
     homepageCtaSecondaryLink?: boolean
+    enableBiddingHours?: boolean
+    biddingStartHour?: boolean
+    biddingEndHour?: boolean
     maintenanceMode?: boolean
     maintenanceMessage?: boolean
     smtpHost?: boolean
@@ -10266,6 +10296,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: boolean
     homepageCtaSecondaryText?: boolean
     homepageCtaSecondaryLink?: boolean
+    enableBiddingHours?: boolean
+    biddingStartHour?: boolean
+    biddingEndHour?: boolean
     maintenanceMode?: boolean
     maintenanceMessage?: boolean
     smtpHost?: boolean
@@ -10292,7 +10325,7 @@ export namespace Prisma {
     tradeRegisterNumber?: boolean
   }
 
-  export type SettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "leadIdFormat" | "customFormat" | "leadPrefix" | "startingNumber" | "numberType" | "defaultCurrency" | "defaultAuctionDays" | "defaultMinIncrement" | "homepageHeroEyebrow" | "homepageHeroTitle" | "homepageHeroHighlight" | "homepageHeroTitleSuffix" | "homepageHeroSubtitle" | "homepageHeroPrimaryCtaText" | "homepageHeroPrimaryCtaLink" | "homepageHeroSecondaryCtaText" | "homepageHeroSecondaryCtaLink" | "homepageFeatureHeading" | "homepageFeatures" | "homepageShowcaseEyebrow" | "homepageShowcaseTitle" | "homepageShowcaseCtaText" | "homepageShowcaseCtaLink" | "homepageStatsEyebrow" | "homepageStatsTitle" | "homepageStats" | "homepageCtaTitle" | "homepageCtaSubtitle" | "homepageCtaPrimaryText" | "homepageCtaPrimaryLink" | "homepageCtaSecondaryText" | "homepageCtaSecondaryLink" | "maintenanceMode" | "maintenanceMessage" | "smtpHost" | "smtpPort" | "smtpUser" | "smtpPass" | "smtpFromName" | "smtpUseTLS" | "smtpUseSSL" | "createdAt" | "updatedAt" | "companyLogoUrl" | "companyName" | "faviconUrl" | "footerDescription" | "footerEmail" | "footerNote" | "footerPhone" | "insuranceTypes" | "legalLinks" | "servicesLinks" | "socialMedia" | "supportLinks" | "tradeRegisterNumber", ExtArgs["result"]["settings"]>
+  export type SettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "leadIdFormat" | "customFormat" | "leadPrefix" | "startingNumber" | "numberType" | "defaultCurrency" | "defaultAuctionDays" | "defaultMinIncrement" | "homepageHeroEyebrow" | "homepageHeroTitle" | "homepageHeroHighlight" | "homepageHeroTitleSuffix" | "homepageHeroSubtitle" | "homepageHeroPrimaryCtaText" | "homepageHeroPrimaryCtaLink" | "homepageHeroSecondaryCtaText" | "homepageHeroSecondaryCtaLink" | "homepageFeatureHeading" | "homepageFeatures" | "homepageShowcaseEyebrow" | "homepageShowcaseTitle" | "homepageShowcaseCtaText" | "homepageShowcaseCtaLink" | "homepageStatsEyebrow" | "homepageStatsTitle" | "homepageStats" | "homepageCtaTitle" | "homepageCtaSubtitle" | "homepageCtaPrimaryText" | "homepageCtaPrimaryLink" | "homepageCtaSecondaryText" | "homepageCtaSecondaryLink" | "enableBiddingHours" | "biddingStartHour" | "biddingEndHour" | "maintenanceMode" | "maintenanceMessage" | "smtpHost" | "smtpPort" | "smtpUser" | "smtpPass" | "smtpFromName" | "smtpUseTLS" | "smtpUseSSL" | "createdAt" | "updatedAt" | "companyLogoUrl" | "companyName" | "faviconUrl" | "footerDescription" | "footerEmail" | "footerNote" | "footerPhone" | "insuranceTypes" | "legalLinks" | "servicesLinks" | "socialMedia" | "supportLinks" | "tradeRegisterNumber", ExtArgs["result"]["settings"]>
 
   export type $SettingsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Settings"
@@ -10331,6 +10364,9 @@ export namespace Prisma {
       homepageCtaPrimaryLink: string
       homepageCtaSecondaryText: string
       homepageCtaSecondaryLink: string
+      enableBiddingHours: boolean
+      biddingStartHour: string
+      biddingEndHour: string
       maintenanceMode: boolean
       maintenanceMessage: string
       smtpHost: string
@@ -10811,6 +10847,9 @@ export namespace Prisma {
     readonly homepageCtaPrimaryLink: FieldRef<"Settings", 'String'>
     readonly homepageCtaSecondaryText: FieldRef<"Settings", 'String'>
     readonly homepageCtaSecondaryLink: FieldRef<"Settings", 'String'>
+    readonly enableBiddingHours: FieldRef<"Settings", 'Boolean'>
+    readonly biddingStartHour: FieldRef<"Settings", 'String'>
+    readonly biddingEndHour: FieldRef<"Settings", 'String'>
     readonly maintenanceMode: FieldRef<"Settings", 'Boolean'>
     readonly maintenanceMessage: FieldRef<"Settings", 'String'>
     readonly smtpHost: FieldRef<"Settings", 'String'>
@@ -30052,6 +30091,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink: 'homepageCtaPrimaryLink',
     homepageCtaSecondaryText: 'homepageCtaSecondaryText',
     homepageCtaSecondaryLink: 'homepageCtaSecondaryLink',
+    enableBiddingHours: 'enableBiddingHours',
+    biddingStartHour: 'biddingStartHour',
+    biddingEndHour: 'biddingEndHour',
     maintenanceMode: 'maintenanceMode',
     maintenanceMessage: 'maintenanceMessage',
     smtpHost: 'smtpHost',
@@ -31017,6 +31059,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: StringFilter<"Settings"> | string
     homepageCtaSecondaryText?: StringFilter<"Settings"> | string
     homepageCtaSecondaryLink?: StringFilter<"Settings"> | string
+    enableBiddingHours?: BoolFilter<"Settings"> | boolean
+    biddingStartHour?: StringFilter<"Settings"> | string
+    biddingEndHour?: StringFilter<"Settings"> | string
     maintenanceMode?: BoolFilter<"Settings"> | boolean
     maintenanceMessage?: StringFilter<"Settings"> | string
     smtpHost?: StringFilter<"Settings"> | string
@@ -31077,6 +31122,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: SortOrder
     homepageCtaSecondaryText?: SortOrder
     homepageCtaSecondaryLink?: SortOrder
+    enableBiddingHours?: SortOrder
+    biddingStartHour?: SortOrder
+    biddingEndHour?: SortOrder
     maintenanceMode?: SortOrder
     maintenanceMessage?: SortOrder
     smtpHost?: SortOrder
@@ -31140,6 +31188,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: StringFilter<"Settings"> | string
     homepageCtaSecondaryText?: StringFilter<"Settings"> | string
     homepageCtaSecondaryLink?: StringFilter<"Settings"> | string
+    enableBiddingHours?: BoolFilter<"Settings"> | boolean
+    biddingStartHour?: StringFilter<"Settings"> | string
+    biddingEndHour?: StringFilter<"Settings"> | string
     maintenanceMode?: BoolFilter<"Settings"> | boolean
     maintenanceMessage?: StringFilter<"Settings"> | string
     smtpHost?: StringFilter<"Settings"> | string
@@ -31200,6 +31251,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: SortOrder
     homepageCtaSecondaryText?: SortOrder
     homepageCtaSecondaryLink?: SortOrder
+    enableBiddingHours?: SortOrder
+    biddingStartHour?: SortOrder
+    biddingEndHour?: SortOrder
     maintenanceMode?: SortOrder
     maintenanceMessage?: SortOrder
     smtpHost?: SortOrder
@@ -31268,6 +31322,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: StringWithAggregatesFilter<"Settings"> | string
     homepageCtaSecondaryText?: StringWithAggregatesFilter<"Settings"> | string
     homepageCtaSecondaryLink?: StringWithAggregatesFilter<"Settings"> | string
+    enableBiddingHours?: BoolWithAggregatesFilter<"Settings"> | boolean
+    biddingStartHour?: StringWithAggregatesFilter<"Settings"> | string
+    biddingEndHour?: StringWithAggregatesFilter<"Settings"> | string
     maintenanceMode?: BoolWithAggregatesFilter<"Settings"> | boolean
     maintenanceMessage?: StringWithAggregatesFilter<"Settings"> | string
     smtpHost?: StringWithAggregatesFilter<"Settings"> | string
@@ -33133,6 +33190,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: string
     homepageCtaSecondaryText?: string
     homepageCtaSecondaryLink?: string
+    enableBiddingHours?: boolean
+    biddingStartHour?: string
+    biddingEndHour?: string
     maintenanceMode?: boolean
     maintenanceMessage?: string
     smtpHost?: string
@@ -33193,6 +33253,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: string
     homepageCtaSecondaryText?: string
     homepageCtaSecondaryLink?: string
+    enableBiddingHours?: boolean
+    biddingStartHour?: string
+    biddingEndHour?: string
     maintenanceMode?: boolean
     maintenanceMessage?: string
     smtpHost?: string
@@ -33253,6 +33316,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: StringFieldUpdateOperationsInput | string
     homepageCtaSecondaryText?: StringFieldUpdateOperationsInput | string
     homepageCtaSecondaryLink?: StringFieldUpdateOperationsInput | string
+    enableBiddingHours?: BoolFieldUpdateOperationsInput | boolean
+    biddingStartHour?: StringFieldUpdateOperationsInput | string
+    biddingEndHour?: StringFieldUpdateOperationsInput | string
     maintenanceMode?: BoolFieldUpdateOperationsInput | boolean
     maintenanceMessage?: StringFieldUpdateOperationsInput | string
     smtpHost?: StringFieldUpdateOperationsInput | string
@@ -33313,6 +33379,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: StringFieldUpdateOperationsInput | string
     homepageCtaSecondaryText?: StringFieldUpdateOperationsInput | string
     homepageCtaSecondaryLink?: StringFieldUpdateOperationsInput | string
+    enableBiddingHours?: BoolFieldUpdateOperationsInput | boolean
+    biddingStartHour?: StringFieldUpdateOperationsInput | string
+    biddingEndHour?: StringFieldUpdateOperationsInput | string
     maintenanceMode?: BoolFieldUpdateOperationsInput | boolean
     maintenanceMessage?: StringFieldUpdateOperationsInput | string
     smtpHost?: StringFieldUpdateOperationsInput | string
@@ -33373,6 +33442,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: string
     homepageCtaSecondaryText?: string
     homepageCtaSecondaryLink?: string
+    enableBiddingHours?: boolean
+    biddingStartHour?: string
+    biddingEndHour?: string
     maintenanceMode?: boolean
     maintenanceMessage?: string
     smtpHost?: string
@@ -33433,6 +33505,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: StringFieldUpdateOperationsInput | string
     homepageCtaSecondaryText?: StringFieldUpdateOperationsInput | string
     homepageCtaSecondaryLink?: StringFieldUpdateOperationsInput | string
+    enableBiddingHours?: BoolFieldUpdateOperationsInput | boolean
+    biddingStartHour?: StringFieldUpdateOperationsInput | string
+    biddingEndHour?: StringFieldUpdateOperationsInput | string
     maintenanceMode?: BoolFieldUpdateOperationsInput | boolean
     maintenanceMessage?: StringFieldUpdateOperationsInput | string
     smtpHost?: StringFieldUpdateOperationsInput | string
@@ -33493,6 +33568,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: StringFieldUpdateOperationsInput | string
     homepageCtaSecondaryText?: StringFieldUpdateOperationsInput | string
     homepageCtaSecondaryLink?: StringFieldUpdateOperationsInput | string
+    enableBiddingHours?: BoolFieldUpdateOperationsInput | boolean
+    biddingStartHour?: StringFieldUpdateOperationsInput | string
+    biddingEndHour?: StringFieldUpdateOperationsInput | string
     maintenanceMode?: BoolFieldUpdateOperationsInput | boolean
     maintenanceMessage?: StringFieldUpdateOperationsInput | string
     smtpHost?: StringFieldUpdateOperationsInput | string
@@ -35513,6 +35591,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: SortOrder
     homepageCtaSecondaryText?: SortOrder
     homepageCtaSecondaryLink?: SortOrder
+    enableBiddingHours?: SortOrder
+    biddingStartHour?: SortOrder
+    biddingEndHour?: SortOrder
     maintenanceMode?: SortOrder
     maintenanceMessage?: SortOrder
     smtpHost?: SortOrder
@@ -35578,6 +35659,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: SortOrder
     homepageCtaSecondaryText?: SortOrder
     homepageCtaSecondaryLink?: SortOrder
+    enableBiddingHours?: SortOrder
+    biddingStartHour?: SortOrder
+    biddingEndHour?: SortOrder
     maintenanceMode?: SortOrder
     maintenanceMessage?: SortOrder
     smtpHost?: SortOrder
@@ -35631,6 +35715,9 @@ export namespace Prisma {
     homepageCtaPrimaryLink?: SortOrder
     homepageCtaSecondaryText?: SortOrder
     homepageCtaSecondaryLink?: SortOrder
+    enableBiddingHours?: SortOrder
+    biddingStartHour?: SortOrder
+    biddingEndHour?: SortOrder
     maintenanceMode?: SortOrder
     maintenanceMessage?: SortOrder
     smtpHost?: SortOrder

@@ -487,7 +487,7 @@
                 <h2>Genel Ayarlar</h2>
                 <p>Diğer sistem ayarları</p>
               </div>
-              
+
               <div class="settings-content">
                 <div class="setting-group">
                   <label class="setting-label">Varsayılan Para Birimi</label>
@@ -500,9 +500,9 @@
 
                 <div class="setting-group">
                   <label class="setting-label">Varsayılan Açık Artırma Süresi (Gün)</label>
-                  <input 
-                    v-model.number="settings.defaultAuctionDays" 
-                    type="number" 
+                  <input
+                    v-model.number="settings.defaultAuctionDays"
+                    type="number"
                     class="form-input"
                     min="1"
                     max="30"
@@ -512,9 +512,9 @@
 
                 <div class="setting-group">
                   <label class="setting-label">Varsayılan Minimum Artış</label>
-                  <input 
-                    v-model.number="settings.defaultMinIncrement" 
-                    type="number" 
+                  <input
+                    v-model.number="settings.defaultMinIncrement"
+                    type="number"
                     class="form-input"
                     min="1"
                     step="0.01"
@@ -523,11 +523,57 @@
                 </div>
 
                 <div class="setting-group">
+                  <label class="setting-label">Teklif Verme Saatleri Kısıtlaması</label>
+                  <div class="toggle-container">
+                    <label class="toggle-switch">
+                      <input
+                        type="checkbox"
+                        v-model="settings.enableBiddingHours"
+                        @change="updateSettings"
+                      >
+                      <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label">
+                      {{ settings.enableBiddingHours ? 'Açık' : 'Kapalı' }}
+                    </span>
+                  </div>
+                  <small class="form-help">
+                    Teklif verme saatlerini kısıtlamak için bu seçeneği aktif edin
+                  </small>
+                </div>
+
+                <div v-if="settings.enableBiddingHours" class="setting-group">
+                  <label class="setting-label">Teklif Verme Başlangıç Saati</label>
+                  <input
+                    v-model="settings.biddingStartHour"
+                    type="time"
+                    class="form-input"
+                    @input="updateSettings"
+                  >
+                  <small class="form-help">
+                    Kullanıcılar bu saatten itibaren teklif verebilir
+                  </small>
+                </div>
+
+                <div v-if="settings.enableBiddingHours" class="setting-group">
+                  <label class="setting-label">Teklif Verme Bitiş Saati</label>
+                  <input
+                    v-model="settings.biddingEndHour"
+                    type="time"
+                    class="form-input"
+                    @input="updateSettings"
+                  >
+                  <small class="form-help">
+                    Kullanıcılar bu saate kadar teklif verebilir
+                  </small>
+                </div>
+
+                <div class="setting-group">
                   <label class="setting-label">Bakım Modu</label>
                   <div class="toggle-container">
                     <label class="toggle-switch">
-                      <input 
-                        type="checkbox" 
+                      <input
+                        type="checkbox"
                         v-model="settings.maintenanceMode"
                         @change="updateSettings"
                       >
@@ -544,8 +590,8 @@
 
                 <div v-if="settings.maintenanceMode" class="setting-group">
                   <label class="setting-label">Bakım Mesajı</label>
-                  <textarea 
-                    v-model="settings.maintenanceMessage" 
+                  <textarea
+                    v-model="settings.maintenanceMessage"
                     class="form-textarea"
                     rows="3"
                     placeholder="Kullanıcılara gösterilecek bakım mesajı"
@@ -652,6 +698,9 @@ const settings = ref({
     { name: 'Araba', icon: 'mdi:car' },
     { name: 'Sağlık', icon: 'mdi:heart' }
   ],
+  enableBiddingHours: false,
+  biddingStartHour: '08:00',
+  biddingEndHour: '20:00',
   maintenanceMode: false,
   maintenanceMessage: 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.',
   smtpHost: '',

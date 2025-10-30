@@ -49,6 +49,31 @@ export default function bidsRouter(prisma, io) {
       if (!parsed.success) return res.status(400).json({ error: 'Ungültige Eingabe' })
       const { leadId, maxBid } = parsed.data
 
+      // Check bidding hours restriction
+      const settings = await prisma.settings.findUnique({
+        where: { id: 'default' }
+      })
+
+      if (settings && settings.enableBiddingHours) {
+        const currentTime = new Date()
+        const currentHour = currentTime.getHours()
+        const currentMinute = currentTime.getMinutes()
+        const currentTimeInMinutes = currentHour * 60 + currentMinute
+
+        // Parse start and end hours (format: "HH:MM")
+        const [startHour, startMinute] = settings.biddingStartHour.split(':').map(Number)
+        const [endHour, endMinute] = settings.biddingEndHour.split(':').map(Number)
+        const startTimeInMinutes = startHour * 60 + startMinute
+        const endTimeInMinutes = endHour * 60 + endMinute
+
+        // Check if current time is within allowed bidding hours
+        if (currentTimeInMinutes < startTimeInMinutes || currentTimeInMinutes >= endTimeInMinutes) {
+          return res.status(400).json({
+            error: `Teklif verme saatleri ${settings.biddingStartHour} - ${settings.biddingEndHour} arasındadır. Lütfen bu saatler arasında tekrar deneyin.`
+          })
+        }
+      }
+
       // Fetch lead with all necessary data
       const lead = await prisma.lead.findUnique({
         where: { id: leadId },
@@ -134,6 +159,28 @@ export default function bidsRouter(prisma, io) {
         })
       } catch (e) {
         console.error('Activity log error:', e.message)
+      }
+
+      // Eğer leaderAutoBid varsa, otomatik teklif için ayrıca activity log kaydı oluştur
+      if (proxyResult.leaderAutoBid) {
+        try {
+          const { ipAddress, userAgent } = extractRequestInfo(req)
+          await logActivity({
+            userId: proxyResult.leaderAutoBid.userId, // mevcut liderin id'si
+            action: ActivityTypes.CREATE_BID,
+            details: {
+              isAuto: true,
+              visiblePrice: proxyResult.leaderAutoBid.amount,
+              leadTitle: lead.title
+            },
+            entityType: 'bid',
+            entityId: proxyResult.leaderAutoBid.id,
+            ipAddress,
+            userAgent
+          })
+        } catch (e) {
+          console.error('Activity log error (auto-bid):', e.message)
+        }
       }
 
       // Emit socket event for the visible bid change

@@ -85,7 +85,7 @@ FRONTEND_PID=$!
 echo -e "\n${GREEN}✅ Tüm servisler başarıyla başlatıldı!${NC}"
 echo -e "\n${BLUE}📋 Servis Bilgileri:${NC}"
 echo -e "  🗄️  PostgreSQL: http://localhost:5432"
-echo -e "  🖥️  Backend API: http://localhost:3000"
+echo -e "  🖥️  Backend API: http://localhost:4000"
 echo -e "  🎨 Frontend: http://localhost:5173"
 echo -e "  🔧 Prisma Studio: http://localhost:5555 (veya terminaldeki bağlantı linki)"
 

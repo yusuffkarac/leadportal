@@ -373,19 +373,19 @@ export default function leadsRouter(prisma, io) {
       bids: anonymizeBids(lead.bids, req.user?.id)
     }
 
-    // Log activity
-    if (req.user?.id) {
-      const { ipAddress, userAgent } = extractRequestInfo(req)
-      await logActivity({
-        userId: req.user.id,
-        action: ActivityTypes.VIEW_LEAD,
-        details: { leadTitle: lead.title },
-        entityType: 'lead',
-        entityId: lead.id,
-        ipAddress,
-        userAgent
-      })
-    }
+    // // Log activity
+    // if (req.user?.id) {
+    //   const { ipAddress, userAgent } = extractRequestInfo(req)
+    //   await logActivity({
+    //     userId: req.user.id,
+    //     action: ActivityTypes.VIEW_LEAD,
+    //     details: { leadTitle: lead.title },
+    //     entityType: 'lead',
+    //     entityId: lead.id,
+    //     ipAddress,
+    //     userAgent
+    //   })
+    // }
 
     res.json(anonymizedLead)
   })

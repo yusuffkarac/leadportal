@@ -33,7 +33,7 @@ async function createTransporter() {
       }
     }
 
-    const transporter = nodemailer.createTransporter(config)
+    const transporter = nodemailer.createTransport(config)
 
     // Transporter'ı test et
     await transporter.verify()

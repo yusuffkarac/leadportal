@@ -167,6 +167,16 @@ async function seedData() {
         inAppEnabled: true,
         icon: 'mdi:arrow-up-bold'
       },
+      {
+        code: 'BID_AUTO_INCREASED',
+        name: 'Otomatik Teklif Arttı',
+        description: 'Proxy bidding ile otomatik teklif yükseltildi',
+        category: 'BID',
+        defaultEnabled: true,
+        emailEnabled: true,
+        inAppEnabled: true,
+        icon: 'mdi:autorenew'
+      },
 
       // LEAD kategorisi
       {

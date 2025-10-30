@@ -21,7 +21,13 @@ const successMessage = ref('')
 const isSubmitting = ref(false)
 const showInstantBuyModal = ref(false)
 const isProcessingInstantBuy = ref(false)
-const settings = ref({ defaultCurrency: 'EUR' })
+const settings = ref({
+  defaultCurrency: 'EUR',
+  enableBiddingHours: false,
+  biddingStartHour: '08:00',
+  biddingEndHour: '20:00'
+})
+const biddingHoursWarning = ref('')
 let pollingInterval = null
 const socket = io('/', {
   path: '/socket.io',
@@ -104,6 +110,29 @@ const myMaxBid = computed(() => {
 const amILeader = computed(() => {
   if (!lead.value?.bids?.length || !currentUser.value?.id) return false
   return lead.value.bids[0]?.user?.id === currentUser.value.id
+})
+
+// Teklif verme saatleri kontrolü
+const canBidNow = computed(() => {
+  if (!settings.value.enableBiddingHours) return true
+
+  const now = new Date()
+  const currentHour = now.getHours()
+  const currentMinute = now.getMinutes()
+  const currentTimeInMinutes = currentHour * 60 + currentMinute
+
+  const [startHour, startMinute] = settings.value.biddingStartHour.split(':').map(Number)
+  const [endHour, endMinute] = settings.value.biddingEndHour.split(':').map(Number)
+  const startTimeInMinutes = startHour * 60 + startMinute
+  const endTimeInMinutes = endHour * 60 + endMinute
+
+  return currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes < endTimeInMinutes
+})
+
+const biddingHoursMessage = computed(() => {
+  if (!settings.value.enableBiddingHours) return ''
+  if (canBidNow.value) return ''
+  return `Teklif verme saatleri ${settings.value.biddingStartHour} - ${settings.value.biddingEndHour} arasındadır. Lütfen bu saatler arasında tekrar deneyin.`
 })
 
 function authHeaders() {
@@ -332,6 +361,16 @@ onUnmounted(() => {
           <div class="form-header">
             <h2>Teklif Ver</h2>
             <p>Maksimum tutarınızı girin - sistem sizin için otomatik olarak artırır!</p>
+
+            <!-- Teklif verme saatleri uyarısı -->
+            <div v-if="biddingHoursMessage" class="bidding-hours-warning">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+              </svg>
+              <span>{{ biddingHoursMessage }}</span>
+            </div>
+
             <div v-if="myMaxBid" class="my-bid-info" role="status" aria-live="polite">
               <div class="my-bid-left">
                 <span class="my-max-label">Maksimum teklifiniz</span>
@@ -376,31 +415,31 @@ onUnmounted(() => {
             <div class="quick-bid-section">
               <label class="quick-bid-label">Hızlı Teklif</label>
               <div class="quick-bid-buttons">
-                <button 
-                  class="quick-bid-btn" 
+                <button
+                  class="quick-bid-btn"
                   @click="setQuickBid(1)"
-                  :disabled="!lead.isActive"
+                  :disabled="!lead.isActive || !canBidNow"
                 >
                   +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement }}
                 </button>
-                <button 
-                  class="quick-bid-btn" 
+                <button
+                  class="quick-bid-btn"
                   @click="setQuickBid(2)"
-                  :disabled="!lead.isActive"
+                  :disabled="!lead.isActive || !canBidNow"
                 >
                   +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement * 2 }}
                 </button>
-                <button 
-                  class="quick-bid-btn" 
+                <button
+                  class="quick-bid-btn"
                   @click="setQuickBid(5)"
-                  :disabled="!lead.isActive"
+                  :disabled="!lead.isActive || !canBidNow"
                 >
                   +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement * 5 }}
                 </button>
-                <button 
-                  class="quick-bid-btn" 
+                <button
+                  class="quick-bid-btn"
                   @click="setQuickBid(10)"
-                  :disabled="!lead.isActive"
+                  :disabled="!lead.isActive || !canBidNow"
                 >
                   +{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement * 10 }}
                 </button>
@@ -408,13 +447,14 @@ onUnmounted(() => {
             </div>
             
             <div class="bid-buttons">
-              <button 
-                class="submit-bid-btn" 
-                :disabled="isSubmitting || !lead.isActive" 
+              <button
+                class="submit-bid-btn"
+                :disabled="isSubmitting || !lead.isActive || !canBidNow"
                 @click="placeBid"
               >
-               
+
                 <span v-if="!lead.isActive">Artırma Bitti</span>
+                <span v-else-if="!canBidNow">Teklif Saati Dışı</span>
                 <span v-else-if="isSubmitting">Gönderiliyor...</span>
                 <span v-else>Teklif Ver</span>
                  <Icon icon="mdi:gavel" width="20" height="20" />
@@ -668,6 +708,30 @@ onUnmounted(() => {
   padding: 4px 8px;
   border-radius: 999px;
   font-size: 0.85rem;
+}
+
+.bidding-hours-warning {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #fef3c7;
+  border: 1px solid #fbbf24;
+  border-radius: 10px;
+  margin-top: 12px;
+  align-items: flex-start;
+}
+
+.bidding-hours-warning svg {
+  flex-shrink: 0;
+  color: #d97706;
+  margin-top: 2px;
+}
+
+.bidding-hours-warning span {
+  color: #92400e;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  font-weight: 500;
 }
 
 .bid-form-section{
