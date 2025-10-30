@@ -44,6 +44,35 @@ const isSubmittingBid = ref({})
 const showDescriptionModal = ref(false)
 const selectedDescription = ref(null)
 
+// Premium slider kaydırma ipucu
+const premiumSliderContainer = ref(null)
+const showRightScrollHint = ref(false)
+const hasMoreThanThreePremium = computed(() => premiumLeads.value.length > 3)
+
+function updatePremiumScrollHint() {
+  const el = premiumSliderContainer.value
+  if (!el) {
+    showRightScrollHint.value = false
+    return
+  }
+  const remaining = el.scrollWidth - el.clientWidth - el.scrollLeft
+  showRightScrollHint.value = remaining > 8 // sağda kaydırılacak alan varsa göster
+}
+
+function scrollPremiumRight() {
+  const el = premiumSliderContainer.value
+  if (!el) return
+  el.scrollBy({ left: 320, behavior: 'smooth' })
+}
+
+function handlePremiumScroll(event) {
+  const container = event?.target || premiumSliderContainer.value
+  if (!container) return
+  // HomeView davranışı: ilk birkaç px içinde göster, sonra gizle
+  const remaining = container.scrollWidth - container.clientWidth - container.scrollLeft
+  showRightScrollHint.value = container.scrollLeft <= 10 && remaining > 8
+}
+
 // Filtre state'leri
 const filters = ref({
   insuranceType: '',
@@ -298,16 +327,11 @@ function shareLead(lead, event) {
 
 function openInstantBuyModal(lead, event) {
   event.stopPropagation() // Kart tıklamasını engelle
-  // For SOFORT_KAUF check startPrice, for AUCTION check instantBuyPrice
-  if (lead.leadType === 'SOFORT_KAUF') {
-    // SOFORT_KAUF always has startPrice, no need to check
-    selectedLead.value = lead
-    showInstantBuyModal.value = true
-  } else if (lead.instantBuyPrice) {
-    // AUCTION must have instantBuyPrice set
-    selectedLead.value = lead
-    showInstantBuyModal.value = true
+  if (!lead.instantBuyPrice) {
+    return
   }
+  selectedLead.value = lead
+  showInstantBuyModal.value = true
 }
 
 function closeInstantBuyModal() {
@@ -473,12 +497,29 @@ onMounted(async () => {
     // Vue reactivity için leads array'ini güncelle
     leads.value = [...leads.value]
     allLeads.value = [...allLeads.value]
+    // Premium slider sağ ok görünürlüğünü canlı tut
+    updatePremiumScrollHint()
   }, 1000) // 1 saniyede bir güncelle
 
   onUnmounted(() => {
     clearInterval(timeInterval)
     socket.close()
   })
+
+  // Premium slider scroll/resize dinleyicileri
+  setTimeout(() => updatePremiumScrollHint(), 0)
+  window.addEventListener('resize', updatePremiumScrollHint)
+  if (premiumSliderContainer.value) {
+    premiumSliderContainer.value.addEventListener('scroll', updatePremiumScrollHint, { passive: true })
+  }
+})
+
+// Temizleme: dış dinleyicileri kaldır
+onUnmounted(() => {
+  window.removeEventListener('resize', updatePremiumScrollHint)
+  if (premiumSliderContainer.value) {
+    premiumSliderContainer.value.removeEventListener('scroll', updatePremiumScrollHint)
+  }
 })
 </script>
 
@@ -522,8 +563,9 @@ onMounted(async () => {
           </div>
         </div>
 
-        <div class="premium-slider-container">
-          <div class="premium-slider">
+        <div class="premium-slider-wrapper">
+          <div class="premium-slider-container" ref="premiumSliderContainer" @scroll="handlePremiumScroll">
+            <div class="premium-slider">
             <div class="premium-card" v-for="lead in premiumLeads" :key="lead.id" @click="navigateToLead(lead)">
               <div class="premium-card-glow"></div>
               <div class="premium-card-header">
@@ -539,9 +581,7 @@ onMounted(async () => {
                 </div>
               </div>
 
-              <div class="premium-card-description">
-                {{ lead.description || 'Açıklama bulunmuyor' }}
-              </div>
+            
 
               <div class="premium-card-price">
                 <div class="premium-price-info">
@@ -569,6 +609,10 @@ onMounted(async () => {
               </div>
             </div>
           </div>
+          </div>
+          <div v-if="hasMoreThanThreePremium && showRightScrollHint" class="premium-scroll-indicator">
+            <Icon icon="mdi:chevron-right" width="32" height="32" />
+          </div>
         </div>
       </div>
     </div>
@@ -585,6 +629,7 @@ onMounted(async () => {
       <div class="page-header">
         <div class="page-header-content">
          <!--   <Icon :icon="pageIcon" width="32" class="page-icon" /> -->
+         
           <div>
             <h1>{{ pageTitle }}</h1>
             <p class="page-subtitle">{{ pageDescription }}</p>
@@ -933,26 +978,15 @@ onMounted(async () => {
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: #fbbf24 #fef3c7;
+  /* Scrollbar gizle (Firefox) */
+  scrollbar-width: none;
+  /* Scrollbar gizle (IE/Edge eski) */
+  -ms-overflow-style: none;
 }
 
 .premium-slider-container::-webkit-scrollbar {
-  height: 8px;
-}
-
-.premium-slider-container::-webkit-scrollbar-track {
-  background: #fef3c7;
-  border-radius: 4px;
-}
-
-.premium-slider-container::-webkit-scrollbar-thumb {
-  background: #fbbf24;
-  border-radius: 4px;
-}
-
-.premium-slider-container::-webkit-scrollbar-thumb:hover {
-  background: #f59e0b;
+  /* Scrollbar gizle (WebKit) */
+  display: none;
 }
 
 .premium-slider {
@@ -961,6 +995,40 @@ onMounted(async () => {
   grid-auto-columns: minmax(320px, 1fr);
   gap: 16px;
   padding-bottom: 8px;
+}
+
+.premium-slider-wrapper {
+  position: relative;
+}
+
+.premium-scroll-indicator {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 64px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.95) 30%);
+  pointer-events: none;
+  z-index: 10;
+  color: #1d4ed8;
+  opacity: 0.85;
+  animation: premium-pulse-scroll 2s ease-in-out infinite;
+}
+
+@keyframes premium-pulse-scroll {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translateY(-50%) translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(4px);
+  }
 }
 
 .premium-card {
@@ -1053,6 +1121,7 @@ onMounted(async () => {
   -webkit-box-orient: vertical;
   overflow: hidden;
   flex: 1;
+  display: none!important;
 }
 
 .premium-card-price {

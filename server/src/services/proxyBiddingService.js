@@ -23,7 +23,7 @@ export function calculateProxyBid(newMaxBid, currentLeaderMaxBid, currentVisible
   // Case 1: First bid on the auction
   if (!currentLeaderMaxBid) {
     return {
-      visibleBid: startPrice, // First bidder pays starting price
+      visibleBid: Math.min(startPrice + minIncrement, newMaxBid), // First visible price = start + increment (capped by bidder's max)
       newLeader: true
     }
   }
