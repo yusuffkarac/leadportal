@@ -154,6 +154,7 @@ exports.Prisma.LeadScalarFieldEnum = {
   description: 'description',
   privateDetails: 'privateDetails',
   postalCode: 'postalCode',
+  leadType: 'leadType',
   startPrice: 'startPrice',
   minIncrement: 'minIncrement',
   instantBuyPrice: 'instantBuyPrice',
@@ -475,7 +476,10 @@ exports.Prisma.JsonNullValueFilter = {
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
 };
-
+exports.LeadType = exports.$Enums.LeadType = {
+  AUCTION: 'AUCTION',
+  SOFORT_KAUF: 'SOFORT_KAUF'
+};
 
 exports.Prisma.ModelName = {
   User: 'User',

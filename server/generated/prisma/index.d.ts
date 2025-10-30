@@ -130,6 +130,23 @@ export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
 export type NotificationRolePermission = $Result.DefaultSelection<Prisma.$NotificationRolePermissionPayload>
 
 /**
+ * Enums
+ */
+export namespace $Enums {
+  export const LeadType: {
+  AUCTION: 'AUCTION',
+  SOFORT_KAUF: 'SOFORT_KAUF'
+};
+
+export type LeadType = (typeof LeadType)[keyof typeof LeadType]
+
+}
+
+export type LeadType = $Enums.LeadType
+
+export const LeadType: typeof $Enums.LeadType
+
+/**
  * ##  Prisma Client ʲˢ
  *
  * Type-safe database client for TypeScript & Node.js
@@ -4819,6 +4836,7 @@ export namespace Prisma {
     description: string | null
     privateDetails: string | null
     postalCode: string | null
+    leadType: $Enums.LeadType | null
     startPrice: number | null
     minIncrement: number | null
     instantBuyPrice: number | null
@@ -4842,6 +4860,7 @@ export namespace Prisma {
     description: string | null
     privateDetails: string | null
     postalCode: string | null
+    leadType: $Enums.LeadType | null
     startPrice: number | null
     minIncrement: number | null
     instantBuyPrice: number | null
@@ -4865,6 +4884,7 @@ export namespace Prisma {
     description: number
     privateDetails: number
     postalCode: number
+    leadType: number
     startPrice: number
     minIncrement: number
     instantBuyPrice: number
@@ -4906,6 +4926,7 @@ export namespace Prisma {
     description?: true
     privateDetails?: true
     postalCode?: true
+    leadType?: true
     startPrice?: true
     minIncrement?: true
     instantBuyPrice?: true
@@ -4929,6 +4950,7 @@ export namespace Prisma {
     description?: true
     privateDetails?: true
     postalCode?: true
+    leadType?: true
     startPrice?: true
     minIncrement?: true
     instantBuyPrice?: true
@@ -4952,6 +4974,7 @@ export namespace Prisma {
     description?: true
     privateDetails?: true
     postalCode?: true
+    leadType?: true
     startPrice?: true
     minIncrement?: true
     instantBuyPrice?: true
@@ -5062,6 +5085,7 @@ export namespace Prisma {
     description: string
     privateDetails: string | null
     postalCode: string | null
+    leadType: $Enums.LeadType
     startPrice: number
     minIncrement: number
     instantBuyPrice: number | null
@@ -5104,6 +5128,7 @@ export namespace Prisma {
     description?: boolean
     privateDetails?: boolean
     postalCode?: boolean
+    leadType?: boolean
     startPrice?: boolean
     minIncrement?: boolean
     instantBuyPrice?: boolean
@@ -5132,6 +5157,7 @@ export namespace Prisma {
     description?: boolean
     privateDetails?: boolean
     postalCode?: boolean
+    leadType?: boolean
     startPrice?: boolean
     minIncrement?: boolean
     instantBuyPrice?: boolean
@@ -5156,6 +5182,7 @@ export namespace Prisma {
     description?: boolean
     privateDetails?: boolean
     postalCode?: boolean
+    leadType?: boolean
     startPrice?: boolean
     minIncrement?: boolean
     instantBuyPrice?: boolean
@@ -5180,6 +5207,7 @@ export namespace Prisma {
     description?: boolean
     privateDetails?: boolean
     postalCode?: boolean
+    leadType?: boolean
     startPrice?: boolean
     minIncrement?: boolean
     instantBuyPrice?: boolean
@@ -5197,7 +5225,7 @@ export namespace Prisma {
     ownerId?: boolean
   }
 
-  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "privateDetails" | "postalCode" | "startPrice" | "minIncrement" | "instantBuyPrice" | "reservePrice" | "antiSnipeSeconds" | "insuranceType" | "isActive" | "isShowcase" | "isSold" | "featured" | "startsAt" | "endsAt" | "createdAt" | "updatedAt" | "ownerId", ExtArgs["result"]["lead"]>
+  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "privateDetails" | "postalCode" | "leadType" | "startPrice" | "minIncrement" | "instantBuyPrice" | "reservePrice" | "antiSnipeSeconds" | "insuranceType" | "isActive" | "isShowcase" | "isSold" | "featured" | "startsAt" | "endsAt" | "createdAt" | "updatedAt" | "ownerId", ExtArgs["result"]["lead"]>
   export type LeadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     bids?: boolean | Lead$bidsArgs<ExtArgs>
     owner?: boolean | UserDefaultArgs<ExtArgs>
@@ -5226,6 +5254,7 @@ export namespace Prisma {
       description: string
       privateDetails: string | null
       postalCode: string | null
+      leadType: $Enums.LeadType
       startPrice: number
       minIncrement: number
       instantBuyPrice: number | null
@@ -5673,6 +5702,7 @@ export namespace Prisma {
     readonly description: FieldRef<"Lead", 'String'>
     readonly privateDetails: FieldRef<"Lead", 'String'>
     readonly postalCode: FieldRef<"Lead", 'String'>
+    readonly leadType: FieldRef<"Lead", 'LeadType'>
     readonly startPrice: FieldRef<"Lead", 'Int'>
     readonly minIncrement: FieldRef<"Lead", 'Int'>
     readonly instantBuyPrice: FieldRef<"Lead", 'Int'>
@@ -29999,6 +30029,7 @@ export namespace Prisma {
     description: 'description',
     privateDetails: 'privateDetails',
     postalCode: 'postalCode',
+    leadType: 'leadType',
     startPrice: 'startPrice',
     minIncrement: 'minIncrement',
     instantBuyPrice: 'instantBuyPrice',
@@ -30460,6 +30491,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'LeadType'
+   */
+  export type EnumLeadTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LeadType'>
+    
+
+
+  /**
+   * Reference to a field of type 'LeadType[]'
+   */
+  export type ListEnumLeadTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LeadType[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -30686,6 +30731,7 @@ export namespace Prisma {
     description?: StringFilter<"Lead"> | string
     privateDetails?: StringNullableFilter<"Lead"> | string | null
     postalCode?: StringNullableFilter<"Lead"> | string | null
+    leadType?: EnumLeadTypeFilter<"Lead"> | $Enums.LeadType
     startPrice?: IntFilter<"Lead"> | number
     minIncrement?: IntFilter<"Lead"> | number
     instantBuyPrice?: IntNullableFilter<"Lead"> | number | null
@@ -30713,6 +30759,7 @@ export namespace Prisma {
     description?: SortOrder
     privateDetails?: SortOrderInput | SortOrder
     postalCode?: SortOrderInput | SortOrder
+    leadType?: SortOrder
     startPrice?: SortOrder
     minIncrement?: SortOrder
     instantBuyPrice?: SortOrderInput | SortOrder
@@ -30743,6 +30790,7 @@ export namespace Prisma {
     description?: StringFilter<"Lead"> | string
     privateDetails?: StringNullableFilter<"Lead"> | string | null
     postalCode?: StringNullableFilter<"Lead"> | string | null
+    leadType?: EnumLeadTypeFilter<"Lead"> | $Enums.LeadType
     startPrice?: IntFilter<"Lead"> | number
     minIncrement?: IntFilter<"Lead"> | number
     instantBuyPrice?: IntNullableFilter<"Lead"> | number | null
@@ -30770,6 +30818,7 @@ export namespace Prisma {
     description?: SortOrder
     privateDetails?: SortOrderInput | SortOrder
     postalCode?: SortOrderInput | SortOrder
+    leadType?: SortOrder
     startPrice?: SortOrder
     minIncrement?: SortOrder
     instantBuyPrice?: SortOrderInput | SortOrder
@@ -30801,6 +30850,7 @@ export namespace Prisma {
     description?: StringWithAggregatesFilter<"Lead"> | string
     privateDetails?: StringNullableWithAggregatesFilter<"Lead"> | string | null
     postalCode?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    leadType?: EnumLeadTypeWithAggregatesFilter<"Lead"> | $Enums.LeadType
     startPrice?: IntWithAggregatesFilter<"Lead"> | number
     minIncrement?: IntWithAggregatesFilter<"Lead"> | number
     instantBuyPrice?: IntNullableWithAggregatesFilter<"Lead"> | number | null
@@ -32793,6 +32843,7 @@ export namespace Prisma {
     description: string
     privateDetails?: string | null
     postalCode?: string | null
+    leadType?: $Enums.LeadType
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
@@ -32819,6 +32870,7 @@ export namespace Prisma {
     description: string
     privateDetails?: string | null
     postalCode?: string | null
+    leadType?: $Enums.LeadType
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
@@ -32845,6 +32897,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
@@ -32871,6 +32924,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
@@ -32897,6 +32951,7 @@ export namespace Prisma {
     description: string
     privateDetails?: string | null
     postalCode?: string | null
+    leadType?: $Enums.LeadType
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
@@ -32920,6 +32975,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
@@ -32942,6 +32998,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
@@ -35243,6 +35300,13 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type EnumLeadTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.LeadType | EnumLeadTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.LeadType[] | ListEnumLeadTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.LeadType[] | ListEnumLeadTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumLeadTypeFilter<$PrismaModel> | $Enums.LeadType
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -35281,6 +35345,7 @@ export namespace Prisma {
     description?: SortOrder
     privateDetails?: SortOrder
     postalCode?: SortOrder
+    leadType?: SortOrder
     startPrice?: SortOrder
     minIncrement?: SortOrder
     instantBuyPrice?: SortOrder
@@ -35312,6 +35377,7 @@ export namespace Prisma {
     description?: SortOrder
     privateDetails?: SortOrder
     postalCode?: SortOrder
+    leadType?: SortOrder
     startPrice?: SortOrder
     minIncrement?: SortOrder
     instantBuyPrice?: SortOrder
@@ -35335,6 +35401,7 @@ export namespace Prisma {
     description?: SortOrder
     privateDetails?: SortOrder
     postalCode?: SortOrder
+    leadType?: SortOrder
     startPrice?: SortOrder
     minIncrement?: SortOrder
     instantBuyPrice?: SortOrder
@@ -35358,6 +35425,16 @@ export namespace Prisma {
     instantBuyPrice?: SortOrder
     reservePrice?: SortOrder
     antiSnipeSeconds?: SortOrder
+  }
+
+  export type EnumLeadTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.LeadType | EnumLeadTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.LeadType[] | ListEnumLeadTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.LeadType[] | ListEnumLeadTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumLeadTypeWithAggregatesFilter<$PrismaModel> | $Enums.LeadType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumLeadTypeFilter<$PrismaModel>
+    _max?: NestedEnumLeadTypeFilter<$PrismaModel>
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -36976,6 +37053,10 @@ export namespace Prisma {
     connect?: LeadWatchWhereUniqueInput | LeadWatchWhereUniqueInput[]
   }
 
+  export type EnumLeadTypeFieldUpdateOperationsInput = {
+    set?: $Enums.LeadType
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -37852,6 +37933,23 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type NestedEnumLeadTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.LeadType | EnumLeadTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.LeadType[] | ListEnumLeadTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.LeadType[] | ListEnumLeadTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumLeadTypeFilter<$PrismaModel> | $Enums.LeadType
+  }
+
+  export type NestedEnumLeadTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.LeadType | EnumLeadTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.LeadType[] | ListEnumLeadTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.LeadType[] | ListEnumLeadTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumLeadTypeWithAggregatesFilter<$PrismaModel> | $Enums.LeadType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumLeadTypeFilter<$PrismaModel>
+    _max?: NestedEnumLeadTypeFilter<$PrismaModel>
+  }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -37975,6 +38073,7 @@ export namespace Prisma {
     description: string
     privateDetails?: string | null
     postalCode?: string | null
+    leadType?: $Enums.LeadType
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
@@ -38000,6 +38099,7 @@ export namespace Prisma {
     description: string
     privateDetails?: string | null
     postalCode?: string | null
+    leadType?: $Enums.LeadType
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
@@ -38343,6 +38443,7 @@ export namespace Prisma {
     description?: StringFilter<"Lead"> | string
     privateDetails?: StringNullableFilter<"Lead"> | string | null
     postalCode?: StringNullableFilter<"Lead"> | string | null
+    leadType?: EnumLeadTypeFilter<"Lead"> | $Enums.LeadType
     startPrice?: IntFilter<"Lead"> | number
     minIncrement?: IntFilter<"Lead"> | number
     instantBuyPrice?: IntNullableFilter<"Lead"> | number | null
@@ -38943,6 +39044,7 @@ export namespace Prisma {
     description: string
     privateDetails?: string | null
     postalCode?: string | null
+    leadType?: $Enums.LeadType
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
@@ -38968,6 +39070,7 @@ export namespace Prisma {
     description: string
     privateDetails?: string | null
     postalCode?: string | null
+    leadType?: $Enums.LeadType
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
@@ -39088,6 +39191,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
@@ -39113,6 +39217,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
@@ -39223,6 +39328,7 @@ export namespace Prisma {
     description: string
     privateDetails?: string | null
     postalCode?: string | null
+    leadType?: $Enums.LeadType
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
@@ -39248,6 +39354,7 @@ export namespace Prisma {
     description: string
     privateDetails?: string | null
     postalCode?: string | null
+    leadType?: $Enums.LeadType
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
@@ -39368,6 +39475,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
@@ -39393,6 +39501,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
@@ -39582,6 +39691,7 @@ export namespace Prisma {
     description: string
     privateDetails?: string | null
     postalCode?: string | null
+    leadType?: $Enums.LeadType
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
@@ -39607,6 +39717,7 @@ export namespace Prisma {
     description: string
     privateDetails?: string | null
     postalCode?: string | null
+    leadType?: $Enums.LeadType
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
@@ -39733,6 +39844,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
@@ -39758,6 +39870,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
@@ -41740,6 +41853,7 @@ export namespace Prisma {
     description: string
     privateDetails?: string | null
     postalCode?: string | null
+    leadType?: $Enums.LeadType
     startPrice: number
     minIncrement: number
     instantBuyPrice?: number | null
@@ -41865,6 +41979,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
@@ -41890,6 +42005,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null
@@ -41915,6 +42031,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
     startPrice?: IntFieldUpdateOperationsInput | number
     minIncrement?: IntFieldUpdateOperationsInput | number
     instantBuyPrice?: NullableIntFieldUpdateOperationsInput | number | null

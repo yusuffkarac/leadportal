@@ -27,6 +27,7 @@ const leadForm = ref({
   description: '',
   privateDetails: '',
   postalCode: '',
+  leadType: 'AUCTION',
   startPrice: '',
   minIncrement: '',
   buyNowPrice: '',
@@ -421,6 +422,7 @@ async function openLeadModal(mode, lead = null) {
         title: '',
         description: '',
         privateDetails: '',
+        leadType: 'AUCTION',
         startPrice: '',
         minIncrement: 10,
         buyNowPrice: '',
@@ -441,6 +443,7 @@ async function openLeadModal(mode, lead = null) {
       title: lead.title,
       description: lead.description || '',
       privateDetails: lead.privateDetails || '',
+      leadType: lead.leadType || 'AUCTION',
       startPrice: lead.startPrice.toString(),
       minIncrement: lead.minIncrement.toString(),
       buyNowPrice: lead.instantBuyPrice ? lead.instantBuyPrice.toString() : '',
@@ -501,6 +504,7 @@ async function saveLead() {
       ...leadForm.value,
       privateDetails: leadForm.value.privateDetails || undefined,
       postalCode: leadForm.value.postalCode || undefined,
+      leadType: leadForm.value.leadType || 'AUCTION',
       startPrice: parseFloat(leadForm.value.startPrice),
       minIncrement: parseFloat(leadForm.value.minIncrement),
       instantBuyPrice: leadForm.value.buyNowPrice ? parseFloat(leadForm.value.buyNowPrice) : null,
@@ -1028,8 +1032,18 @@ watch(showMap, (newValue) => {
             <input v-model="leadForm.title" type="text" class="form-input" placeholder="Lead başlığı" required />
           </div>
 
-          <!-- İki sütun: Sigorta Türü ve Posta Kodu -->
+          <!-- İki sütun: Lead Tipi ve Sigorta Türü -->
           <div class="form-row">
+            <div class="form-group">
+              <label>Lead Tipi *</label>
+              <select v-model="leadForm.leadType" class="form-input">
+                <option value="AUCTION">Açık Artırma</option>
+                <option value="SOFORT_KAUF">Sofort Kauf (Anında Satın Alma)</option>
+              </select>
+              <small style="color: #6b7280; font-size: 0.875rem; display: block; margin-top: 4px;">
+                {{ leadForm.leadType === 'AUCTION' ? 'Açık artırma ile satılacak' : 'Sabit fiyattan anında satın alınabilir' }}
+              </small>
+            </div>
             <div class="form-group">
               <label>Sigorta Türü</label>
               <select v-model="leadForm.insuranceType" class="form-input">
@@ -1037,28 +1051,30 @@ watch(showMap, (newValue) => {
                 <option v-for="type in insuranceTypes" :key="type.name" :value="type.name">{{ type.name }}</option>
               </select>
             </div>
-            <div class="form-group">
-              <label>Posta Kodu</label>
-              <div class="postal-code-container">
-                <input 
-                  v-model="postalCodeSearch" 
-                  type="text" 
-                  class="form-input" 
-                  placeholder="Posta kodu veya şehir adı yazın..." 
-                  @input="onPostalCodeInput"
-                  @focus="onPostalCodeFocus"
-                  @blur="onPostalCodeBlur"
-                  @keydown="onPostalCodeKeydown"
-                />
-                <div v-if="showPostalCodeDropdown && postalCodeResults.length > 0" ref="postalCodeDropdownRef" class="postal-code-dropdown">
-                  <div 
-                    v-for="(zipcode, index) in postalCodeResults" 
-                    :key="zipcode.postal"
-                    :class="['postal-code-item', { 'selected': index === selectedPostalCodeIndex }]"
-                    @mousedown="selectPostalCode(zipcode)"
-                  >
-                    {{ zipcode.display }}
-                  </div>
+          </div>
+
+          <!-- Posta Kodu -->
+          <div class="form-group full-width">
+            <label>Posta Kodu</label>
+            <div class="postal-code-container">
+              <input
+                v-model="postalCodeSearch"
+                type="text"
+                class="form-input"
+                placeholder="Posta kodu veya şehir adı yazın..."
+                @input="onPostalCodeInput"
+                @focus="onPostalCodeFocus"
+                @blur="onPostalCodeBlur"
+                @keydown="onPostalCodeKeydown"
+              />
+              <div v-if="showPostalCodeDropdown && postalCodeResults.length > 0" ref="postalCodeDropdownRef" class="postal-code-dropdown">
+                <div
+                  v-for="(zipcode, index) in postalCodeResults"
+                  :key="zipcode.postal"
+                  :class="['postal-code-item', { 'selected': index === selectedPostalCodeIndex }]"
+                  @mousedown="selectPostalCode(zipcode)"
+                >
+                  {{ zipcode.display }}
                 </div>
               </div>
             </div>
@@ -1080,17 +1096,17 @@ watch(showMap, (newValue) => {
           <!-- İki sütun: Fiyatlar -->
           <div class="form-row">
             <div class="form-group">
-              <label>Başlangıç Fiyatı ({{ getCurrencySymbol(settings.defaultCurrency) }}) *</label>
+              <label>{{ leadForm.leadType === 'SOFORT_KAUF' ? 'Satış Fiyatı' : 'Başlangıç Fiyatı' }} ({{ getCurrencySymbol(settings.defaultCurrency) }}) *</label>
               <input v-model="leadForm.startPrice" type="number" class="form-input" placeholder="0" min="0" step="1" required />
             </div>
-            <div class="form-group">
+            <div class="form-group" v-if="leadForm.leadType === 'AUCTION'">
               <label>Minimum Artış ({{ getCurrencySymbol(settings.defaultCurrency) }}) *</label>
               <input v-model="leadForm.minIncrement" type="number" class="form-input" placeholder="0" min="0" step="1" required />
             </div>
           </div>
 
-          <!-- İki sütun: Anında Al ve Başlangıç Tarihi -->
-          <div class="form-row">
+          <!-- İki sütun: Anında Al ve Başlangıç Tarihi (Sadece Auction için) -->
+          <div class="form-row" v-if="leadForm.leadType === 'AUCTION'">
             <div class="form-group">
               <label>Anında Satın Alma Fiyatı ({{ getCurrencySymbol(settings.defaultCurrency) }})</label>
               <input v-model="leadForm.buyNowPrice" type="number" class="form-input" placeholder="Opsiyonel" min="0" step="1" />
@@ -1101,6 +1117,13 @@ watch(showMap, (newValue) => {
               <input v-model="leadForm.startsAt" type="datetime-local" class="form-input" />
               <small class="form-help">Boş bırakırsanız lead hemen aktif olur</small>
             </div>
+          </div>
+
+          <!-- Başlangıç Tarihi (Sofort Kauf için) -->
+          <div class="form-group full-width" v-if="leadForm.leadType === 'SOFORT_KAUF'">
+            <label>Başlangıç Tarihi (Opsiyonel)</label>
+            <input v-model="leadForm.startsAt" type="datetime-local" class="form-input" />
+            <small class="form-help">Boş bırakırsanız lead hemen aktif olur</small>
           </div>
 
           <!-- Tek sütun: Bitiş Tarihi -->

@@ -39,6 +39,11 @@ export const appRoutes = [
       component: LeadMarketplaceView,
     },
     {
+      path: '/sofort-kauf',
+      name: 'sofort-kauf',
+      component: LeadMarketplaceView,
+    },
+    {
       path: '/forgot-password',
       name: 'forgot-password',
       component: ForgotPasswordView,

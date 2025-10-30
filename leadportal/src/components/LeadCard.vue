@@ -174,11 +174,11 @@ const minBidAmount = computed(() => {
     <!-- Price and Bidder Info -->
     <div class="price-bidder-section">
       <div class="price-row">
-        <div class="price-amount-large">
-          <span style="font-weight:bolder" v-if="lead.bids && lead.bids.length">
+        <div class="price-amount-large" >
+          <span style="font-weight:bolder!important;"  v-if="lead.bids && lead.bids.length">
             {{ formatPrice(lead.bids[0].amount, settings.defaultCurrency) }}
           </span>
-          <span v-else>{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
+          <span style="font-weight:bolder!important;"  v-else>{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
         </div>
       </div>
       <div class="bidder-info-line">
@@ -269,7 +269,7 @@ const minBidAmount = computed(() => {
 <style scoped>
 .auction-card {
   background: white;
-  border: 2px solid #0f172a;
+  border: 1px solid #0f172a;
   border-radius: 16px;
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);

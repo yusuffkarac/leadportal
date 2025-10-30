@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import api from '@/utils/axios.js'
 import { io } from 'socket.io-client'
@@ -9,6 +10,27 @@ import InstantBuyModal from '@/components/InstantBuyModal.vue'
 import LeadCard from '@/components/LeadCard.vue'
 
 const { success, error } = useAlert()
+const route = useRoute()
+
+// Route'a göre lead tipini belirle
+const leadType = computed(() => {
+  return route.path === '/sofort-kauf' ? 'SOFORT_KAUF' : 'AUCTION'
+})
+
+// Sayfa başlığı ve açıklaması
+const pageTitle = computed(() => {
+  return leadType.value === 'SOFORT_KAUF' ? 'Sofort Kauf' : 'Açık Artırma'
+})
+
+const pageDescription = computed(() => {
+  return leadType.value === 'SOFORT_KAUF'
+    ? 'Anında satın alınabilir lead\'ler'
+    : 'Teklif vererek kazanabileceğiniz lead\'ler'
+})
+
+const pageIcon = computed(() => {
+  return leadType.value === 'SOFORT_KAUF' ? 'mdi:flash' : 'mdi:gavel'
+})
 
 const leads = ref([])
 const allLeads = ref([]) // Tüm lead'ler
@@ -218,7 +240,8 @@ function clearFilters() {
 }
 
 async function fetchLeads() {
-  const { data } = await api.get('/leads')
+  // Route'a göre lead tipini filtrele
+  const { data } = await api.get(`/leads?leadType=${leadType.value}`)
   // Lead'lerin aktif durumunu endsAt tarihine göre güncelle
   allLeads.value = data.map(lead => {
     const now = new Date()
@@ -415,6 +438,12 @@ function updateMapMarkers() {
 // Lead'ler değiştiğinde haritayı güncelle
 watch(leads, () => updateMapMarkers())
 
+// Route değiştiğinde leadleri yeniden yükle
+watch(() => route.path, async () => {
+  await fetchLeads()
+  applyFilters()
+})
+
 onMounted(async () => {
   loadFilters() // Filtreleri yükle
   await loadSettings()
@@ -449,7 +478,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section>
+  <section :data-lead-type="leadType">
     <!-- Hero Section - Lead yoksa üstte -->
     <section v-if="!leads.length" class="hero-section">
       <div class="hero-content">
@@ -546,10 +575,16 @@ onMounted(async () => {
       </div>
     </div>
 
-    <!-- Aktif Açık Artırmalar -->
+    <!-- Aktif Açık Artırmalar / Sofort Kauf -->
     <div class="auctions-section">
       <div class="page-header">
-        <h1>Aktif Açık Artırmalar</h1>
+        <div class="page-header-content">
+          <Icon :icon="pageIcon" width="32" class="page-icon" />
+          <div>
+            <h1>{{ pageTitle }}</h1>
+            <p class="page-subtitle">{{ pageDescription }}</p>
+          </div>
+        </div>
         <div class="header-actions">
           <button class="view-toggle-btn" @click="toggleMapVisibility" :title="showMap ? 'Haritayı Gizle' : 'Haritayı Göster'">
             <Icon v-if="showMap" icon="mdi:map-marker-off" width="20" height="20" />
@@ -1233,8 +1268,34 @@ onMounted(async () => {
   gap: 16px;
 }
 
+.page-header-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.page-icon {
+  flex-shrink: 0;
+}
+
+.page-header-content .page-icon {
+  color: var(--primary, #3b82f6);
+}
+
+/* Sofort Kauf için turuncu renk */
+[data-lead-type="SOFORT_KAUF"] .page-icon {
+  color: #f59e0b;
+}
+
+.page-subtitle {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin: 0.25rem 0 0 0;
+}
+
 .page-header h1 {
   font-size: 1.875rem;
+  margin: 0;
   font-weight: 700;
   color: #111827;
   margin: 0;

@@ -317,6 +317,7 @@ onUnmounted(() => {
 const isNavigating = ref(false)
 const isMobileMenuOpen = ref(false)
 const isAdminDropdownOpen = ref(false)
+const isLeadsDropdownOpen = ref(false)
 
 function toggleMobileMenu() {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
@@ -332,6 +333,14 @@ function openAdminDropdown() {
 
 function closeAdminDropdown() {
   isAdminDropdownOpen.value = false
+}
+
+function openLeadsDropdown() {
+  isLeadsDropdownOpen.value = true
+}
+
+function closeLeadsDropdown() {
+  isLeadsDropdownOpen.value = false
 }
 </script>
 
@@ -349,10 +358,26 @@ function closeAdminDropdown() {
           <Icon icon="mdi:home-outline" width="16" height="16" />
           <span>Anasayfa</span>
         </RouterLink>
-        <RouterLink to="/leads">
-          <Icon icon="mdi:briefcase-outline" width="16" height="16" />
-          <span>Leadler</span>
-        </RouterLink>
+
+        <!-- Leads Dropdown -->
+        <div class="leads-dropdown" @mouseenter="openLeadsDropdown" @mouseleave="closeLeadsDropdown">
+          <button class="leads-trigger">
+            <Icon icon="mdi:briefcase-outline" width="16" height="16" />
+            Leadler
+            <Icon icon="mdi:chevron-down" width="12" height="12" />
+          </button>
+          <div v-if="isLeadsDropdownOpen" class="leads-dropdown-menu">
+            <RouterLink to="/leads" class="leads-menu-item">
+              <Icon icon="mdi:gavel" width="16" height="16" />
+              Açık Artırma
+            </RouterLink>
+            <RouterLink to="/sofort-kauf" class="leads-menu-item">
+              <Icon icon="mdi:flash" width="16" height="16" />
+              Sofort Kauf
+            </RouterLink>
+          </div>
+        </div>
+
         <RouterLink v-if="isAuthed" to="/dashboard">
           <Icon icon="mdi:view-dashboard-outline" width="16" height="16" />
           <span>Dashboard</span>
@@ -496,12 +521,22 @@ function closeAdminDropdown() {
           <span>Anasayfa</span>
         </RouterLink>
 
-        <RouterLink to="/leads" @click="closeMobileMenu" class="mobile-nav-link">
-          <Icon icon="mdi:briefcase-outline" width="20" height="20" />
-          <span>Leadler</span>
-        </RouterLink>
-        
-        
+        <!-- Leads submenu in mobile -->
+        <div class="mobile-nav-section">
+          <div class="mobile-nav-section-header">
+            <Icon icon="mdi:briefcase-outline" width="20" height="20" />
+            <span>Leadler</span>
+          </div>
+          <RouterLink to="/leads" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
+            <Icon icon="mdi:gavel" width="18" height="18" />
+            <span>Açık Artırma</span>
+          </RouterLink>
+          <RouterLink to="/sofort-kauf" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
+            <Icon icon="mdi:flash" width="18" height="18" />
+            <span>Sofort Kauf</span>
+          </RouterLink>
+        </div>
+
         <RouterLink v-if="isAuthed" to="/dashboard" @click="closeMobileMenu" class="mobile-nav-link">
           <Icon icon="mdi:view-dashboard-outline" width="20" height="20" />
           <span>Dashboard</span>
@@ -784,6 +819,84 @@ nav a:first-of-type {
 
 @media (min-width: 1024px) {}
 
+/* Leads Dropdown Styles */
+.leads-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.leads-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  color: #374151;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+  height: 2.5rem;
+}
+
+.leads-trigger:hover {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  color: #1f2937;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.leads-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 12rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.2s;
+  pointer-events: none;
+  /* Menü ile tetikleyici arasında boşluk bırakma: hover sırasında kaybolmayı engellemek için sıfırlandı */
+  margin-top: 0;
+}
+
+.leads-dropdown:hover .leads-dropdown-menu {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.leads-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: #374151;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.leads-menu-item:hover {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  color: #1f2937;
+}
+
+.leads-menu-item svg {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.leads-menu-item:hover svg {
+  transform: scale(1.1);
+}
+
 /* Admin Dropdown Styles */
 .admin-dropdown {
   position: relative;
@@ -917,6 +1030,38 @@ nav a:first-of-type {
     transform: translateX(0);
     opacity: 1;
   }
+}
+
+/* Mobile Nav Section Styles */
+.mobile-nav-section {
+  margin: 0.5rem 0;
+}
+
+.mobile-nav-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  background: #f9fafb;
+  border-radius: 0.375rem;
+  margin-bottom: 0.25rem;
+}
+
+.mobile-nav-section-header svg {
+  flex-shrink: 0;
+}
+
+.mobile-nav-sublink {
+  padding-left: 2.5rem !important;
+  font-size: 0.875rem !important;
+  color: #6b7280 !important;
+}
+
+.mobile-nav-sublink:hover {
+  color: #1f2937 !important;
 }
 
 .mobile-admin-section {

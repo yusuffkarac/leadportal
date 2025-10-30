@@ -5,6 +5,7 @@ import axios from 'axios'
 const title = ref('')
 const description = ref('')
 const postalCode = ref('')
+const leadType = ref('AUCTION') // Default to auction
 const startPrice = ref('0')
 const minIncrement = ref('1')
 const instantBuyPrice = ref('')
@@ -183,6 +184,7 @@ async function submit() {
       description: description.value,
       privateDetails: privateDetails.value || undefined,
       postalCode: postalCode.value || undefined,
+      leadType: leadType.value,
       startPrice: Number(startPrice.value),
       minIncrement: Number(minIncrement.value),
       instantBuyPrice: instantBuyPrice.value ? Number(instantBuyPrice.value) : undefined,
@@ -195,6 +197,7 @@ async function submit() {
     title.value = ''
     description.value = ''
     postalCode.value = ''
+    leadType.value = 'AUCTION'
     privateDetails.value = ''
     startPrice.value = '0'
     minIncrement.value = '1'
@@ -253,7 +256,17 @@ async function submit() {
         <input class="input" v-model="postalCode" placeholder="Örn. 85309" />
       </div>
       <div class="stack">
-        <label>Başlangıç Fiyatı</label>
+        <label>Lead Tipi</label>
+        <select class="input" v-model="leadType">
+          <option value="AUCTION">Açık Artırma</option>
+          <option value="SOFORT_KAUF">Sofort Kauf (Anında Satın Alma)</option>
+        </select>
+        <small style="color: var(--primary); font-size: 0.875rem;">
+          {{ leadType === 'AUCTION' ? 'Açık artırma ile satılacak' : 'Sabit fiyattan anında satın alınabilir' }}
+        </small>
+      </div>
+      <div class="stack">
+        <label>{{ leadType === 'SOFORT_KAUF' ? 'Satış Fiyatı' : 'Başlangıç Fiyatı' }}</label>
         <input class="input" v-model="startPrice" type="number" />
       </div>
       <div class="stack" style="grid-column: 1 / 3;">
@@ -265,11 +278,11 @@ async function submit() {
         <textarea class="input" v-model="privateDetails" rows="6" placeholder="Satın alan kişinin göreceği detay bilgileri girin" />
         <small style="color: var(--primary); font-size: 0.875rem;">Bu alan sadece leadi satın alan kişi, lead sahibi ve adminler tarafından görülebilir.</small>
       </div>
-      <div class="stack">
+      <div class="stack" v-if="leadType === 'AUCTION'">
         <label>Min. Artış</label>
         <input class="input" v-model="minIncrement" type="number" />
       </div>
-      <div class="stack">
+      <div class="stack" v-if="leadType === 'AUCTION'">
         <label>Anında Satın Alma Fiyatı (Opsiyonel)</label>
         <input class="input" v-model="instantBuyPrice" type="number" placeholder="Boş bırakılabilir" />
         <small style="color: var(--primary); font-size: 0.875rem;">Bu fiyatı ödeyen kişi açık artırmayı beklemeden hemen satın alabilir</small>

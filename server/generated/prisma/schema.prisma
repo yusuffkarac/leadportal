@@ -54,6 +54,7 @@ model Lead {
   description      String
   privateDetails   String?     @db.Text
   postalCode       String? // Posta kodu (örn. 85309)
+  leadType         LeadType    @default(AUCTION) // Lead satış türü
   startPrice       Int
   minIncrement     Int
   instantBuyPrice  Int?
@@ -73,6 +74,11 @@ model Lead {
   owner            User        @relation("LeadOwner", fields: [ownerId], references: [id])
   sale             LeadSale?
   watchers         LeadWatch[]
+}
+
+enum LeadType {
+  AUCTION // Açık artırma
+  SOFORT_KAUF // Anında satın alma
 }
 
 model Bid {

@@ -99,6 +99,7 @@ const createLeadSchema = z.object({
   description: z.string().min(1, 'Beschreibung ist erforderlich'),
   privateDetails: z.string().max(20000).optional().nullable(),
   postalCode: z.string().min(3).max(12).optional().nullable(),
+  leadType: z.enum(['AUCTION', 'SOFORT_KAUF']).optional().default('AUCTION'),
   startPrice: z.number().int().nonnegative('Ungültige Eingabe: erwartet int, erhalten number'),
   minIncrement: z.number().int().positive(),
   instantBuyPrice: z.number().int().positive().nullable().optional(),
@@ -257,11 +258,16 @@ export default function leadsRouter(prisma, io) {
     await checkAndSellExpiredLeads(prisma, io)
 
     const showcaseOnly = req.query.showcase === 'true' || req.query.showcase === '1'
+    const leadTypeFilter = req.query.leadType // 'AUCTION' or 'SOFORT_KAUF'
+
     const where = {
       isActive: true
     }
     if (showcaseOnly) {
       where.isShowcase = true
+    }
+    if (leadTypeFilter && (leadTypeFilter === 'AUCTION' || leadTypeFilter === 'SOFORT_KAUF')) {
+      where.leadType = leadTypeFilter
     }
 
     const leads = await prisma.lead.findMany({
@@ -443,7 +449,7 @@ export default function leadsRouter(prisma, io) {
       const issues = parsed.error.issues.map((i) => ({ path: i.path.join('.'), message: i.message }))
       return res.status(400).json({ error: 'Validierung fehlgeschlagen', issues })
     }
-    const { title, description, privateDetails, postalCode, startPrice, minIncrement, instantBuyPrice, insuranceType, startsAt, endsAt, isShowcase = false } = parsed.data
+    const { title, description, privateDetails, postalCode, leadType, startPrice, minIncrement, instantBuyPrice, insuranceType, startsAt, endsAt, isShowcase = false } = parsed.data
     
     // Ayarlardan ID formatını ve varsayılan değerleri al
     let settings = await prisma.settings.findUnique({
@@ -511,6 +517,7 @@ export default function leadsRouter(prisma, io) {
         description,
         privateDetails: privateDetails || null,
         postalCode: postalCode || null,
+        leadType: leadType || 'AUCTION',
         startPrice,
         minIncrement: finalMinIncrement, // Varsayılan değeri kullan
         instantBuyPrice,
