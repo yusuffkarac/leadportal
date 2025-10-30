@@ -26,6 +26,7 @@ import UserDashboardView from '../views/UserDashboardView.vue'
 import AdminBalanceView from '../views/AdminBalanceView.vue'
 import NotificationPreferencesView from '../views/NotificationPreferencesView.vue'
 import AdminNotificationSettingsView from '../views/AdminNotificationSettingsView.vue'
+import AdminPendingPaymentsView from '../views/AdminPendingPaymentsView.vue'
 
 export const appRoutes = [
     {
@@ -185,6 +186,12 @@ export const appRoutes = [
       path: '/admin/balance',
       name: 'admin-balance',
       component: AdminBalanceView,
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin/pending-payments',
+      name: 'admin-pending-payments',
+      component: AdminPendingPaymentsView,
       meta: { requiresAdmin: true },
     },
     {

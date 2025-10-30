@@ -104,18 +104,28 @@ model LeadWatch {
   @@unique([leadId, userId])
 }
 
+enum PaymentStatus {
+  PENDING    // IBAN ödemesi bekliyor
+  COMPLETED  // Ödeme tamamlandı
+  FAILED     // Ödeme başarısız
+}
+
 model LeadSale {
-  id            String   @id @default(cuid())
-  leadId        String   @unique
+  id            String         @id @default(cuid())
+  leadId        String         @unique
   buyerId       String
   amount        Int
-  paymentMethod String   @default("balance") // "balance" veya "iban"
-  balanceBefore Int?     // Bakiye ile ödeme yapıldıysa öncesi
-  balanceAfter  Int?     // Bakiye ile ödeme yapıldıysa sonrası
-  soldAt        DateTime @default(now())
-  createdAt     DateTime @default(now())
-  buyer         User     @relation("LeadBuyer", fields: [buyerId], references: [id])
-  lead          Lead     @relation(fields: [leadId], references: [id])
+  paymentMethod String         @default("balance") // "balance" veya "iban"
+  paymentStatus PaymentStatus? // Ödeme durumu (IBAN için)
+  balanceBefore Int?           // Bakiye ile ödeme yapıldıysa öncesi
+  balanceAfter  Int?           // Bakiye ile ödeme yapıldıysa sonrası
+  confirmedAt   DateTime?      // Admin ödemeyi onayladığı zaman
+  confirmedBy   String?        // Onaylayan admin kullanıcı ID
+  adminNotes    String?        // Admin notları
+  soldAt        DateTime       @default(now())
+  createdAt     DateTime       @default(now())
+  buyer         User           @relation("LeadBuyer", fields: [buyerId], references: [id])
+  lead          Lead           @relation(fields: [leadId], references: [id])
 }
 
 model Settings {

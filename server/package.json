@@ -11,7 +11,8 @@
     "prisma:studio": "prisma studio --schema ./prisma/schema.prisma",
     "seed": "node src/scripts/seedData.js",
     "export": "node src/scripts/exportData.js",
-    "import": "node src/scripts/importData.js"
+    "import": "node src/scripts/importData.js",
+    "leads:generate": "node src/scripts/generateFakeLeads.js"
   },
   "keywords": [],
   "author": "",

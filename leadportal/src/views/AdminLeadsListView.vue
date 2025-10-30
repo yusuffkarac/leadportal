@@ -41,6 +41,7 @@ const leadForm = ref({
 const errorMessage = ref('')
 const successMessage = ref('')
 const insuranceTypes = ref([])
+const pendingPaymentsCount = ref(0)
 
 // Formleadport entegrasyonu için yeni değişkenler
 const formleadportFormId = ref('')
@@ -349,28 +350,41 @@ async function loadSettings() {
   }
 }
 
+async function fetchPendingPayments() {
+  try {
+    const response = await axios.get('/api/lead-sales/admin/pending', { headers: authHeaders() })
+    pendingPaymentsCount.value = response.data.length
+  } catch (error) {
+    console.error('Error fetching pending payments:', error)
+    pendingPaymentsCount.value = 0
+  }
+}
+
 async function fetchMine() {
   const { data } = await axios.get('/api/leads/admin/list', { headers: authHeaders() })
-  
+
   // Satış bilgilerini al
   const salesResponse = await axios.get('/api/lead-sales/admin/all', { headers: authHeaders() })
   const sales = salesResponse.data
-  
+
   // Lead'lerin aktif durumunu endsAt tarihine göre güncelle ve satış bilgilerini ekle
   leads.value = data.map(lead => {
     const now = new Date()
     const endDate = new Date(lead.endsAt)
     const isExpired = endDate < now
-    
+
     // Bu lead için satış bilgisini bul
     const sale = sales.find(s => s.leadId === lead.id)
-    
+
     return {
       ...lead,
       isActive: lead.isActive && !isExpired,
       sale: sale || null
     }
   })
+
+  // Bekleyen IBAN ödemelerini de yükle
+  await fetchPendingPayments()
 }
 
 async function openLeadModal(mode, lead = null) {
@@ -720,6 +734,21 @@ watch(showMap, (newValue) => {
             Yeni Lead
           </button>
         </div>
+      </div>
+
+      <!-- Pending Payments Alert -->
+      <div v-if="pendingPaymentsCount > 0" class="pending-payments-alert">
+        <div class="alert-content">
+          <Icon icon="mdi:clock-alert-outline" width="24" />
+          <div>
+            <strong>{{ pendingPaymentsCount }} bekleyen IBAN ödemesi var!</strong>
+            <p>IBAN ile yapılan ödemeler admin onayı bekliyor.</p>
+          </div>
+        </div>
+        <router-link to="/admin/pending-payments" class="alert-button">
+          <Icon icon="mdi:eye" width="18" />
+          Ödemeleri Görüntüle
+        </router-link>
       </div>
     
     <!-- Filtreler -->
@@ -2337,6 +2366,102 @@ watch(showMap, (newValue) => {
 .payment-method-badge.iban {
   background: #fef3c7;
   color: #d97706;
+}
+
+/* Pending Payments Alert */
+.pending-payments-alert {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alert-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.alert-content svg {
+  color: #d97706;
+  flex-shrink: 0;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+.alert-content strong {
+  display: block;
+  font-size: 1rem;
+  color: #92400e;
+  margin-bottom: 0.25rem;
+}
+
+.alert-content p {
+  font-size: 0.875rem;
+  color: #78350f;
+  margin: 0;
+}
+
+.alert-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #f59e0b;
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.alert-button:hover {
+  background: #d97706;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+}
+
+@media (max-width: 768px) {
+  .pending-payments-alert {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .alert-button {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .sale-payment-info {

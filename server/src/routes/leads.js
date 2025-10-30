@@ -647,6 +647,12 @@ export default function leadsRouter(prisma, io) {
         return res.status(400).json({ error: 'Dieser Lead wurde bereits verkauft' })
       }
 
+      // Aynı lead için daha önce bir satış oluşturulmuş mu?
+      const existingSale = await prisma.leadSale.findUnique({ where: { leadId } })
+      if (existingSale) {
+        return res.status(400).json({ error: 'Dieser Lead wurde bereits verkauft' })
+      }
+
       // Check if lead is scheduled for future start
       const currentTime = now()
       if (lead.startsAt && lead.startsAt > currentTime) {
@@ -841,13 +847,14 @@ export default function leadsRouter(prisma, io) {
       } else if (paymentMethod === 'iban') {
         // IBAN ile ödeme
         const [sale] = await prisma.$transaction([
-          // LeadSale kaydı oluştur
+          // LeadSale kaydı oluştur (PENDING status ile)
           prisma.leadSale.create({
             data: {
               leadId: leadId,
               buyerId: userId,
               amount: purchasePrice,
               paymentMethod: 'iban',
+              paymentStatus: 'PENDING',
               balanceBefore: null,
               balanceAfter: null
             }
@@ -893,11 +900,61 @@ export default function leadsRouter(prisma, io) {
           paymentMethod: 'iban'
         })
 
+        // Admin'lere PAYMENT_PENDING bildirimi gönder
+        try {
+          const adminUsers = await prisma.user.findMany({
+            where: {
+              userTypeId: {
+                in: ['FULL_ADMIN', 'ADMIN', 'SUPERADMIN']
+              }
+            }
+          })
+
+          for (const admin of adminUsers) {
+            await createNotification(
+              admin.id,
+              'PAYMENT_PENDING',
+              'Yeni IBAN Ödemesi Bekliyor',
+              `"${lead.title}" için ${user.email} IBAN ile ${purchasePrice} TL ödeme yaptı. Onay bekleniyor.`,
+              { leadId, saleId: sale.id, amount: purchasePrice, buyerId: userId, buyerEmail: user.email }
+            )
+          }
+        } catch (e) {
+          console.error('Notification error (PAYMENT_PENDING):', e.message)
+        }
+
+        // Bildirim: Satın alan kullanıcıya (IBAN ile ödeme bekliyor)
+        try {
+          await createNotification(
+            userId,
+            'LEAD_PURCHASED',
+            'Lead Satın Alındı - Ödeme Beklemede',
+            `"${lead.title}" lead'ini ${purchasePrice} TL'ye satın aldınız. IBAN ödemesi admin onayı bekliyor.`,
+            { leadId, saleId: sale.id, amount: purchasePrice, paymentStatus: 'PENDING' }
+          )
+        } catch (e) {
+          console.error('Notification error (LEAD_PURCHASED):', e.message)
+        }
+
+        // Bildirim: Lead sahibine
+        try {
+          await createNotification(
+            lead.ownerId,
+            'LEAD_SOLD',
+            'Lead Satıldı - Ödeme Beklemede',
+            `"${lead.title}" lead'iniz ${purchasePrice} TL'ye satıldı. IBAN ödemesi admin onayı bekliyor.`,
+            { leadId, saleId: sale.id, amount: purchasePrice, paymentStatus: 'PENDING' }
+          )
+        } catch (e) {
+          console.error('Notification error (LEAD_SOLD):', e.message)
+        }
+
         res.json({
           success: true,
           message: 'Lead erfolgreich gekauft - Zahlung wird per IBAN verarbeitet',
           sale: sale,
-          paymentMethod: 'iban'
+          paymentMethod: 'iban',
+          paymentStatus: 'PENDING'
         })
       }
 
@@ -907,6 +964,10 @@ export default function leadsRouter(prisma, io) {
       console.error('Error stack:', error.stack)
       console.error('Lead ID:', req.params.id)
       console.error('User ID:', req.user?.id)
+      // Unique constraint (leadId) ihlali: lead zaten satılmış
+      if (error?.code === 'P2002' && Array.isArray(error?.meta?.target) && error.meta.target.includes('leadId')) {
+        return res.status(400).json({ error: 'Dieser Lead wurde bereits verkauft' })
+      }
       res.status(500).json({ error: 'Sofortkauf fehlgeschlagen', errorMessage: error.message })
     }
   })

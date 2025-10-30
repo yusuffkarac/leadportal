@@ -421,6 +421,10 @@ function closeLeadsDropdown() {
                 <Icon icon="mdi:wallet-outline" width="16" height="16" />
                 Bakiye Yönetimi
               </RouterLink>
+              <RouterLink to="/admin/pending-payments" class="menu-item">
+                <Icon icon="mdi:clock-alert-outline" width="16" height="16" />
+                Bekleyen Ödemeler
+              </RouterLink>
             </div>
 
             <!-- Ayarlar Kategorisi -->
@@ -579,6 +583,11 @@ function closeLeadsDropdown() {
           <RouterLink to="/admin/balance" @click="closeMobileMenu" class="mobile-nav-link">
             <Icon icon="mdi:wallet-outline" width="20" height="20" />
             <span>Bakiye Yönetimi</span>
+          </RouterLink>
+
+          <RouterLink to="/admin/pending-payments" @click="closeMobileMenu" class="mobile-nav-link">
+            <Icon icon="mdi:clock-alert-outline" width="20" height="20" />
+            <span>Bekleyen Ödemeler</span>
           </RouterLink>
 
           <!-- Ayarlar Kategorisi -->

@@ -455,13 +455,44 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
     let instantBuyCount = 0;
     let auctionCount = 0;
 
+    // Payment method breakdown
+    let balanceRevenue = 0;
+    let ibanRevenue = 0;
+    let balanceCount = 0;
+    let ibanCount = 0;
+
+    // Payment status breakdown (IBAN specific)
+    let ibanPendingRevenue = 0;
+    let ibanCompletedRevenue = 0;
+    let ibanPendingCount = 0;
+    let ibanCompletedCount = 0;
+
     instantBuySales.forEach(sale => {
+      // Instant buy vs auction
       if (sale.lead?.instantBuyPrice && sale.amount >= sale.lead.instantBuyPrice) {
         instantBuyRevenue += sale.amount;
         instantBuyCount++;
       } else {
         auctionRevenue += sale.amount;
         auctionCount++;
+      }
+
+      // Payment method breakdown
+      if (sale.paymentMethod === 'balance') {
+        balanceRevenue += sale.amount;
+        balanceCount++;
+      } else if (sale.paymentMethod === 'iban') {
+        ibanRevenue += sale.amount;
+        ibanCount++;
+
+        // IBAN payment status breakdown
+        if (sale.paymentStatus === 'PENDING') {
+          ibanPendingRevenue += sale.amount;
+          ibanPendingCount++;
+        } else if (sale.paymentStatus === 'COMPLETED') {
+          ibanCompletedRevenue += sale.amount;
+          ibanCompletedCount++;
+        }
       }
     });
 
@@ -660,6 +691,14 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
         weeklyGrowth,
         instantBuy: { revenue: instantBuyRevenue, count: instantBuyCount },
         auction: { revenue: auctionRevenue, count: auctionCount }
+      },
+      paymentBreakdown: {
+        balance: { revenue: balanceRevenue, count: balanceCount },
+        iban: {
+          total: { revenue: ibanRevenue, count: ibanCount },
+          pending: { revenue: ibanPendingRevenue, count: ibanPendingCount },
+          completed: { revenue: ibanCompletedRevenue, count: ibanCompletedCount }
+        }
       },
       sellerStatistics: {
         topSellers: topSellersSorted

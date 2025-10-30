@@ -220,6 +220,36 @@ async function seedData() {
         emailEnabled: true,
         inAppEnabled: true,
         icon: 'mdi:wallet-plus'
+      },
+      {
+        code: 'PAYMENT_PENDING',
+        name: 'IBAN Ödemesi Bekliyor',
+        description: 'Yeni bir IBAN ödemesi onay bekliyor',
+        category: 'PAYMENT',
+        defaultEnabled: true,
+        emailEnabled: true,
+        inAppEnabled: true,
+        icon: 'mdi:clock-alert-outline'
+      },
+      {
+        code: 'PAYMENT_CONFIRMED',
+        name: 'Ödemeniz Onaylandı',
+        description: 'IBAN ile yaptığınız ödeme admin tarafından onaylandı',
+        category: 'PAYMENT',
+        defaultEnabled: true,
+        emailEnabled: true,
+        inAppEnabled: true,
+        icon: 'mdi:check-circle-outline'
+      },
+      {
+        code: 'PAYMENT_CONFIRMED_SELLER',
+        name: 'Lead Satış Ödemeniz Alındı',
+        description: 'Lead satışınızın IBAN ödemesi onaylandı',
+        category: 'PAYMENT',
+        defaultEnabled: true,
+        emailEnabled: true,
+        inAppEnabled: true,
+        icon: 'mdi:cash-check'
       }
     ]
 

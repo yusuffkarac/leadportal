@@ -195,8 +195,12 @@ exports.Prisma.LeadSaleScalarFieldEnum = {
   buyerId: 'buyerId',
   amount: 'amount',
   paymentMethod: 'paymentMethod',
+  paymentStatus: 'paymentStatus',
   balanceBefore: 'balanceBefore',
   balanceAfter: 'balanceAfter',
+  confirmedAt: 'confirmedAt',
+  confirmedBy: 'confirmedBy',
+  adminNotes: 'adminNotes',
   soldAt: 'soldAt',
   createdAt: 'createdAt'
 };
@@ -479,6 +483,12 @@ exports.Prisma.JsonNullValueFilter = {
 exports.LeadType = exports.$Enums.LeadType = {
   AUCTION: 'AUCTION',
   SOFORT_KAUF: 'SOFORT_KAUF'
+};
+
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
 };
 
 exports.Prisma.ModelName = {
