@@ -171,8 +171,23 @@ const minBidAmount = computed(() => {
     <!-- Lead Title -->
     <h3 class="lead-title">{{ lead.title }}</h3>
 
-    <!-- Price and Bidder Info -->
-    <div class="price-bidder-section">
+    <!-- Price and Bidder Info - Sofort Kauf -->
+    <div v-if="lead.leadType === 'SOFORT_KAUF'" class="price-bidder-section sofort-kauf-price">
+      <div class="price-row">
+        <div class="price-amount-large">
+          <span style="font-weight:bolder!important;">{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
+        </div>
+      </div>
+      <div class="bidder-info-line">
+        <span class="bidder-label">
+          <Icon icon="mdi:flash" width="16" height="16" />
+          Sofort Kauf Preis
+        </span>
+      </div>
+    </div>
+
+    <!-- Price and Bidder Info - Auction -->
+    <div v-else class="price-bidder-section">
       <div class="price-row">
         <div class="price-amount-large" >
           <span style="font-weight:bolder!important;"  v-if="lead.bids && lead.bids.length">
@@ -193,8 +208,8 @@ const minBidAmount = computed(() => {
       </div>
     </div>
 
-    <!-- Quick Bid Section -->
-    <div v-if="showQuickBid && !lead.isExpired && lead.isActive" class="quick-bid-section" @click.stop>
+    <!-- Quick Bid Section (Sadece Auction için) -->
+    <div v-if="lead.leadType !== 'SOFORT_KAUF' && showQuickBid && !lead.isExpired && lead.isActive" class="quick-bid-section" @click.stop>
       <div class="quick-bid-input-group">
         <div class="currency-symbol">{{ getCurrencySymbol(settings.defaultCurrency) }}</div>
         <input
@@ -245,23 +260,37 @@ const minBidAmount = computed(() => {
 
     <!-- Action Buttons -->
     <div class="action-buttons">
+      <!-- Sofort Kauf için tek buton -->
       <button
-        class="bid-action-btn"
-        @click.stop="handleClick"
-        :disabled="lead.isExpired"
-      >
-
-        Detaylı Görünüm
-      </button>
-      <button
-        v-if="lead.instantBuyPrice && !lead.isExpired && lead.isActive && !lead.isScheduled"
-        class="instant-buy-action-btn"
+        v-if="lead.leadType === 'SOFORT_KAUF'"
+        class="sofort-kauf-buy-btn"
         @click="handleInstantBuy"
+        :disabled="lead.isExpired || !lead.isActive || lead.isScheduled"
       >
-        <Icon icon="mdi:lightning-bolt" width="20" height="20" />
-        Sofort Kaufen
-        <span style="font-weight: bolder">{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</span>
+        <Icon icon="mdi:flash" width="20" height="20" />
+        Satın Al
+        <span style="font-weight: bolder">{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
       </button>
+
+      <!-- Auction için mevcut butonlar -->
+      <template v-else>
+        <button
+          class="bid-action-btn"
+          @click.stop="handleClick"
+          :disabled="lead.isExpired"
+        >
+          Detaylı Görünüm
+        </button>
+        <button
+          v-if="lead.instantBuyPrice && !lead.isExpired && lead.isActive && !lead.isScheduled"
+          class="instant-buy-action-btn"
+          @click="handleInstantBuy"
+        >
+          <Icon icon="mdi:lightning-bolt" width="20" height="20" />
+          Sofort Kaufen
+          <span style="font-weight: bolder">{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</span>
+        </button>
+      </template>
     </div>
   </div>
 </template>
@@ -416,8 +445,14 @@ const minBidAmount = computed(() => {
   background: #f8fafc;
   border-radius: 8px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 6px;
+  justify-content: space-between;
+  
+}
+.price-bidder-section span{
+  color: #10b981!important;
+
 }
 
 .price-row {
@@ -605,6 +640,49 @@ const minBidAmount = computed(() => {
 
 .instant-buy-action-btn:hover {
   background: #f59e0b;
+}
+
+/* Sofort Kauf Price Section */
+.sofort-kauf-price .bidder-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.sofort-kauf-price .price-amount-large {
+  color: #f59e0b;
+}
+
+/* Sofort Kauf Buy Button */
+.sofort-kauf-buy-btn {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--text);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.sofort-kauf-buy-btn:hover:not(:disabled) {
+  background: #d97706;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+}
+
+.sofort-kauf-buy-btn:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* Scheduled Badge */

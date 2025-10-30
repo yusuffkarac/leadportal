@@ -653,14 +653,21 @@ export default function leadsRouter(prisma, io) {
         return res.status(400).json({ error: 'Bu lead henüz başlamamıştır. Açık artırma başladığında satın alabilirsiniz.' })
       }
 
-      if (!lead.instantBuyPrice) {
-        return res.status(400).json({ error: 'Für diesen Lead wurde kein Sofortkaufpreis festgelegt' })
+      // Fiyatı belirle: SOFORT_KAUF için startPrice, AUCTION için instantBuyPrice
+      let purchasePrice
+      if (lead.leadType === 'SOFORT_KAUF') {
+        purchasePrice = lead.startPrice
+      } else {
+        if (!lead.instantBuyPrice) {
+          return res.status(400).json({ error: 'Für diesen Lead wurde kein Sofortkaufpreis festgelegt' })
+        }
+        purchasePrice = lead.instantBuyPrice
       }
 
       // Ödeme yöntemi mantığı
       const hasIban = !!buyer.ibanNumber
       const userPreferredBalance = buyer.balanceEnabled && buyer.paymentMethod === 'balance'
-      const hasSufficientBalance = buyer.balance >= lead.instantBuyPrice
+      const hasSufficientBalance = buyer.balance >= purchasePrice
 
       // Karar mantığı:
       // 1. Kullanıcı bakiye tercih etti VE bakiye yeterli → Bakiyeden çek
@@ -683,7 +690,7 @@ export default function leadsRouter(prisma, io) {
           return res.status(400).json({
             error: 'Lütfen IBAN bilgilerinizi ekleyin veya bakiye yükleyin.',
             errorType: 'INSUFFICIENT_BALANCE',
-            required: lead.instantBuyPrice,
+            required: purchasePrice,
             available: buyer.balance
           })
         }
@@ -709,7 +716,7 @@ export default function leadsRouter(prisma, io) {
         })
         
         const balanceBefore = currentUser.balance
-        const balanceAfter = balanceBefore - lead.instantBuyPrice
+        const balanceAfter = balanceBefore - purchasePrice
 
         // Transaction ile bakiyeyi düş ve satışı kaydet
         const [sale, updatedUser, balanceTransaction] = await prisma.$transaction([
@@ -718,7 +725,7 @@ export default function leadsRouter(prisma, io) {
             data: {
               leadId: leadId,
               buyerId: userId,
-              amount: lead.instantBuyPrice,
+              amount: purchasePrice,
               paymentMethod: 'balance',
               balanceBefore: balanceBefore,
               balanceAfter: balanceAfter
@@ -729,7 +736,7 @@ export default function leadsRouter(prisma, io) {
             where: { id: userId },
             data: {
               balance: {
-                decrement: lead.instantBuyPrice
+                decrement: purchasePrice
               }
             }
           }),
@@ -737,7 +744,7 @@ export default function leadsRouter(prisma, io) {
           prisma.balanceTransaction.create({
             data: {
               userId: userId,
-              amount: -lead.instantBuyPrice,
+              amount: -purchasePrice,
               type: 'PURCHASE_DEDUCT',
               description: `Lead satın alma: ${lead.title}`,
               relatedId: leadId
@@ -762,7 +769,7 @@ export default function leadsRouter(prisma, io) {
             details: {
               leadId: leadId,
               leadTitle: lead.title,
-              amount: lead.instantBuyPrice,
+              amount: purchasePrice,
               paymentMethod: 'balance',
               newBalance: updatedUser.balance
             },
@@ -779,7 +786,7 @@ export default function leadsRouter(prisma, io) {
         io.emit('lead:sold', {
           leadId: leadId,
           buyerId: userId,
-          amount: lead.instantBuyPrice,
+          amount: purchasePrice,
           title: lead.title,
           instantBuy: true,
           paymentMethod: 'balance'
@@ -791,8 +798,8 @@ export default function leadsRouter(prisma, io) {
             userId,
             'LEAD_PURCHASED',
             'Lead Satın Alındı',
-            `"${lead.title}" lead'ini ${lead.instantBuyPrice} TL'ye satın aldınız.`,
-            { leadId, saleId: sale.id, amount: lead.instantBuyPrice }
+            `"${lead.title}" lead'ini ${purchasePrice} TL'ye satın aldınız.`,
+            { leadId, saleId: sale.id, amount: purchasePrice }
           )
         } catch (e) {
           console.error('Notification error (LEAD_PURCHASED):', e.message)
@@ -804,8 +811,8 @@ export default function leadsRouter(prisma, io) {
             lead.ownerId,
             'LEAD_SOLD',
             'Lead Satıldı',
-            `"${lead.title}" lead'iniz ${lead.instantBuyPrice} TL'ye satıldı.`,
-            { leadId, saleId: sale.id, amount: lead.instantBuyPrice }
+            `"${lead.title}" lead'iniz ${purchasePrice} TL'ye satıldı.`,
+            { leadId, saleId: sale.id, amount: purchasePrice }
           )
         } catch (e) {
           console.error('Notification error (LEAD_SOLD):', e.message)
@@ -817,8 +824,8 @@ export default function leadsRouter(prisma, io) {
             lead.ownerId,
             'PAYMENT_RECEIVED',
             'Ödeme Alındı',
-            `"${lead.title}" satışından ${lead.instantBuyPrice} TL ödeme aldınız.`,
-            { leadId, saleId: sale.id, amount: lead.instantBuyPrice }
+            `"${lead.title}" satışından ${purchasePrice} TL ödeme aldınız.`,
+            { leadId, saleId: sale.id, amount: purchasePrice }
           )
         } catch (e) {
           console.error('Notification error (PAYMENT_RECEIVED):', e.message)
@@ -839,7 +846,7 @@ export default function leadsRouter(prisma, io) {
             data: {
               leadId: leadId,
               buyerId: userId,
-              amount: lead.instantBuyPrice,
+              amount: purchasePrice,
               paymentMethod: 'iban',
               balanceBefore: null,
               balanceAfter: null
@@ -864,7 +871,7 @@ export default function leadsRouter(prisma, io) {
             details: {
               leadId: leadId,
               leadTitle: lead.title,
-              amount: lead.instantBuyPrice,
+              amount: purchasePrice,
               paymentMethod: 'iban'
             },
             entityType: 'lead',
@@ -880,7 +887,7 @@ export default function leadsRouter(prisma, io) {
         io.emit('lead:sold', {
           leadId: leadId,
           buyerId: userId,
-          amount: lead.instantBuyPrice,
+          amount: purchasePrice,
           title: lead.title,
           instantBuy: true,
           paymentMethod: 'iban'

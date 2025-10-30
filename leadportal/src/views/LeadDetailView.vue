@@ -163,11 +163,15 @@ function shareLead() {
 }
 
 function openInstantBuyModal() {
-  if (!lead.value.instantBuyPrice) {
+  // For SOFORT_KAUF, use startPrice; for AUCTION, use instantBuyPrice
+  if (lead.value.leadType === 'SOFORT_KAUF') {
+    showInstantBuyModal.value = true
+  } else if (!lead.value.instantBuyPrice) {
     errorMessage.value = 'Bu lead için anında satın alma fiyatı belirlenmemiş'
     return
+  } else {
+    showInstantBuyModal.value = true
   }
-  showInstantBuyModal.value = true
 }
 
 function closeInstantBuyModal() {
@@ -320,22 +324,42 @@ onUnmounted(() => {
           </div>
           
           <div class="lead-stats-section">
-            <div class="current-bid-card">
-              <div class="bid-amount">{{ formatPrice(lead.bids?.[0]?.amount || lead.startPrice, settings.defaultCurrency) }}</div>
-              <div class="bid-label">Güncel Teklif</div>
-            </div>
-            
-           
-            <div class="stats-row">
-              <div class="stat-card">
-                <div class="stat-value">{{ lead.bids?.length || 0 }}</div>
-                <div class="stat-label">Teklif</div>
+            <!-- SOFORT_KAUF: Show fixed price and buy button -->
+            <template v-if="lead.leadType === 'SOFORT_KAUF'">
+              <div class="current-bid-card">
+                <div class="bid-amount">{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</div>
+                <div class="bid-label">Sabit Fiyat</div>
               </div>
-              <div class="stat-card">
-                <div class="stat-value">{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement }}</div>
-                <div class="stat-label">Min Artış</div>
+
+              <button
+                v-if="lead.isActive && !lead.isSold"
+                class="sofort-kauf-buy-btn-large"
+                @click="openInstantBuyModal"
+              >
+                <Icon icon="mdi:flash" width="24" height="24" />
+                <span>Satın Al</span>
+                <span class="price">{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
+              </button>
+            </template>
+
+            <!-- AUCTION: Show current bid and stats -->
+            <template v-else>
+              <div class="current-bid-card">
+                <div class="bid-amount">{{ formatPrice(lead.bids?.[0]?.amount || lead.startPrice, settings.defaultCurrency) }}</div>
+                <div class="bid-label">Güncel Teklif</div>
               </div>
-            </div>
+
+              <div class="stats-row">
+                <div class="stat-card">
+                  <div class="stat-value">{{ lead.bids?.length || 0 }}</div>
+                  <div class="stat-label">Teklif</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value">{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement }}</div>
+                  <div class="stat-label">Min Artış</div>
+                </div>
+              </div>
+            </template>
             <!-- Özel Detaylar: sadece satın alan/sahip/admin görür; backend null döndürürse gizli kalır -->
             <div v-if="lead.privateDetails" class="private-details">
               <div class="private-title">Satın Alanlara Özel Detaylar</div>
@@ -355,8 +379,8 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- Bid Form Section -->
-      <div class="bid-form-section">
+      <!-- Bid Form Section - Only for AUCTION type -->
+      <div v-if="lead.leadType !== 'SOFORT_KAUF'" class="bid-form-section">
         <div class="bid-form-panel">
           <div class="form-header">
             <h2>Teklif Ver</h2>
@@ -484,8 +508,8 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- Bids Section -->
-      <div class="bids-section">
+      <!-- Bids Section - Only for AUCTION type -->
+      <div v-if="lead.leadType !== 'SOFORT_KAUF'" class="bids-section">
         <div class="bids-panel">
           <div class="panel-header">
             <h2>Teklif Geçmişi</h2>
@@ -583,6 +607,20 @@ onUnmounted(() => {
   grid-template-columns: 1fr 400px;
   gap: 32px;
   align-items: start;
+}
+
+/* Single column layout for SOFORT_KAUF */
+.page-content:has(.lead-hero) {
+  grid-template-columns: 1fr 400px;
+}
+
+.modern-lead-detail:has(.lead-hero):not(:has(.bid-form-section)) .page-content {
+  grid-template-columns: 1fr;
+  max-width: 900px;
+}
+
+.modern-lead-detail:has(.lead-hero):not(:has(.bid-form-section)) .lead-hero {
+  max-width: 100%;
 }
 
 @media (max-width: 1024px) {
@@ -1200,6 +1238,46 @@ onUnmounted(() => {
 }
 .d-none{
   display: none;
+}
+
+/* SOFORT_KAUF Buy Button */
+.sofort-kauf-buy-btn-large {
+  width: 100%;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.sofort-kauf-buy-btn-large:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+
+.sofort-kauf-buy-btn-large .price {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .sofort-kauf-buy-btn-large {
+    padding: 14px 20px;
+    font-size: 1rem;
+  }
+
+  .sofort-kauf-buy-btn-large .price {
+    font-size: 1.1rem;
+  }
 }
 </style>
 

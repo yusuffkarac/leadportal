@@ -265,11 +265,16 @@ function showDescription(lead, event) {
 
 function openInstantBuyModal(lead, event) {
   event?.stopPropagation()
-  if (!lead.instantBuyPrice) {
-    return
+  // For SOFORT_KAUF check startPrice, for AUCTION check instantBuyPrice
+  if (lead.leadType === 'SOFORT_KAUF') {
+    // SOFORT_KAUF always has startPrice, no need to check
+    selectedLead.value = lead
+    showInstantBuyModal.value = true
+  } else if (lead.instantBuyPrice) {
+    // AUCTION must have instantBuyPrice set
+    selectedLead.value = lead
+    showInstantBuyModal.value = true
   }
-  selectedLead.value = lead
-  showInstantBuyModal.value = true
 }
 
 function closeInstantBuyModal() {

@@ -361,11 +361,11 @@ function closeLeadsDropdown() {
 
         <!-- Leads Dropdown -->
         <div class="leads-dropdown" @mouseenter="openLeadsDropdown" @mouseleave="closeLeadsDropdown">
-          <button class="leads-trigger">
+          <RouterLink to="/leads" class="leads-trigger" style="background:none;border:none;display:flex;align-items:center;gap:4px;cursor:pointer;padding:0;">
             <Icon icon="mdi:briefcase-outline" width="16" height="16" />
             Leadler
             <Icon icon="mdi:chevron-down" width="12" height="12" />
-          </button>
+          </RouterLink>
           <div v-if="isLeadsDropdownOpen" class="leads-dropdown-menu">
             <RouterLink to="/leads" class="leads-menu-item">
               <Icon icon="mdi:gavel" width="16" height="16" />
@@ -844,7 +844,7 @@ nav a:first-of-type {
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   color: #1f2937;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
 }
 
 .leads-dropdown-menu {

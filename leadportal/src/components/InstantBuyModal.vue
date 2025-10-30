@@ -26,6 +26,15 @@ const emit = defineEmits(['close', 'success'])
 
 const isProcessing = ref(false)
 
+// Compute the correct price based on lead type
+const purchasePrice = computed(() => {
+  if (!props.lead) return 0
+  // For SOFORT_KAUF use startPrice, for AUCTION use instantBuyPrice
+  return props.lead.leadType === 'SOFORT_KAUF'
+    ? props.lead.startPrice
+    : props.lead.instantBuyPrice
+})
+
 function authHeaders() {
   const token = localStorage.getItem('token')
   return token ? { Authorization: `Bearer ${token}` } : {}
@@ -110,7 +119,7 @@ async function confirmPurchase() {
             <div class="price-display">
               <div class="price-info">
                 <span class="price-label">Sofort-Kaufpreis</span>
-                <span class="price-amount">{{ formatPrice(lead?.instantBuyPrice, currency) }}</span>
+                <span class="price-amount">{{ formatPrice(purchasePrice, currency) }}</span>
               </div>
               <div class="price-badge">
                 <Icon icon="mdi:lightning-bolt" width="20" height="20" />
