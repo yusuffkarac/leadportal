@@ -94,7 +94,10 @@
         <div class="payment-header">
           <div class="payment-title">
             <Icon icon="mdi:file-document-outline" width="20" />
-            <h3>{{ payment.lead.title }}</h3>
+            <div class="lead-info">
+              <h3>{{ payment.lead.title }}</h3>
+              <span class="lead-id">Lead ID: {{ payment.leadId }}</span>
+            </div>
           </div>
           <div class="payment-amount">
             <span class="amount">{{ formatCurrency(payment.amount) }}</span>
@@ -106,102 +109,50 @@
 
         <div class="payment-details">
           <div class="detail-row">
-            <div class="detail-item">
-              <Icon icon="mdi:account" width="18" />
-              <div>
-                <div class="detail-label">Alıcı</div>
-                <div class="detail-value">
-                  {{ payment.buyer.firstName || payment.buyer.email }}
-                  <span v-if="payment.buyer.lastName">{{ payment.buyer.lastName }}</span>
-                </div>
-                <div class="detail-sub">{{ payment.buyer.email }}</div>
-              </div>
+            <div class="detail-item compact">
+              <Icon icon="mdi:account" width="14" />
+              <div class="detail-value">{{ payment.buyer.email }}</div>
             </div>
-
-            <div class="detail-item">
-              <Icon icon="mdi:calendar" width="18" />
-              <div>
-                <div class="detail-label">Tarih</div>
-                <div class="detail-value">{{ formatDate(payment.createdAt) }}</div>
-              </div>
-            </div>
-
-            <div class="detail-item">
-              <Icon icon="mdi:credit-card" width="18" />
-              <div>
-                <div class="detail-label">Yöntem</div>
-                <div class="detail-value">IBAN</div>
-              </div>
+            <div class="detail-item compact">
+              <Icon icon="mdi:calendar" width="14" />
+              <div class="detail-value">{{ formatDateShort(payment.createdAt) }}</div>
             </div>
           </div>
 
           <!-- IBAN Details -->
           <div class="iban-details">
-            <div class="iban-header">
-              <Icon icon="mdi:bank" width="18" />
-              <span>IBAN Bilgileri</span>
+            <div class="iban-row">
+              <span class="iban-label">Hesap:</span>
+              <span class="iban-value">{{ payment.buyer.ibanAccountHolder || '-' }}</span>
             </div>
-            <div class="iban-info">
-              <div class="iban-row">
-                <span class="iban-label">Hesap Sahibi:</span>
-                <span class="iban-value">{{ payment.buyer.ibanAccountHolder || 'Belirtilmemiş' }}</span>
-              </div>
-              <div class="iban-row">
-                <span class="iban-label">IBAN:</span>
-                <span class="iban-value monospace">{{ payment.buyer.ibanNumber || 'Belirtilmemiş' }}</span>
-              </div>
+            <div class="iban-row">
+              <span class="iban-label">IBAN:</span>
+              <span class="iban-value monospace">{{ payment.buyer.ibanNumber || '-' }}</span>
             </div>
           </div>
 
           <!-- Admin Notes - Only for pending -->
           <div v-if="activeTab === 'pending'" class="admin-notes-section">
-            <label>Admin Notu</label>
             <textarea
               v-model="payment.adminNotes"
-              placeholder="Not ekleyin..."
+              placeholder="Admin notu..."
               rows="2"
               class="notes-input"
             ></textarea>
           </div>
 
-          <!-- Show admin notes if completed -->
-          <div v-if="activeTab === 'completed' && payment.adminNotes" class="completed-notes">
-            <div class="notes-header">
-              <Icon icon="mdi:note-text-outline" width="18" />
-              <span>Admin Notu</span>
-            </div>
+          <!-- Show admin notes if completed or rejected -->
+          <div v-if="(activeTab === 'completed' || activeTab === 'rejected') && payment.adminNotes" 
+               :class="['compact-notes', activeTab === 'rejected' ? 'rejected' : 'completed']">
             <p>{{ payment.adminNotes }}</p>
           </div>
 
-          <!-- Show rejection reason if rejected -->
-          <div v-if="activeTab === 'rejected' && payment.adminNotes" class="rejected-notes">
-            <div class="notes-header rejected">
-              <Icon icon="mdi:note-alert-outline" width="18" />
-              <span>Red Nedeni</span>
-            </div>
-            <p>{{ payment.adminNotes }}</p>
-          </div>
-
-          <!-- Show confirmation details if completed -->
-          <div v-if="activeTab === 'completed'" class="confirmation-details">
-            <div class="confirmation-item">
-              <Icon icon="mdi:calendar-check" width="18" />
-              <div>
-                <div class="detail-label">Onay Tarihi</div>
-                <div class="detail-value">{{ formatDate(payment.confirmedAt) }}</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Show rejection details if rejected -->
-          <div v-if="activeTab === 'rejected'" class="rejection-details">
-            <div class="confirmation-item">
-              <Icon icon="mdi:calendar-remove" width="18" />
-              <div>
-                <div class="detail-label">Red Tarihi</div>
-                <div class="detail-value">{{ formatDate(payment.confirmedAt) }}</div>
-              </div>
-            </div>
+          <!-- Lead Navigation Button -->
+          <div class="lead-navigation">
+            <button class="btn-view-lead" @click="goToLead(payment.leadId)">
+              <Icon icon="mdi:arrow-right-circle" width="14" />
+              Leade Git
+            </button>
           </div>
         </div>
 
@@ -299,8 +250,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import axios from '../utils/axios'
+
+const router = useRouter()
 
 const activeTab = ref('pending') // 'pending', 'completed', or 'rejected'
 const pendingPayments = ref([])
@@ -343,6 +297,16 @@ const formatDate = (dateString) => {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(new Date(dateString))
+}
+
+const formatDateShort = (dateString) => {
+  return new Intl.DateTimeFormat('tr-TR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
   }).format(new Date(dateString))
@@ -478,17 +442,33 @@ const rejectPayment = async () => {
   }
 }
 
-const switchTab = (tab) => {
-  activeTab.value = tab
-  if (tab === 'completed' && completedPayments.value.length === 0) {
-    fetchCompletedPayments()
-  } else if (tab === 'rejected' && rejectedPayments.value.length === 0) {
-    fetchRejectedPayments()
+const fetchAllPayments = async () => {
+  try {
+    const response = await axios.get('/lead-sales/admin/all')
+    const allIbanPayments = response.data.filter(payment => payment.paymentMethod === 'iban')
+    
+    // Tüm IBAN ödemelerini durumlarına göre ayır
+    completedPayments.value = allIbanPayments.filter(payment => payment.paymentStatus === 'COMPLETED')
+    rejectedPayments.value = allIbanPayments.filter(payment => payment.paymentStatus === 'FAILED')
+  } catch (error) {
+    console.error('Error fetching all payments:', error)
   }
 }
 
-onMounted(() => {
-  fetchPendingPayments()
+const switchTab = (tab) => {
+  activeTab.value = tab
+  // Artık tüm ödemeler sayfa açıldığında yüklendiği için ekstra fetch gerekmiyor
+}
+
+const goToLead = (leadId) => {
+  router.push({ name: 'lead-detail', params: { id: leadId } })
+}
+
+onMounted(async () => {
+  await Promise.all([
+    fetchPendingPayments(),
+    fetchAllPayments()
+  ])
 })
 </script>
 
@@ -632,9 +612,21 @@ onMounted(() => {
 
 /* Payments List */
 .payments-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
+}
+
+@media (max-width: 1200px) {
+  .payments-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .payments-list {
+    grid-template-columns: 1fr;
+  }
 }
 
 .payment-card {
@@ -643,6 +635,8 @@ onMounted(() => {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   border-left: 3px solid #f59e0b;
+  display: flex;
+  flex-direction: column;
 }
 
 .payment-card.completed {
@@ -662,46 +656,71 @@ onMounted(() => {
 }
 
 .payment-header {
-  padding: 1rem;
+  padding: 0.5rem 0.75rem;
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .payment-title {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.lead-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+  flex: 1;
 }
 
 .payment-title h3 {
-  font-size: 1rem;
+  font-size: 0.8125rem;
   color: #1e293b;
   margin: 0;
   font-weight: 600;
+  line-height: 1.2;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.lead-id {
+  font-size: 0.625rem;
+  color: #64748b;
+  font-weight: 400;
+  word-break: break-all;
+  margin-top: 0.125rem;
 }
 
 .payment-amount {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0.375rem;
+  flex-shrink: 0;
 }
 
 .amount {
-  font-size: 1.25rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   color: #1e293b;
+  line-height: 1.2;
 }
 
 .badge {
-  padding: 0.375rem 0.75rem;
+  padding: 0.25rem 0.5rem;
   border-radius: 9999px;
-  font-size: 0.75rem;
+  font-size: 0.625rem;
   font-weight: 600;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .pending-badge {
@@ -721,114 +740,102 @@ onMounted(() => {
 
 /* Payment Details */
 .payment-details {
-  padding: 1rem;
+  padding: 0.5rem 0.75rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .detail-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .detail-item {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.375rem;
+  align-items: center;
+}
+
+.detail-item.compact {
+  flex: 1;
+  min-width: 0;
 }
 
 .detail-item svg {
   color: #64748b;
   flex-shrink: 0;
-  margin-top: 0.25rem;
-}
-
-.detail-label {
-  font-size: 0.75rem;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.25rem;
+  width: 14px;
+  height: 14px;
 }
 
 .detail-value {
-  font-size: 1rem;
+  font-size: 0.75rem;
   color: #1e293b;
-  font-weight: 600;
-}
-
-.detail-sub {
-  font-size: 0.875rem;
-  color: #64748b;
-  margin-top: 0.25rem;
+  font-weight: 500;
+  line-height: 1.3;
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* IBAN Details */
 .iban-details {
   background: #f8fafc;
-  border-radius: 6px;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-.iban-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 0.75rem;
-}
-
-.iban-info {
+  border-radius: 4px;
+  padding: 0.375rem;
+  margin-bottom: 0.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
 .iban-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
+  font-size: 0.6875rem;
 }
 
 .iban-label {
-  font-size: 0.875rem;
   color: #64748b;
+  flex-shrink: 0;
+  font-weight: 500;
 }
 
 .iban-value {
-  font-size: 0.875rem;
   color: #1e293b;
   font-weight: 500;
+  text-align: right;
+  word-break: break-all;
+  flex: 1;
+  min-width: 0;
 }
 
 .iban-value.monospace {
   font-family: 'Courier New', monospace;
   letter-spacing: 0.05em;
+  font-size: 0.625rem;
 }
 
 /* Admin Notes */
 .admin-notes-section {
-  margin-top: 1rem;
-}
-
-.admin-notes-section label {
-  display: block;
-  font-size: 0.875rem;
-  color: #1e293b;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .notes-input {
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.375rem;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 0.875rem;
+  border-radius: 4px;
+  font-size: 0.6875rem;
   resize: vertical;
   font-family: inherit;
+  line-height: 1.3;
 }
 
 .notes-input:focus {
@@ -837,101 +844,100 @@ onMounted(() => {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Completed Notes */
-.completed-notes {
-  background: #f0fdf4;
-  border-radius: 6px;
-  padding: 0.75rem;
-  margin-top: 1rem;
+/* Compact Notes */
+.compact-notes {
+  border-radius: 4px;
+  padding: 0.375rem;
+  margin-top: 0.5rem;
+  font-size: 0.6875rem;
+  line-height: 1.3;
 }
 
-.notes-header {
+.compact-notes.completed {
+  background: #f0fdf4;
+}
+
+.compact-notes.completed p {
+  color: #047857;
+  margin: 0;
+}
+
+.compact-notes.rejected {
+  background: #fef2f2;
+}
+
+.compact-notes.rejected p {
+  color: #b91c1c;
+  margin: 0;
+}
+
+
+/* Lead Navigation */
+.lead-navigation {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-view-lead {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
+  padding: 0.375rem 0.625rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.6875rem;
   font-weight: 600;
-  color: #065f46;
-  margin-bottom: 0.5rem;
-  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.completed-notes p {
-  color: #047857;
-  font-size: 0.875rem;
-  margin: 0;
+.btn-view-lead:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
 }
 
-/* Rejected Notes */
-.rejected-notes {
-  background: #fef2f2;
-  border-radius: 6px;
-  padding: 0.75rem;
-  margin-top: 1rem;
-}
-
-.notes-header.rejected {
-  color: #991b1b;
-}
-
-.rejected-notes p {
-  color: #b91c1c;
-  font-size: 0.875rem;
-  margin: 0;
-}
-
-/* Confirmation Details */
-.confirmation-details {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e2e8f0;
-}
-
-.confirmation-item {
-  display: flex;
-  gap: 0.75rem;
-  align-items: start;
-}
-
-.confirmation-item svg {
-  color: #10b981;
+.btn-view-lead svg {
   flex-shrink: 0;
-  margin-top: 0.25rem;
-}
-
-/* Rejection Details */
-.rejection-details {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e2e8f0;
-}
-
-.rejection-details .confirmation-item svg {
-  color: #ef4444;
+  width: 14px;
+  height: 14px;
 }
 
 /* Payment Actions */
 .payment-actions {
-  padding: 1rem;
+  padding: 0.5rem 0.75rem;
   background: #f8fafc;
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
   border-top: 1px solid #e2e8f0;
+  margin-top: auto;
 }
 
 .btn-confirm,
 .btn-reject {
   flex: 1;
-  padding: 0.625rem 1rem;
+  padding: 0.375rem 0.625rem;
   border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  border-radius: 4px;
+  font-size: 0.6875rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.375rem;
+  gap: 0.25rem;
   transition: all 0.2s;
+}
+
+.btn-confirm svg,
+.btn-reject svg {
+  width: 16px;
+  height: 16px;
 }
 
 .btn-confirm {
@@ -1153,6 +1159,11 @@ onMounted(() => {
 
   .payment-header {
     flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .payment-amount {
+    width: 100%;
     align-items: flex-start;
   }
 
