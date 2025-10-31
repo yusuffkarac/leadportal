@@ -62,6 +62,72 @@
       </button>
     </div>
 
+    <!-- Search and Filters -->
+    <div class="search-filter-section">
+      <div class="search-container">
+        <Icon icon="mdi:magnify" width="18" class="search-icon" />
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Lead ara (isim, email, Lead ID)..."
+          class="search-input"
+        />
+      </div>
+
+      <button class="filter-toggle" @click="showFilters = !showFilters">
+        <Icon icon="mdi:filter-outline" width="18" />
+        Filtreler
+        <Icon
+          :icon="showFilters ? 'mdi:chevron-up' : 'mdi:chevron-down'"
+          width="18"
+        />
+      </button>
+    </div>
+
+    <!-- Filter Options -->
+    <div v-if="showFilters" class="filters-panel">
+      <div class="filter-group">
+        <label>Miktar Aralığı</label>
+        <div class="amount-filter">
+          <input
+            v-model.number="minAmount"
+            type="number"
+            placeholder="Min"
+            class="amount-input"
+          />
+          <span class="dash">-</span>
+          <input
+            v-model.number="maxAmount"
+            type="number"
+            placeholder="Max"
+            class="amount-input"
+          />
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>Tarih Aralığı</label>
+        <div class="date-filter">
+          <input
+            v-model="startDate"
+            type="date"
+            class="date-input"
+          />
+          <span class="dash">-</span>
+          <input
+            v-model="endDate"
+            type="date"
+            class="date-input"
+          />
+        </div>
+      </div>
+
+      <button class="btn-reset-filters" @click="resetFilters">
+        <Icon icon="mdi:refresh" width="16" />
+        Filtreleri Sıfırla
+      </button>
+    </div>
+
     <!-- Loading State -->
     <div v-if="isLoading" class="loading-state">
       <Icon icon="mdi:loading" class="spin" width="48" />
@@ -271,6 +337,14 @@ const modalTitle = ref('')
 const rejectReason = ref('')
 const selectedPayment = ref(null)
 
+// Search and Filter states
+const searchQuery = ref('')
+const showFilters = ref(false)
+const minAmount = ref(null)
+const maxAmount = ref(null)
+const startDate = ref('')
+const endDate = ref('')
+
 const totalPendingRevenue = computed(() => {
   return pendingPayments.value.reduce((sum, payment) => sum + payment.amount, 0)
 })
@@ -280,9 +354,44 @@ const totalCompletedRevenue = computed(() => {
 })
 
 const displayedPayments = computed(() => {
-  if (activeTab.value === 'pending') return pendingPayments.value
-  if (activeTab.value === 'completed') return completedPayments.value
-  return rejectedPayments.value
+  let payments = []
+
+  if (activeTab.value === 'pending') payments = pendingPayments.value
+  else if (activeTab.value === 'completed') payments = completedPayments.value
+  else payments = rejectedPayments.value
+
+  // Apply search filter
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase().trim()
+    payments = payments.filter(payment => {
+      const title = (payment.lead?.title || '').toLowerCase()
+      const email = (payment.buyer?.email || '').toLowerCase()
+      const leadId = (payment.leadId || '').toString()
+
+      return title.includes(query) || email.includes(query) || leadId.includes(query)
+    })
+  }
+
+  // Apply amount filter
+  if (minAmount.value !== null && minAmount.value !== '') {
+    payments = payments.filter(payment => payment.amount >= minAmount.value)
+  }
+  if (maxAmount.value !== null && maxAmount.value !== '') {
+    payments = payments.filter(payment => payment.amount <= maxAmount.value)
+  }
+
+  // Apply date filter
+  if (startDate.value) {
+    const start = new Date(startDate.value)
+    payments = payments.filter(payment => new Date(payment.createdAt) >= start)
+  }
+  if (endDate.value) {
+    const end = new Date(endDate.value)
+    end.setHours(23, 59, 59, 999) // Include the entire end day
+    payments = payments.filter(payment => new Date(payment.createdAt) <= end)
+  }
+
+  return payments
 })
 
 const formatCurrency = (amount) => {
@@ -389,8 +498,16 @@ const confirmPayment = async () => {
     modalMessage.value = 'Ödeme başarıyla onaylandı! Alıcı ve satıcıya bildirim gönderildi.'
     showErrorModal.value = true
 
-    // Remove from list
+    // Remove from pending list
     pendingPayments.value = pendingPayments.value.filter(p => p.id !== payment.id)
+    
+    // Add to completed list with updated status
+    const updatedPayment = {
+      ...payment,
+      paymentStatus: 'COMPLETED',
+      confirmedAt: new Date().toISOString()
+    }
+    completedPayments.value = [updatedPayment, ...completedPayments.value]
   } catch (error) {
     console.error('Error confirming payment:', error)
     modalTitle.value = 'Hata!'
@@ -429,8 +546,17 @@ const rejectPayment = async () => {
     modalMessage.value = 'Ödeme reddedildi ve lead tekrar satışa çıkarıldı.'
     showErrorModal.value = true
 
-    // Remove from list
+    // Remove from pending list
     pendingPayments.value = pendingPayments.value.filter(p => p.id !== payment.id)
+    
+    // Add to rejected list with updated status
+    const updatedPayment = {
+      ...payment,
+      paymentStatus: 'FAILED',
+      adminNotes: rejectReason.value,
+      confirmedAt: new Date().toISOString()
+    }
+    rejectedPayments.value = [updatedPayment, ...rejectedPayments.value]
   } catch (error) {
     console.error('Error rejecting payment:', error)
     modalTitle.value = 'Hata!'
@@ -453,6 +579,14 @@ const fetchAllPayments = async () => {
   } catch (error) {
     console.error('Error fetching all payments:', error)
   }
+}
+
+const resetFilters = () => {
+  searchQuery.value = ''
+  minAmount.value = null
+  maxAmount.value = null
+  startDate.value = ''
+  endDate.value = ''
 }
 
 const switchTab = (tab) => {
@@ -510,28 +644,41 @@ onMounted(async () => {
 
 .stat-card {
   background: white;
-  padding: 0.875rem 1rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  border: 1px solid #f0f1f3;
 }
 
 .stat-card.pending {
-  border-left: 4px solid #f59e0b;
+  background: #fffbf7;
+}
+
+.stat-card.pending svg {
+  color: #f59e0b;
 }
 
 .stat-card.completed {
-  border-left: 4px solid #10b981;
+  background: #f7fef9;
 }
 
-.stat-card svg {
-  color: #64748b;
+.stat-card.completed svg {
+  color: #10b981;
+}
+
+.stat-card.rejected {
+  background: #fdf7f7;
+}
+
+.stat-card.rejected svg {
+  color: #ef4444;
 }
 
 .stat-value {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: #1e293b;
 }
@@ -539,40 +686,215 @@ onMounted(async () => {
 .stat-label {
   font-size: 0.75rem;
   color: #64748b;
+  font-weight: 500;
 }
 
 /* Tabs */
 .tabs {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 1.25rem;
-  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  overflow-x: auto;
 }
 
 .tab {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
+  padding: 0.875rem 1.25rem;
   background: transparent;
   border: none;
-  border-bottom: 3px solid transparent;
+  border-bottom: 2px solid transparent;
   color: #64748b;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
-  margin-bottom: -2px;
+  transition: all 0.25s ease;
+  margin-bottom: -1px;
+  white-space: nowrap;
 }
 
 .tab:hover {
   color: #1e293b;
-  background: #f8fafc;
+  background: transparent;
 }
 
 .tab.active {
   color: #1e293b;
-  border-bottom-color: #f59e0b;
+  border-bottom-color: #3b82f6;
+}
+
+/* Search and Filter Section */
+.search-filter-section {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.search-container {
+  flex: 1;
+  min-width: 250px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: #64748b;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  background: white;
+  transition: all 0.25s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-input::placeholder {
+  color: #cbd5e1;
+}
+
+.filter-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.filter-toggle:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.filter-toggle svg {
+  color: #64748b;
+}
+
+/* Filters Panel */
+.filters-panel {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 1.5rem;
+  align-items: flex-start;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-group label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.5;
+  min-height: 1.3125rem;
+}
+
+.amount-filter,
+.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.amount-input,
+.date-input {
+  flex: 1;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: white;
+  transition: all 0.25s ease;
+}
+
+.amount-input:focus,
+.date-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.amount-input::placeholder {
+  color: #cbd5e1;
+}
+
+.dash {
+  color: #cbd5e1;
+  font-weight: 500;
+}
+
+.btn-reset-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  align-self: flex-start;
+  margin-top: 1.8125rem;
+}
+
+.btn-reset-filters:hover {
+  background: #e2e8f0;
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
+.btn-reset-filters svg {
+  width: 16px;
+  height: 16px;
 }
 
 /* Loading & Empty States */
@@ -582,7 +904,8 @@ onMounted(async () => {
   padding: 4rem 2rem;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f1f3;
 }
 
 .loading-state svg.spin {
@@ -631,38 +954,43 @@ onMounted(async () => {
 
 .payment-card {
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  border-left: 3px solid #f59e0b;
+  border: 1px solid #f0f1f3;
   display: flex;
   flex-direction: column;
+  transition: all 0.25s ease;
 }
 
-.payment-card.completed {
-  border-left-color: #10b981;
+.payment-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-color: #e2e8f0;
 }
+
+
 
 .payment-card.completed .payment-header {
-  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  background: #f7fef9;
+  border-bottom: 1px solid #d1fae5;
 }
 
-.payment-card.rejected {
-  border-left-color: #ef4444;
-}
 
 .payment-card.rejected .payment-header {
-  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  background: #fdf7f7;
+  border-bottom: 1px solid #fee2e2;
 }
 
 .payment-header {
-  padding: 0.5rem 0.75rem;
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  padding: 1rem;
+  background: #fffbf7;
+  border-bottom: 1px solid #fecaca;
+
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .payment-title {
@@ -740,7 +1068,7 @@ onMounted(async () => {
 
 /* Payment Details */
 .payment-details {
-  padding: 0.5rem 0.75rem;
+  padding: 1rem;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -785,12 +1113,13 @@ onMounted(async () => {
 /* IBAN Details */
 .iban-details {
   background: #f8fafc;
-  border-radius: 4px;
-  padding: 0.375rem;
-  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem;
 }
 
 .iban-row {
@@ -824,58 +1153,66 @@ onMounted(async () => {
 
 /* Admin Notes */
 .admin-notes-section {
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
 }
 
 .notes-input {
   width: 100%;
-  padding: 0.375rem;
+  padding: 0.5rem;
   border: 1px solid #e2e8f0;
-  border-radius: 4px;
-  font-size: 0.6875rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
   resize: vertical;
   font-family: inherit;
-  line-height: 1.3;
+  line-height: 1.4;
+  background: #fafbfc;
+  transition: all 0.25s ease;
 }
 
 .notes-input:focus {
   outline: none;
   border-color: #3b82f6;
+  background: white;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 /* Compact Notes */
 .compact-notes {
-  border-radius: 4px;
-  padding: 0.375rem;
-  margin-top: 0.5rem;
-  font-size: 0.6875rem;
-  line-height: 1.3;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  border: 1px solid transparent;
 }
 
 .compact-notes.completed {
-  background: #f0fdf4;
+  background: #f7fef9;
+  border-color: #d1fae5;
 }
 
 .compact-notes.completed p {
   color: #047857;
   margin: 0;
+  font-weight: 500;
 }
 
 .compact-notes.rejected {
-  background: #fef2f2;
+  background: #fdf7f7;
+  border-color: #fee2e2;
 }
 
 .compact-notes.rejected p {
   color: #b91c1c;
   margin: 0;
+  font-weight: 500;
 }
 
 
 /* Lead Navigation */
 .lead-navigation {
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
   border-top: 1px solid #e2e8f0;
   display: flex;
   justify-content: flex-end;
@@ -884,36 +1221,36 @@ onMounted(async () => {
 .btn-view-lead {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.375rem 0.625rem;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
   background: #3b82f6;
   color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.6875rem;
+  border: 1px solid #3b82f6;
+  border-radius: 6px;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s ease;
 }
 
 .btn-view-lead:hover {
   background: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+  border-color: #2563eb;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
 }
 
 .btn-view-lead svg {
   flex-shrink: 0;
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
 }
 
 /* Payment Actions */
 .payment-actions {
-  padding: 0.5rem 0.75rem;
-  background: #f8fafc;
+  padding: 0.75rem 1rem;
+  background: #fafbfc;
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
   border-top: 1px solid #e2e8f0;
   margin-top: auto;
 }
@@ -921,17 +1258,17 @@ onMounted(async () => {
 .btn-confirm,
 .btn-reject {
   flex: 1;
-  padding: 0.375rem 0.625rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.6875rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.25rem;
-  transition: all 0.2s;
+  gap: 0.375rem;
+  transition: all 0.25s ease;
 }
 
 .btn-confirm svg,
@@ -943,28 +1280,30 @@ onMounted(async () => {
 .btn-confirm {
   background: #10b981;
   color: white;
+  border-color: #10b981;
 }
 
 .btn-confirm:hover:not(:disabled) {
   background: #059669;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  border-color: #059669;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
 }
 
 .btn-reject {
   background: #ef4444;
   color: white;
+  border-color: #ef4444;
 }
 
 .btn-reject:hover:not(:disabled) {
   background: #dc2626;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  border-color: #dc2626;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25);
 }
 
 .btn-confirm:disabled,
 .btn-reject:disabled {
-  opacity: 0.5;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
@@ -1103,28 +1442,34 @@ onMounted(async () => {
 .modal-btn.cancel {
   background: #f1f5f9;
   color: #64748b;
+  border: 1px solid #e2e8f0;
 }
 
 .modal-btn.cancel:hover {
   background: #e2e8f0;
+  border-color: #cbd5e1;
 }
 
 .modal-btn.confirm {
   background: #10b981;
   color: white;
+  border: 1px solid #10b981;
 }
 
 .modal-btn.confirm:hover {
   background: #059669;
+  border-color: #059669;
 }
 
 .modal-btn.reject {
   background: #ef4444;
   color: white;
+  border: 1px solid #ef4444;
 }
 
 .modal-btn.reject:hover {
   background: #dc2626;
+  border-color: #dc2626;
 }
 
 .modal-btn:disabled {
@@ -1155,6 +1500,28 @@ onMounted(async () => {
     white-space: nowrap;
     padding: 0.625rem 1rem;
     font-size: 0.8125rem;
+  }
+
+  .search-filter-section {
+    flex-direction: column;
+  }
+
+  .search-container {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .filter-toggle {
+    width: 100%;
+  }
+
+  .filters-panel {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .btn-reset-filters {
+    grid-column: 1 / -1;
   }
 
   .payment-header {
