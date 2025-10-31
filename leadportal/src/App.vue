@@ -4,6 +4,7 @@ import HelloWorld from './components/HelloWorld.vue'
 import UserProfile from './components/UserProfile.vue'
 import GlobalAlert from './components/GlobalAlert.vue'
 import NotificationDropdown from './components/NotificationDropdown.vue'
+import LeadSearchModal from './components/LeadSearchModal.vue'
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { checkPageAccess } from './utils/permissions.js'
 import defaultLogo from '@/assets/images/logo.png'
@@ -318,6 +319,7 @@ const isNavigating = ref(false)
 const isMobileMenuOpen = ref(false)
 const isAdminDropdownOpen = ref(false)
 const isLeadsDropdownOpen = ref(false)
+const showSearchModal = ref(false)
 
 function toggleMobileMenu() {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
@@ -341,6 +343,14 @@ function openLeadsDropdown() {
 
 function closeLeadsDropdown() {
   isLeadsDropdownOpen.value = false
+}
+
+function openSearchModal() {
+  showSearchModal.value = true
+}
+
+function closeSearchModal() {
+  showSearchModal.value = false
 }
 </script>
 
@@ -484,6 +494,9 @@ function closeLeadsDropdown() {
             </div>
           </div>
         </div>
+        <button v-if="isAuthed" class="search-btn" @click="openSearchModal" title="Lead Ara">
+          <Icon icon="mdi:magnify" width="20" height="20" />
+        </button>
         <NotificationDropdown v-if="isAuthed" />
         <UserProfile
           v-if="isAuthed"
@@ -545,8 +558,12 @@ function closeLeadsDropdown() {
           <Icon icon="mdi:view-dashboard-outline" width="20" height="20" />
           <span>Dashboard</span>
         </RouterLink>
-        
-        
+
+        <button v-if="isAuthed" @click="openSearchModal(); closeMobileMenu();" class="mobile-nav-link mobile-search-btn">
+          <Icon icon="mdi:magnify" width="20" height="20" />
+          <span>Lead Ara</span>
+        </button>
+
         <RouterLink v-if="!isAuthed" to="/login" @click="closeMobileMenu" class="mobile-nav-link">
           <Icon icon="mdi:login-variant" width="20" height="20" />
           <span>Giriş</span>
@@ -752,7 +769,10 @@ function closeLeadsDropdown() {
   
   <!-- Global Alert System -->
   <GlobalAlert />
-  
+
+  <!-- Lead Search Modal -->
+  <LeadSearchModal :show="showSearchModal" @close="closeSearchModal" />
+
 </template>
 
 <style scoped>
@@ -1135,5 +1155,49 @@ nav a:first-of-type {
 .mobile-logout-btn:hover {
   background: #fef2f2;
   color: #dc2626;
+}
+
+/* Search Button Styles */
+.search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 0.5rem;
+  border: none;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: 0.5rem;
+}
+
+.search-btn:hover {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+}
+
+.search-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.search-btn:hover svg {
+  transform: scale(1.1);
+}
+
+/* Mobile Search Button */
+.mobile-search-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.mobile-search-btn:hover {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 </style>
