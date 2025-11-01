@@ -476,7 +476,7 @@ onMounted(() => {
 
 <style scoped>
 .user-dashboard {
-  max-width: 1400px;
+  max-width: 80%;
   margin: 0 auto;
   padding: 2rem;
 }

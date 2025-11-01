@@ -325,6 +325,42 @@
               </div>
             </div>
 
+            <!-- Session Timeout Settings -->
+            <div class="settings-section">
+              <div class="section-header-main">
+                <h2>Oturum Zaman Aşımı</h2>
+                <p>Hareketsizlik nedeniyle otomatik logout için zaman ve mesaj ayarları</p>
+              </div>
+              <div class="settings-content">
+                <div class="setting-group">
+                  <label class="setting-label">Zaman Aşımı Süresi (dakika)</label>
+                  <input
+                    v-model.number="settings.sessionTimeoutMinutes"
+                    type="number"
+                    min="1"
+                    max="10080"
+                    placeholder="120"
+                  />
+                  <small class="help">1-10080 dakika arası değer girin (1 dakika - 7 gün)</small>
+                </div>
+                <div class="setting-group">
+                  <label class="setting-label">Logout Mesajı</label>
+                  <textarea
+                    v-model="settings.sessionTimeoutMessage"
+                    placeholder="Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız."
+                    rows="4"
+                  ></textarea>
+                  <small class="help">Kullanıcı logout olduktan sonra login sayfasında gösterilecek mesaj</small>
+                </div>
+                <div>
+                  <button class="btn btn-primary" @click="saveGeneralSettings" :disabled="savingGeneral">
+                    <span v-if="savingGeneral" class="spinner-sm"></span>
+                    <span v-else>Kaydet</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <!-- Lead ID Format -->
             <div class="settings-section">
               <div class="section-header-main">
@@ -727,7 +763,9 @@ const settings = ref({
   smtpPass: '',
   smtpFromName: 'LeadPortal',
   smtpUseTLS: false,
-  smtpUseSSL: true
+  smtpUseSSL: true,
+  sessionTimeoutMinutes: 120,
+  sessionTimeoutMessage: 'Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.'
 })
 
 // Iconify tabanlı picker kontrol durumu
@@ -1221,7 +1259,7 @@ onMounted(() => {
 <style scoped>
 /* Page */
 .admin-settings-page { min-height: 100vh; background: #f8fafc; padding: 2rem; overflow-x: hidden; }
-.page-content { max-width: 1400px; margin: 0 auto; }
+.page-content { max-width: 80%; margin: 0 auto; }
 .page-header { margin-bottom: 32px; text-align: center; }
 .page-header h1 { font-size: 2.5rem; font-weight: 700; color: #1f2937; margin: 0 0 8px; }
 .page-subtitle { font-size: 1rem; color: #6b7280; margin: 0; }

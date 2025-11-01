@@ -315,7 +315,9 @@ router.post('/', requireAdmin, async (req, res) => {
       smtpPass,
       smtpFromName,
       smtpUseTLS,
-      smtpUseSSL
+      smtpUseSSL,
+      sessionTimeoutMinutes,
+      sessionTimeoutMessage
     } = req.body
 
     // Validation
@@ -334,6 +336,11 @@ router.post('/', requireAdmin, async (req, res) => {
     // Sigorta türleri validasyonu
     if (insuranceTypes && !Array.isArray(insuranceTypes)) {
       return res.status(400).json({ message: 'Sigorta türleri bir dizi olmalıdır' })
+    }
+
+    // Session timeout validasyonu
+    if (sessionTimeoutMinutes !== undefined && (sessionTimeoutMinutes < 1 || sessionTimeoutMinutes > 10080)) {
+      return res.status(400).json({ message: 'Session timeout 1-10080 dakika arasında olmalıdır' })
     }
 
     // Settings'i database'e kaydet
@@ -360,7 +367,9 @@ router.post('/', requireAdmin, async (req, res) => {
         smtpPass: smtpPass ?? '',
         smtpFromName: smtpFromName ?? 'LeadPortal',
         smtpUseTLS: smtpUseTLS ?? false,
-        smtpUseSSL: smtpUseSSL ?? true
+        smtpUseSSL: smtpUseSSL ?? true,
+        sessionTimeoutMinutes: sessionTimeoutMinutes ?? 120,
+        sessionTimeoutMessage: sessionTimeoutMessage ?? 'Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.'
       },
       create: {
         id: 'default',
@@ -384,7 +393,9 @@ router.post('/', requireAdmin, async (req, res) => {
         smtpPass: smtpPass ?? '',
         smtpFromName: smtpFromName ?? 'LeadPortal',
         smtpUseTLS: smtpUseTLS ?? false,
-        smtpUseSSL: smtpUseSSL ?? true
+        smtpUseSSL: smtpUseSSL ?? true,
+        sessionTimeoutMinutes: sessionTimeoutMinutes ?? 120,
+        sessionTimeoutMessage: sessionTimeoutMessage ?? 'Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.'
       }
     })
 
@@ -427,10 +438,11 @@ router.get('/branding', async (req, res) => {
         supportLinks: true,
         legalLinks: true,
         socialMedia: true,
-        defaultCurrency: true
+        defaultCurrency: true,
+        sessionTimeoutMessage: true
       }
     })
-    
+
     if (!settings) {
       // Return default branding
       settings = {
@@ -446,7 +458,8 @@ router.get('/branding', async (req, res) => {
         supportLinks: null,
         legalLinks: null,
         socialMedia: null,
-        defaultCurrency: 'EUR'
+        defaultCurrency: 'EUR',
+        sessionTimeoutMessage: 'Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.'
       }
     }
 

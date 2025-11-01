@@ -16,6 +16,8 @@ const passwordError = ref('')
 const requires2FA = ref(false)
 const twoFactorCode = ref('')
 const twoFactorError = ref('')
+const sessionTimeoutMessage = ref('')
+const showSessionTimeoutMessage = ref(false)
 
 // Branding
 const companyName = ref('LeadPortal')
@@ -99,8 +101,37 @@ function goBack() {
   error.value = ''
 }
 
+// Logout mesajını göster
+async function loadLogoutMessage() {
+  try {
+    // URL parametresinden logout nedenini kontrol et
+    const params = new URLSearchParams(window.location.search)
+    const logoutReason = params.get('logout')
+
+    if (logoutReason === 'inactivity') {
+      showSessionTimeoutMessage.value = true
+      // Mesajı branding ayarlarından al (public endpoint)
+      try {
+        const response = await axios.get('/api/settings/branding')
+        if (response.data && response.data.sessionTimeoutMessage) {
+          sessionTimeoutMessage.value = response.data.sessionTimeoutMessage
+        } else {
+          // Fallback default message
+          sessionTimeoutMessage.value = 'Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.'
+        }
+      } catch (e) {
+        // Eğer ayarları alamazsak default mesajı kullan
+        sessionTimeoutMessage.value = 'Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.'
+      }
+    }
+  } catch (error) {
+    console.warn('Logout message load error:', error)
+  }
+}
+
 onMounted(() => {
   loadBranding()
+  loadLogoutMessage()
   window.addEventListener('settings-change', loadBranding)
 })
 
@@ -118,6 +149,11 @@ onUnmounted(() => {
           <h1>{{ companyName }}</h1>
           <p>Hesabınıza güvenle giriş yapın</p>
         </div>
+      </div>
+
+      <div v-if="showSessionTimeoutMessage" class="alert info">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        <span>{{ sessionTimeoutMessage }}</span>
       </div>
 
       <div v-if="error" class="alert">
@@ -247,6 +283,12 @@ onUnmounted(() => {
   color: #b91c1c;
   background: #fee2e2;
   border: 1px solid #fecaca;
+}
+
+.alert.info {
+  color: #0369a1;
+  background: #e0f2fe;
+  border-color: #bae6fd;
 }
 
 .form { margin-top: 16px; display: grid; gap: 14px; }

@@ -859,7 +859,7 @@ onUnmounted(() => {
 }
 
 .page-content {
-  max-width: 85%;
+  max-width: 80%;
   margin: 0 auto;
   padding: 32px 24px;
 }

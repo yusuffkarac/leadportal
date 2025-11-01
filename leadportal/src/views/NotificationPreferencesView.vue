@@ -274,7 +274,7 @@ onMounted(() => {
 
 <style scoped>
 .preferences-container {
-  max-width: 1000px;
+  max-width: 80%;
   margin: 0 auto;
   padding: 24px;
 }

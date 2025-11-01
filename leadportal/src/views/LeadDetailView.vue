@@ -600,7 +600,7 @@ onUnmounted(() => {
 
 /* Page Layout */
 .page-content {
-  max-width: 1400px;
+  max-width: 80%;
   margin: 0 auto;
   padding: 24px;
   display: grid;

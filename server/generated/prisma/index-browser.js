@@ -266,7 +266,9 @@ exports.Prisma.SettingsScalarFieldEnum = {
   servicesLinks: 'servicesLinks',
   socialMedia: 'socialMedia',
   supportLinks: 'supportLinks',
-  tradeRegisterNumber: 'tradeRegisterNumber'
+  tradeRegisterNumber: 'tradeRegisterNumber',
+  sessionTimeoutMinutes: 'sessionTimeoutMinutes',
+  sessionTimeoutMessage: 'sessionTimeoutMessage'
 };
 
 exports.Prisma.UserTypeScalarFieldEnum = {

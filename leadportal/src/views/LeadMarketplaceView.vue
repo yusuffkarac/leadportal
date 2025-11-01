@@ -1134,7 +1134,7 @@ onUnmounted(() => {
   padding: 32px 28px;
   margin: 0 auto 24px auto;
   border: 1px solid rgba(15, 23, 42, 0.06);
-  max-width: 1400px;
+  max-width: 80%;
   width: 100%;
 }
 
@@ -1144,7 +1144,7 @@ onUnmounted(() => {
   padding: 32px 28px;
   margin: 0 auto 24px auto;
   border: 1px solid rgba(15, 23, 42, 0.06);
-  max-width: 1400px;
+  max-width: 80%;
   width: 100%;
 }
 
@@ -1154,7 +1154,7 @@ onUnmounted(() => {
   padding: 32px 28px;
   margin: 0 auto;
   border: 1px solid rgba(15, 23, 42, 0.06);
-  max-width: 1400px;
+  max-width: 80%;
   width: 100%;
 }
 

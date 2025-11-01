@@ -638,7 +638,7 @@ onMounted(() => {
 
 <style scoped>
 .admin-statistics {
-  max-width: 1400px;
+  max-width: 80%;
   margin: 0 auto;
   padding: 2rem;
 }

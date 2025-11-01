@@ -9637,6 +9637,7 @@ export namespace Prisma {
     defaultAuctionDays: number | null
     defaultMinIncrement: number | null
     smtpPort: number | null
+    sessionTimeoutMinutes: number | null
   }
 
   export type SettingsSumAggregateOutputType = {
@@ -9644,6 +9645,7 @@ export namespace Prisma {
     defaultAuctionDays: number | null
     defaultMinIncrement: number | null
     smtpPort: number | null
+    sessionTimeoutMinutes: number | null
   }
 
   export type SettingsMinAggregateOutputType = {
@@ -9700,6 +9702,8 @@ export namespace Prisma {
     footerNote: string | null
     footerPhone: string | null
     tradeRegisterNumber: string | null
+    sessionTimeoutMinutes: number | null
+    sessionTimeoutMessage: string | null
   }
 
   export type SettingsMaxAggregateOutputType = {
@@ -9756,6 +9760,8 @@ export namespace Prisma {
     footerNote: string | null
     footerPhone: string | null
     tradeRegisterNumber: string | null
+    sessionTimeoutMinutes: number | null
+    sessionTimeoutMessage: string | null
   }
 
   export type SettingsCountAggregateOutputType = {
@@ -9819,6 +9825,8 @@ export namespace Prisma {
     socialMedia: number
     supportLinks: number
     tradeRegisterNumber: number
+    sessionTimeoutMinutes: number
+    sessionTimeoutMessage: number
     _all: number
   }
 
@@ -9828,6 +9836,7 @@ export namespace Prisma {
     defaultAuctionDays?: true
     defaultMinIncrement?: true
     smtpPort?: true
+    sessionTimeoutMinutes?: true
   }
 
   export type SettingsSumAggregateInputType = {
@@ -9835,6 +9844,7 @@ export namespace Prisma {
     defaultAuctionDays?: true
     defaultMinIncrement?: true
     smtpPort?: true
+    sessionTimeoutMinutes?: true
   }
 
   export type SettingsMinAggregateInputType = {
@@ -9891,6 +9901,8 @@ export namespace Prisma {
     footerNote?: true
     footerPhone?: true
     tradeRegisterNumber?: true
+    sessionTimeoutMinutes?: true
+    sessionTimeoutMessage?: true
   }
 
   export type SettingsMaxAggregateInputType = {
@@ -9947,6 +9959,8 @@ export namespace Prisma {
     footerNote?: true
     footerPhone?: true
     tradeRegisterNumber?: true
+    sessionTimeoutMinutes?: true
+    sessionTimeoutMessage?: true
   }
 
   export type SettingsCountAggregateInputType = {
@@ -10010,6 +10024,8 @@ export namespace Prisma {
     socialMedia?: true
     supportLinks?: true
     tradeRegisterNumber?: true
+    sessionTimeoutMinutes?: true
+    sessionTimeoutMessage?: true
     _all?: true
   }
 
@@ -10160,6 +10176,8 @@ export namespace Prisma {
     socialMedia: JsonValue | null
     supportLinks: JsonValue | null
     tradeRegisterNumber: string
+    sessionTimeoutMinutes: number
+    sessionTimeoutMessage: string
     _count: SettingsCountAggregateOutputType | null
     _avg: SettingsAvgAggregateOutputType | null
     _sum: SettingsSumAggregateOutputType | null
@@ -10242,6 +10260,8 @@ export namespace Prisma {
     socialMedia?: boolean
     supportLinks?: boolean
     tradeRegisterNumber?: boolean
+    sessionTimeoutMinutes?: boolean
+    sessionTimeoutMessage?: boolean
   }, ExtArgs["result"]["settings"]>
 
   export type SettingsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -10305,6 +10325,8 @@ export namespace Prisma {
     socialMedia?: boolean
     supportLinks?: boolean
     tradeRegisterNumber?: boolean
+    sessionTimeoutMinutes?: boolean
+    sessionTimeoutMessage?: boolean
   }, ExtArgs["result"]["settings"]>
 
   export type SettingsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -10368,6 +10390,8 @@ export namespace Prisma {
     socialMedia?: boolean
     supportLinks?: boolean
     tradeRegisterNumber?: boolean
+    sessionTimeoutMinutes?: boolean
+    sessionTimeoutMessage?: boolean
   }, ExtArgs["result"]["settings"]>
 
   export type SettingsSelectScalar = {
@@ -10431,9 +10455,11 @@ export namespace Prisma {
     socialMedia?: boolean
     supportLinks?: boolean
     tradeRegisterNumber?: boolean
+    sessionTimeoutMinutes?: boolean
+    sessionTimeoutMessage?: boolean
   }
 
-  export type SettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "leadIdFormat" | "customFormat" | "leadPrefix" | "startingNumber" | "numberType" | "defaultCurrency" | "defaultAuctionDays" | "defaultMinIncrement" | "homepageHeroEyebrow" | "homepageHeroTitle" | "homepageHeroHighlight" | "homepageHeroTitleSuffix" | "homepageHeroSubtitle" | "homepageHeroPrimaryCtaText" | "homepageHeroPrimaryCtaLink" | "homepageHeroSecondaryCtaText" | "homepageHeroSecondaryCtaLink" | "homepageFeatureHeading" | "homepageFeatures" | "homepageShowcaseEyebrow" | "homepageShowcaseTitle" | "homepageShowcaseCtaText" | "homepageShowcaseCtaLink" | "homepageStatsEyebrow" | "homepageStatsTitle" | "homepageStats" | "homepageCtaTitle" | "homepageCtaSubtitle" | "homepageCtaPrimaryText" | "homepageCtaPrimaryLink" | "homepageCtaSecondaryText" | "homepageCtaSecondaryLink" | "enableBiddingHours" | "biddingStartHour" | "biddingEndHour" | "maintenanceMode" | "maintenanceMessage" | "smtpHost" | "smtpPort" | "smtpUser" | "smtpPass" | "smtpFromName" | "smtpUseTLS" | "smtpUseSSL" | "createdAt" | "updatedAt" | "companyLogoUrl" | "companyName" | "faviconUrl" | "footerDescription" | "footerEmail" | "footerNote" | "footerPhone" | "insuranceTypes" | "legalLinks" | "servicesLinks" | "socialMedia" | "supportLinks" | "tradeRegisterNumber", ExtArgs["result"]["settings"]>
+  export type SettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "leadIdFormat" | "customFormat" | "leadPrefix" | "startingNumber" | "numberType" | "defaultCurrency" | "defaultAuctionDays" | "defaultMinIncrement" | "homepageHeroEyebrow" | "homepageHeroTitle" | "homepageHeroHighlight" | "homepageHeroTitleSuffix" | "homepageHeroSubtitle" | "homepageHeroPrimaryCtaText" | "homepageHeroPrimaryCtaLink" | "homepageHeroSecondaryCtaText" | "homepageHeroSecondaryCtaLink" | "homepageFeatureHeading" | "homepageFeatures" | "homepageShowcaseEyebrow" | "homepageShowcaseTitle" | "homepageShowcaseCtaText" | "homepageShowcaseCtaLink" | "homepageStatsEyebrow" | "homepageStatsTitle" | "homepageStats" | "homepageCtaTitle" | "homepageCtaSubtitle" | "homepageCtaPrimaryText" | "homepageCtaPrimaryLink" | "homepageCtaSecondaryText" | "homepageCtaSecondaryLink" | "enableBiddingHours" | "biddingStartHour" | "biddingEndHour" | "maintenanceMode" | "maintenanceMessage" | "smtpHost" | "smtpPort" | "smtpUser" | "smtpPass" | "smtpFromName" | "smtpUseTLS" | "smtpUseSSL" | "createdAt" | "updatedAt" | "companyLogoUrl" | "companyName" | "faviconUrl" | "footerDescription" | "footerEmail" | "footerNote" | "footerPhone" | "insuranceTypes" | "legalLinks" | "servicesLinks" | "socialMedia" | "supportLinks" | "tradeRegisterNumber" | "sessionTimeoutMinutes" | "sessionTimeoutMessage", ExtArgs["result"]["settings"]>
 
   export type $SettingsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Settings"
@@ -10499,6 +10525,8 @@ export namespace Prisma {
       socialMedia: Prisma.JsonValue | null
       supportLinks: Prisma.JsonValue | null
       tradeRegisterNumber: string
+      sessionTimeoutMinutes: number
+      sessionTimeoutMessage: string
     }, ExtArgs["result"]["settings"]>
     composites: {}
   }
@@ -10982,6 +11010,8 @@ export namespace Prisma {
     readonly socialMedia: FieldRef<"Settings", 'Json'>
     readonly supportLinks: FieldRef<"Settings", 'Json'>
     readonly tradeRegisterNumber: FieldRef<"Settings", 'String'>
+    readonly sessionTimeoutMinutes: FieldRef<"Settings", 'Int'>
+    readonly sessionTimeoutMessage: FieldRef<"Settings", 'String'>
   }
     
 
@@ -30231,7 +30261,9 @@ export namespace Prisma {
     servicesLinks: 'servicesLinks',
     socialMedia: 'socialMedia',
     supportLinks: 'supportLinks',
-    tradeRegisterNumber: 'tradeRegisterNumber'
+    tradeRegisterNumber: 'tradeRegisterNumber',
+    sessionTimeoutMinutes: 'sessionTimeoutMinutes',
+    sessionTimeoutMessage: 'sessionTimeoutMessage'
   };
 
   export type SettingsScalarFieldEnum = (typeof SettingsScalarFieldEnum)[keyof typeof SettingsScalarFieldEnum]
@@ -31258,6 +31290,8 @@ export namespace Prisma {
     socialMedia?: JsonNullableFilter<"Settings">
     supportLinks?: JsonNullableFilter<"Settings">
     tradeRegisterNumber?: StringFilter<"Settings"> | string
+    sessionTimeoutMinutes?: IntFilter<"Settings"> | number
+    sessionTimeoutMessage?: StringFilter<"Settings"> | string
   }
 
   export type SettingsOrderByWithRelationInput = {
@@ -31321,6 +31355,8 @@ export namespace Prisma {
     socialMedia?: SortOrderInput | SortOrder
     supportLinks?: SortOrderInput | SortOrder
     tradeRegisterNumber?: SortOrder
+    sessionTimeoutMinutes?: SortOrder
+    sessionTimeoutMessage?: SortOrder
   }
 
   export type SettingsWhereUniqueInput = Prisma.AtLeast<{
@@ -31387,6 +31423,8 @@ export namespace Prisma {
     socialMedia?: JsonNullableFilter<"Settings">
     supportLinks?: JsonNullableFilter<"Settings">
     tradeRegisterNumber?: StringFilter<"Settings"> | string
+    sessionTimeoutMinutes?: IntFilter<"Settings"> | number
+    sessionTimeoutMessage?: StringFilter<"Settings"> | string
   }, "id">
 
   export type SettingsOrderByWithAggregationInput = {
@@ -31450,6 +31488,8 @@ export namespace Prisma {
     socialMedia?: SortOrderInput | SortOrder
     supportLinks?: SortOrderInput | SortOrder
     tradeRegisterNumber?: SortOrder
+    sessionTimeoutMinutes?: SortOrder
+    sessionTimeoutMessage?: SortOrder
     _count?: SettingsCountOrderByAggregateInput
     _avg?: SettingsAvgOrderByAggregateInput
     _max?: SettingsMaxOrderByAggregateInput
@@ -31521,6 +31561,8 @@ export namespace Prisma {
     socialMedia?: JsonNullableWithAggregatesFilter<"Settings">
     supportLinks?: JsonNullableWithAggregatesFilter<"Settings">
     tradeRegisterNumber?: StringWithAggregatesFilter<"Settings"> | string
+    sessionTimeoutMinutes?: IntWithAggregatesFilter<"Settings"> | number
+    sessionTimeoutMessage?: StringWithAggregatesFilter<"Settings"> | string
   }
 
   export type UserTypeWhereInput = {
@@ -33431,6 +33473,8 @@ export namespace Prisma {
     socialMedia?: NullableJsonNullValueInput | InputJsonValue
     supportLinks?: NullableJsonNullValueInput | InputJsonValue
     tradeRegisterNumber?: string
+    sessionTimeoutMinutes?: number
+    sessionTimeoutMessage?: string
   }
 
   export type SettingsUncheckedCreateInput = {
@@ -33494,6 +33538,8 @@ export namespace Prisma {
     socialMedia?: NullableJsonNullValueInput | InputJsonValue
     supportLinks?: NullableJsonNullValueInput | InputJsonValue
     tradeRegisterNumber?: string
+    sessionTimeoutMinutes?: number
+    sessionTimeoutMessage?: string
   }
 
   export type SettingsUpdateInput = {
@@ -33557,6 +33603,8 @@ export namespace Prisma {
     socialMedia?: NullableJsonNullValueInput | InputJsonValue
     supportLinks?: NullableJsonNullValueInput | InputJsonValue
     tradeRegisterNumber?: StringFieldUpdateOperationsInput | string
+    sessionTimeoutMinutes?: IntFieldUpdateOperationsInput | number
+    sessionTimeoutMessage?: StringFieldUpdateOperationsInput | string
   }
 
   export type SettingsUncheckedUpdateInput = {
@@ -33620,6 +33668,8 @@ export namespace Prisma {
     socialMedia?: NullableJsonNullValueInput | InputJsonValue
     supportLinks?: NullableJsonNullValueInput | InputJsonValue
     tradeRegisterNumber?: StringFieldUpdateOperationsInput | string
+    sessionTimeoutMinutes?: IntFieldUpdateOperationsInput | number
+    sessionTimeoutMessage?: StringFieldUpdateOperationsInput | string
   }
 
   export type SettingsCreateManyInput = {
@@ -33683,6 +33733,8 @@ export namespace Prisma {
     socialMedia?: NullableJsonNullValueInput | InputJsonValue
     supportLinks?: NullableJsonNullValueInput | InputJsonValue
     tradeRegisterNumber?: string
+    sessionTimeoutMinutes?: number
+    sessionTimeoutMessage?: string
   }
 
   export type SettingsUpdateManyMutationInput = {
@@ -33746,6 +33798,8 @@ export namespace Prisma {
     socialMedia?: NullableJsonNullValueInput | InputJsonValue
     supportLinks?: NullableJsonNullValueInput | InputJsonValue
     tradeRegisterNumber?: StringFieldUpdateOperationsInput | string
+    sessionTimeoutMinutes?: IntFieldUpdateOperationsInput | number
+    sessionTimeoutMessage?: StringFieldUpdateOperationsInput | string
   }
 
   export type SettingsUncheckedUpdateManyInput = {
@@ -33809,6 +33863,8 @@ export namespace Prisma {
     socialMedia?: NullableJsonNullValueInput | InputJsonValue
     supportLinks?: NullableJsonNullValueInput | InputJsonValue
     tradeRegisterNumber?: StringFieldUpdateOperationsInput | string
+    sessionTimeoutMinutes?: IntFieldUpdateOperationsInput | number
+    sessionTimeoutMessage?: StringFieldUpdateOperationsInput | string
   }
 
   export type UserTypeCreateInput = {
@@ -35884,6 +35940,8 @@ export namespace Prisma {
     socialMedia?: SortOrder
     supportLinks?: SortOrder
     tradeRegisterNumber?: SortOrder
+    sessionTimeoutMinutes?: SortOrder
+    sessionTimeoutMessage?: SortOrder
   }
 
   export type SettingsAvgOrderByAggregateInput = {
@@ -35891,6 +35949,7 @@ export namespace Prisma {
     defaultAuctionDays?: SortOrder
     defaultMinIncrement?: SortOrder
     smtpPort?: SortOrder
+    sessionTimeoutMinutes?: SortOrder
   }
 
   export type SettingsMaxOrderByAggregateInput = {
@@ -35947,6 +36006,8 @@ export namespace Prisma {
     footerNote?: SortOrder
     footerPhone?: SortOrder
     tradeRegisterNumber?: SortOrder
+    sessionTimeoutMinutes?: SortOrder
+    sessionTimeoutMessage?: SortOrder
   }
 
   export type SettingsMinOrderByAggregateInput = {
@@ -36003,6 +36064,8 @@ export namespace Prisma {
     footerNote?: SortOrder
     footerPhone?: SortOrder
     tradeRegisterNumber?: SortOrder
+    sessionTimeoutMinutes?: SortOrder
+    sessionTimeoutMessage?: SortOrder
   }
 
   export type SettingsSumOrderByAggregateInput = {
@@ -36010,6 +36073,7 @@ export namespace Prisma {
     defaultAuctionDays?: SortOrder
     defaultMinIncrement?: SortOrder
     smtpPort?: SortOrder
+    sessionTimeoutMinutes?: SortOrder
   }
   export type JsonWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<

@@ -397,7 +397,7 @@ onMounted(() => {
 
 <style scoped>
 .admin-activity-log {
-  max-width: 1600px;
+  max-width: 80%;
   margin: 0 auto;
   padding: 2rem;
 }

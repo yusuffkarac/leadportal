@@ -1297,7 +1297,7 @@ onMounted(() => {
 }
 
 .page-content {
-  max-width: 1400px;
+  max-width: 80%;
   margin: 0 auto;
 }
 
@@ -1520,7 +1520,7 @@ onMounted(() => {
 .modal {
   background: var(--panel);
   border-radius: 0.75rem;
-  max-width: 1400px;
+  max-width: 80%;
   width: 95%;
   max-height: 95vh;
   overflow: hidden;

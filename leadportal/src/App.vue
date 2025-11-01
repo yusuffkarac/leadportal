@@ -10,6 +10,8 @@ import { checkPageAccess } from './utils/permissions.js'
 import defaultLogo from '@/assets/images/logo.png'
 import api from '@/utils/axios.js'
 import { Icon } from '@iconify/vue'
+import { useActivityMonitor } from './composables/useActivityMonitor.js'
+import { useSessionTimeout } from './composables/useSessionTimeout.js'
 
 const router = useRouter()
 
@@ -284,10 +286,23 @@ function onAuthChange() { updateAuth() }
 let navToken = 0
 let hideTimer = null
 
+// Activity monitoring and session timeout
+let activityMonitor = null
+let sessionTimeout = null
+
 onMounted(() => {
   updateAuth()
   loadBranding()
   loadDesignSettings()
+
+  // Composable'ları başlat
+  const storage = window.sessionStorage.getItem('token') ? window.sessionStorage : window.localStorage
+  if (storage.getItem('token')) {
+    // Kullanıcı logged in ise monitoring başlat
+    activityMonitor = useActivityMonitor()
+    sessionTimeout = useSessionTimeout()
+  }
+
   window.addEventListener('auth-change', onAuthChange)
   window.addEventListener('settings-change', loadBranding)
   window.addEventListener('design-settings-change', loadDesignSettings)
@@ -309,6 +324,14 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  // Composable'ları durdur
+  if (activityMonitor && activityMonitor.stopMonitoring) {
+    activityMonitor.stopMonitoring()
+  }
+  if (sessionTimeout && sessionTimeout.stopSessionTimeoutCheck) {
+    sessionTimeout.stopSessionTimeoutCheck()
+  }
+
   window.removeEventListener('auth-change', onAuthChange)
   window.removeEventListener('settings-change', loadBranding)
   window.removeEventListener('design-settings-change', loadDesignSettings)

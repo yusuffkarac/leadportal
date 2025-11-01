@@ -415,7 +415,7 @@ onMounted(async () => {
   gap: 8px;
 }
 .page-content {
-  max-width: 1400px;
+  max-width: 80%;
   margin: 0 auto;
   padding: 2rem;
   overflow-x: hidden;

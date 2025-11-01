@@ -334,7 +334,7 @@ onMounted(() => {
 <style scoped>
 .admin-notification-settings {
   padding: 24px;
-  max-width: 1400px;
+  max-width: 80%;
   margin: 0 auto;
 }
 

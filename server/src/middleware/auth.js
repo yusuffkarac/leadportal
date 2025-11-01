@@ -14,7 +14,7 @@ export const requireAdmin = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
-      select: { userTypeId: true, isActive: true }
+      select: { userTypeId: true, isActive: true, lastActivity: true }
     })
 
     if (!user) {
@@ -23,6 +23,23 @@ export const requireAdmin = async (req, res, next) => {
 
     if (user.isActive === false) {
       return res.status(401).json({ message: 'Hesabınız deaktif edilmiştir' })
+    }
+
+    // Hareketsizlik kontrolü
+    const settings = await prisma.settings.findUnique({
+      where: { id: 'default' },
+      select: { sessionTimeoutMinutes: true }
+    })
+
+    if (user.lastActivity && settings) {
+      const now = new Date()
+      const lastActivityTime = new Date(user.lastActivity)
+      const diffMinutes = (now - lastActivityTime) / (1000 * 60)
+
+      if (diffMinutes > settings.sessionTimeoutMinutes) {
+        res.setHeader('X-Session-Timeout', 'true')
+        return res.status(401).json({ message: 'Oturumunuz sona ermiştir' })
+      }
     }
 
     if (user.userTypeId !== 'ADMIN' && user.userTypeId !== 'SUPERADMIN') {
@@ -48,7 +65,7 @@ export const requireAuth = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
-      select: { id: true, userTypeId: true, isActive: true }
+      select: { id: true, userTypeId: true, isActive: true, lastActivity: true }
     })
 
     if (!user) {
@@ -57,6 +74,23 @@ export const requireAuth = async (req, res, next) => {
 
     if (user.isActive === false) {
       return res.status(401).json({ message: 'Hesabınız deaktif edilmiştir' })
+    }
+
+    // Hareketsizlik kontrolü
+    const settings = await prisma.settings.findUnique({
+      where: { id: 'default' },
+      select: { sessionTimeoutMinutes: true }
+    })
+
+    if (user.lastActivity && settings) {
+      const now = new Date()
+      const lastActivityTime = new Date(user.lastActivity)
+      const diffMinutes = (now - lastActivityTime) / (1000 * 60)
+
+      if (diffMinutes > settings.sessionTimeoutMinutes) {
+        res.setHeader('X-Session-Timeout', 'true')
+        return res.status(401).json({ message: 'Oturumunuz sona ermiştir' })
+      }
     }
 
     req.user = user

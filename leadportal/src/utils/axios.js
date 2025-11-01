@@ -32,8 +32,11 @@ api.interceptors.response.use(
       return Promise.reject(error)
     }
     
-    // 401 Unauthorized - token süresi dolmuş
+    // 401 Unauthorized - token süresi dolmuş veya session timeout
     if (error.response?.status === 401) {
+      // Session timeout header var mı kontrol et
+      const isSessionTimeout = error.response?.headers?.['x-session-timeout'] === 'true'
+
       localStorage.removeItem('token')
       sessionStorage.removeItem('token')
       localStorage.removeItem('userType')
@@ -41,10 +44,11 @@ api.interceptors.response.use(
       localStorage.removeItem('userTypeId')
       sessionStorage.removeItem('userTypeId')
       window.dispatchEvent(new Event('auth-change'))
-      
+
       // Login sayfasına yönlendir (eğer zaten login sayfasında değilse)
       if (!window.location.pathname.includes('/login')) {
-        window.location.href = '/login'
+        const logoutParam = isSessionTimeout ? '?logout=inactivity' : ''
+        window.location.href = `/login${logoutParam}`
       }
     }
     

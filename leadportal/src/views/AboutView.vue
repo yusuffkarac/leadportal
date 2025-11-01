@@ -190,7 +190,7 @@
 }
 
 .page-content {
-  max-width: 1400px;
+  max-width: 80%;
   margin: 0 auto;
   padding: 32px 24px;
 }

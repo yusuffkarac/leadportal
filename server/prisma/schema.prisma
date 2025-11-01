@@ -190,6 +190,8 @@ model Settings {
   socialMedia         Json?
   supportLinks        Json?
   tradeRegisterNumber String   @default("İstanbul Ticaret Sicil No: 12345")
+  sessionTimeoutMinutes Int     @default(120) // Dakika cinsinden oturum timeout süresi (default 2 saat)
+  sessionTimeoutMessage String  @default("Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.") // Logout sonrası gösterilecek mesaj
 }
 
 model UserType {
