@@ -87,6 +87,48 @@ const viewMode = ref(localStorage.getItem('leadViewMode') || 'grid')
 // Harita görünürlüğü
 const showMap = ref(localStorage.getItem('showLeadMap') !== 'false') // Default true
 
+// Pagination
+const itemsPerPage = ref(parseInt(localStorage.getItem('itemsPerPage')) || 15)
+const currentPage = ref(1)
+
+// Sayfalandırılmış leads
+const displayedLeads = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return leads.value.slice(start, end)
+})
+
+// Toplam sayfa sayısı
+const totalPages = computed(() => {
+  return Math.ceil(leads.value.length / itemsPerPage.value)
+})
+
+// Items per page değiştiğinde
+function changeItemsPerPage(newValue) {
+  itemsPerPage.value = newValue
+  localStorage.setItem('itemsPerPage', newValue.toString())
+  currentPage.value = 1 // İlk sayfaya dön
+}
+
+// Sayfa değiştir
+function goToPage(page) {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
+    // Sayfanın en üstüne kaydır
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+}
+
+// Sonraki sayfa
+function nextPage() {
+  goToPage(currentPage.value + 1)
+}
+
+// Önceki sayfa
+function previousPage() {
+  goToPage(currentPage.value - 1)
+}
+
 // Görünüm tipini değiştir
 function toggleViewMode() {
   viewMode.value = viewMode.value === 'grid' ? 'table' : 'grid'
@@ -278,6 +320,7 @@ function applyFilters() {
   
   leads.value = filtered
   saveFilters()
+  currentPage.value = 1 // Filtreleme sonrası ilk sayfaya dön
 }
 
 // Insurance type listesi (name'leri döndür)
@@ -301,6 +344,7 @@ function clearFilters() {
   }
   leads.value = [...allLeads.value]
   saveFilters()
+  currentPage.value = 1 // Filtreleri temizledikten sonra ilk sayfaya dön
 }
 
 async function fetchLeads() {
@@ -755,7 +799,7 @@ onUnmounted(() => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="lead in leads" :key="lead.id" class="table-row" :class="{ 'expired-row': lead.isExpired, 'critical-time': isTimeRemaining(lead.endsAt, 60) }">
+            <tr v-for="lead in displayedLeads" :key="lead.id" class="table-row" :class="{ 'expired-row': lead.isExpired, 'critical-time': isTimeRemaining(lead.endsAt, 60) }">
               <td class="lead-cell">
                 <div class="lead-info">
                   <Icon v-if="lead.insuranceType" :icon="getInsuranceTypeIcon(lead.insuranceType)" class="table-icon" width="16" height="16" />
@@ -829,7 +873,7 @@ onUnmounted(() => {
       <!-- Grid Görünümü -->
       <div v-else class="auctions-grid">
         <LeadCard
-          v-for="lead in leads"
+          v-for="lead in displayedLeads"
           :key="lead.id"
           :lead="lead"
           :settings="settings"
@@ -841,9 +885,63 @@ onUnmounted(() => {
           @submit-bid="submitQuickBid"
         />
       </div>
+
+      <!-- Pagination -->
+      <div v-if="leads.length > 0" class="pagination-container">
+        <div class="pagination-info">
+          <div class="items-per-page-control">
+            <label for="items-per-page">Sayfa başına:</label>
+            <select id="items-per-page" v-model.number="itemsPerPage" @change="changeItemsPerPage" class="items-per-page-select">
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+              <option value="30">30</option>
+              <option value="50">50</option>
+            </select>
+          </div>
+          <span class="pagination-text">
+            {{ (currentPage - 1) * itemsPerPage + 1 }} - {{ Math.min(currentPage * itemsPerPage, leads.length) }} / {{ leads.length }} sonuç
+          </span>
+        </div>
+
+        <div class="pagination-controls">
+          <button
+            class="pagination-btn prev"
+            @click="previousPage"
+            :disabled="currentPage === 1"
+            title="Önceki sayfa"
+          >
+            <Icon icon="mdi:chevron-left" width="20" height="20" />
+            Önceki
+          </button>
+
+          <div class="pagination-pages">
+            <button
+              v-for="page in totalPages"
+              :key="page"
+              class="pagination-page"
+              :class="{ active: currentPage === page }"
+              @click="goToPage(page)"
+              :disabled="totalPages === 1"
+            >
+              {{ page }}
+            </button>
+          </div>
+
+          <button
+            class="pagination-btn next"
+            @click="nextPage"
+            :disabled="currentPage === totalPages"
+            title="Sonraki sayfa"
+          >
+            Sonraki
+            <Icon icon="mdi:chevron-right" width="20" height="20" />
+          </button>
+        </div>
+      </div>
   </div>
 
-    <!-- 
+    <!--
     Hero Section - Lead varsa altta
     <section v-if="leads.length" class="hero-section">
       <div class="hero-content">
@@ -2408,6 +2506,206 @@ onUnmounted(() => {
   .bid-count-bottom {
     padding: 2px 6px;
     font-size: 0.55rem;
+  }
+}
+
+/* Pagination */
+.pagination-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+  align-items: center;
+}
+
+.pagination-info {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  justify-content: space-between;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.items-per-page-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.items-per-page-control label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.items-per-page-select {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.items-per-page-select:hover {
+  border-color: #9ca3af;
+  background: #f9fafb;
+}
+
+.items-per-page-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.pagination-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  color: #111827;
+}
+
+.pagination-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f9fafb;
+}
+
+.pagination-pages {
+  display: flex;
+  gap: 4px;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 0 4px;
+}
+
+.pagination-page {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: white;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pagination-page:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  color: #111827;
+}
+
+.pagination-page.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+  font-weight: 600;
+}
+
+.pagination-page:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .pagination-container {
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+  }
+
+  .pagination-info {
+    gap: 12px;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .items-per-page-control {
+    justify-content: center;
+  }
+
+  .pagination-text {
+    text-align: center;
+  }
+
+  .pagination-btn {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+
+  .pagination-page {
+    min-width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pagination-pages {
+    max-width: calc(100vw - 32px);
+  }
+
+  .pagination-btn {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+
+  .pagination-btn svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .pagination-page {
+    min-width: 28px;
+    height: 28px;
+    font-size: 0.7rem;
+    padding: 0 4px;
   }
 }
 
