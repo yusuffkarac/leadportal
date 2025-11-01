@@ -743,8 +743,7 @@ onUnmounted(() => {
           <thead>
             <tr>
               <th>Lead ID & Başlık</th>
-              <th>Teklifler</th>
-              <th>Güncel Fiyat</th>
+              <th>Fiyat & Teklif</th>
               <th>Hızlı Teklif</th>
               <th>Kalan Süre</th>
               <th>Durum</th>
@@ -762,19 +761,17 @@ onUnmounted(() => {
                       <span v-if="lead.insuranceType" class="insurance-type-inline" :class="getInsuranceTypeClass(lead.insuranceType)">{{ lead.insuranceType }}</span>
                       {{ lead.title }}
                     </div>
-                    <div class="lead-description-text">{{ lead.description?.substring(0, 60) }}...</div>
+                   <!-- <div class="lead-description-text">{{ lead.description?.substring(0, 60) }}...</div>-->
                   </div>
                 </div>
               </td>
               <td>
-                <span class="bid-count-highlight">{{ lead.bids ? lead.bids.length : 0 }} teklif</span>
-              </td>
-              <td>
-                <div class="price-cell">
-                  <span class="current-price">
+                <div class="price-and-bid-cell">
+                  <div class="price-top">
                     <span v-if="lead.bids && lead.bids.length">{{ formatPrice(lead.bids[0].amount, settings.defaultCurrency) }}</span>
                     <span v-else>{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
-                  </span>
+                  </div>
+                  <div class="bid-count-bottom">{{ lead.bids ? lead.bids.length : 0 }} teklif</div>
                 </div>
               </td>
               <td>
@@ -2120,17 +2117,32 @@ onUnmounted(() => {
   background: #6b7280;
 }
 
-/* Bid Count Highlight */
-.bid-count-highlight {
+/* Price and Bid Combined Cell */
+.price-and-bid-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.price-top {
+  font-weight: 700;
+  color: #059669;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.bid-count-bottom {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 12px;
+  padding: 4px 10px;
   background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
   color: #15803d;
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
 }
 
 /* Quick Bid Inline */
@@ -2332,9 +2344,17 @@ onUnmounted(() => {
     font-size: 0.7rem;
   }
 
-  .bid-count-highlight {
-    padding: 4px 8px;
-    font-size: 0.7rem;
+  .price-and-bid-cell {
+    gap: 4px;
+  }
+
+  .price-top {
+    font-size: 0.9rem;
+  }
+
+  .bid-count-bottom {
+    padding: 3px 8px;
+    font-size: 0.65rem;
   }
 
   .table-btn {
@@ -2345,6 +2365,19 @@ onUnmounted(() => {
   .lead-cell {
     min-width: 120px;
     max-width: 180px;
+  }
+
+  .price-and-bid-cell {
+    gap: 3px;
+  }
+
+  .price-top {
+    font-size: 0.85rem;
+  }
+
+  .bid-count-bottom {
+    padding: 3px 8px;
+    font-size: 0.6rem;
   }
 }
 
@@ -2382,6 +2415,19 @@ onUnmounted(() => {
 
   .lead-title-text {
     font-size: 0.7rem;
+  }
+
+  .price-and-bid-cell {
+    gap: 2px;
+  }
+
+  .price-top {
+    font-size: 0.8rem;
+  }
+
+  .bid-count-bottom {
+    padding: 2px 6px;
+    font-size: 0.55rem;
   }
 }
 
