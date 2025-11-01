@@ -8,22 +8,24 @@
 
       <!-- Tabs -->
       <div class="tabs-container">
-        <button
-          v-for="tab in tabs"
-          :key="tab.id"
-          class="tab"
-          :class="{ active: activeTab === tab.id }"
-          @click="activeTab = tab.id"
-        >
-          <component :is="tab.icon" />
-          <span>{{ tab.label }}</span>
-        </button>
+        <div class="tabs-nav">
+          <button
+            v-for="tab in tabs"
+            :key="tab.id"
+            class="tab-button"
+            :class="{ active: activeTab === tab.id }"
+            @click="activeTab = tab.id"
+          >
+            <component :is="tab.icon" />
+            <span>{{ tab.label }}</span>
+          </button>
+        </div>
       </div>
 
       <!-- Tab Content -->
       <div class="tab-content">
         <!-- Firma Ayarları Tab -->
-        <div v-show="activeTab === 'company'" class="tab-panel">
+        <div v-if="activeTab === 'company'" class="tab-panel">
           <div class="grid">
             <!-- Marka -->
             <section class="card">
@@ -273,7 +275,7 @@
         </div>
 
         <!-- Uygulama Ayarları Tab -->
-        <div v-show="activeTab === 'application'" class="tab-panel">
+        <div v-if="activeTab === 'application'" class="tab-panel">
           <div class="settings-sections">
             <!-- SMTP Ayarları -->
             <div class="settings-section">
@@ -1218,7 +1220,7 @@ onMounted(() => {
 
 <style scoped>
 /* Page */
-.admin-settings-page { min-height: 100vh; background: #f8f9fa; padding: 24px; }
+.admin-settings-page { min-height: 100vh; background: #f8fafc; padding: 2rem; overflow-x: hidden; }
 .page-content { max-width: 1400px; margin: 0 auto; }
 .page-header { margin-bottom: 32px; text-align: center; }
 .page-header h1 { font-size: 2.5rem; font-weight: 700; color: #1f2937; margin: 0 0 8px; }
@@ -1226,43 +1228,50 @@ onMounted(() => {
 
 /* Tabs */
 .tabs-container {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 32px;
-  border-bottom: 2px solid #e5e7eb;
-  overflow-x: auto;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: 2rem;
 }
 
-.tab {
+.tabs-nav {
+  display: flex;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.tab-button {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 16px 24px;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
   background: none;
   border: none;
-  border-bottom: 3px solid transparent;
-  color: #6b7280;
-  font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
+  color: #64748b;
   cursor: pointer;
-  transition: all 0.2s ease;
-  margin-bottom: -2px;
-  white-space: nowrap;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
 }
 
-.tab:hover {
-  color: #1f2937;
-  background: #f9fafb;
+.tab-button:hover {
+  color: #475569;
+  background: #f1f5f9;
 }
 
-.tab.active {
-  color: #3b82f6;
-  border-bottom-color: #3b82f6;
-  background: #eff6ff;
+.tab-button.active {
+  color: var(--text);
+  border-bottom-color: var(--text);
+  background: white;
 }
 
 /* Tab Content */
 .tab-content {
+  padding: 2rem;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.3s ease;
 }
 
@@ -1508,8 +1517,9 @@ input:checked + .toggle-slider:before { transform: translateX(26px); }
 @media (max-width: 768px) {
   .admin-settings-page { padding: 16px; }
   .page-header h1 { font-size: 2rem; }
-  .tabs-container { gap: 8px; }
-  .tab { padding: 12px 16px; font-size: 0.875rem; }
+  .tabs-nav { flex-wrap: wrap; }
+  .tab-button { padding: 0.875rem 1rem; font-size: 0.875rem; }
+  .tab-content { padding: 1.5rem; }
   .settings-section { padding: 20px; }
   .link-item { grid-template-columns: 1fr; }
   .insurance-type-item-with-icon { grid-template-columns: 40px 1fr 36px; }

@@ -183,27 +183,31 @@ onMounted(async () => {
       </div>
 
       <!-- Tabs -->
-      <div class="tabs">
-        <button 
-          class="tab-button" 
-          :class="{ active: activeTab === 'userTypes' }"
-          @click="activeTab = 'userTypes'"
-        >
-          <Icon icon="mdi:account-group" width="20" height="20" />
-          Kullanıcı Tipi Bazlı
-        </button>
-        <button 
-          class="tab-button" 
-          :class="{ active: activeTab === 'users' }"
-          @click="activeTab = 'users'"
-        >
-          <Icon icon="mdi:account" width="20" height="20" />
-          Kullanıcı Bazlı
-        </button>
+      <div class="tabs-container">
+        <div class="tabs-nav">
+          <button 
+            class="tab-button" 
+            :class="{ active: activeTab === 'userTypes' }"
+            @click="activeTab = 'userTypes'"
+          >
+            <Icon icon="mdi:account-group" width="20" height="20" />
+            Kullanıcı Tipi Bazlı
+          </button>
+          <button 
+            class="tab-button" 
+            :class="{ active: activeTab === 'users' }"
+            @click="activeTab = 'users'"
+          >
+            <Icon icon="mdi:account" width="20" height="20" />
+            Kullanıcı Bazlı
+          </button>
+        </div>
       </div>
 
-      <!-- Kullanıcı Tipi Bazlı Yetkilendirmeler -->
-      <div v-if="activeTab === 'userTypes'" class="tab-content">
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- Kullanıcı Tipi Bazlı Yetkilendirmeler -->
+        <div v-if="activeTab === 'userTypes'" class="tab-panel">
         <div class="info-box">
           <Icon icon="mdi:information" width="20" height="20" />
           <div>
@@ -292,8 +296,8 @@ onMounted(async () => {
         </div>
       </div>
 
-      <!-- Kullanıcı Bazlı Yetkilendirmeler -->
-      <div v-if="activeTab === 'users'" class="tab-content">
+        <!-- Kullanıcı Bazlı Yetkilendirmeler -->
+        <div v-if="activeTab === 'users'" class="tab-panel">
         <div class="info-box">
           <Icon icon="mdi:information" width="20" height="20" />
           <div>
@@ -398,6 +402,7 @@ onMounted(async () => {
           <h3>Kullanıcı seçilmedi</h3>
           <p>Yukarıdan bir kullanıcı seçerek başlayın</p>
         </div>
+        </div>
       </div>
     </div>
   </section>
@@ -413,6 +418,7 @@ onMounted(async () => {
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
+  overflow-x: hidden;
 }
 
 .page-header {
@@ -433,11 +439,18 @@ onMounted(async () => {
 }
 
 /* Tabs */
-.tabs {
-  display: flex;
-  gap: 1rem;
+.tabs-container {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  overflow: hidden;
   margin-bottom: 2rem;
-  border-bottom: 2px solid #e5e7eb;
+}
+
+.tabs-nav {
+  display: flex;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
 }
 
 .tab-button {
@@ -447,22 +460,29 @@ onMounted(async () => {
   padding: 1rem 1.5rem;
   background: none;
   border: none;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
-  color: #64748b;
-  font-size: 1rem;
   font-weight: 500;
+  color: #64748b;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
 }
 
 .tab-button:hover {
-  color: #334155;
+  color: #475569;
+  background: #f1f5f9;
 }
 
 .tab-button.active {
   color: var(--text);
   border-bottom-color: var(--text);
+  background: white;
+}
+
+.tab-content {
+  padding: 2rem;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
 /* Info Box */
@@ -851,23 +871,24 @@ onMounted(async () => {
     grid-template-columns: 1fr;
   }
 
-  .tabs {
+  .tabs-nav {
     flex-direction: column;
     gap: 0;
-    border-bottom: none;
   }
 
   .tab-button {
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e2e8f0;
     border-left: 2px solid transparent;
-    margin-bottom: 0;
-    margin-left: -2px;
     justify-content: flex-start;
   }
 
   .tab-button.active {
-    border-bottom-color: #e5e7eb;
+    border-bottom-color: #e2e8f0;
     border-left-color: var(--text);
+  }
+
+  .tab-content {
+    padding: 1.5rem;
   }
 
   .permission-options {

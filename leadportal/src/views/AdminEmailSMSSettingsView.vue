@@ -7,27 +7,31 @@
       </div>
 
       <!-- Tabs -->
-      <div class="tabs">
-        <button
-          class="tab"
-          :class="{ active: activeTab === 'email' }"
-          @click="activeTab = 'email'"
-        >
-          <Icon icon="mdi:email" width="20" height="20" />
-          Email Template'leri
-        </button>
-        <button
-          class="tab"
-          :class="{ active: activeTab === 'sms' }"
-          @click="activeTab = 'sms'"
-        >
-          <Icon icon="mdi:cellphone" width="20" height="20" />
-          SMS Template'leri
-        </button>
+      <div class="tabs-container">
+        <div class="tabs-nav">
+          <button
+            class="tab-button"
+            :class="{ active: activeTab === 'email' }"
+            @click="activeTab = 'email'"
+          >
+            <Icon icon="mdi:email" width="20" height="20" />
+            Email Template'leri
+          </button>
+          <button
+            class="tab-button"
+            :class="{ active: activeTab === 'sms' }"
+            @click="activeTab = 'sms'"
+          >
+            <Icon icon="mdi:cellphone" width="20" height="20" />
+            SMS Template'leri
+          </button>
+        </div>
       </div>
 
-      <!-- Email Templates -->
-      <div v-if="activeTab === 'email'" class="templates-section">
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- Email Templates -->
+        <div v-if="activeTab === 'email'" class="tab-panel">
         <div class="section-header">
           <h2>Email Template'leri</h2>
           <button class="btn btn-primary" @click="openEmailModal(null)">
@@ -83,8 +87,8 @@
         </div>
       </div>
 
-      <!-- SMS Templates -->
-      <div v-if="activeTab === 'sms'" class="templates-section">
+        <!-- SMS Templates -->
+        <div v-if="activeTab === 'sms'" class="tab-panel">
         <div class="section-header">
           <h2>SMS Template'leri</h2>
           <button class="btn btn-primary" @click="openSmsModal(null)">
@@ -130,6 +134,7 @@
               </button>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>
@@ -1286,8 +1291,9 @@ onMounted(() => {
 <style scoped>
 .admin-settings-page {
   min-height: 100vh;
-  background: var(--bg);
+  background: #f8fafc;
   padding: 2rem 1rem;
+  overflow-x: hidden;
 }
 
 .page-content {
@@ -1312,36 +1318,50 @@ onMounted(() => {
 }
 
 /* Tabs */
-.tabs {
-  display: flex;
-  gap: 1rem;
+.tabs-container {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  overflow: hidden;
   margin-bottom: 2rem;
-  border-bottom: 2px solid var(--border);
 }
 
-.tab {
+.tabs-nav {
+  display: flex;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.tab-button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 1rem 1.5rem;
   background: none;
   border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--muted);
-  font-size: 1rem;
   font-weight: 500;
+  color: #64748b;
   cursor: pointer;
   transition: all 0.2s;
-  margin-bottom: -2px;
+  border-bottom: 2px solid transparent;
 }
 
-.tab:hover {
+.tab-button:hover {
+  color: #475569;
+  background: #f1f5f9;
+}
+
+.tab-button.active {
   color: var(--text);
+  border-bottom-color: var(--text);
+  background: white;
 }
 
-.tab.active {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
+.tab-content {
+  padding: 2rem;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
 /* Templates Section */
@@ -1997,12 +2017,16 @@ onMounted(() => {
     grid-template-columns: 1fr;
   }
 
-  .tabs {
+  .tabs-nav {
     overflow-x: auto;
   }
 
-  .tab {
+  .tab-button {
     white-space: nowrap;
+  }
+
+  .tab-content {
+    padding: 1.5rem;
   }
 
   .section-header {

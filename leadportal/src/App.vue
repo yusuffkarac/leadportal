@@ -430,7 +430,7 @@ function closeAdminCategory() {
   <div class="container">
     <div class="navbar">
       <div class="brand" @click="goToHome">
-        <img alt="Logo" class="logo" :src="companyLogoUrl || defaultLogo" width="40"/>
+        <img alt="Logo" class="logo" :src="companyLogoUrl || defaultLogo" width="50"/>
         <span>{{ companyName }}</span>
       </div>
       
@@ -901,6 +901,15 @@ header {
 
 .logo {
   display: block;
+}
+
+.brand {
+  border-right: 1px solid #e2e8f0;
+  padding-right: 1rem;
+  margin-right: 1rem;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
 }
 
 nav {

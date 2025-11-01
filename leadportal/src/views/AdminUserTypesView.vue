@@ -651,6 +651,7 @@ onMounted(() => {
   min-height: 100vh;
   background: #f8fafc;
   padding: 2rem;
+  overflow-x: hidden;
 }
 
 .page-content {

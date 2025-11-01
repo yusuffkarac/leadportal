@@ -35,31 +35,33 @@
     </div>
 
     <!-- Tabs -->
-    <div class="tabs">
-      <button
-        class="tab"
-        :class="{ active: activeTab === 'pending' }"
-        @click="switchTab('pending')"
-      >
-        <Icon icon="mdi:clock-alert-outline" width="18" />
-        Bekleyen ({{ pendingPayments.length }})
-      </button>
-      <button
-        class="tab"
-        :class="{ active: activeTab === 'completed' }"
-        @click="switchTab('completed')"
-      >
-        <Icon icon="mdi:check-circle" width="18" />
-        Onaylanmış ({{ completedPayments.length }})
-      </button>
-      <button
-        class="tab"
-        :class="{ active: activeTab === 'rejected' }"
-        @click="switchTab('rejected')"
-      >
-        <Icon icon="mdi:close-circle" width="18" />
-        Reddedilmiş ({{ rejectedPayments.length }})
-      </button>
+    <div class="tabs-container">
+      <div class="tabs-nav">
+        <button
+          class="tab-button"
+          :class="{ active: activeTab === 'pending' }"
+          @click="switchTab('pending')"
+        >
+          <Icon icon="mdi:clock-alert-outline" width="18" />
+          Bekleyen ({{ pendingPayments.length }})
+        </button>
+        <button
+          class="tab-button"
+          :class="{ active: activeTab === 'completed' }"
+          @click="switchTab('completed')"
+        >
+          <Icon icon="mdi:check-circle" width="18" />
+          Onaylanmış ({{ completedPayments.length }})
+        </button>
+        <button
+          class="tab-button"
+          :class="{ active: activeTab === 'rejected' }"
+          @click="switchTab('rejected')"
+        >
+          <Icon icon="mdi:close-circle" width="18" />
+          Reddedilmiş ({{ rejectedPayments.length }})
+        </button>
+      </div>
     </div>
 
     <!-- Search and Filters -->
@@ -611,6 +613,7 @@ onMounted(async () => {
   padding: 1.25rem;
   max-width: 1200px;
   margin: 0 auto;
+  overflow-x: hidden;
 }
 
 .page-header {
@@ -690,39 +693,44 @@ onMounted(async () => {
 }
 
 /* Tabs */
-.tabs {
-  display: flex;
-  gap: 0.5rem;
+.tabs-container {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  overflow: hidden;
   margin-bottom: 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
-  overflow-x: auto;
 }
 
-.tab {
+.tabs-nav {
+  display: flex;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.tab-button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.875rem 1.25rem;
-  background: transparent;
+  padding: 1rem 1.5rem;
+  background: none;
   border: none;
-  border-bottom: 2px solid transparent;
+  font-weight: 500;
   color: #64748b;
-  font-size: 0.875rem;
-  font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s ease;
-  margin-bottom: -1px;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
   white-space: nowrap;
 }
 
-.tab:hover {
-  color: #1e293b;
-  background: transparent;
+.tab-button:hover {
+  color: #475569;
+  background: #f1f5f9;
 }
 
-.tab.active {
-  color: #1e293b;
-  border-bottom-color: #3b82f6;
+.tab-button.active {
+  color: var(--text);
+  border-bottom-color: var(--text);
+  background: white;
 }
 
 /* Search and Filter Section */
@@ -1491,14 +1499,13 @@ onMounted(async () => {
     width: 100%;
   }
 
-  .tabs {
+  .tabs-nav {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
 
-  .tab {
-    white-space: nowrap;
-    padding: 0.625rem 1rem;
+  .tab-button {
+    padding: 0.875rem 1rem;
     font-size: 0.8125rem;
   }
 

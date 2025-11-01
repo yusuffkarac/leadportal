@@ -242,7 +242,8 @@
                   id="ibanNumber"
                   v-model="ibanForm.ibanNumber"
                   class="form-input"
-                  placeholder="DE89 3704 0044 0532 0130 00"
+                  :placeholder="ibanData.hasIban ? '' : 'DE89 3704 0044 0532 0130 00'"
+                  @focus="handleIbanFocus"
                   required
                   maxlength="34"
                 />
@@ -882,10 +883,11 @@ async function loadIbanData() {
     const response = await api.get('/auth/iban')
     ibanData.value = response.data
 
-    // Eğer IBAN varsa form'a doldur (düzenleme için)
+    // Eğer IBAN varsa form'a doldur (düzenleme için) - IBAN numarası maskelenmiş olarak gelir
     if (ibanData.value.hasIban) {
       ibanForm.ibanAccountHolder = ibanData.value.ibanAccountHolder || ''
-      ibanForm.ibanNumber = ibanData.value.ibanNumberFull || ''
+      // Maskelenmiş IBAN'ı form alanına yerleştir
+      ibanForm.ibanNumber = ibanData.value.ibanNumber || ''
       ibanForm.ibanBic = ibanData.value.ibanBic || ''
       ibanForm.ibanAddress = ibanData.value.ibanAddress || ''
       ibanForm.ibanPostalCode = ibanData.value.ibanPostalCode || ''
@@ -904,8 +906,19 @@ async function saveIban() {
 
   isLoadingIban.value = true
   try {
-    await api.put('/auth/iban', ibanForm)
-    await loadIbanData()
+    const response = await api.put('/auth/iban', ibanForm)
+    // Response'dan gelen maskelenmiş IBAN verilerini kullan
+    if (response.data?.iban) {
+      ibanData.value = {
+        ...response.data.iban,
+        hasIban: true
+      }
+      // Form'daki IBAN alanını maskelenmiş değerle güncelle
+      ibanForm.ibanNumber = response.data.iban.ibanNumber || ''
+    } else {
+      await loadIbanData()
+      // loadIbanData zaten maskelenmiş IBAN'ı form'a yerleştiriyor
+    }
     isEditingIban.value = false
     ibanConsent.value = false
     success('IBAN bilgileri başarıyla kaydedildi')
@@ -917,18 +930,29 @@ async function saveIban() {
   }
 }
 
+function handleIbanFocus() {
+  // Eğer IBAN alanı maskelenmiş değer içeriyorsa (yıldız varsa), temizle
+  if (ibanForm.ibanNumber && ibanForm.ibanNumber.includes('*')) {
+    ibanForm.ibanNumber = ''
+  }
+}
+
 function startEditIban() {
   isEditingIban.value = true
   ibanConsent.value = true // Zaten kayıtlı IBAN varsa onay verilmiş demektir
+  // Maskelenmiş IBAN'ı form alanına yerleştir
+  if (ibanData.value.hasIban) {
+    ibanForm.ibanNumber = ibanData.value.ibanNumber || ''
+  }
 }
 
 function cancelEditIban() {
   isEditingIban.value = false
   ibanConsent.value = false
-  // Form'u tekrar doldur
+  // Form'u tekrar doldur - IBAN numarası maskelenmiş olarak gösterilir
   if (ibanData.value.hasIban) {
     ibanForm.ibanAccountHolder = ibanData.value.ibanAccountHolder || ''
-    ibanForm.ibanNumber = ibanData.value.ibanNumberFull || ''
+    ibanForm.ibanNumber = ibanData.value.ibanNumber || ''
     ibanForm.ibanBic = ibanData.value.ibanBic || ''
     ibanForm.ibanAddress = ibanData.value.ibanAddress || ''
     ibanForm.ibanPostalCode = ibanData.value.ibanPostalCode || ''

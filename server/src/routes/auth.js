@@ -414,9 +414,28 @@ export default function authRouter(prisma) {
         }
       })
 
+      // IBAN'ı maskele (son 4 hane hariç)
+      let maskedIban = null
+      if (updatedUser.ibanNumber) {
+        const iban = updatedUser.ibanNumber
+        if (iban.length > 4) {
+          maskedIban = '*'.repeat(iban.length - 4) + iban.slice(-4)
+        } else {
+          maskedIban = iban
+        }
+      }
+
       res.json({
         message: 'IBAN bilgileri başarıyla güncellendi',
-        iban: updatedUser
+        iban: {
+          ibanAccountHolder: updatedUser.ibanAccountHolder,
+          ibanNumber: maskedIban,
+          ibanBic: updatedUser.ibanBic,
+          ibanAddress: updatedUser.ibanAddress,
+          ibanPostalCode: updatedUser.ibanPostalCode,
+          ibanCity: updatedUser.ibanCity,
+          hasIban: !!updatedUser.ibanNumber
+        }
       })
     } catch (error) {
       console.error('IBAN güncelleme hatası:', error)
@@ -462,7 +481,6 @@ export default function authRouter(prisma) {
       res.json({
         ibanAccountHolder: user.ibanAccountHolder,
         ibanNumber: maskedIban,
-        ibanNumberFull: user.ibanNumber, // Düzenleme için
         ibanBic: user.ibanBic,
         ibanAddress: user.ibanAddress,
         ibanPostalCode: user.ibanPostalCode,
