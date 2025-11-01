@@ -704,6 +704,7 @@ function closeAdminCategory() {
             <div class="mobile-nav-section-header" data-category="management" @click="toggleMobileAdminCategory('management')" style="cursor: pointer;">
               <Icon icon="mdi:view-dashboard-outline" width="20" height="20" />
               <span>Yönetim</span>
+              <Icon :icon="mobileAdminCategoryStates.management ? 'mdi:chevron-up' : 'mdi:chevron-down'" width="20" height="20" class="category-chevron" />
             </div>
             <div v-if="mobileAdminCategoryStates.management">
               <RouterLink to="/admin/leads" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
@@ -738,6 +739,7 @@ function closeAdminCategory() {
             <div class="mobile-nav-section-header" data-category="settings" @click="toggleMobileAdminCategory('settings')" style="cursor: pointer;">
               <Icon icon="mdi:cog-outline" width="20" height="20" />
               <span>Ayarlar</span>
+              <Icon :icon="mobileAdminCategoryStates.settings ? 'mdi:chevron-up' : 'mdi:chevron-down'" width="20" height="20" class="category-chevron" />
             </div>
             <div v-if="mobileAdminCategoryStates.settings">
               <RouterLink to="/admin/settings" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
@@ -760,6 +762,7 @@ function closeAdminCategory() {
             <div class="mobile-nav-section-header" data-category="permissions" @click="toggleMobileAdminCategory('permissions')" style="cursor: pointer;">
               <Icon icon="mdi:shield-outline" width="20" height="20" />
               <span>Yetkiler</span>
+              <Icon :icon="mobileAdminCategoryStates.permissions ? 'mdi:chevron-up' : 'mdi:chevron-down'" width="20" height="20" class="category-chevron" />
             </div>
             <div v-if="mobileAdminCategoryStates.permissions">
               <RouterLink to="/admin/user-types" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
@@ -778,6 +781,7 @@ function closeAdminCategory() {
             <div class="mobile-nav-section-header" data-category="content" @click="toggleMobileAdminCategory('content')" style="cursor: pointer;">
               <Icon icon="mdi:file-document-outline" width="20" height="20" />
               <span>İçerik Yönetimi</span>
+              <Icon :icon="mobileAdminCategoryStates.content ? 'mdi:chevron-up' : 'mdi:chevron-down'" width="20" height="20" class="category-chevron" />
             </div>
             <div v-if="mobileAdminCategoryStates.content">
               <RouterLink to="/admin/faq" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
@@ -1236,6 +1240,17 @@ nav a:first-of-type {
 }
 
 .mobile-nav-section-header svg {
+  flex-shrink: 0;
+}
+
+.mobile-nav-section-header span {
+  flex: 1;
+}
+
+.category-chevron {
+  margin-left: auto;
+  transition: transform 0.2s ease;
+  color: #9ca3af;
   flex-shrink: 0;
 }
 
