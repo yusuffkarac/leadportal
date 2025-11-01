@@ -103,10 +103,9 @@ const totalPages = computed(() => {
   return Math.ceil(leads.value.length / itemsPerPage.value)
 })
 
-// Items per page değiştiğinde
-function changeItemsPerPage(newValue) {
-  itemsPerPage.value = newValue
-  localStorage.setItem('itemsPerPage', newValue.toString())
+// Items per page değiştiğinde (localStorage'a kaydet)
+function changeItemsPerPage() {
+  localStorage.setItem('itemsPerPage', itemsPerPage.value.toString())
   currentPage.value = 1 // İlk sayfaya dön
 }
 
