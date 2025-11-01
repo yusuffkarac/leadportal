@@ -19,7 +19,8 @@ async function load() {
   const { data } = await axios.get(`/api/leads/${leadId}`, { headers: authHeaders() })
   lead.value = {
     ...data,
-    isShowcase: !!data.isShowcase
+    isShowcase: !!data.isShowcase,
+    isPremium: !!data.isPremium
   }
 }
 
@@ -83,7 +84,8 @@ async function save() {
       startsAt: lead.value.startsAt || undefined,
       endsAt: lead.value.endsAt,
       isActive: lead.value.isActive,
-      isShowcase: !!lead.value.isShowcase
+      isShowcase: !!lead.value.isShowcase,
+      isPremium: !!lead.value.isPremium
     }
     await axios.put(`/api/leads/${leadId}`, payload, { headers: authHeaders() })
     ok.value = 'Kaydedildi'
@@ -151,6 +153,19 @@ onMounted(() => {
           </div>
           <small class="toggle-help">
             Vitrine alınan leadler ana sayfadaki vitrin bölümünde öne çıkarılır.
+          </small>
+        </div>
+        <div class="stack toggle-field">
+          <label>Premium'a Ekle</label>
+          <div class="toggle-container">
+            <label class="toggle-switch">
+              <input type="checkbox" v-model="lead.isPremium" />
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">{{ lead.isPremium ? 'Açık' : 'Kapalı' }}</span>
+          </div>
+          <small class="toggle-help">
+            Premium'a alınan leadler lead pazaryeri sayfasındaki premium bölümünde gösterilir.
           </small>
         </div>
         <div class="row">

@@ -102,7 +102,7 @@ async function confirmPurchase() {
           <div class="lead-info-card">
             <div class="lead-info-header">
               <h3 class="lead-title">{{ lead?.title }}</h3>
-              <span class="lead-id">LP-{{ lead?.id }}</span>
+              <span class="lead-id">{{ lead?.id }}</span>
             </div>
 
             <div class="lead-meta">

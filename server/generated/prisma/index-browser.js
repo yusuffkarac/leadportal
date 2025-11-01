@@ -163,6 +163,7 @@ exports.Prisma.LeadScalarFieldEnum = {
   insuranceType: 'insuranceType',
   isActive: 'isActive',
   isShowcase: 'isShowcase',
+  isPremium: 'isPremium',
   isSold: 'isSold',
   featured: 'featured',
   startsAt: 'startsAt',

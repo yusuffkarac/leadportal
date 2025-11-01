@@ -681,7 +681,7 @@ onUnmounted(() => {
                   {{ formatTimeRemaining(lead.endsAt) }}
                 </div>
                 <div class="premium-bids">
-                  <Icon icon="mdi:gavel" width="16" height="16" />
+                 
                   {{ lead.bids ? lead.bids.length : 0 }} teklif
                 </div>
               </div>
@@ -790,10 +790,10 @@ onUnmounted(() => {
           <thead>
             <tr>
               <th>Lead ID & Başlık</th>
-              <th>Fiyat & Teklif</th>
-              <th>Hızlı Teklif</th>
+              <th v-if="leadType === 'SOFORT_KAUF'">Fiyat</th>
+              <th v-else>Fiyat & Teklif</th>
+              <th v-if="leadType !== 'SOFORT_KAUF'">Hızlı Teklif</th>
               <th>Kalan Süre</th>
-              <th>Durum</th>
               <th>İşlemler</th>
             </tr>
           </thead>
@@ -803,7 +803,7 @@ onUnmounted(() => {
                 <div class="lead-info">
                   <Icon v-if="lead.insuranceType" :icon="getInsuranceTypeIcon(lead.insuranceType)" class="table-icon" width="16" height="16" />
                   <div>
-                    <div class="lead-id-badge">LP-{{ lead.id }}</div>
+                    <div class="lead-id-badge">{{ lead.id }}</div>
                     <div class="lead-title-text">
                       <span v-if="lead.insuranceType" class="insurance-type-inline" :style="{ backgroundColor: getInsuranceTypeColor(lead.insuranceType) }">{{ lead.insuranceType }}</span>
                       {{ lead.title }}
@@ -813,7 +813,10 @@ onUnmounted(() => {
                 </div>
               </td>
               <td>
-                <div class="price-and-bid-cell">
+                <div v-if="lead.leadType === 'SOFORT_KAUF'" class="price-only-cell">
+                  <span class="current-price">{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
+                </div>
+                <div v-else class="price-and-bid-cell">
                   <div class="price-top">
                     <span v-if="lead.bids && lead.bids.length">{{ formatPrice(lead.bids[0].amount, settings.defaultCurrency) }}</span>
                     <span v-else>{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
@@ -821,8 +824,8 @@ onUnmounted(() => {
                   <div class="bid-count-bottom">{{ lead.bids ? lead.bids.length : 0 }} teklif</div>
                 </div>
               </td>
-              <td>
-                <div v-if="lead.leadType !== 'SOFORT_KAUF' && !lead.isExpired && lead.isActive" class="quick-bid-cell" @click.stop>
+              <td v-if="lead.leadType !== 'SOFORT_KAUF'">
+                <div v-if="!lead.isExpired && lead.isActive" class="quick-bid-cell" @click.stop>
                   <div class="quick-bid-inline">
                     <input
                       type="number"
@@ -837,8 +840,11 @@ onUnmounted(() => {
                       @click="submitQuickBid(lead, quickBidAmounts[lead.id])"
                       :disabled="!quickBidAmounts[lead.id] || quickBidAmounts[lead.id] <= 0"
                     >
+                     
                       Teklif
+                       <Icon icon="mdi:gavel" width="14" height="14" />
                     </button>
+                    
                   </div>
                 </div>
                 <span v-else class="text-muted">-</span>
@@ -850,16 +856,15 @@ onUnmounted(() => {
                 </div>
               </td>
               <td>
-                <span class="status-badge-table" :class="lead.isExpired ? 'expired' : 'active'">
-                  {{ lead.isExpired ? 'Geçmiş' : 'Aktif' }}
-                </span>
-              </td>
-              <td>
                 <div class="table-actions">
-                  <button class="table-btn primary" @click="navigateToLead(lead)" :disabled="lead.isExpired">
+                  <button v-if="lead.leadType === 'SOFORT_KAUF'" class="table-btn success" @click="openInstantBuyModal(lead, $event)" :disabled="lead.isExpired || !lead.isActive">
+                    <Icon icon="mdi:shopping-cart" width="14" height="14" />
+                    Satın Al
+                  </button>
+                  <button v-else class="table-btn primary" @click="navigateToLead(lead)" :disabled="lead.isExpired">
                     Detay
                   </button>
-                  <button v-if="lead.instantBuyPrice && !lead.isExpired" class="table-btn success" @click="openInstantBuyModal(lead, $event)">
+                  <button v-if="lead.leadType !== 'SOFORT_KAUF' && lead.instantBuyPrice && !lead.isExpired" class="table-btn success" @click="openInstantBuyModal(lead, $event)">
                     <Icon icon="mdi:lightning-bolt" width="14" height="14" />
                   </button>
                 </div>
@@ -971,7 +976,7 @@ onUnmounted(() => {
         <div class="modal-body">
           <div class="description-info">
             <div class="lead-title-modal">{{ selectedDescription?.title }}</div>
-            <div class="lead-id-modal">LP-{{ selectedDescription?.id }}</div>
+            <div class="lead-id-modal">{{ selectedDescription?.id }}</div>
             <div class="description-text">
               {{ selectedDescription?.description || 'Keine Beschreibung verfügbar' }}
             </div>
@@ -2222,22 +2227,39 @@ onUnmounted(() => {
   white-space: nowrap;
 }
 
+/* Price Only Cell (SOFORT_KAUF Mode) */
+.price-only-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+}
+
+.price-only-cell .current-price {
+  font-weight: 700;
+  color: #059669;
+  font-size: 1rem;
+  line-height: 1;
+}
+
 /* Quick Bid Inline */
 .quick-bid-cell {
-  padding: 10px 16px !important;
+  padding: 10px 14px !important;
+  width: 190px;
+  max-width: 190px;
 }
 
 .quick-bid-inline {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   align-items: center;
   width: 100%;
 }
 
 .quick-bid-input-inline {
   flex: 1;
-  min-width: 60px;
-  padding: 6px 8px;
+  min-width: 70px;
+  padding: 6px 10px;
   border: 1px solid #cbd5e1;
   border-radius: 4px;
   font-size: 0.75rem;
@@ -2280,6 +2302,8 @@ onUnmounted(() => {
 /* Countdown Timer */
 .time-cell {
   position: relative;
+  min-width: 160px;
+  width: auto;
 }
 
 .countdown-timer {
@@ -2292,6 +2316,8 @@ onUnmounted(() => {
   border-radius: 6px;
   background: #f1f5f9;
   transition: all 0.2s ease;
+  width: fit-content;
+  min-width: 100%;
 }
 
 .countdown-timer svg {
@@ -2301,6 +2327,7 @@ onUnmounted(() => {
 .time-text {
   font-size: 0.875rem;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 /* Blinking Effect for Last Minute */
@@ -2354,13 +2381,27 @@ onUnmounted(() => {
     max-width: 220px;
   }
 
+  .quick-bid-cell {
+    width: 170px;
+    max-width: 170px;
+    padding: 10px 12px !important;
+  }
+
   .quick-bid-input-inline {
-    min-width: 50px;
+    min-width: 60px;
+  }
+
+  .time-cell {
+    min-width: 150px;
   }
 
   .insurance-type-inline {
     padding: 2px 4px;
     font-size: 0.6rem;
+  }
+
+  .price-only-cell .current-price {
+    font-size: 0.9rem;
   }
 }
 
@@ -2407,6 +2448,16 @@ onUnmounted(() => {
     font-size: 0.6rem;
   }
 
+  .quick-bid-cell {
+    width: 150px;
+    max-width: 150px;
+    padding: 8px 10px !important;
+  }
+
+  .time-cell {
+    min-width: 140px;
+  }
+
   .countdown-timer {
     padding: 4px 6px;
     gap: 3px;
@@ -2419,6 +2470,7 @@ onUnmounted(() => {
 
   .time-text {
     font-size: 0.7rem;
+    white-space: nowrap;
   }
 
   .price-and-bid-cell {

@@ -106,7 +106,8 @@ const createLeadSchema = z.object({
   insuranceType: z.string().optional().nullable(),
   startsAt: z.string().optional().nullable().transform((v) => v ? createDate(v) : null),
   endsAt: z.string().min(1, 'Endzeit ist erforderlich').transform((v) => createDate(v)),
-  isShowcase: z.boolean().optional()
+  isShowcase: z.boolean().optional(),
+  isPremium: z.boolean().optional()
 })
 
 // Süresi dolmuş lead'leri kontrol et ve en yüksek teklifi veren kişiye sat

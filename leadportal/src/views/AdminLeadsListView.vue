@@ -35,7 +35,8 @@ const leadForm = ref({
   startsAt: '',
   endsAt: '',
   isActive: true,
-  isShowcase: false
+  isShowcase: false,
+  isPremium: false
 })
 
 const errorMessage = ref('')
@@ -463,10 +464,11 @@ async function openLeadModal(mode, lead = null) {
       buyNowPrice: lead.instantBuyPrice ? lead.instantBuyPrice.toString() : '',
       startsAt: lead.startsAt ? new Date(lead.startsAt).toISOString().slice(0, 16) : '',
       endsAt: lead.endsAt ? new Date(lead.endsAt).toISOString().slice(0, 16) : '',
-      isActive: lead.isActive,
+      isActive: true, // Lead her zaman aktif
       postalCode: lead.postalCode || '',
       insuranceType: lead.insuranceType || '',
-      isShowcase: !!lead.isShowcase
+      isShowcase: !!lead.isShowcase,
+      isPremium: !!lead.isPremium
     }
     // Posta kodu için sadece posta kodu numarasını göster
     postalCodeSearch.value = lead.postalCode || ''
@@ -525,7 +527,9 @@ async function saveLead() {
       insuranceType: leadForm.value.insuranceType || undefined,
       startsAt: leadForm.value.startsAt || undefined,
       endsAt: leadForm.value.endsAt, // datetime-local değerini olduğu gibi gönder
-      isShowcase: !!leadForm.value.isShowcase
+      isActive: true, // Lead her zaman aktif
+      isShowcase: !!leadForm.value.isShowcase,
+      isPremium: !!leadForm.value.isPremium
     }
 
     if (modalMode.value === 'new') {
@@ -1161,9 +1165,8 @@ watch(showMap, (newValue) => {
             <input v-model="leadForm.endsAt" type="datetime-local" class="form-input" required />
           </div>
 
-          <!-- Edit modunda: İki sütun: Vitrin ve Aktif Durumu -->
-          <!-- New modunda: Tek sütun: Sadece Vitrin -->
-          <div v-if="modalMode === 'edit'" class="form-row">
+          <!-- Vitrine Ekle ve Premium'a Ekle - Yan yana -->
+          <div class="form-row">
             <div class="form-group toggle-field">
               <label>Vitrine Ekle</label>
               <div class="toggle-container">
@@ -1173,31 +1176,19 @@ watch(showMap, (newValue) => {
                 </label>
                 <span class="toggle-label">{{ leadForm.isShowcase ? 'Açık' : 'Kapalı' }}</span>
               </div>
-              <small class="toggle-help">Vitrine alınan leadler ana sayfada öne çıkar.</small>
+              <small class="toggle-help">Vitrine alınan leadler ana sayfanın vitrin bölümünde öne çıkarılır.</small>
             </div>
             <div class="form-group toggle-field">
-              <label>Lead aktif</label>
+              <label>Premium'a Ekle</label>
               <div class="toggle-container">
                 <label class="toggle-switch">
-                  <input type="checkbox" v-model="leadForm.isActive" />
+                  <input type="checkbox" v-model="leadForm.isPremium" />
                   <span class="toggle-slider"></span>
                 </label>
-                <span class="toggle-label">{{ leadForm.isActive ? 'Açık' : 'Kapalı' }}</span>
+                <span class="toggle-label">{{ leadForm.isPremium ? 'Açık' : 'Kapalı' }}</span>
               </div>
-              <small class="toggle-help">Görülebilir ve teklif verilebilir.</small>
+              <small class="toggle-help">Premium'a alınan leadler pazaryeri sayfasındaki premium bölümünde gösterilir.</small>
             </div>
-          </div>
-
-          <div v-else class="form-group toggle-field full-width">
-            <label>Vitrine Ekle</label>
-            <div class="toggle-container">
-              <label class="toggle-switch">
-                <input type="checkbox" v-model="leadForm.isShowcase" />
-                <span class="toggle-slider"></span>
-              </label>
-              <span class="toggle-label">{{ leadForm.isShowcase ? 'Açık' : 'Kapalı' }}</span>
-            </div>
-            <small class="toggle-help">Vitrine alınan leadler ana sayfanın vitrin bölümünde öne çıkarılır.</small>
           </div>
 
           <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>

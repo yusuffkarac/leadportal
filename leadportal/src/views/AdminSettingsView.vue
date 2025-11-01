@@ -431,7 +431,12 @@
                   <div class="insurance-types-list">
                     <div v-for="(type, index) in settings.insuranceTypes" :key="index" class="insurance-type-item-with-icon">
                       <div class="icon-preview" :style="{ backgroundColor: settings.insuranceTypes[index].color || '#f3f4f6' }">
-                        <Icon :icon="(type && type.icon) ? type.icon : 'mdi:file'" width="20" height="20" />
+                        <Icon 
+                          :icon="(type && type.icon) ? type.icon : 'mdi:file'" 
+                          width="20" 
+                          height="20" 
+                          color="#fff"
+                        />
                       </div>
                       <input
                         v-model="settings.insuranceTypes[index].name"

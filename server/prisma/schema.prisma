@@ -63,6 +63,7 @@ model Lead {
   insuranceType   String?     // Sigorta türü
   isActive        Boolean     @default(true)
   isShowcase      Boolean     @default(false)
+  isPremium       Boolean     @default(false) // Premium section lead
   isSold          Boolean     @default(false)
   featured        Boolean     @default(false) // Öne çıkan lead
   startsAt        DateTime?   // Açık artırmanın başlangıç zamanı (opsiyonel, boşsa hemen başlar)

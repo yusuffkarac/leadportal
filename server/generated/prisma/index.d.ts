@@ -4858,6 +4858,7 @@ export namespace Prisma {
     insuranceType: string | null
     isActive: boolean | null
     isShowcase: boolean | null
+    isPremium: boolean | null
     isSold: boolean | null
     featured: boolean | null
     startsAt: Date | null
@@ -4882,6 +4883,7 @@ export namespace Prisma {
     insuranceType: string | null
     isActive: boolean | null
     isShowcase: boolean | null
+    isPremium: boolean | null
     isSold: boolean | null
     featured: boolean | null
     startsAt: Date | null
@@ -4906,6 +4908,7 @@ export namespace Prisma {
     insuranceType: number
     isActive: number
     isShowcase: number
+    isPremium: number
     isSold: number
     featured: number
     startsAt: number
@@ -4948,6 +4951,7 @@ export namespace Prisma {
     insuranceType?: true
     isActive?: true
     isShowcase?: true
+    isPremium?: true
     isSold?: true
     featured?: true
     startsAt?: true
@@ -4972,6 +4976,7 @@ export namespace Prisma {
     insuranceType?: true
     isActive?: true
     isShowcase?: true
+    isPremium?: true
     isSold?: true
     featured?: true
     startsAt?: true
@@ -4996,6 +5001,7 @@ export namespace Prisma {
     insuranceType?: true
     isActive?: true
     isShowcase?: true
+    isPremium?: true
     isSold?: true
     featured?: true
     startsAt?: true
@@ -5107,6 +5113,7 @@ export namespace Prisma {
     insuranceType: string | null
     isActive: boolean
     isShowcase: boolean
+    isPremium: boolean
     isSold: boolean
     featured: boolean
     startsAt: Date | null
@@ -5150,6 +5157,7 @@ export namespace Prisma {
     insuranceType?: boolean
     isActive?: boolean
     isShowcase?: boolean
+    isPremium?: boolean
     isSold?: boolean
     featured?: boolean
     startsAt?: boolean
@@ -5179,6 +5187,7 @@ export namespace Prisma {
     insuranceType?: boolean
     isActive?: boolean
     isShowcase?: boolean
+    isPremium?: boolean
     isSold?: boolean
     featured?: boolean
     startsAt?: boolean
@@ -5204,6 +5213,7 @@ export namespace Prisma {
     insuranceType?: boolean
     isActive?: boolean
     isShowcase?: boolean
+    isPremium?: boolean
     isSold?: boolean
     featured?: boolean
     startsAt?: boolean
@@ -5229,6 +5239,7 @@ export namespace Prisma {
     insuranceType?: boolean
     isActive?: boolean
     isShowcase?: boolean
+    isPremium?: boolean
     isSold?: boolean
     featured?: boolean
     startsAt?: boolean
@@ -5238,7 +5249,7 @@ export namespace Prisma {
     ownerId?: boolean
   }
 
-  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "privateDetails" | "postalCode" | "leadType" | "startPrice" | "minIncrement" | "instantBuyPrice" | "reservePrice" | "antiSnipeSeconds" | "insuranceType" | "isActive" | "isShowcase" | "isSold" | "featured" | "startsAt" | "endsAt" | "createdAt" | "updatedAt" | "ownerId", ExtArgs["result"]["lead"]>
+  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "privateDetails" | "postalCode" | "leadType" | "startPrice" | "minIncrement" | "instantBuyPrice" | "reservePrice" | "antiSnipeSeconds" | "insuranceType" | "isActive" | "isShowcase" | "isPremium" | "isSold" | "featured" | "startsAt" | "endsAt" | "createdAt" | "updatedAt" | "ownerId", ExtArgs["result"]["lead"]>
   export type LeadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     bids?: boolean | Lead$bidsArgs<ExtArgs>
     owner?: boolean | UserDefaultArgs<ExtArgs>
@@ -5276,6 +5287,7 @@ export namespace Prisma {
       insuranceType: string | null
       isActive: boolean
       isShowcase: boolean
+      isPremium: boolean
       isSold: boolean
       featured: boolean
       startsAt: Date | null
@@ -5724,6 +5736,7 @@ export namespace Prisma {
     readonly insuranceType: FieldRef<"Lead", 'String'>
     readonly isActive: FieldRef<"Lead", 'Boolean'>
     readonly isShowcase: FieldRef<"Lead", 'Boolean'>
+    readonly isPremium: FieldRef<"Lead", 'Boolean'>
     readonly isSold: FieldRef<"Lead", 'Boolean'>
     readonly featured: FieldRef<"Lead", 'Boolean'>
     readonly startsAt: FieldRef<"Lead", 'DateTime'>
@@ -30103,6 +30116,7 @@ export namespace Prisma {
     insuranceType: 'insuranceType',
     isActive: 'isActive',
     isShowcase: 'isShowcase',
+    isPremium: 'isPremium',
     isSold: 'isSold',
     featured: 'featured',
     startsAt: 'startsAt',
@@ -30823,6 +30837,7 @@ export namespace Prisma {
     insuranceType?: StringNullableFilter<"Lead"> | string | null
     isActive?: BoolFilter<"Lead"> | boolean
     isShowcase?: BoolFilter<"Lead"> | boolean
+    isPremium?: BoolFilter<"Lead"> | boolean
     isSold?: BoolFilter<"Lead"> | boolean
     featured?: BoolFilter<"Lead"> | boolean
     startsAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
@@ -30851,6 +30866,7 @@ export namespace Prisma {
     insuranceType?: SortOrderInput | SortOrder
     isActive?: SortOrder
     isShowcase?: SortOrder
+    isPremium?: SortOrder
     isSold?: SortOrder
     featured?: SortOrder
     startsAt?: SortOrderInput | SortOrder
@@ -30882,6 +30898,7 @@ export namespace Prisma {
     insuranceType?: StringNullableFilter<"Lead"> | string | null
     isActive?: BoolFilter<"Lead"> | boolean
     isShowcase?: BoolFilter<"Lead"> | boolean
+    isPremium?: BoolFilter<"Lead"> | boolean
     isSold?: BoolFilter<"Lead"> | boolean
     featured?: BoolFilter<"Lead"> | boolean
     startsAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
@@ -30910,6 +30927,7 @@ export namespace Prisma {
     insuranceType?: SortOrderInput | SortOrder
     isActive?: SortOrder
     isShowcase?: SortOrder
+    isPremium?: SortOrder
     isSold?: SortOrder
     featured?: SortOrder
     startsAt?: SortOrderInput | SortOrder
@@ -30942,6 +30960,7 @@ export namespace Prisma {
     insuranceType?: StringNullableWithAggregatesFilter<"Lead"> | string | null
     isActive?: BoolWithAggregatesFilter<"Lead"> | boolean
     isShowcase?: BoolWithAggregatesFilter<"Lead"> | boolean
+    isPremium?: BoolWithAggregatesFilter<"Lead"> | boolean
     isSold?: BoolWithAggregatesFilter<"Lead"> | boolean
     featured?: BoolWithAggregatesFilter<"Lead"> | boolean
     startsAt?: DateTimeNullableWithAggregatesFilter<"Lead"> | Date | string | null
@@ -32955,6 +32974,7 @@ export namespace Prisma {
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
+    isPremium?: boolean
     isSold?: boolean
     featured?: boolean
     startsAt?: Date | string | null
@@ -32982,6 +33002,7 @@ export namespace Prisma {
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
+    isPremium?: boolean
     isSold?: boolean
     featured?: boolean
     startsAt?: Date | string | null
@@ -33009,6 +33030,7 @@ export namespace Prisma {
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
+    isPremium?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -33036,6 +33058,7 @@ export namespace Prisma {
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
+    isPremium?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -33063,6 +33086,7 @@ export namespace Prisma {
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
+    isPremium?: boolean
     isSold?: boolean
     featured?: boolean
     startsAt?: Date | string | null
@@ -33087,6 +33111,7 @@ export namespace Prisma {
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
+    isPremium?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -33110,6 +33135,7 @@ export namespace Prisma {
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
+    isPremium?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -35485,6 +35511,7 @@ export namespace Prisma {
     insuranceType?: SortOrder
     isActive?: SortOrder
     isShowcase?: SortOrder
+    isPremium?: SortOrder
     isSold?: SortOrder
     featured?: SortOrder
     startsAt?: SortOrder
@@ -35517,6 +35544,7 @@ export namespace Prisma {
     insuranceType?: SortOrder
     isActive?: SortOrder
     isShowcase?: SortOrder
+    isPremium?: SortOrder
     isSold?: SortOrder
     featured?: SortOrder
     startsAt?: SortOrder
@@ -35541,6 +35569,7 @@ export namespace Prisma {
     insuranceType?: SortOrder
     isActive?: SortOrder
     isShowcase?: SortOrder
+    isPremium?: SortOrder
     isSold?: SortOrder
     featured?: SortOrder
     startsAt?: SortOrder
@@ -38263,6 +38292,7 @@ export namespace Prisma {
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
+    isPremium?: boolean
     isSold?: boolean
     featured?: boolean
     startsAt?: Date | string | null
@@ -38289,6 +38319,7 @@ export namespace Prisma {
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
+    isPremium?: boolean
     isSold?: boolean
     featured?: boolean
     startsAt?: Date | string | null
@@ -38641,6 +38672,7 @@ export namespace Prisma {
     insuranceType?: StringNullableFilter<"Lead"> | string | null
     isActive?: BoolFilter<"Lead"> | boolean
     isShowcase?: BoolFilter<"Lead"> | boolean
+    isPremium?: BoolFilter<"Lead"> | boolean
     isSold?: BoolFilter<"Lead"> | boolean
     featured?: BoolFilter<"Lead"> | boolean
     startsAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
@@ -39262,6 +39294,7 @@ export namespace Prisma {
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
+    isPremium?: boolean
     isSold?: boolean
     featured?: boolean
     startsAt?: Date | string | null
@@ -39288,6 +39321,7 @@ export namespace Prisma {
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
+    isPremium?: boolean
     isSold?: boolean
     featured?: boolean
     startsAt?: Date | string | null
@@ -39409,6 +39443,7 @@ export namespace Prisma {
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
+    isPremium?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -39435,6 +39470,7 @@ export namespace Prisma {
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
+    isPremium?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -39546,6 +39582,7 @@ export namespace Prisma {
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
+    isPremium?: boolean
     isSold?: boolean
     featured?: boolean
     startsAt?: Date | string | null
@@ -39572,6 +39609,7 @@ export namespace Prisma {
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
+    isPremium?: boolean
     isSold?: boolean
     featured?: boolean
     startsAt?: Date | string | null
@@ -39693,6 +39731,7 @@ export namespace Prisma {
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
+    isPremium?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -39719,6 +39758,7 @@ export namespace Prisma {
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
+    isPremium?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -39909,6 +39949,7 @@ export namespace Prisma {
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
+    isPremium?: boolean
     isSold?: boolean
     featured?: boolean
     startsAt?: Date | string | null
@@ -39935,6 +39976,7 @@ export namespace Prisma {
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
+    isPremium?: boolean
     isSold?: boolean
     featured?: boolean
     startsAt?: Date | string | null
@@ -40062,6 +40104,7 @@ export namespace Prisma {
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
+    isPremium?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -40088,6 +40131,7 @@ export namespace Prisma {
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
+    isPremium?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -42071,6 +42115,7 @@ export namespace Prisma {
     insuranceType?: string | null
     isActive?: boolean
     isShowcase?: boolean
+    isPremium?: boolean
     isSold?: boolean
     featured?: boolean
     startsAt?: Date | string | null
@@ -42201,6 +42246,7 @@ export namespace Prisma {
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
+    isPremium?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -42227,6 +42273,7 @@ export namespace Prisma {
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
+    isPremium?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -42253,6 +42300,7 @@ export namespace Prisma {
     insuranceType?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isShowcase?: BoolFieldUpdateOperationsInput | boolean
+    isPremium?: BoolFieldUpdateOperationsInput | boolean
     isSold?: BoolFieldUpdateOperationsInput | boolean
     featured?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
