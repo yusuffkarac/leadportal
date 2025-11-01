@@ -1,5 +1,7 @@
 import express from 'express'
 import { PrismaClient } from '../prismaClient.js'
+import { renderEmailTemplate } from '../utils/emailTemplateRenderer.js'
+import { sendAppEmail } from '../utils/mailer.js'
 
 const router = express.Router()
 const prisma = new PrismaClient()
@@ -308,11 +310,178 @@ router.delete('/email-templates/:id', requireAdmin, async (req, res) => {
     await prisma.emailTemplate.delete({
       where: { id: req.params.id }
     })
-    
+
     res.json({ message: 'Email template silindi' })
   } catch (error) {
     console.error('Email template delete error:', error)
     res.status(500).json({ message: 'Email template silinemedi' })
+  }
+})
+
+// Email template önizle
+router.post('/email-templates/:id/preview', requireAdmin, async (req, res) => {
+  try {
+    const template = await prisma.emailTemplate.findUnique({
+      where: { id: req.params.id }
+    })
+
+    if (!template) {
+      return res.status(404).json({ message: 'Email template bulunamadı' })
+    }
+
+    // Örnek değişkenleri oluştur
+    const exampleVariables = {
+      companyName: 'LeadPortal',
+      leadTitle: 'Test Lead',
+      amount: '5000',
+      newAmount: '6500',
+      currency: 'TL',
+      leadUrl: 'https://leadportal.com/leads/example-123',
+      year: new Date().getFullYear(),
+      userName: 'John Doe',
+      userEmail: 'john@example.com'
+    }
+
+    // Template'i render et
+    const rendered = await renderEmailTemplate(template.type, exampleVariables)
+
+    res.json({
+      subject: rendered.subject,
+      html: rendered.html,
+      text: rendered.text,
+      variables: template.variables || []
+    })
+  } catch (error) {
+    console.error('Email template preview error:', error)
+    res.status(500).json({ message: 'Email template önizlenemedi' })
+  }
+})
+
+// Email template test gönder
+router.post('/email-templates/:id/send-test', requireAdmin, async (req, res) => {
+  try {
+    const { testEmail, leadId } = req.body
+
+    if (!testEmail) {
+      return res.status(400).json({ message: 'Test email adresi gerekli' })
+    }
+
+    const template = await prisma.emailTemplate.findUnique({
+      where: { id: req.params.id }
+    })
+
+    if (!template) {
+      return res.status(404).json({ message: 'Email template bulunamadı' })
+    }
+
+    // Ayarlar ve lead verilerini al
+    const settings = await prisma.settings.findUnique({
+      where: { id: 'default' }
+    })
+
+    let variables = {
+      companyName: settings?.smtpFromName || 'LeadPortal',
+      year: new Date().getFullYear(),
+      userName: req.user.firstName || req.user.username || 'Admin',
+      userEmail: req.user.email
+    }
+
+    // Eğer leadId varsa, lead verilerini kullan
+    if (leadId) {
+      const lead = await prisma.lead.findUnique({
+        where: { id: leadId },
+        include: {
+          bids: {
+            orderBy: { createdAt: 'desc' },
+            take: 2
+          },
+          owner: true
+        }
+      })
+
+      if (lead) {
+        const latestBid = lead.bids[0]
+        const previousBid = lead.bids[1]
+
+        variables = {
+          ...variables,
+          leadTitle: lead.title,
+          amount: latestBid?.amount?.toString() || lead.startPrice.toString(),
+          newAmount: (previousBid ? previousBid.amount : lead.startPrice).toString(),
+          currency: 'TL',
+          leadUrl: `https://${req.hostname}/leads/${lead.id}`
+        }
+      }
+    } else {
+      // Örnek değişkenler
+      variables = {
+        ...variables,
+        leadTitle: 'Test Lead',
+        amount: '5000',
+        newAmount: '6500',
+        currency: 'TL',
+        leadUrl: 'https://leadportal.com/leads/example-123'
+      }
+    }
+
+    // Template'i render et
+    const rendered = await renderEmailTemplate(template.type, variables)
+
+    // Test email gönder
+    await sendAppEmail({
+      to: testEmail,
+      subject: `[TEST] ${rendered.subject}`,
+      html: rendered.html,
+      text: rendered.text
+    })
+
+    res.json({
+      message: 'Test email gönderildi',
+      sentTo: testEmail,
+      subject: rendered.subject,
+      usedVariables: variables
+    })
+  } catch (error) {
+    console.error('Email template send test error:', error)
+
+    // SMTP ayarları olmadığında veya bağlantı hatası olduğunda
+    if (error.message.includes('SMTP') || error.message.includes('connect')) {
+      return res.status(400).json({
+        message: 'SMTP ayarları yapılandırılmamış. Lütfen admin panelinde email ayarlarını kontrol edin.',
+        error: error.message
+      })
+    }
+
+    res.status(500).json({ message: 'Test email gönderilemedi', error: error.message })
+  }
+})
+
+// Leads listesini getir (test email için lead seçme)
+router.get('/leads-for-test', requireAdmin, async (req, res) => {
+  try {
+    const leads = await prisma.lead.findMany({
+      where: { isActive: true },
+      select: {
+        id: true,
+        title: true,
+        startPrice: true,
+        bids: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+          select: { amount: true }
+        },
+        owner: {
+          select: { firstName: true, username: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 50
+    })
+
+    res.json(leads)
+  } catch (error) {
+    console.error('Error fetching leads for test:', error)
+    res.status(500).json({ message: 'Lead\'ler yüklenemedi' })
   }
 })
 

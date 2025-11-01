@@ -1110,7 +1110,7 @@ nav a:first-of-type {
   transform: translateY(0) scale(1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: auto;
-  margin-top: 0.25rem;
+
   padding: 0.25rem 0;
 }
 

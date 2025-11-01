@@ -62,6 +62,14 @@
               </div>
             </div>
             <div class="template-footer">
+              <button class="btn btn-sm btn-outline" @click="previewEmailTemplate(template)">
+                <Icon icon="mdi:eye" width="14" height="14" />
+                Önizle
+              </button>
+              <button class="btn btn-sm btn-outline" @click="openTestEmailModal(template)">
+                <Icon icon="mdi:email-send" width="14" height="14" />
+                Test Gönder
+              </button>
               <button class="btn btn-sm btn-outline" @click="openEmailModal(template)">
                 <Icon icon="mdi:pencil" width="14" height="14" />
                 Düzenle
@@ -308,17 +316,6 @@ Teşekkürler,
           </div>
           
           <div class="field">
-            <label>Değişkenler</label>
-            <input
-              v-model="emailVariablesInput"
-              type="text"
-              class="input"
-              placeholder="companyName, leadTitle, amount, currency (virgülle ayırın)"
-            >
-            <small class="help">Bu template'de kullanılabilecek değişkenler (virgülle ayırın)</small>
-          </div>
-          
-          <div class="field">
             <label class="checkbox-label">
               <input
                 v-model="emailForm.isActive"
@@ -330,6 +327,14 @@ Teşekkürler,
         </div>
         <div class="modal-footer">
           <button class="btn btn-outline" @click="closeEmailModal">İptal</button>
+          <button v-if="editingEmailTemplate" class="btn btn-outline" @click="previewEmailTemplate(editingEmailTemplate)">
+            <Icon icon="mdi:eye" width="14" height="14" />
+            Önizle
+          </button>
+          <button v-if="editingEmailTemplate" class="btn btn-outline" @click="openTestEmailModal(editingEmailTemplate)">
+            <Icon icon="mdi:email-send" width="14" height="14" />
+            Test Gönder
+          </button>
           <button class="btn btn-primary" @click="saveEmailTemplate" :disabled="savingEmail">
             <span v-if="savingEmail" class="spinner-sm"></span>
             <span v-else>{{ editingEmailTemplate ? 'Güncelle' : 'Oluştur' }}</span>
@@ -416,17 +421,6 @@ Teşekkürler,
           </div>
           
           <div class="field">
-            <label>Değişkenler</label>
-            <input
-              v-model="smsVariablesInput"
-              type="text"
-              class="input"
-              placeholder="companyName, leadTitle, amount, currency (virgülle ayırın)"
-            >
-            <small class="help">Bu template'de kullanılabilecek değişkenler</small>
-          </div>
-          
-          <div class="field">
             <label class="checkbox-label">
               <input
                 v-model="smsForm.isActive"
@@ -441,6 +435,113 @@ Teşekkürler,
           <button class="btn btn-primary" @click="saveSmsTemplate" :disabled="savingSms">
             <span v-if="savingSms" class="spinner-sm"></span>
             <span v-else>{{ editingSmsTemplate ? 'Güncelle' : 'Oluştur' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Email Preview Modal -->
+    <div v-if="showPreviewModal" class="modal-overlay" @click.self="closePreviewModal">
+      <div class="modal preview-modal">
+        <div class="modal-header">
+          <h2>Email Önizlemesi</h2>
+          <button class="modal-close" @click="closePreviewModal">
+            <Icon icon="mdi:close" width="24" height="24" />
+          </button>
+        </div>
+        <div class="preview-content" v-if="previewData">
+          <div class="preview-section">
+            <strong>Konu:</strong>
+            <p class="preview-subject">{{ previewData.subject }}</p>
+          </div>
+          <div class="preview-divider"></div>
+          <div class="preview-section">
+            <strong>Email İçeriği:</strong>
+            <iframe
+              v-if="previewData.html"
+              class="email-preview-frame"
+              :srcdoc="previewData.html"
+              title="Email Preview"
+            ></iframe>
+          </div>
+        </div>
+        <div v-else class="preview-loading">
+          <div class="spinner-sm"></div>
+          <p>Yükleniyor...</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" @click="closePreviewModal">Kapat</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Test Email Modal -->
+    <div v-if="showTestModal" class="modal-overlay" @click.self="closeTestModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Test Email Gönder</h2>
+          <button class="modal-close" @click="closeTestModal">
+            <Icon icon="mdi:close" width="24" height="24" />
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label>Test Email Adresi *</label>
+            <input
+              v-model="testEmailAddress"
+              type="email"
+              class="input"
+              placeholder="ornek@example.com"
+              @keyup.enter="sendTestEmail"
+            >
+            <small class="help">Test emailinin gönderileceği adres</small>
+          </div>
+
+          <div class="field">
+            <label>Lead (Opsiyonel)</label>
+            <select v-model="selectedTestLead" class="input">
+              <option :value="null">Örnek Veriler Kullan</option>
+              <optgroup v-for="lead in availableLeads" :key="lead.id" :label="`${lead.title} (${lead.bids && lead.bids.length > 0 ? lead.bids[0].amount : lead.startPrice} TL)`">
+                <option :value="lead.id">{{ lead.title }}</option>
+              </optgroup>
+            </select>
+            <small class="help">Gerçek lead verilerini kullanmak için bir lead seçin</small>
+          </div>
+
+          <div class="field">
+            <label class="checkbox-label">
+              <input
+                v-model="showTestVariables"
+                type="checkbox"
+              >
+              <span>Kullanılacak değişkenleri göster</span>
+            </label>
+          </div>
+
+          <!-- Kullanılacak Değişkenler Tablosu -->
+          <div v-if="showTestVariables && testVariables" class="variables-table">
+            <h4>Email'de Kullanılacak Değişkenler</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Değişken Adı</th>
+                  <th>Değeri</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(value, key) in testVariables" :key="key">
+                  <td class="variable-name"><code v-text="`{{${key}}}`"></code></td>
+                  <td class="variable-value">{{ value }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" @click="closeTestModal" :disabled="sendingTest">İptal</button>
+          <button class="btn btn-primary" @click="sendTestEmail" :disabled="sendingTest || !testEmailAddress">
+            <span v-if="sendingTest" class="spinner-sm"></span>
+            <span v-else>Gönder</span>
           </button>
         </div>
       </div>
@@ -475,13 +576,26 @@ const emailForm = ref({
   variables: []
 })
 
-const emailVariablesInput = ref('')
-
 // SMS Templates
 const smsTemplates = ref([])
 const showSmsModal = ref(false)
 const editingSmsTemplate = ref(null)
 const savingSms = ref(false)
+
+// Preview Modal
+const showPreviewModal = ref(false)
+const previewData = ref(null)
+
+// Test Email Modal
+const showTestModal = ref(false)
+const testEmailAddress = ref('')
+const sendingTest = ref(false)
+const currentTestingTemplate = ref(null)
+const availableLeads = ref([])
+const selectedTestLead = ref(null)
+const showTestVariables = ref(false)
+const testVariables = ref(null)
+const loadingLeads = ref(false)
 
 const smsForm = ref({
   type: '',
@@ -491,8 +605,6 @@ const smsForm = ref({
   isActive: true,
   variables: []
 })
-
-const smsVariablesInput = ref('')
 
 // Common variables with icons
 const commonEmailVariables = [
@@ -884,7 +996,6 @@ function openEmailModal(template) {
       isActive: template.isActive,
       variables: template.variables || []
     }
-    emailVariablesInput.value = (template.variables || []).join(', ')
   } else {
     editingEmailTemplate.value = null
     emailForm.value = {
@@ -897,7 +1008,6 @@ function openEmailModal(template) {
       isActive: true,
       variables: []
     }
-    emailVariablesInput.value = ''
   }
   showAdvancedHtml.value = false // Her açılışta HTML kısmı kapalı
   showEmailModal.value = true
@@ -918,15 +1028,8 @@ async function saveEmailTemplate() {
 
     savingEmail.value = true
 
-    // Parse variables
-    const variables = emailVariablesInput.value
-      .split(',')
-      .map(v => v.trim())
-      .filter(v => v.length > 0)
-
     const data = {
-      ...emailForm.value,
-      variables
+      ...emailForm.value
     }
 
     if (editingEmailTemplate.value) {
@@ -974,7 +1077,6 @@ function openSmsModal(template) {
       isActive: template.isActive,
       variables: template.variables || []
     }
-    smsVariablesInput.value = (template.variables || []).join(', ')
   } else {
     editingSmsTemplate.value = null
     smsForm.value = {
@@ -985,7 +1087,6 @@ function openSmsModal(template) {
       isActive: true,
       variables: []
     }
-    smsVariablesInput.value = ''
   }
   showSmsModal.value = true
 }
@@ -1005,15 +1106,8 @@ async function saveSmsTemplate() {
 
     savingSms.value = true
 
-    // Parse variables
-    const variables = smsVariablesInput.value
-      .split(',')
-      .map(v => v.trim())
-      .filter(v => v.length > 0)
-
     const data = {
-      ...smsForm.value,
-      variables
+      ...smsForm.value
     }
 
     if (editingSmsTemplate.value) {
@@ -1049,9 +1143,135 @@ async function deleteSmsTemplate(id) {
   }
 }
 
+// Preview Email Template
+async function previewEmailTemplate(template) {
+  try {
+    previewData.value = null
+    showPreviewModal.value = true
+
+    const response = await api.post(`/email-sms-settings/email-templates/${template.id}/preview`)
+    previewData.value = response.data
+  } catch (error) {
+    console.error('Email template preview hatası:', error)
+    showAlert('Email önizlenemedi', 'error')
+    showPreviewModal.value = false
+  }
+}
+
+function closePreviewModal() {
+  showPreviewModal.value = false
+  previewData.value = null
+}
+
+// Test Email Modal Functions
+async function openTestEmailModal(template) {
+  currentTestingTemplate.value = template
+  testEmailAddress.value = ''
+  selectedTestLead.value = null
+  showTestVariables.value = false
+  testVariables.value = null
+  showTestModal.value = true
+
+  // Load available leads
+  await loadAvailableLeads()
+}
+
+function closeTestModal() {
+  showTestModal.value = false
+  testEmailAddress.value = ''
+  currentTestingTemplate.value = null
+  selectedTestLead.value = null
+  showTestVariables.value = false
+  testVariables.value = null
+}
+
+async function loadAvailableLeads() {
+  try {
+    loadingLeads.value = true
+    const response = await api.get('/email-sms-settings/leads-for-test')
+    availableLeads.value = response.data
+  } catch (error) {
+    console.error('Lead\'ler yüklenemedi:', error)
+    showAlert('Lead\'ler yüklenemedi', 'error')
+  } finally {
+    loadingLeads.value = false
+  }
+}
+
+// Watch selectedTestLead to update variables
+watch(selectedTestLead, async () => {
+  if (selectedTestLead.value) {
+    updateTestVariables()
+  } else {
+    testVariables.value = null
+  }
+})
+
+function updateTestVariables() {
+  if (!selectedTestLead.value) {
+    testVariables.value = null
+    return
+  }
+
+  const lead = availableLeads.value.find(l => l.id === selectedTestLead.value)
+  if (!lead) return
+
+  const currentBid = lead.bids && lead.bids.length > 0 ? lead.bids[0].amount : lead.startPrice
+  const prevBid = lead.startPrice
+
+  testVariables.value = {
+    companyName: 'LeadPortal',
+    leadTitle: lead.title,
+    amount: currentBid.toString(),
+    newAmount: prevBid.toString(),
+    currency: 'TL',
+    leadUrl: `https://leadportal.com/leads/${lead.id}`,
+    year: new Date().getFullYear(),
+    userName: lead.owner?.firstName || lead.owner?.username || 'Admin',
+    userEmail: 'admin@leadportal.com'
+  }
+}
+
+async function sendTestEmail() {
+  if (!currentTestingTemplate.value || !testEmailAddress.value) {
+    showAlert('Lütfen email adresini girin', 'error')
+    return
+  }
+
+  try {
+    sendingTest.value = true
+
+    const payload = {
+      testEmail: testEmailAddress.value
+    }
+
+    if (selectedTestLead.value) {
+      payload.leadId = selectedTestLead.value
+    }
+
+    const response = await api.post(`/email-sms-settings/email-templates/${currentTestingTemplate.value.id}/send-test`, payload)
+
+    showAlert(`Test email ${testEmailAddress.value} adresine gönderildi`, 'success')
+
+    // Gönderilen değişkenleri göster
+    if (response.data.usedVariables) {
+      testVariables.value = response.data.usedVariables
+      showTestVariables.value = true
+    }
+
+    closeTestModal()
+  } catch (error) {
+    console.error('Test email gönderme hatası:', error)
+    const errorMessage = error.response?.data?.message || 'Test email gönderilemedi'
+    showAlert(errorMessage, 'error')
+  } finally {
+    sendingTest.value = false
+  }
+}
+
 // Text content değişikliklerini izle
 watch(() => emailForm.value.textContent, (newText) => {
-  
+
   if (!showAdvancedHtml.value && newText) {
     generateHtmlFromText()
   }
@@ -1660,6 +1880,117 @@ onMounted(() => {
   margin-top: 2px;
 }
 
+/* Variables Table */
+.variables-table {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+
+.variables-table h4 {
+  margin: 0 0 1rem 0;
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.variables-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.variables-table th,
+.variables-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.variables-table th {
+  background: var(--panel);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.variables-table tbody tr:hover {
+  background: var(--panel);
+}
+
+.variable-name code {
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--primary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+}
+
+.variable-value {
+  word-break: break-word;
+  color: var(--muted);
+}
+
+/* Preview Modal */
+.preview-modal {
+  max-width: 900px;
+  max-height: 90vh;
+}
+
+.preview-content {
+  padding: 2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.preview-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  gap: 1rem;
+  color: var(--muted);
+}
+
+.preview-section {
+  margin-bottom: 1.5rem;
+}
+
+.preview-section strong {
+  display: block;
+  color: var(--text);
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.preview-subject {
+  padding: 1rem;
+  background: var(--bg);
+  border-left: 4px solid var(--primary);
+  border-radius: 0.5rem;
+  color: var(--text);
+  margin: 0;
+  word-break: break-word;
+}
+
+.preview-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 1.5rem 0;
+}
+
+.email-preview-frame {
+  width: 100%;
+  height: 500px;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: white;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .templates-grid {
@@ -1679,14 +2010,22 @@ onMounted(() => {
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .variables-chips {
     max-height: 120px;
     overflow-y: auto;
   }
-  
+
   .editor-toolbar {
     overflow-x: auto;
+  }
+
+  .preview-modal {
+    max-height: 95vh;
+  }
+
+  .email-preview-frame {
+    height: 350px;
   }
 }
 </style>
