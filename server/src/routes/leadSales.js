@@ -53,7 +53,9 @@ router.get('/admin/all', async (req, res) => {
             id: true,
             email: true,
             firstName: true,
-            lastName: true
+            lastName: true,
+            ibanAccountHolder: true,
+            ibanNumber: true
           }
         },
         lead: {

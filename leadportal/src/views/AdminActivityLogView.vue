@@ -62,7 +62,12 @@ const actionTranslations = {
   DISABLE_2FA : '2FA Deaktif Edildi',
   ADMIN_DISABLE_2FA : 'ADMIN - 2FA Deaktif Etti',
   INITIATE_2FA : '2FA Ayarlandı',
-  ENABLE_2FA	 : '2FA Aktif Edildi'
+  ENABLE_2FA	 : '2FA Aktif Edildi',
+  MARK_NOTIFICATION_READ : 'Bildirimler okundu işaretlendi',
+  MARK_ALL_NOTIFICATIONS_READ : 'Tüm Bildirimler okundu işaretlendi',
+  CONFIRM_IBAN_PAYMENT : 'IBAN Ödemesi Onaylandı',
+  REJECT_IBAN_PAYMENT : 'IBAN Ödemesi Reddedildi'
+
 
 
 }

@@ -41,12 +41,15 @@ async function performSearch(query) {
   try {
     const { data } = await api.get('/leads')
 
-    // Filter leads by title or description
+    //        lead.description.toLowerCase().includes(searchLower) ||
+
+    // Filter leads by id, title, description or insurance type
     const filtered = data.filter(lead => {
       const searchLower = query.toLowerCase()
+      const leadIdStr = String(lead.id || '').toLowerCase()
       return (
+        leadIdStr.includes(searchLower) ||
         lead.title.toLowerCase().includes(searchLower) ||
-        lead.description.toLowerCase().includes(searchLower) ||
         (lead.insuranceType && lead.insuranceType.toLowerCase().includes(searchLower))
       )
     })
@@ -61,7 +64,7 @@ async function performSearch(query) {
 }
 
 function goToLead(leadId) {
-  router.push(`/leads/${leadId}`)
+  router.push(`/lead/${leadId}`)
   close()
 }
 
@@ -115,7 +118,7 @@ function getCurrentPrice(lead) {
               v-model="searchQuery"
               type="text"
               class="search-input"
-              placeholder="Lead başlığı veya açıklama ara..."
+              placeholder="Lead ID veya Başlık ara..."
               autofocus
             />
             <Icon
@@ -142,6 +145,20 @@ function getCurrentPrice(lead) {
             <div v-else-if="searchResults.length > 0" class="search-results">
               <div class="results-header">
                 <span>{{ searchResults.length }} sonuç bulundu</span>
+            <div
+              v-for="lead in searchResults"
+              :key="lead.id"
+              class="result-item"
+              @click="goToLead(lead.id)"
+            >
+              <div class="result-header">
+                <div class="result-title-wrapper">
+                  <h3 class="result-title">{{ lead.title }}</h3>
+                  <span class="lead-id">ID: {{ lead.id }}</span>
+                </div>
+                <span class="lead-type-badge" :class="lead.leadType.toLowerCase()">
+                  {{ getLeadTypeLabel(lead.leadType) }}
+                </span>
               </div>
               <div
                 v-for="lead in searchResults"
@@ -172,6 +189,9 @@ function getCurrentPrice(lead) {
               <Icon icon="mdi:text-search" width="48" height="48" />
               <p>Lead başlığı veya açıklaması ile arama yapın</p>
             </div>
+          <div v-else class="search-prompt">
+            <Icon icon="mdi:text-search" width="48" height="48" />
+            <p>Lead ID veya başlık ile arama yapın</p>
           </div>
         </div>
       </div>
@@ -187,7 +207,7 @@ function getCurrentPrice(lead) {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -201,7 +221,7 @@ function getCurrentPrice(lead) {
   border-radius: 16px;
   width: 100%;
   max-width: 700px;
-  max-height: 80vh;
+  height: 80vh;
   display: flex;
   flex-direction: column;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
