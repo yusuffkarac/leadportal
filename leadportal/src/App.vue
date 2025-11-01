@@ -5,7 +5,7 @@ import UserProfile from './components/UserProfile.vue'
 import GlobalAlert from './components/GlobalAlert.vue'
 import NotificationDropdown from './components/NotificationDropdown.vue'
 import LeadSearchModal from './components/LeadSearchModal.vue'
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue'
 import { checkPageAccess } from './utils/permissions.js'
 import defaultLogo from '@/assets/images/logo.png'
 import api from '@/utils/axios.js'
@@ -332,8 +332,32 @@ const mobileAdminCategoryStates = ref({
   content: false
 })
 
-function toggleMobileAdminCategory(category) {
+// Mobile user profile dropdown state
+const isMobileUserProfileOpen = ref(false)
+
+async function toggleMobileAdminCategory(category) {
+  const wasOpen = mobileAdminCategoryStates.value[category]
   mobileAdminCategoryStates.value[category] = !mobileAdminCategoryStates.value[category]
+  
+  // Eğer kategori açıldıysa (önceden kapalıydı ve şimdi açıldı), scroll yap
+  if (!wasOpen && mobileAdminCategoryStates.value[category]) {
+    await nextTick()
+    
+    // Kategori header'ını bul
+    const categoryHeader = document.querySelector(`[data-category="${category}"]`)
+    const menuContent = document.querySelector('.mobile-menu-content')
+    
+    if (categoryHeader && menuContent) {
+      // Header'ın menu içindeki göreceli pozisyonunu bul
+      const headerTop = categoryHeader.offsetTop
+      
+      // 20px üstten boşluk bırakarak smooth scroll yap
+      menuContent.scrollTo({
+        top: headerTop - 20,
+        behavior: 'smooth'
+      })
+    }
+  }
 }
 
 function closeMobileAdminCategories() {
@@ -342,13 +366,21 @@ function closeMobileAdminCategories() {
   })
 }
 
-function toggleMobileMenu() {
+function toggleMobileUserProfile() {
+  isMobileUserProfileOpen.value = !isMobileUserProfileOpen.value
+}
+
+function toggleMobileMenu(event) {
+  if (event) {
+    event.stopPropagation()
+  }
   isMobileMenuOpen.value = !isMobileMenuOpen.value
 }
 
 function closeMobileMenu() {
   isMobileMenuOpen.value = false
   closeMobileAdminCategories()
+  isMobileUserProfileOpen.value = false
 }
 
 function openAdminDropdown() {
@@ -570,14 +602,14 @@ function closeAdminCategory() {
       </div>
 
       <!-- Mobile Menu Button -->
-      <button class="mobile-menu-btn" @click="toggleMobileMenu">
+      <button class="mobile-menu-btn" @click.stop="toggleMobileMenu">
         <Icon v-if="!isMobileMenuOpen" icon="mdi:menu" width="24" height="24" />
         <Icon v-else icon="mdi:close" width="24" height="24" />
       </button>
     </div>
 
     <!-- Mobile Menu Overlay -->
-    <div v-if="isMobileMenuOpen" class="mobile-menu-overlay" @click="closeMobileMenu"></div>
+    <div v-if="isMobileMenuOpen" class="mobile-menu-overlay" @click.self="closeMobileMenu"></div>
     
     <!-- Mobile Menu -->
     <div class="mobile-menu" :class="{ 'mobile-menu-open': isMobileMenuOpen }">
@@ -591,6 +623,42 @@ function closeAdminCategory() {
           <button class="mobile-menu-close" @click="closeMobileMenu">
             <Icon icon="mdi:close" width="24" height="24" />
           </button>
+        </div>
+        
+        <div v-if="isAuthed" class="mobile-user-section">
+          <div class="mobile-user-profile-trigger" @click="toggleMobileUserProfile">
+            <div class="user-avatar">
+              <img
+                v-if="currentUser?.profileImage"
+                :src="currentUser.profileImage"
+                :alt="currentUser?.firstName || 'User'"
+                class="avatar-img"
+              />
+              <div v-else class="avatar-placeholder">
+                {{ (currentUser?.firstName?.[0] || 'U').toUpperCase() }}
+              </div>
+            </div>
+            <div class="user-info">
+              <div class="user-name">{{ currentUser?.firstName || currentUser?.username || 'Kullanıcı' }}</div>
+              <div class="user-role">{{ userType?.name || 'Kullanıcı' }}</div>
+            </div>
+            <Icon :icon="isMobileUserProfileOpen ? 'mdi:chevron-up' : 'mdi:chevron-down'" width="20" height="20" />
+          </div>
+
+          <div v-if="isMobileUserProfileOpen" class="mobile-user-profile-menu">
+            <RouterLink to="/profile" @click="closeMobileMenu" class="mobile-user-menu-item">
+              <Icon icon="mdi:account" width="18" height="18" />
+              <span>Profil</span>
+            </RouterLink>
+            <RouterLink v-if="canAccessPurchased" to="/purchased-leads" @click="closeMobileMenu" class="mobile-user-menu-item">
+              <Icon icon="mdi:shopping-outline" width="18" height="18" />
+              <span>Satın Aldıklarım</span>
+            </RouterLink>
+            <button class="mobile-user-menu-item logout-item" @click="logout">
+              <Icon icon="mdi:logout-variant" width="18" height="18" />
+              <span>Çıkış Yap</span>
+            </button>
+          </div>
         </div>
         
         <RouterLink to="/" @click="closeMobileMenu" class="mobile-nav-link">
@@ -633,7 +701,7 @@ function closeAdminCategory() {
         <div v-if="isAuthed && (userTypeId === 'ADMIN' || userTypeId === 'SUPERADMIN')" class="mobile-admin-section">
           <!-- Yönetim Kategorisi -->
           <div class="mobile-nav-section">
-            <div class="mobile-nav-section-header" @click="toggleMobileAdminCategory('management')" style="cursor: pointer;">
+            <div class="mobile-nav-section-header" data-category="management" @click="toggleMobileAdminCategory('management')" style="cursor: pointer;">
               <Icon icon="mdi:view-dashboard-outline" width="20" height="20" />
               <span>Yönetim</span>
             </div>
@@ -667,7 +735,7 @@ function closeAdminCategory() {
 
           <!-- Ayarlar Kategorisi -->
           <div class="mobile-nav-section">
-            <div class="mobile-nav-section-header" @click="toggleMobileAdminCategory('settings')" style="cursor: pointer;">
+            <div class="mobile-nav-section-header" data-category="settings" @click="toggleMobileAdminCategory('settings')" style="cursor: pointer;">
               <Icon icon="mdi:cog-outline" width="20" height="20" />
               <span>Ayarlar</span>
             </div>
@@ -689,7 +757,7 @@ function closeAdminCategory() {
 
           <!-- Yetkiler Kategorisi -->
           <div class="mobile-nav-section">
-            <div class="mobile-nav-section-header" @click="toggleMobileAdminCategory('permissions')" style="cursor: pointer;">
+            <div class="mobile-nav-section-header" data-category="permissions" @click="toggleMobileAdminCategory('permissions')" style="cursor: pointer;">
               <Icon icon="mdi:shield-outline" width="20" height="20" />
               <span>Yetkiler</span>
             </div>
@@ -707,7 +775,7 @@ function closeAdminCategory() {
 
           <!-- İçerik Yönetimi Kategorisi -->
           <div class="mobile-nav-section">
-            <div class="mobile-nav-section-header" @click="toggleMobileAdminCategory('content')" style="cursor: pointer;">
+            <div class="mobile-nav-section-header" data-category="content" @click="toggleMobileAdminCategory('content')" style="cursor: pointer;">
               <Icon icon="mdi:file-document-outline" width="20" height="20" />
               <span>İçerik Yönetimi</span>
             </div>
@@ -726,21 +794,6 @@ function closeAdminCategory() {
               </RouterLink>
             </div>
           </div>
-        </div>
-        
-        <div v-if="isAuthed" class="mobile-user-section">
-          <UserProfile 
-            :user="currentUser" 
-            :role="role" 
-            :userType="userType"
-            :canAccessAbout="canAccessAbout"
-            :canAccessFAQ="canAccessFAQ"
-            :canAccessPurchased="canAccessPurchased"
-          />
-          <button class="mobile-logout-btn" @click="logout">
-            <Icon icon="mdi:logout-variant" width="20" height="20" />
-            <span>Çıkış</span>
-          </button>
         </div>
       </div>
     </div>
@@ -1319,36 +1372,116 @@ nav a:first-of-type {
 }
 
 .mobile-user-section {
-  border-top: 1px solid #e2e8f0;
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+
+.mobile-user-profile-trigger {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
 }
 
-.mobile-user-section .user-profile {
-  margin: 0 1rem;
-  min-width: auto;
+.mobile-user-profile-trigger:active {
+  background: #f3f4f6;
 }
 
-.mobile-logout-btn {
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid #e2e8f0;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+.mobile-user-profile-trigger{
+  background: linear-gradient(135deg,#f8fafc 0%,#e2e8f0 100%);
+}
+.mobile-user-profile-menu {
+  background: #fafbfc;
+  border: 1px solid #e2e8f0;
+  border-top: none;
+  border-radius: 0 0 0.375rem 0.375rem;
+  overflow: hidden;
+  animation: slideDown 0.2s ease;
+  margin-top: -1px;
+}
+
+.mobile-user-menu-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  background: none;
+  color: #374151;
+  text-decoration: none;
+  background: #fafbfc;
   border: none;
-  color: #ef4444;
-  font-size: 0.875rem;
-  font-weight: 500;
+  border-bottom: 1px solid #f3f4f6;
   cursor: pointer;
   transition: all 0.2s ease;
-  border-radius: 0.5rem;
-  margin: 0 0.5rem;
+  font-size: 0.875rem;
+  width: 100%;
+  text-align: left;
 }
 
-.mobile-logout-btn:hover {
+.mobile-user-menu-item:last-child {
+  border-bottom: none;
+}
+
+.mobile-user-menu-item:hover {
+  background: #f0f1f3;
+  color: #1f2937;
+  padding-left: 1.25rem;
+}
+
+.mobile-user-menu-item.logout-item {
+  color: #ef4444;
+}
+
+.mobile-user-menu-item.logout-item:hover {
   background: #fef2f2;
   color: #dc2626;
 }
