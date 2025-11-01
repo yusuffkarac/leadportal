@@ -321,6 +321,9 @@ const isAdminDropdownOpen = ref(false)
 const isLeadsDropdownOpen = ref(false)
 const showSearchModal = ref(false)
 
+// Multi-level admin menu states
+const activeAdminCategory = ref(null)
+
 function toggleMobileMenu() {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
 }
@@ -351,6 +354,14 @@ function openSearchModal() {
 
 function closeSearchModal() {
   showSearchModal.value = false
+}
+
+function openAdminCategory(category) {
+  activeAdminCategory.value = category
+}
+
+function closeAdminCategory() {
+  activeAdminCategory.value = null
 }
 </script>
 
@@ -406,91 +417,111 @@ function closeSearchModal() {
           </button>
           <div v-if="isAdminDropdownOpen" class="admin-dropdown-menu">
             <!-- Yönetim Kategorisi -->
-            <div class="menu-category">
-              <div class="category-header">
-                <Icon icon="mdi:view-dashboard-outline" width="14" height="14" />
+            <div class="menu-category" @mouseenter="openAdminCategory('management')" @mouseleave="closeAdminCategory">
+              <div class="category-trigger">
+                <Icon icon="mdi:view-dashboard-outline" width="16" height="16" />
                 <span>Yönetim</span>
+                <Icon icon="mdi:chevron-right" width="14" height="14" class="category-arrow" />
               </div>
-              <RouterLink to="/admin/leads" class="menu-item">
-                <Icon icon="mdi:briefcase-outline" width="16" height="16" />
-                Leadler
-              </RouterLink>
-              <RouterLink to="/admin/users" class="menu-item">
-                <Icon icon="mdi:account-group-outline" width="16" height="16" />
-                Kullanıcılar
-              </RouterLink>
-              <RouterLink to="/admin/statistics" class="menu-item">
-                <Icon icon="mdi:chart-line-variant" width="16" height="16" />
-                İstatistikler
-              </RouterLink>
-              <RouterLink to="/admin/activity-log" class="menu-item">
-                <Icon icon="mdi:history" width="16" height="16" />
-                Aktivite Geçmişi
-              </RouterLink>
-              <RouterLink to="/admin/balance" class="menu-item">
-                <Icon icon="mdi:wallet-outline" width="16" height="16" />
-                Bakiye Yönetimi
-              </RouterLink>
-              <RouterLink to="/admin/pending-payments" class="menu-item">
-                <Icon icon="mdi:clock-alert-outline" width="16" height="16" />
-                Bekleyen Ödemeler
-              </RouterLink>
+
+              <!-- Submenu -->
+              <div v-if="activeAdminCategory === 'management'" class="category-submenu">
+                <RouterLink to="/admin/leads" class="submenu-item">
+                  <Icon icon="mdi:briefcase-outline" width="16" height="16" />
+                  Leadler
+                </RouterLink>
+                <RouterLink to="/admin/users" class="submenu-item">
+                  <Icon icon="mdi:account-group-outline" width="16" height="16" />
+                  Kullanıcılar
+                </RouterLink>
+                <RouterLink to="/admin/statistics" class="submenu-item">
+                  <Icon icon="mdi:chart-line-variant" width="16" height="16" />
+                  İstatistikler
+                </RouterLink>
+                <RouterLink to="/admin/activity-log" class="submenu-item">
+                  <Icon icon="mdi:history" width="16" height="16" />
+                  Aktivite Geçmişi
+                </RouterLink>
+                <RouterLink to="/admin/balance" class="submenu-item">
+                  <Icon icon="mdi:wallet-outline" width="16" height="16" />
+                  Bakiye Yönetimi
+                </RouterLink>
+                <RouterLink to="/admin/pending-payments" class="submenu-item">
+                  <Icon icon="mdi:clock-alert-outline" width="16" height="16" />
+                  Bekleyen Ödemeler
+                </RouterLink>
+              </div>
             </div>
 
             <!-- Ayarlar Kategorisi -->
-            <div class="menu-category">
-              <div class="category-header">
-                <Icon icon="mdi:cog-outline" width="14" height="14" />
-                <span>Ayarlar</span>
-              </div>
-              <RouterLink to="/admin/settings" class="menu-item">
+            <div class="menu-category" @mouseenter="openAdminCategory('settings')" @mouseleave="closeAdminCategory">
+              <div class="category-trigger">
                 <Icon icon="mdi:cog-outline" width="16" height="16" />
-                Ayarlar
-              </RouterLink>
-              <RouterLink to="/admin/email-sms-settings" class="menu-item">
-                <Icon icon="mdi:email-outline" width="16" height="16" />
-                Mail/SMS Ayarları
-              </RouterLink>
-              <RouterLink to="/admin/notification-settings" class="menu-item">
-                <Icon icon="mdi:bell-outline" width="16" height="16" />
-                Bildirim Ayarları
-              </RouterLink>
+                <span>Ayarlar</span>
+                <Icon icon="mdi:chevron-right" width="14" height="14" class="category-arrow" />
+              </div>
+
+              <!-- Submenu -->
+              <div v-if="activeAdminCategory === 'settings'" class="category-submenu">
+                <RouterLink to="/admin/settings" class="submenu-item">
+                  <Icon icon="mdi:cog-outline" width="16" height="16" />
+                  Ayarlar
+                </RouterLink>
+                <RouterLink to="/admin/email-sms-settings" class="submenu-item">
+                  <Icon icon="mdi:email-outline" width="16" height="16" />
+                  Mail/SMS Ayarları
+                </RouterLink>
+                <RouterLink to="/admin/notification-settings" class="submenu-item">
+                  <Icon icon="mdi:bell-outline" width="16" height="16" />
+                  Bildirim Ayarları
+                </RouterLink>
+              </div>
             </div>
 
             <!-- Yetkiler Kategorisi -->
-            <div class="menu-category">
-              <div class="category-header">
-                <Icon icon="mdi:shield-outline" width="14" height="14" />
+            <div class="menu-category" @mouseenter="openAdminCategory('permissions')" @mouseleave="closeAdminCategory">
+              <div class="category-trigger">
+                <Icon icon="mdi:shield-outline" width="16" height="16" />
                 <span>Yetkiler</span>
+                <Icon icon="mdi:chevron-right" width="14" height="14" class="category-arrow" />
               </div>
-              <RouterLink to="/admin/user-types" class="menu-item">
-                <Icon icon="mdi:account-multiple-outline" width="16" height="16" />
-                Kullanıcı Tipleri
-              </RouterLink>
-              <RouterLink to="/admin/lead-type-permissions" class="menu-item">
-                <Icon icon="mdi:shield-check-outline" width="16" height="16" />
-                Lead Tipi Yetkileri
-              </RouterLink>
+
+              <!-- Submenu -->
+              <div v-if="activeAdminCategory === 'permissions'" class="category-submenu">
+                <RouterLink to="/admin/user-types" class="submenu-item">
+                  <Icon icon="mdi:account-multiple-outline" width="16" height="16" />
+                  Kullanıcı Tipleri
+                </RouterLink>
+                <RouterLink to="/admin/lead-type-permissions" class="submenu-item">
+                  <Icon icon="mdi:shield-check-outline" width="16" height="16" />
+                  Lead Tipi Yetkileri
+                </RouterLink>
+              </div>
             </div>
 
             <!-- İçerik Yönetimi Kategorisi -->
-            <div class="menu-category">
-              <div class="category-header">
-                <Icon icon="mdi:file-document-outline" width="14" height="14" />
+            <div class="menu-category" @mouseenter="openAdminCategory('content')" @mouseleave="closeAdminCategory">
+              <div class="category-trigger">
+                <Icon icon="mdi:file-document-outline" width="16" height="16" />
                 <span>İçerik Yönetimi</span>
+                <Icon icon="mdi:chevron-right" width="14" height="14" class="category-arrow" />
               </div>
-              <RouterLink to="/admin/faq" class="menu-item">
-                <Icon icon="mdi:help-circle-outline" width="16" height="16" />
-                FAQ Yönetimi
-              </RouterLink>
-              <RouterLink to="/admin/about" class="menu-item">
-                <Icon icon="mdi:information-outline" width="16" height="16" />
-                Hakkında Yönetimi
-              </RouterLink>
-              <RouterLink to="/admin/homepage-settings" class="menu-item">
-                <Icon icon="mdi:home-outline" width="16" height="16" />
-                Ana Sayfa Yönetimi
-              </RouterLink>
+
+              <!-- Submenu -->
+              <div v-if="activeAdminCategory === 'content'" class="category-submenu">
+                <RouterLink to="/admin/faq" class="submenu-item">
+                  <Icon icon="mdi:help-circle-outline" width="16" height="16" />
+                  FAQ Yönetimi
+                </RouterLink>
+                <RouterLink to="/admin/about" class="submenu-item">
+                  <Icon icon="mdi:information-outline" width="16" height="16" />
+                  Hakkında Yönetimi
+                </RouterLink>
+                <RouterLink to="/admin/homepage-settings" class="submenu-item">
+                  <Icon icon="mdi:home-outline" width="16" height="16" />
+                  Ana Sayfa Yönetimi
+                </RouterLink>
+              </div>
             </div>
           </div>
         </div>
@@ -1002,56 +1033,104 @@ nav a:first-of-type {
 
 /* Menu Categories */
 .menu-category {
-  padding: 0.5rem 0;
+  position: relative;
 }
 
 .menu-category:not(:last-child) {
   border-bottom: 1px solid #e2e8f0;
 }
 
-.category-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #6b7280;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: #f9fafb;
-}
-
-.category-header svg {
-  flex-shrink: 0;
-  opacity: 0.7;
-}
-
-.menu-item {
+.category-trigger {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.625rem 1rem 0.625rem 2.25rem;
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.category-trigger:hover {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  color: #1f2937;
+}
+
+.category-trigger span {
+  flex: 1;
+}
+
+.category-arrow {
+  margin-left: auto;
+  transition: transform 0.2s ease;
+  color: #9ca3af;
+}
+
+.category-trigger:hover .category-arrow {
+  transform: translateX(2px);
+  color: #374151;
+}
+
+.category-trigger svg:first-child {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.category-trigger:hover svg:first-child {
+  transform: scale(1.1);
+}
+
+/* Category Submenu */
+.category-submenu {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  min-width: 14rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  z-index: 60;
+  margin-left: 0.25rem;
+  opacity: 0;
+  transform: translateX(-10px);
+  animation: slideInSubmenu 0.2s ease forwards;
+  overflow: hidden;
+}
+
+@keyframes slideInSubmenu {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.submenu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
   color: #374151;
   text-decoration: none;
   transition: all 0.2s ease;
   font-size: 0.875rem;
 }
 
-.menu-item:hover {
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  color: #1f2937;
-  box-shadow: inset 3px 0px 0px var(--text);
+.submenu-item:hover {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+  padding-left: 1.25rem;
 }
 
-.menu-item svg {
+.submenu-item svg {
   transition: transform 0.2s ease;
   flex-shrink: 0;
 }
 
-.menu-item:hover svg {
+.submenu-item:hover svg {
   transform: scale(1.1);
-  color: var(--text);
 }
 
 @keyframes slideInFromLeft {

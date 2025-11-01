@@ -131,20 +131,20 @@ function getCurrentPrice(lead) {
             />
           </div>
 
-          <div v-if="isSearching" class="search-status">
-            <Icon icon="mdi:loading" width="24" height="24" class="spinner" />
-            <span>Aranıyor...</span>
-          </div>
-
-          <div v-else-if="hasSearched && searchResults.length === 0" class="search-status">
-            <Icon icon="mdi:alert-circle-outline" width="24" height="24" />
-            <span>Sonuç bulunamadı</span>
-          </div>
-
-          <div v-else-if="searchResults.length > 0" class="search-results">
-            <div class="results-header">
-              <span>{{ searchResults.length }} sonuç bulundu</span>
+          <div class="search-content">
+            <div v-if="isSearching" class="search-status">
+              <Icon icon="mdi:loading" width="24" height="24" class="spinner" />
+              <span>Aranıyor...</span>
             </div>
+
+            <div v-else-if="hasSearched && searchResults.length === 0" class="search-status">
+              <Icon icon="mdi:alert-circle-outline" width="24" height="24" />
+              <span>Sonuç bulunamadı</span>
+            </div>
+
+            <div v-else-if="searchResults.length > 0" class="search-results">
+              <div class="results-header">
+                <span>{{ searchResults.length }} sonuç bulundu</span>
             <div
               v-for="lead in searchResults"
               :key="lead.id"
@@ -160,19 +160,35 @@ function getCurrentPrice(lead) {
                   {{ getLeadTypeLabel(lead.leadType) }}
                 </span>
               </div>
-              <p class="result-description">{{ lead.description }}</p>
-              <div class="result-footer">
-                <div class="result-info">
-                  <Icon icon="mdi:shield-check" width="16" height="16" />
-                  <span>{{ lead.insuranceType || 'Belirtilmemiş' }}</span>
+              <div
+                v-for="lead in searchResults"
+                :key="lead.id"
+                class="result-item"
+                @click="goToLead(lead.id)"
+              >
+                <div class="result-header">
+                  <h3 class="result-title">{{ lead.title }}</h3>
+                  <span class="lead-type-badge" :class="lead.leadType.toLowerCase()">
+                    {{ getLeadTypeLabel(lead.leadType) }}
+                  </span>
                 </div>
-                <div class="result-price">
-                  {{ formatPrice(getCurrentPrice(lead)) }}
+                <p class="result-description">{{ lead.description }}</p>
+                <div class="result-footer">
+                  <div class="result-info">
+                    <Icon icon="mdi:shield-check" width="16" height="16" />
+                    <span>{{ lead.insuranceType || 'Belirtilmemiş' }}</span>
+                  </div>
+                  <div class="result-price">
+                    {{ formatPrice(getCurrentPrice(lead)) }}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
+            <div v-else class="search-prompt">
+              <Icon icon="mdi:text-search" width="48" height="48" />
+              <p>Lead başlığı veya açıklaması ile arama yapın</p>
+            </div>
           <div v-else class="search-prompt">
             <Icon icon="mdi:text-search" width="48" height="48" />
             <p>Lead ID veya başlık ile arama yapın</p>
@@ -264,6 +280,14 @@ function getCurrentPrice(lead) {
   padding: 1.5rem;
   overflow-y: auto;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-content {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
 }
 
 .search-input-wrapper {
@@ -314,6 +338,7 @@ function getCurrentPrice(lead) {
   padding: 3rem 1rem;
   color: #6b7280;
   font-size: 1rem;
+  flex: 1;
 }
 
 .spinner {
@@ -329,6 +354,7 @@ function getCurrentPrice(lead) {
   padding: 3rem 1rem;
   color: #9ca3af;
   text-align: center;
+  flex: 1;
 }
 
 .search-prompt p {
@@ -340,6 +366,8 @@ function getCurrentPrice(lead) {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .results-header {
