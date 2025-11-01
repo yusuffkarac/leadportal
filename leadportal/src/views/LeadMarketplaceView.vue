@@ -153,6 +153,37 @@ function formatTimeRemaining(endsAt) {
   }
 }
 
+// Kalan zaman belirli bir süreden az mı kontrol et (saniye cinsinden)
+function isTimeRemaining(endsAt, seconds) {
+  const now = new Date()
+  const endTime = new Date(endsAt)
+  const diff = (endTime - now) / 1000
+  return diff > 0 && diff < seconds
+}
+
+// Sigorta tipi için CSS sınıfı döndür
+function getInsuranceTypeClass(typeName) {
+  if (!typeName) return 'insurance-default'
+  // Önceden tanımlı renk haritası
+  const typeColorMap = {
+    'KV-Voll': 'insurance-kv-voll',
+    'KV': 'insurance-kv',
+    'Hayvan': 'insurance-animal',
+    'Araba': 'insurance-car',
+    'Sağlık': 'insurance-health'
+  }
+  return typeColorMap[typeName] || 'insurance-default'
+}
+
+// Minimum teklif tutarı hesapla
+function getMinBidAmount(lead) {
+  if (!lead) return '0'
+  if (lead.bids && lead.bids.length) {
+    return (lead.bids[0].amount + lead.minIncrement).toString()
+  }
+  return (lead.startPrice + lead.minIncrement).toString()
+}
+
 // Ayarları yükle
 async function loadSettings() {
   try {
@@ -711,29 +742,32 @@ onUnmounted(() => {
         <table class="leads-table">
           <thead>
             <tr>
-              <th>Lead</th>
-              <th>Sigorta Tipi</th>
-              <th>Güncel Teklif</th>
-              <th>Anında Al</th>
+              <th>Lead ID & Başlık</th>
+              <th>Teklifler</th>
+              <th>Güncel Fiyat</th>
+              <th>Hızlı Teklif</th>
               <th>Kalan Süre</th>
-              <th>Teklif Sayısı</th>
               <th>Durum</th>
               <th>İşlemler</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="lead in leads" :key="lead.id" class="table-row" :class="{ 'expired-row': lead.isExpired }">
+            <tr v-for="lead in leads" :key="lead.id" class="table-row" :class="{ 'expired-row': lead.isExpired, 'critical-time': isTimeRemaining(lead.endsAt, 60) }">
               <td class="lead-cell">
                 <div class="lead-info">
                   <Icon v-if="lead.insuranceType" :icon="getInsuranceTypeIcon(lead.insuranceType)" class="table-icon" width="16" height="16" />
                   <div>
-                    <div class="lead-title-text">{{ lead.title }}</div>
+                    <div class="lead-id-badge">LP-{{ lead.id }}</div>
+                    <div class="lead-title-text">
+                      <span v-if="lead.insuranceType" class="insurance-type-inline" :class="getInsuranceTypeClass(lead.insuranceType)">{{ lead.insuranceType }}</span>
+                      {{ lead.title }}
+                    </div>
                     <div class="lead-description-text">{{ lead.description?.substring(0, 60) }}...</div>
                   </div>
                 </div>
               </td>
               <td>
-                <span class="insurance-badge">{{ lead.insuranceType || '-' }}</span>
+                <span class="bid-count-highlight">{{ lead.bids ? lead.bids.length : 0 }} teklif</span>
               </td>
               <td>
                 <div class="price-cell">
@@ -744,16 +778,32 @@ onUnmounted(() => {
                 </div>
               </td>
               <td>
-                <span v-if="lead.instantBuyPrice" class="instant-price-badge">
-                  {{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}
-                </span>
+                <div v-if="lead.leadType !== 'SOFORT_KAUF' && !lead.isExpired && lead.isActive" class="quick-bid-cell" @click.stop>
+                  <div class="quick-bid-inline">
+                    <input
+                      type="number"
+                      class="quick-bid-input-inline"
+                      :placeholder="getMinBidAmount(lead)"
+                      v-model="quickBidAmounts[lead.id]"
+                      @click="$event.stopPropagation()"
+                      :min="getMinBidAmount(lead)"
+                    />
+                    <button
+                      class="quick-bid-submit-inline"
+                      @click="submitQuickBid(lead, quickBidAmounts[lead.id])"
+                      :disabled="!quickBidAmounts[lead.id] || quickBidAmounts[lead.id] <= 0"
+                    >
+                      Teklif
+                    </button>
+                  </div>
+                </div>
                 <span v-else class="text-muted">-</span>
               </td>
-              <td>
-                <span class="time-remaining">{{ formatTimeRemaining(lead.endsAt) }}</span>
-              </td>
-              <td>
-                <span class="bid-count">{{ lead.bids ? lead.bids.length : 0 }}</span>
+              <td class="time-cell">
+                <div class="countdown-timer" :class="{ 'blinking': isTimeRemaining(lead.endsAt, 60) }">
+                  <Icon icon="mdi:clock" width="16" height="16" />
+                  <span class="time-text">{{ formatTimeRemaining(lead.endsAt) }}</span>
+                </div>
               </td>
               <td>
                 <span class="status-badge-table" :class="lead.isExpired ? 'expired' : 'active'">
@@ -2022,6 +2072,174 @@ onUnmounted(() => {
 
 .table-btn.success:hover {
   background: #059669;
+}
+
+/* Lead ID Badge */
+.lead-id-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #6b7280;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+}
+
+/* Insurance Type Inline Badge */
+.insurance-type-inline {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-right: 4px;
+  color: white;
+}
+
+.insurance-kv-voll {
+  background: #dc2626;
+}
+
+.insurance-kv {
+  background: #f97316;
+}
+
+.insurance-animal {
+  background: #8b5cf6;
+}
+
+.insurance-car {
+  background: #0ea5e9;
+}
+
+.insurance-health {
+  background: #10b981;
+}
+
+.insurance-default {
+  background: #6b7280;
+}
+
+/* Bid Count Highlight */
+.bid-count-highlight {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  color: #15803d;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+/* Quick Bid Inline */
+.quick-bid-cell {
+  padding: 10px 16px !important;
+}
+
+.quick-bid-inline {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  width: 100%;
+}
+
+.quick-bid-input-inline {
+  flex: 1;
+  min-width: 60px;
+  padding: 6px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: white;
+  color: #0f172a;
+  transition: all 0.2s ease;
+}
+
+.quick-bid-input-inline:focus {
+  outline: none;
+  border-color: #0f172a;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1);
+}
+
+.quick-bid-submit-inline {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  background: #0f172a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.quick-bid-submit-inline:hover:not(:disabled) {
+  background: #1e293b;
+}
+
+.quick-bid-submit-inline:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Countdown Timer */
+.time-cell {
+  position: relative;
+}
+
+.countdown-timer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #374151;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  transition: all 0.2s ease;
+}
+
+.countdown-timer svg {
+  flex-shrink: 0;
+}
+
+.time-text {
+  font-size: 0.875rem;
+  letter-spacing: 0.5px;
+}
+
+/* Blinking Effect for Last Minute */
+.blinking {
+  animation: blink 1s infinite;
+  background: #fee2e2;
+  color: #991b1b;
+  font-weight: 700;
+}
+
+@keyframes blink {
+  0%, 49% {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+  50%, 100% {
+    background: #fecaca;
+    color: #7f1d1d;
+  }
+}
+
+/* Critical Time Row */
+.table-row.critical-time {
+  background: #fffbeb;
+}
+
+.table-row.critical-time:hover {
+  background: #fef3c7;
 }
 
 /* Tablo Responsive */
