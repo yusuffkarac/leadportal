@@ -110,9 +110,7 @@ io.on('connection', (socket) => {
   console.log('[Socket] Client connected:', socket.id, 'User:', socket.data.user?.id || 'anonymous')
 
   socket.on('join-lead', (leadId) => {
-    console.log('[Socket] Client', socket.id, 'joining lead room:', leadId)
     socket.join(`lead:${leadId}`)
-    console.log('[Socket] Client', socket.id, 'joined room: lead:' + leadId)
   })
 
   socket.on('disconnect', (reason) => {

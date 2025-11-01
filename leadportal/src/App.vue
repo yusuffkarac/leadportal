@@ -356,12 +356,22 @@ function closeSearchModal() {
   showSearchModal.value = false
 }
 
+let categoryCloseTimer = null
+
 function openAdminCategory(category) {
+  if (categoryCloseTimer) {
+    clearTimeout(categoryCloseTimer)
+    categoryCloseTimer = null
+  }
   activeAdminCategory.value = category
 }
 
 function closeAdminCategory() {
-  activeAdminCategory.value = null
+  // Submenu'den ayrılırken gecikme ekle - submenu'ye geçiş için zaman tanı
+  categoryCloseTimer = setTimeout(() => {
+    activeAdminCategory.value = null
+    categoryCloseTimer = null
+  }, 400)
 }
 </script>
 
@@ -425,7 +435,7 @@ function closeAdminCategory() {
               </div>
 
               <!-- Submenu -->
-              <div v-if="activeAdminCategory === 'management'" class="category-submenu">
+              <div v-if="activeAdminCategory === 'management'" class="category-submenu" @mouseenter="openAdminCategory('management')" @mouseleave="closeAdminCategory">
                 <RouterLink to="/admin/leads" class="submenu-item">
                   <Icon icon="mdi:briefcase-outline" width="16" height="16" />
                   Leadler
@@ -462,7 +472,7 @@ function closeAdminCategory() {
               </div>
 
               <!-- Submenu -->
-              <div v-if="activeAdminCategory === 'settings'" class="category-submenu">
+              <div v-if="activeAdminCategory === 'settings'" class="category-submenu" @mouseenter="openAdminCategory('settings')" @mouseleave="closeAdminCategory">
                 <RouterLink to="/admin/settings" class="submenu-item">
                   <Icon icon="mdi:cog-outline" width="16" height="16" />
                   Ayarlar
@@ -487,7 +497,7 @@ function closeAdminCategory() {
               </div>
 
               <!-- Submenu -->
-              <div v-if="activeAdminCategory === 'permissions'" class="category-submenu">
+              <div v-if="activeAdminCategory === 'permissions'" class="category-submenu" @mouseenter="openAdminCategory('permissions')" @mouseleave="closeAdminCategory">
                 <RouterLink to="/admin/user-types" class="submenu-item">
                   <Icon icon="mdi:account-multiple-outline" width="16" height="16" />
                   Kullanıcı Tipleri
@@ -508,7 +518,7 @@ function closeAdminCategory() {
               </div>
 
               <!-- Submenu -->
-              <div v-if="activeAdminCategory === 'content'" class="category-submenu">
+              <div v-if="activeAdminCategory === 'content'" class="category-submenu" @mouseenter="openAdminCategory('content')" @mouseleave="closeAdminCategory">
                 <RouterLink to="/admin/faq" class="submenu-item">
                   <Icon icon="mdi:help-circle-outline" width="16" height="16" />
                   FAQ Yönetimi
@@ -1018,22 +1028,20 @@ nav a:first-of-type {
   border-radius: 0.5rem;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   z-index: 50;
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(-15px) scale(0.95);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  pointer-events: none;
-}
-
-.admin-dropdown:hover .admin-dropdown-menu {
+  overflow: visible;
   opacity: 1;
   transform: translateY(0) scale(1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: auto;
+  margin-top: 0.25rem;
+  padding: 0.25rem 0;
 }
 
 /* Menu Categories */
 .menu-category {
   position: relative;
+  display: block;
+  overflow: visible;
 }
 
 .menu-category:not(:last-child) {
@@ -1085,19 +1093,19 @@ nav a:first-of-type {
 /* Category Submenu */
 .category-submenu {
   position: absolute;
-  left: 100%;
-  top: 0;
+  left: calc(100% - 1rem);
+  top: -0.25rem;
   min-width: 14rem;
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   z-index: 60;
-  margin-left: 0.25rem;
-  opacity: 0;
-  transform: translateX(-10px);
-  animation: slideInSubmenu 0.2s ease forwards;
+
+  opacity: 1;
+  transform: translateX(0);
   overflow: hidden;
+  pointer-events: auto;
 }
 
 @keyframes slideInSubmenu {

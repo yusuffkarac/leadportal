@@ -145,20 +145,6 @@ function getCurrentPrice(lead) {
             <div v-else-if="searchResults.length > 0" class="search-results">
               <div class="results-header">
                 <span>{{ searchResults.length }} sonuç bulundu</span>
-            <div
-              v-for="lead in searchResults"
-              :key="lead.id"
-              class="result-item"
-              @click="goToLead(lead.id)"
-            >
-              <div class="result-header">
-                <div class="result-title-wrapper">
-                  <h3 class="result-title">{{ lead.title }}</h3>
-                  <span class="lead-id">ID: {{ lead.id }}</span>
-                </div>
-                <span class="lead-type-badge" :class="lead.leadType.toLowerCase()">
-                  {{ getLeadTypeLabel(lead.leadType) }}
-                </span>
               </div>
               <div
                 v-for="lead in searchResults"
@@ -167,7 +153,10 @@ function getCurrentPrice(lead) {
                 @click="goToLead(lead.id)"
               >
                 <div class="result-header">
-                  <h3 class="result-title">{{ lead.title }}</h3>
+                  <div class="result-title-wrapper">
+                    <h3 class="result-title">{{ lead.title }}</h3>
+                    <span class="lead-id">ID: {{ lead.id }}</span>
+                  </div>
                   <span class="lead-type-badge" :class="lead.leadType.toLowerCase()">
                     {{ getLeadTypeLabel(lead.leadType) }}
                   </span>
@@ -187,11 +176,8 @@ function getCurrentPrice(lead) {
 
             <div v-else class="search-prompt">
               <Icon icon="mdi:text-search" width="48" height="48" />
-              <p>Lead başlığı veya açıklaması ile arama yapın</p>
+              <p>Lead ID veya başlık ile arama yapın</p>
             </div>
-          <div v-else class="search-prompt">
-            <Icon icon="mdi:text-search" width="48" height="48" />
-            <p>Lead ID veya başlık ile arama yapın</p>
           </div>
         </div>
       </div>

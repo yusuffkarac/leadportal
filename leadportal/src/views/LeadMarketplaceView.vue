@@ -161,18 +161,22 @@ function isTimeRemaining(endsAt, seconds) {
   return diff > 0 && diff < seconds
 }
 
-// Sigorta tipi için CSS sınıfı döndür
-function getInsuranceTypeClass(typeName) {
-  if (!typeName) return 'insurance-default'
-  // Önceden tanımlı renk haritası
-  const typeColorMap = {
-    'KV-Voll': 'insurance-kv-voll',
-    'KV': 'insurance-kv',
-    'Hayvan': 'insurance-animal',
-    'Araba': 'insurance-car',
-    'Sağlık': 'insurance-health'
+// Sigorta tipi için rengi döndür (setting'den)
+function getInsuranceTypeColor(typeName) {
+  if (!typeName) return '#6b7280' // default gray
+  const typeObj = settings.value.insuranceTypes.find(t => (typeof t === 'object' ? t.name : t) === typeName)
+  if (typeObj && typeof typeObj === 'object' && typeObj.color) {
+    return typeObj.color
   }
-  return typeColorMap[typeName] || 'insurance-default'
+  // Fallback renkler
+  const typeColorMap = {
+    'KV-Voll': '#dc2626',
+    'KV': '#f97316',
+    'Hayvan': '#8b5cf6',
+    'Araba': '#0ea5e9',
+    'Sağlık': '#10b981'
+  }
+  return typeColorMap[typeName] || '#6b7280'
 }
 
 // Minimum teklif tutarı hesapla
@@ -758,7 +762,7 @@ onUnmounted(() => {
                   <div>
                     <div class="lead-id-badge">LP-{{ lead.id }}</div>
                     <div class="lead-title-text">
-                      <span v-if="lead.insuranceType" class="insurance-type-inline" :class="getInsuranceTypeClass(lead.insuranceType)">{{ lead.insuranceType }}</span>
+                      <span v-if="lead.insuranceType" class="insurance-type-inline" :style="{ backgroundColor: getInsuranceTypeColor(lead.insuranceType) }">{{ lead.insuranceType }}</span>
                       {{ lead.title }}
                     </div>
                    <!-- <div class="lead-description-text">{{ lead.description?.substring(0, 60) }}...</div>-->
@@ -2091,30 +2095,6 @@ onUnmounted(() => {
   text-transform: uppercase;
   margin-right: 4px;
   color: white;
-}
-
-.insurance-kv-voll {
-  background: #dc2626;
-}
-
-.insurance-kv {
-  background: #f97316;
-}
-
-.insurance-animal {
-  background: #8b5cf6;
-}
-
-.insurance-car {
-  background: #0ea5e9;
-}
-
-.insurance-health {
-  background: #10b981;
-}
-
-.insurance-default {
-  background: #6b7280;
 }
 
 /* Price and Bid Combined Cell */

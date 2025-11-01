@@ -430,13 +430,13 @@
                   <label class="setting-label">Mevcut Sigorta Türleri</label>
                   <div class="insurance-types-list">
                     <div v-for="(type, index) in settings.insuranceTypes" :key="index" class="insurance-type-item-with-icon">
-                      <div class="icon-preview">
+                      <div class="icon-preview" :style="{ backgroundColor: settings.insuranceTypes[index].color || '#f3f4f6' }">
                         <Icon :icon="(type && type.icon) ? type.icon : 'mdi:file'" width="20" height="20" />
                       </div>
-                      <input 
-                        v-model="settings.insuranceTypes[index].name" 
-                        type="text" 
-                        class="insurance-type-input" 
+                      <input
+                        v-model="settings.insuranceTypes[index].name"
+                        type="text"
+                        class="insurance-type-input"
                         placeholder="Tür Adı"
                       />
                       <div class="icon-picker">
@@ -455,6 +455,17 @@
                           </div>
                         </div>
                       </Teleport>
+                      <div class="color-picker-wrapper">
+                        <label class="color-picker-label" :title="`Renk: ${settings.insuranceTypes[index].color || '#f3f4f6'}`">
+                          <span>Renk</span>
+                          <input
+                            v-model="settings.insuranceTypes[index].color"
+                            type="color"
+                            class="color-picker-input"
+                            :title="`Rengi seçin`"
+                          />
+                        </label>
+                      </div>
                       <button @click="removeInsuranceType(index)" class="btn-remove" type="button">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                           <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -694,9 +705,9 @@ const settings = ref({
   defaultAuctionDays: 7,
   defaultMinIncrement: 10,
   insuranceTypes: [
-    { name: 'Hayvan', icon: 'mdi:paw' },
-    { name: 'Araba', icon: 'mdi:car' },
-    { name: 'Sağlık', icon: 'mdi:heart' }
+    { name: 'Hayvan', icon: 'mdi:paw', color: '#8b5cf6' },
+    { name: 'Araba', icon: 'mdi:car', color: '#0ea5e9' },
+    { name: 'Sağlık', icon: 'mdi:heart', color: '#10b981' }
   ],
   enableBiddingHours: false,
   biddingStartHour: '08:00',
@@ -782,9 +793,11 @@ async function loadSettings() {
             'Araba': 'mdi:car',
             'Sağlık': 'mdi:heart'
           }
-          settings.value.insuranceTypes = settings.value.insuranceTypes.map(name => ({
+          const defaultColors = ['#dc2626', '#f97316', '#8b5cf6', '#0ea5e9', '#10b981', '#f59e0b', '#6366f1', '#ec4899']
+          settings.value.insuranceTypes = settings.value.insuranceTypes.map((name, idx) => ({
             name: name,
-            icon: defaultIcons[name] || 'mdi:file'
+            icon: defaultIcons[name] || 'mdi:file',
+            color: defaultColors[idx % defaultColors.length]
           }))
         } else if (firstItem && typeof firstItem === 'object') {
           // Object: eksik/yanlış alanları tamamla (FA -> Iconify dönüşüm)
@@ -798,7 +811,8 @@ async function loadSettings() {
             'fa-home': 'mdi:home',
             'fa-user': 'mdi:account'
           }
-          settings.value.insuranceTypes = settings.value.insuranceTypes.map(type => {
+          const defaultColors = ['#dc2626', '#f97316', '#8b5cf6', '#0ea5e9', '#10b981', '#f59e0b', '#6366f1', '#ec4899']
+          settings.value.insuranceTypes = settings.value.insuranceTypes.map((type, idx) => {
             const n = (type.name || '').trim()
             let icon = (type.icon || '').trim()
             if (icon.includes(':')) {
@@ -810,7 +824,8 @@ async function loadSettings() {
             } else {
               icon = 'mdi:file'
             }
-            return { name: n, icon }
+            const color = type.color || defaultColors[idx % defaultColors.length]
+            return { name: n, icon, color }
           })
         }
       }
@@ -1102,7 +1117,12 @@ async function saveLeadIdSettings() {
 }
 
 function addInsuranceType() {
-  settings.value.insuranceTypes.push({ name: '', icon: 'fa-file-alt' })
+  // Varsayılan renkler dizisi
+  const defaultColors = ['#dc2626', '#f97316', '#8b5cf6', '#0ea5e9', '#10b981', '#f59e0b', '#6366f1', '#ec4899']
+  const existingCount = settings.value.insuranceTypes.length
+  const color = defaultColors[existingCount % defaultColors.length]
+
+  settings.value.insuranceTypes.push({ name: '', icon: 'mdi:file', color })
 }
 
 function removeInsuranceType(index) {
@@ -1128,10 +1148,14 @@ async function saveInsuranceTypes() {
       return
     }
     
-    // Her type için icon yoksa default icon ekle (Iconify)
-    filteredTypes.forEach(type => {
+    // Her type için icon ve color yoksa default ekle (Iconify)
+    const defaultColors = ['#dc2626', '#f97316', '#8b5cf6', '#0ea5e9', '#10b981', '#f59e0b', '#6366f1', '#ec4899']
+    filteredTypes.forEach((type, idx) => {
       if (!type.icon || type.icon.trim() === '') {
         type.icon = 'mdi:file'
+      }
+      if (!type.color || type.color.trim() === '') {
+        type.color = defaultColors[idx % defaultColors.length]
       }
     })
     
@@ -1380,7 +1404,7 @@ input:checked + .toggle-slider:before { transform: translateX(26px); }
 
 .insurance-types-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
 .insurance-type-item { display: flex; align-items: center; gap: 12px; }
-.insurance-type-item-with-icon { display: grid; grid-template-columns: 40px 1fr 200px 36px; align-items: center; gap: 12px; }
+.insurance-type-item-with-icon { display: grid; grid-template-columns: 40px 1fr 200px 100px 36px; align-items: center; gap: 12px; }
 .icon-preview { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #f3f4f6; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1.2rem; color: var(--primary); flex-shrink: 0; }
 .icon-select { padding: 10px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 0.875rem; transition: border-color 0.2s ease; min-width: 150px; background: white; }
 .icon-select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
@@ -1426,6 +1450,51 @@ input:checked + .toggle-slider:before { transform: translateX(26px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Color Picker */
+.color-picker-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.color-picker-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.color-picker-label span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.color-picker-input {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 4px;
+}
+
+.color-picker-input:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.color-picker-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .grid { grid-template-columns: 1fr; }
@@ -1440,6 +1509,7 @@ input:checked + .toggle-slider:before { transform: translateX(26px); }
   .link-item { grid-template-columns: 1fr; }
   .insurance-type-item-with-icon { grid-template-columns: 40px 1fr 36px; }
   .icon-picker { width: 100%; grid-column: 1 / -1; }
+  .color-picker-wrapper { grid-column: 1 / -1; }
   .icon-picker-modal-overlay { padding: 10px; }
 }
 </style>
