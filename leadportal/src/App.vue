@@ -324,12 +324,31 @@ const showSearchModal = ref(false)
 // Multi-level admin menu states
 const activeAdminCategory = ref(null)
 
+// Mobile admin category states
+const mobileAdminCategoryStates = ref({
+  management: false,
+  settings: false,
+  permissions: false,
+  content: false
+})
+
+function toggleMobileAdminCategory(category) {
+  mobileAdminCategoryStates.value[category] = !mobileAdminCategoryStates.value[category]
+}
+
+function closeMobileAdminCategories() {
+  Object.keys(mobileAdminCategoryStates.value).forEach(key => {
+    mobileAdminCategoryStates.value[key] = false
+  })
+}
+
 function toggleMobileMenu() {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
 }
 
 function closeMobileMenu() {
   isMobileMenuOpen.value = false
+  closeMobileAdminCategories()
 }
 
 function openAdminDropdown() {
@@ -613,99 +632,100 @@ function closeAdminCategory() {
         <!-- Admin Section -->
         <div v-if="isAuthed && (userTypeId === 'ADMIN' || userTypeId === 'SUPERADMIN')" class="mobile-admin-section">
           <!-- Yönetim Kategorisi -->
-          <div class="mobile-category-label">
-            <Icon icon="mdi:view-dashboard-outline" width="16" height="16" />
-            Yönetim
+          <div class="mobile-nav-section">
+            <div class="mobile-nav-section-header" @click="toggleMobileAdminCategory('management')" style="cursor: pointer;">
+              <Icon icon="mdi:view-dashboard-outline" width="20" height="20" />
+              <span>Yönetim</span>
+            </div>
+            <div v-if="mobileAdminCategoryStates.management">
+              <RouterLink to="/admin/leads" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
+                <Icon icon="mdi:briefcase-outline" width="18" height="18" />
+                <span>Leadler</span>
+              </RouterLink>
+              <RouterLink to="/admin/users" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
+                <Icon icon="mdi:account-group-outline" width="18" height="18" />
+                <span>Kullanıcılar</span>
+              </RouterLink>
+              <RouterLink to="/admin/statistics" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
+                <Icon icon="mdi:chart-line-variant" width="18" height="18" />
+                <span>İstatistikler</span>
+              </RouterLink>
+              <RouterLink to="/admin/activity-log" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
+                <Icon icon="mdi:history" width="18" height="18" />
+                <span>Aktivite Geçmişi</span>
+              </RouterLink>
+              <RouterLink to="/admin/balance" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
+                <Icon icon="mdi:wallet-outline" width="18" height="18" />
+                <span>Bakiye Yönetimi</span>
+              </RouterLink>
+              <RouterLink to="/admin/pending-payments" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
+                <Icon icon="mdi:clock-alert-outline" width="18" height="18" />
+                <span>Bekleyen Ödemeler</span>
+              </RouterLink>
+            </div>
           </div>
-
-          <RouterLink to="/admin/leads" @click="closeMobileMenu" class="mobile-nav-link">
-            <Icon icon="mdi:briefcase-outline" width="20" height="20" />
-            <span>Leadler</span>
-          </RouterLink>
-
-          <RouterLink to="/admin/users" @click="closeMobileMenu" class="mobile-nav-link">
-            <Icon icon="mdi:account-group-outline" width="20" height="20" />
-            <span>Kullanıcılar</span>
-          </RouterLink>
-
-          <RouterLink to="/admin/statistics" @click="closeMobileMenu" class="mobile-nav-link">
-            <Icon icon="mdi:chart-line-variant" width="20" height="20" />
-            <span>İstatistikler</span>
-          </RouterLink>
-
-          <RouterLink to="/admin/activity-log" @click="closeMobileMenu" class="mobile-nav-link">
-            <Icon icon="mdi:history" width="20" height="20" />
-            <span>Aktivite Geçmişi</span>
-          </RouterLink>
-
-          <RouterLink to="/admin/balance" @click="closeMobileMenu" class="mobile-nav-link">
-            <Icon icon="mdi:wallet-outline" width="20" height="20" />
-            <span>Bakiye Yönetimi</span>
-          </RouterLink>
-
-          <RouterLink to="/admin/pending-payments" @click="closeMobileMenu" class="mobile-nav-link">
-            <Icon icon="mdi:clock-alert-outline" width="20" height="20" />
-            <span>Bekleyen Ödemeler</span>
-          </RouterLink>
 
           <!-- Ayarlar Kategorisi -->
-          <div class="mobile-category-label">
-            <Icon icon="mdi:cog-outline" width="16" height="16" />
-            Ayarlar
+          <div class="mobile-nav-section">
+            <div class="mobile-nav-section-header" @click="toggleMobileAdminCategory('settings')" style="cursor: pointer;">
+              <Icon icon="mdi:cog-outline" width="20" height="20" />
+              <span>Ayarlar</span>
+            </div>
+            <div v-if="mobileAdminCategoryStates.settings">
+              <RouterLink to="/admin/settings" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
+                <Icon icon="mdi:cog-outline" width="18" height="18" />
+                <span>Ayarlar</span>
+              </RouterLink>
+              <RouterLink to="/admin/email-sms-settings" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
+                <Icon icon="mdi:email-outline" width="18" height="18" />
+                <span>Mail/SMS Ayarları</span>
+              </RouterLink>
+              <RouterLink to="/admin/notification-settings" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
+                <Icon icon="mdi:bell-outline" width="18" height="18" />
+                <span>Bildirim Ayarları</span>
+              </RouterLink>
+            </div>
           </div>
-
-          <RouterLink to="/admin/settings" @click="closeMobileMenu" class="mobile-nav-link">
-            <Icon icon="mdi:cog-outline" width="20" height="20" />
-            <span>Ayarlar</span>
-          </RouterLink>
-
-
-          <RouterLink to="/admin/email-sms-settings" @click="closeMobileMenu" class="mobile-nav-link">
-            <Icon icon="mdi:email-outline" width="20" height="20" />
-            <span>Mail/SMS Ayarları</span>
-          </RouterLink>
-
-          <RouterLink to="/admin/notification-settings" @click="closeMobileMenu" class="mobile-nav-link">
-            <Icon icon="mdi:bell-outline" width="20" height="20" />
-            <span>Bildirim Ayarları</span>
-          </RouterLink>
 
           <!-- Yetkiler Kategorisi -->
-          <div class="mobile-category-label">
-            <Icon icon="mdi:shield-outline" width="16" height="16" />
-            Yetkiler
+          <div class="mobile-nav-section">
+            <div class="mobile-nav-section-header" @click="toggleMobileAdminCategory('permissions')" style="cursor: pointer;">
+              <Icon icon="mdi:shield-outline" width="20" height="20" />
+              <span>Yetkiler</span>
+            </div>
+            <div v-if="mobileAdminCategoryStates.permissions">
+              <RouterLink to="/admin/user-types" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
+                <Icon icon="mdi:account-multiple-outline" width="18" height="18" />
+                <span>Kullanıcı Tipleri</span>
+              </RouterLink>
+              <RouterLink to="/admin/lead-type-permissions" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
+                <Icon icon="mdi:shield-check-outline" width="18" height="18" />
+                <span>Lead Tipi Yetkileri</span>
+              </RouterLink>
+            </div>
           </div>
-
-          <RouterLink to="/admin/user-types" @click="closeMobileMenu" class="mobile-nav-link">
-            <Icon icon="mdi:account-multiple-outline" width="20" height="20" />
-            <span>Kullanıcı Tipleri</span>
-          </RouterLink>
-
-          <RouterLink to="/admin/lead-type-permissions" @click="closeMobileMenu" class="mobile-nav-link">
-            <Icon icon="mdi:shield-check-outline" width="20" height="20" />
-            <span>Lead Tipi Yetkileri</span>
-          </RouterLink>
 
           <!-- İçerik Yönetimi Kategorisi -->
-          <div class="mobile-category-label">
-            <Icon icon="mdi:file-document-outline" width="16" height="16" />
-            İçerik Yönetimi
+          <div class="mobile-nav-section">
+            <div class="mobile-nav-section-header" @click="toggleMobileAdminCategory('content')" style="cursor: pointer;">
+              <Icon icon="mdi:file-document-outline" width="20" height="20" />
+              <span>İçerik Yönetimi</span>
+            </div>
+            <div v-if="mobileAdminCategoryStates.content">
+              <RouterLink to="/admin/faq" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
+                <Icon icon="mdi:help-circle-outline" width="18" height="18" />
+                <span>FAQ Yönetimi</span>
+              </RouterLink>
+              <RouterLink to="/admin/about" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
+                <Icon icon="mdi:information-outline" width="18" height="18" />
+                <span>Hakkında Yönetimi</span>
+              </RouterLink>
+              <RouterLink to="/admin/homepage-settings" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
+                <Icon icon="mdi:home-outline" width="18" height="18" />
+                <span>Ana Sayfa Yönetimi</span>
+              </RouterLink>
+            </div>
           </div>
-
-          <RouterLink to="/admin/faq" @click="closeMobileMenu" class="mobile-nav-link">
-            <Icon icon="mdi:help-circle-outline" width="20" height="20" />
-            <span>FAQ Yönetimi</span>
-          </RouterLink>
-
-          <RouterLink to="/admin/about" @click="closeMobileMenu" class="mobile-nav-link">
-            <Icon icon="mdi:information-outline" width="20" height="20" />
-            <span>Hakkında Yönetimi</span>
-          </RouterLink>
-
-          <RouterLink to="/admin/homepage-settings" @click="closeMobileMenu" class="mobile-nav-link">
-            <Icon icon="mdi:home-outline" width="20" height="20" />
-            <span>Ana Sayfa Yönetimi</span>
-          </RouterLink>
         </div>
         
         <div v-if="isAuthed" class="mobile-user-section">
@@ -1149,10 +1169,6 @@ nav a:first-of-type {
 }
 
 /* Mobile Nav Section Styles */
-.mobile-nav-section {
-  margin: 0.5rem 0;
-}
-
 .mobile-nav-section-header {
   display: flex;
   align-items: center;
@@ -1184,6 +1200,99 @@ nav a:first-of-type {
   border-top: 1px solid #e2e8f0;
   margin-top: 0.5rem;
   padding-top: 0.5rem;
+}
+
+.mobile-category-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #f0f1f3;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #4b5563;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.mobile-category-toggle:hover {
+  background: #f9fafb;
+}
+
+.mobile-category-toggle:active {
+  background: #f3f4f6;
+}
+
+.mobile-category-toggle-header {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex: 1;
+}
+
+.mobile-category-toggle-header svg {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.mobile-category-toggle:hover .mobile-category-toggle-header svg {
+  opacity: 0.8;
+}
+
+.mobile-category-toggle svg:last-child {
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.mobile-category-toggle:hover svg:last-child {
+  opacity: 0.7;
+}
+
+.mobile-category-items {
+  background: #fafbfc;
+  border-bottom: 1px solid #f0f1f3;
+  padding: 0.25rem 0;
+  animation: slideDown 0.25s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+  }
+  to {
+    opacity: 1;
+    max-height: 600px;
+    overflow: visible;
+  }
+}
+
+.mobile-category-items .mobile-nav-link {
+  padding: 0.5rem 1rem 0.5rem 2.75rem !important;
+  background: #fafbfc;
+  border: none;
+  border-radius: 0;
+  font-size: 0.8rem;
+  color: #6b7684;
+}
+
+.mobile-category-items .mobile-nav-link:hover {
+  background: #f0f1f3 !important;
+  color: #374151 !important;
+  padding-left: 3rem !important;
+}
+
+.mobile-category-items .mobile-nav-link svg {
+  opacity: 0.7;
+}
+
+.mobile-category-items .mobile-nav-link:hover svg {
+  opacity: 1;
 }
 
 .mobile-category-label {
