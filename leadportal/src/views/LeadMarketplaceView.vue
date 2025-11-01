@@ -2259,28 +2259,129 @@ onUnmounted(() => {
   }
 }
 
+@media (max-width: 1024px) {
+  .lead-cell {
+    min-width: 150px;
+    max-width: 220px;
+  }
+
+  .quick-bid-input-inline {
+    min-width: 50px;
+  }
+
+  .insurance-type-inline {
+    padding: 2px 4px;
+    font-size: 0.6rem;
+  }
+}
+
 @media (max-width: 768px) {
   .table-view {
     border-radius: 8px;
   }
 
   .leads-table {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
   }
 
   .leads-table th,
   .leads-table td {
-    padding: 8px 10px;
+    padding: 6px 8px;
   }
 
   .lead-description-text {
     display: none;
   }
 
-  .insurance-badge,
-  .instant-price-badge {
-    font-size: 0.6875rem;
-    padding: 3px 8px;
+  .lead-id-badge {
+    display: none;
+  }
+
+  .insurance-type-inline {
+    padding: 1px 3px;
+    font-size: 0.55rem;
+    margin-right: 2px;
+  }
+
+  .quick-bid-inline {
+    gap: 2px;
+  }
+
+  .quick-bid-input-inline {
+    min-width: 40px;
+    padding: 4px 6px;
+    font-size: 0.65rem;
+  }
+
+  .quick-bid-submit-inline {
+    padding: 4px 6px;
+    font-size: 0.6rem;
+  }
+
+  .countdown-timer {
+    padding: 4px 6px;
+    gap: 3px;
+  }
+
+  .countdown-timer svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  .time-text {
+    font-size: 0.7rem;
+  }
+
+  .bid-count-highlight {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+
+  .table-btn {
+    padding: 4px 8px;
+    font-size: 0.65rem;
+  }
+
+  .lead-cell {
+    min-width: 120px;
+    max-width: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .leads-table {
+    font-size: 0.6rem;
+  }
+
+  .leads-table th,
+  .leads-table td {
+    padding: 4px 6px;
+  }
+
+  .quick-bid-inline {
+    display: none;
+  }
+
+  .countdown-timer {
+    padding: 3px 4px;
+  }
+
+  .table-btn {
+    padding: 3px 6px;
+    font-size: 0.55rem;
+  }
+
+  .lead-cell {
+    min-width: 100px;
+    max-width: 140px;
+  }
+
+  .quick-bid-cell {
+    display: none;
+  }
+
+  .lead-title-text {
+    font-size: 0.7rem;
   }
 }
 
