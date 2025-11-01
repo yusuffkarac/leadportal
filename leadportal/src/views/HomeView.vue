@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue'
 import { Icon } from '@iconify/vue'
 import api from '@/utils/axios.js'
 import { formatPrice } from '@/utils/currency.js'
@@ -24,7 +24,8 @@ const showcaseLeads = ref([])
 const isLoadingShowcase = ref(false)
 const showcaseError = ref('')
 const settings = ref({ defaultCurrency: 'EUR', insuranceTypes: [] })
-const showScrollIndicator = ref(true)
+const showRightScrollHint = ref(false)
+const showLeftScrollHint = ref(false)
 
 const defaultHomepageContent = {
   hero: {
@@ -239,13 +240,101 @@ const statsHeading = computed(() => homepageContent.value.statsHeading)
 const statsList = computed(() => homepageContent.value.stats)
 const ctaContent = computed(() => homepageContent.value.cta)
 
+// Drag-to-scroll için state'ler
+const scrollContainer = ref(null)
+const isDragging = ref(false)
+const startX = ref(0)
+const scrollLeft = ref(0)
+const hasMoved = ref(false)
+
 function handleScroll(event) {
   const container = event.target
-  if (container.scrollLeft > 10) {
-    showScrollIndicator.value = false
-  } else {
-    showScrollIndicator.value = true
+  if (!container) return
+  
+  const scrollLeft = container.scrollLeft
+  const scrollWidth = container.scrollWidth
+  const clientWidth = container.clientWidth
+  const remaining = scrollWidth - clientWidth - scrollLeft
+  
+  // Sağda kaydırılacak alan varsa sağ oku göster
+  showRightScrollHint.value = remaining > 8
+  // Solda kaydırılacak alan varsa sol oku göster
+  showLeftScrollHint.value = scrollLeft > 8
+}
+
+// Showcase slider'ı sağa kaydır
+function scrollShowcaseRight() {
+  if (!scrollContainer.value) return
+  scrollContainer.value.scrollBy({ left: 400, behavior: 'smooth' })
+}
+
+// Showcase slider'ı sola kaydır
+function scrollShowcaseLeft() {
+  if (!scrollContainer.value) return
+  scrollContainer.value.scrollBy({ left: -400, behavior: 'smooth' })
+}
+
+function handleMouseDown(e) {
+  if (!scrollContainer.value) return
+  isDragging.value = true
+  hasMoved.value = false
+  const rect = scrollContainer.value.getBoundingClientRect()
+  startX.value = e.pageX - rect.left
+  scrollLeft.value = scrollContainer.value.scrollLeft
+  scrollContainer.value.style.cursor = 'grabbing'
+  scrollContainer.value.style.userSelect = 'none'
+}
+
+function handleMouseMove(e) {
+  if (!isDragging.value || !scrollContainer.value) return
+  e.preventDefault()
+  const rect = scrollContainer.value.getBoundingClientRect()
+  const x = e.pageX - rect.left
+  const walk = (x - startX.value) * 1.5 // Scroll hızı çarpanı
+  scrollContainer.value.scrollLeft = scrollLeft.value - walk
+  hasMoved.value = true
+}
+
+function handleMouseUp() {
+  if (!scrollContainer.value) return
+  isDragging.value = false
+  scrollContainer.value.style.cursor = 'grab'
+  scrollContainer.value.style.userSelect = ''
+}
+
+// Touch events için
+function handleTouchStart(e) {
+  if (!scrollContainer.value) return
+  isDragging.value = true
+  hasMoved.value = false
+  const rect = scrollContainer.value.getBoundingClientRect()
+  startX.value = e.touches[0].pageX - rect.left
+  scrollLeft.value = scrollContainer.value.scrollLeft
+}
+
+function handleTouchMove(e) {
+  if (!isDragging.value || !scrollContainer.value) return
+  e.preventDefault()
+  const rect = scrollContainer.value.getBoundingClientRect()
+  const x = e.touches[0].pageX - rect.left
+  const walk = (x - startX.value) * 1.5
+  scrollContainer.value.scrollLeft = scrollLeft.value - walk
+  hasMoved.value = true
+}
+
+function handleTouchEnd() {
+  isDragging.value = false
+}
+
+// Click olayını sadece drag yoksa işle
+function handleCardClick(lead, event) {
+  if (hasMoved.value) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    hasMoved.value = false
+    return
   }
+  navigateToLead(lead)
 }
 
 function openLeadDetail(leadId) {
@@ -327,6 +416,18 @@ onMounted(async () => {
   ])
   await loadShowcaseLeads()
 
+  // Scroll durumunu kontrol et (DOM render edildikten sonra)
+  await nextTick()
+  if (scrollContainer.value) {
+    handleScroll({ target: scrollContainer.value })
+    scrollContainer.value.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('resize', () => {
+      if (scrollContainer.value) {
+        handleScroll({ target: scrollContainer.value })
+      }
+    })
+  }
+
   // Her yeni teklifte ilgili kartı anında güncelle
   socket.on('bid:new', ({ leadId, bid }) => {
     const idx = showcaseLeads.value.findIndex(l => l.id === leadId)
@@ -343,8 +444,29 @@ onMounted(async () => {
     showcaseLeads.value = [...showcaseLeads.value]
   }, 1000) // 1 saniyede bir güncelle
 
+  // Global mouse event listener'ları (drag sırasında mouse container dışına taşınsa bile çalışsın)
+  const globalMouseMove = (e) => {
+    if (isDragging.value) {
+      handleMouseMove(e)
+    }
+  }
+  const globalMouseUp = () => {
+    if (isDragging.value) {
+      handleMouseUp()
+    }
+  }
+
+  document.addEventListener('mousemove', globalMouseMove)
+  document.addEventListener('mouseup', globalMouseUp)
+
   onUnmounted(() => {
     clearInterval(timeInterval)
+    document.removeEventListener('mousemove', globalMouseMove)
+    document.removeEventListener('mouseup', globalMouseUp)
+    if (scrollContainer.value) {
+      scrollContainer.value.removeEventListener('scroll', handleScroll)
+    }
+    window.removeEventListener('resize', handleScroll)
     socket.close()
   })
 })
@@ -412,7 +534,16 @@ onMounted(async () => {
       <div v-if="isLoadingShowcase" class="showcase-state">Vitrin leadleri yükleniyor…</div>
       <div v-else-if="showcaseError" class="showcase-state error">{{ showcaseError }}</div>
       <div v-else-if="hasShowcaseLeads" class="showcase-wrapper">
-        <div class="showcase-scroll-container" @scroll="handleScroll">
+        <div
+          ref="scrollContainer"
+          class="showcase-scroll-container"
+          :class="{ 'is-dragging': isDragging }"
+          @scroll="handleScroll"
+          @mousedown="handleMouseDown"
+          @touchstart="handleTouchStart"
+          @touchmove="handleTouchMove"
+          @touchend="handleTouchEnd"
+        >
           <div class="showcase-grid">
             <LeadCard
               v-for="lead in displayShowcaseLeads"
@@ -421,16 +552,33 @@ onMounted(async () => {
               :settings="settings"
               :show-quick-bid="!lead.isExpired && lead.isActive && !lead.isScheduled"
               :zipcode-index="zipcodeIndex"
-              @click="navigateToLead"
+              @click="handleCardClick(lead, $event)"
               @show-description="showDescription"
               @instant-buy="openInstantBuyModal"
               @submit-bid="submitQuickBid"
             />
           </div>
         </div>
-      <div v-if="hasMoreThanThreeLeads && showScrollIndicator" class="scroll-indicator">
-        <Icon icon="mdi:chevron-right" height="32" width="32" />
-      </div>
+        <div class="showcase-scroll-buttons">
+          <button
+            v-if="hasMoreThanThreeLeads && showLeftScrollHint"
+            class="scroll-indicator scroll-indicator-left"
+            @click="scrollShowcaseLeft"
+            type="button"
+            aria-label="Sola kaydır"
+          >
+            <Icon icon="mdi:chevron-left" height="32" width="32" />
+          </button>
+          <button
+            v-if="hasMoreThanThreeLeads && showRightScrollHint"
+            class="scroll-indicator scroll-indicator-right"
+            @click="scrollShowcaseRight"
+            type="button"
+            aria-label="Sağa kaydır"
+          >
+            <Icon icon="mdi:chevron-right" height="32" width="32" />
+          </button>
+        </div>
     </div>
       <div v-else class="showcase-state">
         Henüz vitrine alınmış lead bulunmuyor. Yeni fırsatlar eklendikçe burada görünecek.
@@ -703,26 +851,54 @@ onMounted(async () => {
   position: relative;
 }
 
+.showcase-scroll-buttons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
 .scroll-indicator {
   position: absolute;
-  right: 0;
   top: 50%;
   transform: translateY(-50%);
   width: 64px;
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding-right: 12px;
-  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.95) 30%);
-  pointer-events: none;
+  pointer-events: auto;
   z-index: 10;
   color: #1d4ed8;
   opacity: 0.8;
-  animation: pulse-scroll 2s ease-in-out infinite;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  background: transparent;
 }
 
-@keyframes pulse-scroll {
+.scroll-indicator-left {
+  left: 0;
+  justify-content: flex-start;
+  padding-left: 12px;
+  background: linear-gradient(to left, transparent, rgba(255, 255, 255, 0.95) 30%);
+  animation: pulse-scroll-left 2s ease-in-out infinite;
+}
+
+.scroll-indicator-right {
+  right: 0;
+  justify-content: flex-end;
+  padding-right: 12px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.95) 30%);
+  animation: pulse-scroll-right 2s ease-in-out infinite;
+}
+
+.scroll-indicator:hover {
+  opacity: 1;
+}
+
+@keyframes pulse-scroll-right {
   0%, 100% {
     opacity: 0.5;
     transform: translateY(-50%) translateX(0);
@@ -733,12 +909,33 @@ onMounted(async () => {
   }
 }
 
+@keyframes pulse-scroll-left {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translateY(-50%) translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(-4px);
+  }
+}
+
 .showcase-scroll-container {
   overflow-x: auto;
   overflow-y: visible;
   scrollbar-width: none;
   scrollbar-color: #cbd5e1 #f1f5f9;
   padding-bottom: 8px;
+  cursor: grab;
+  user-select: none;
+}
+
+.showcase-scroll-container.is-dragging {
+  cursor: grabbing;
+}
+
+.showcase-scroll-container.is-dragging * {
+  pointer-events: none;
 }
 
 .showcase-scroll-container::-webkit-scrollbar {

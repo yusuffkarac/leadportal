@@ -47,16 +47,31 @@ const selectedDescription = ref(null)
 // Premium slider kaydırma ipucu
 const premiumSliderContainer = ref(null)
 const showRightScrollHint = ref(false)
+const showLeftScrollHint = ref(false)
 const hasMoreThanThreePremium = computed(() => premiumLeads.value.length > 3)
+
+// Drag-to-scroll için state'ler
+const isDraggingPremium = ref(false)
+const premiumStartX = ref(0)
+const premiumScrollLeft = ref(0)
+const hasMovedPremium = ref(false)
 
 function updatePremiumScrollHint() {
   const el = premiumSliderContainer.value
   if (!el) {
     showRightScrollHint.value = false
+    showLeftScrollHint.value = false
     return
   }
-  const remaining = el.scrollWidth - el.clientWidth - el.scrollLeft
-  showRightScrollHint.value = remaining > 8 // sağda kaydırılacak alan varsa göster
+  const scrollLeft = el.scrollLeft
+  const scrollWidth = el.scrollWidth
+  const clientWidth = el.clientWidth
+  const remaining = scrollWidth - clientWidth - scrollLeft
+  
+  // Sağda kaydırılacak alan varsa sağ oku göster
+  showRightScrollHint.value = remaining > 8
+  // Solda kaydırılacak alan varsa sol oku göster
+  showLeftScrollHint.value = scrollLeft > 8
 }
 
 function scrollPremiumRight() {
@@ -65,12 +80,80 @@ function scrollPremiumRight() {
   el.scrollBy({ left: 320, behavior: 'smooth' })
 }
 
+function scrollPremiumLeft() {
+  const el = premiumSliderContainer.value
+  if (!el) return
+  el.scrollBy({ left: -320, behavior: 'smooth' })
+}
+
 function handlePremiumScroll(event) {
   const container = event?.target || premiumSliderContainer.value
   if (!container) return
-  // HomeView davranışı: ilk birkaç px içinde göster, sonra gizle
-  const remaining = container.scrollWidth - container.clientWidth - container.scrollLeft
-  showRightScrollHint.value = container.scrollLeft <= 10 && remaining > 8
+  updatePremiumScrollHint()
+}
+
+// Premium slider drag-to-scroll handler'ları
+function handlePremiumMouseDown(e) {
+  if (!premiumSliderContainer.value) return
+  isDraggingPremium.value = true
+  hasMovedPremium.value = false
+  const rect = premiumSliderContainer.value.getBoundingClientRect()
+  premiumStartX.value = e.pageX - rect.left
+  premiumScrollLeft.value = premiumSliderContainer.value.scrollLeft
+  premiumSliderContainer.value.style.cursor = 'grabbing'
+  premiumSliderContainer.value.style.userSelect = 'none'
+}
+
+function handlePremiumMouseMove(e) {
+  if (!isDraggingPremium.value || !premiumSliderContainer.value) return
+  e.preventDefault()
+  const rect = premiumSliderContainer.value.getBoundingClientRect()
+  const x = e.pageX - rect.left
+  const walk = (x - premiumStartX.value) * 1.5 // Scroll hızı çarpanı
+  premiumSliderContainer.value.scrollLeft = premiumScrollLeft.value - walk
+  hasMovedPremium.value = true
+}
+
+function handlePremiumMouseUp() {
+  if (!premiumSliderContainer.value) return
+  isDraggingPremium.value = false
+  premiumSliderContainer.value.style.cursor = 'grab'
+  premiumSliderContainer.value.style.userSelect = ''
+}
+
+// Touch events için
+function handlePremiumTouchStart(e) {
+  if (!premiumSliderContainer.value) return
+  isDraggingPremium.value = true
+  hasMovedPremium.value = false
+  const rect = premiumSliderContainer.value.getBoundingClientRect()
+  premiumStartX.value = e.touches[0].pageX - rect.left
+  premiumScrollLeft.value = premiumSliderContainer.value.scrollLeft
+}
+
+function handlePremiumTouchMove(e) {
+  if (!isDraggingPremium.value || !premiumSliderContainer.value) return
+  e.preventDefault()
+  const rect = premiumSliderContainer.value.getBoundingClientRect()
+  const x = e.touches[0].pageX - rect.left
+  const walk = (x - premiumStartX.value) * 1.5
+  premiumSliderContainer.value.scrollLeft = premiumScrollLeft.value - walk
+  hasMovedPremium.value = true
+}
+
+function handlePremiumTouchEnd() {
+  isDraggingPremium.value = false
+}
+
+// Premium card click handler - drag yoksa navigate et
+function handlePremiumCardClick(lead, event) {
+  if (hasMovedPremium.value) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    hasMovedPremium.value = false
+    return
+  }
+  navigateToLead(lead)
 }
 
 // Filtre state'leri
@@ -579,10 +662,20 @@ onMounted(async () => {
     updatePremiumScrollHint()
   }, 1000) // 1 saniyede bir güncelle
 
-  onUnmounted(() => {
-    clearInterval(timeInterval)
-    socket.close()
-  })
+  // Global mouse event listener'ları (premium slider drag için)
+  const globalPremiumMouseMove = (e) => {
+    if (isDraggingPremium.value) {
+      handlePremiumMouseMove(e)
+    }
+  }
+  const globalPremiumMouseUp = () => {
+    if (isDraggingPremium.value) {
+      handlePremiumMouseUp()
+    }
+  }
+
+  document.addEventListener('mousemove', globalPremiumMouseMove)
+  document.addEventListener('mouseup', globalPremiumMouseUp)
 
   // Premium slider scroll/resize dinleyicileri
   setTimeout(() => updatePremiumScrollHint(), 0)
@@ -590,6 +683,13 @@ onMounted(async () => {
   if (premiumSliderContainer.value) {
     premiumSliderContainer.value.addEventListener('scroll', updatePremiumScrollHint, { passive: true })
   }
+
+  onUnmounted(() => {
+    clearInterval(timeInterval)
+    document.removeEventListener('mousemove', globalPremiumMouseMove)
+    document.removeEventListener('mouseup', globalPremiumMouseUp)
+    socket.close()
+  })
 })
 
 // Temizleme: dış dinleyicileri kaldır
@@ -642,9 +742,18 @@ onUnmounted(() => {
         </div>
 
         <div class="premium-slider-wrapper">
-          <div class="premium-slider-container" ref="premiumSliderContainer" @scroll="handlePremiumScroll">
+          <div
+            ref="premiumSliderContainer"
+            class="premium-slider-container"
+            :class="{ 'is-dragging': isDraggingPremium }"
+            @scroll="handlePremiumScroll"
+            @mousedown="handlePremiumMouseDown"
+            @touchstart="handlePremiumTouchStart"
+            @touchmove="handlePremiumTouchMove"
+            @touchend="handlePremiumTouchEnd"
+          >
             <div class="premium-slider">
-            <div class="premium-card" v-for="lead in premiumLeads" :key="lead.id" @click="navigateToLead(lead)">
+            <div class="premium-card" v-for="lead in premiumLeads" :key="lead.id" @click="handlePremiumCardClick(lead, $event)">
               <div class="premium-card-glow"></div>
               <div class="premium-card-header">
                 <div class="premium-card-title">
@@ -688,9 +797,24 @@ onUnmounted(() => {
             </div>
           </div>
           </div>
-          <div v-if="hasMoreThanThreePremium && showRightScrollHint" class="premium-scroll-indicator">
+          <button
+            v-if="hasMoreThanThreePremium && showLeftScrollHint"
+            class="premium-scroll-indicator premium-scroll-indicator-left"
+            @click="scrollPremiumLeft"
+            type="button"
+            aria-label="Sola kaydır"
+          >
+            <Icon icon="mdi:chevron-left" width="32" height="32" />
+          </button>
+          <button
+            v-if="hasMoreThanThreePremium && showRightScrollHint"
+            class="premium-scroll-indicator premium-scroll-indicator-right"
+            @click="scrollPremiumRight"
+            type="button"
+            aria-label="Sağa kaydır"
+          >
             <Icon icon="mdi:chevron-right" width="32" height="32" />
-          </div>
+          </button>
         </div>
       </div>
     </div>
@@ -1135,6 +1259,16 @@ onUnmounted(() => {
   scrollbar-width: none;
   /* Scrollbar gizle (IE/Edge eski) */
   -ms-overflow-style: none;
+  cursor: grab;
+  user-select: none;
+}
+
+.premium-slider-container.is-dragging {
+  cursor: grabbing;
+}
+
+.premium-slider-container.is-dragging * {
+  pointer-events: none;
 }
 
 .premium-slider-container::-webkit-scrollbar {
@@ -1156,24 +1290,43 @@ onUnmounted(() => {
 
 .premium-scroll-indicator {
   position: absolute;
-  right: 0;
   top: 50%;
   transform: translateY(-50%);
   width: 64px;
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding-right: 12px;
-  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.95) 30%);
-  pointer-events: none;
+  pointer-events: auto;
   z-index: 10;
   color: #1d4ed8;
   opacity: 0.85;
-  animation: premium-pulse-scroll 2s ease-in-out infinite;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  background: transparent;
 }
 
-@keyframes premium-pulse-scroll {
+.premium-scroll-indicator-left {
+  left: 0;
+  justify-content: flex-start;
+  padding-left: 12px;
+  background: linear-gradient(to left, transparent, rgba(255, 255, 255, 0.95) 30%);
+  animation: premium-pulse-scroll-left 2s ease-in-out infinite;
+}
+
+.premium-scroll-indicator-right {
+  right: 0;
+  justify-content: flex-end;
+  padding-right: 12px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.95) 30%);
+  animation: premium-pulse-scroll-right 2s ease-in-out infinite;
+}
+
+.premium-scroll-indicator:hover {
+  opacity: 1;
+}
+
+@keyframes premium-pulse-scroll-right {
   0%, 100% {
     opacity: 0.6;
     transform: translateY(-50%) translateX(0);
@@ -1181,6 +1334,17 @@ onUnmounted(() => {
   50% {
     opacity: 1;
     transform: translateY(-50%) translateX(4px);
+  }
+}
+
+@keyframes premium-pulse-scroll-left {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translateY(-50%) translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(-4px);
   }
 }
 
