@@ -177,29 +177,6 @@ export default function authRouter(prisma) {
           console.log('Registration approval email not configured in settings')
         }
 
-        // 3. Kullanıcıya onay beklediğini bildir
-        try {
-          const currentYear = new Date().getFullYear()
-          console.log(`Sending pending confirmation email to user: ${user.email}`)
-          const emailResult = await sendNotificationEmail({
-            to: user.email,
-            template: 'REGISTRATION_PENDING_CONFIRMATION',
-            variables: {
-              firstName: user.firstName || user.email.split('@')[0],
-              supportEmail: settings?.footerEmail || 'support@leadportal.com',
-              companyName: settings.companyName || 'LeadPortal',
-              year: currentYear.toString()
-            }
-          })
-          if (emailResult?.success) {
-            console.log(`Pending confirmation email sent successfully to: ${user.email}`)
-          } else {
-            console.error(`Pending confirmation email failed: ${emailResult?.error || 'Unknown error'}`)
-          }
-        } catch (error) {
-          console.error('User confirmation email failed:', error)
-        }
-
         return res.json({
           message: 'Kaydınız alındı. Admin onayı bekleniyor. Onaylandıktan sonra giriş yapabileceksiniz.',
           user: { id: user.id, email: user.email }

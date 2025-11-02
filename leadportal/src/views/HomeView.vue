@@ -1075,6 +1075,8 @@ onMounted(async () => {
   .home-page {
     gap: 48px;
     padding: 32px 20px 64px;
+    max-width: 90%;
+
   }
 
   .features-grid,
@@ -1163,6 +1165,8 @@ onMounted(async () => {
   .home-page {
     gap: 40px;
     padding: 24px 16px 56px;
+    max-width: 90%;
+
   }
 
   .hero {

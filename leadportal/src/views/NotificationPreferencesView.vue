@@ -12,7 +12,8 @@ const message = ref({ type: '', text: '' })
 const groupedPreferences = ref({
   BID: [],
   LEAD: [],
-  PAYMENT: []
+  PAYMENT: [],
+  ADMIN: []
 })
 
 const categoryLabels = {
@@ -30,6 +31,11 @@ const categoryLabels = {
     name: 'Ödeme Bildirimleri',
     description: 'Bakiye ve ödeme işlemleri hakkında bildirimler',
     icon: 'mdi:wallet-outline'
+  },
+  ADMIN: {
+    name: 'Admin Bildirimleri',
+    description: 'Yönetim ve sistem bildirimleri',
+    icon: 'mdi:shield-account-outline'
   }
 }
 
@@ -46,7 +52,8 @@ async function loadPreferences() {
       groupedPreferences.value = {
         BID: [],
         LEAD: [],
-        PAYMENT: []
+        PAYMENT: [],
+        ADMIN: []
       }
 
       preferences.value.forEach(pref => {

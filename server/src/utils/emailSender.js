@@ -391,7 +391,7 @@ export async function sendNotificationEmail({ to, template, variables = {} }) {
     </tr>
   </table>
 </div>`,
-            textContent: `Yeni Kayıt İsteği\n\nAdı: {{firstName}} {{lastName}}\nEmail: {{email}}\nKayıt Tarihi: {{registrationDate}}\n\nOnay Bekleyen Kullanıcıları Görmek İçin: {{appUrl}}/admin/pending-users\n\n© {{year}} {{companyName}}`,
+            textContent: `.7\n\nAdı: {{firstName}} {{lastName}}\nEmail: {{email}}\nKayıt Tarihi: {{registrationDate}}\n\nOnay Bekleyen Kullanıcıları Görmek İçin: {{appUrl}}/admin/pending-users\n\n© {{year}} {{companyName}}`,
             isActive: true,
             variables: ['firstName', 'lastName', 'userName', 'email', 'registrationDate', 'appUrl', 'companyName', 'year']
           }
