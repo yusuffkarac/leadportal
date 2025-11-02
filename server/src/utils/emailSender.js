@@ -311,14 +311,189 @@ LeadPortal
  */
 export async function sendNotificationEmail({ to, template, variables = {} }) {
   try {
+    console.log(`[EmailSender] Sending notification email - Template: ${template}, To: ${to}`)
+    
     // Email template'i bul
-    const emailTemplate = await prisma.emailTemplate.findUnique({
+    let emailTemplate = await prisma.emailTemplate.findUnique({
       where: { type: template }
     })
+    
+    console.log(`[EmailSender] Template found: ${!!emailTemplate}, Active: ${emailTemplate?.isActive}`)
 
+    // Eğer template yoksa, otomatik olarak oluştur
     if (!emailTemplate || !emailTemplate.isActive) {
-      console.error(`Email template not found or inactive: ${template}`)
-      return { success: false, error: 'Template not found' }
+      console.log(`Email template ${template} not found or inactive, creating it...`)
+      
+      // NEW_USER_REGISTRATION template'i
+      if (template === 'NEW_USER_REGISTRATION') {
+        emailTemplate = await prisma.emailTemplate.upsert({
+          where: { type: template },
+          update: { 
+            isActive: true,
+            subject: 'Yeni Kayıt İsteği - {{userName}}',
+            htmlContent: `<div style="background:#f6f8fb;padding:24px;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111827;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
+    <tr>
+      <td style="background:#2563eb;color:#ffffff;padding:20px 24px;font-size:18px;font-weight:700;text-align:center;">
+        {{companyName}}
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:24px;">
+        <h2 style="margin:0 0 16px 0;font-size:20px;color:#111827;">Yeni Kayıt İsteği</h2>
+        <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">Yeni bir kullanıcı kayıt olmak istiyor:</p>
+        <ul style="margin:0 0 16px 0;padding-left:20px;color:#374151;">
+          <li style="margin-bottom:8px;"><strong>Adı:</strong> {{firstName}} {{lastName}}</li>
+          <li style="margin-bottom:8px;"><strong>Email:</strong> {{email}}</li>
+          <li style="margin-bottom:8px;"><strong>Kayıt Tarihi:</strong> {{registrationDate}}</li>
+        </ul>
+        <a href="{{appUrl}}/admin/pending-users" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;margin-top:16px;">Onay Bekleyen Kullanıcıları Gör</a>
+      </td>
+    </tr>
+    <tr>
+      <td style="background:#f9fafb;color:#6b7280;padding:16px 24px;font-size:12px;text-align:center;">
+        © {{year}} {{companyName}}
+      </td>
+    </tr>
+  </table>
+</div>`,
+            textContent: `Yeni Kayıt İsteği\n\nAdı: {{firstName}} {{lastName}}\nEmail: {{email}}\nKayıt Tarihi: {{registrationDate}}\n\nOnay Bekleyen Kullanıcıları Görmek İçin: {{appUrl}}/admin/pending-users\n\n© {{year}} {{companyName}}`,
+            variables: ['firstName', 'lastName', 'userName', 'email', 'registrationDate', 'appUrl', 'companyName', 'year']
+          },
+          create: {
+            type: template,
+            name: 'Yeni Kullanıcı Kaydı Bildirimi',
+            description: 'Admin\'e yeni kayıt isteği hakkında bildirim',
+            subject: 'Yeni Kayıt İsteği - {{userName}}',
+            htmlContent: `<div style="background:#f6f8fb;padding:24px;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111827;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
+    <tr>
+      <td style="background:#2563eb;color:#ffffff;padding:20px 24px;font-size:18px;font-weight:700;text-align:center;">
+        {{companyName}}
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:24px;">
+        <h2 style="margin:0 0 16px 0;font-size:20px;color:#111827;">Yeni Kayıt İsteği</h2>
+        <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">Yeni bir kullanıcı kayıt olmak istiyor:</p>
+        <ul style="margin:0 0 16px 0;padding-left:20px;color:#374151;">
+          <li style="margin-bottom:8px;"><strong>Adı:</strong> {{firstName}} {{lastName}}</li>
+          <li style="margin-bottom:8px;"><strong>Email:</strong> {{email}}</li>
+          <li style="margin-bottom:8px;"><strong>Kayıt Tarihi:</strong> {{registrationDate}}</li>
+        </ul>
+        <a href="{{appUrl}}/admin/pending-users" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;margin-top:16px;">Onay Bekleyen Kullanıcıları Gör</a>
+      </td>
+    </tr>
+    <tr>
+      <td style="background:#f9fafb;color:#6b7280;padding:16px 24px;font-size:12px;text-align:center;">
+        © {{year}} {{companyName}}
+      </td>
+    </tr>
+  </table>
+</div>`,
+            textContent: `Yeni Kayıt İsteği\n\nAdı: {{firstName}} {{lastName}}\nEmail: {{email}}\nKayıt Tarihi: {{registrationDate}}\n\nOnay Bekleyen Kullanıcıları Görmek İçin: {{appUrl}}/admin/pending-users\n\n© {{year}} {{companyName}}`,
+            isActive: true,
+            variables: ['firstName', 'lastName', 'userName', 'email', 'registrationDate', 'appUrl', 'companyName', 'year']
+          }
+        })
+      }
+      // REGISTRATION_PENDING_CONFIRMATION template'i
+      else if (template === 'REGISTRATION_PENDING_CONFIRMATION') {
+        emailTemplate = await prisma.emailTemplate.upsert({
+          where: { type: template },
+          update: { 
+            isActive: true,
+            htmlContent: `<div style="background:#f6f8fb;padding:24px;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111827;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
+    <tr>
+      <td style="background:#2563eb;color:#ffffff;padding:20px 24px;font-size:18px;font-weight:700;text-align:center;">
+        {{companyName}}
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:24px;">
+        <h2 style="margin:0 0 16px 0;font-size:20px;color:#111827;">Hoş Geldiniz!</h2>
+        <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">Merhaba {{firstName}},</p>
+        <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">{{companyName}}'a kayıt olduğunuz için teşekkür ederiz.</p>
+        <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">Kaydınız alındı ve admin onayı bekleniyor. Onaylandıktan sonra tüm özelliklere erişebileceksiniz.</p>
+        <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">Bu işlem genellikle 24 saat içinde tamamlanır.</p>
+        <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">Sorularınız varsa <a href="mailto:{{supportEmail}}" style="color:#2563eb;">bizimle iletişime geçebilirsiniz</a>.</p>
+        <p style="margin:0;line-height:1.6;color:#374151;">Hoş geldiniz!<br/>{{companyName}} Ekibi</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="background:#f9fafb;color:#6b7280;padding:16px 24px;font-size:12px;text-align:center;">
+        © {{year}} {{companyName}}
+      </td>
+    </tr>
+  </table>
+</div>`,
+            textContent: `Hoş Geldiniz!\n\nMerhaba {{firstName}},\n\n{{companyName}}'a kayıt olduğunuz için teşekkür ederiz.\n\nKaydınız alındı ve admin onayı bekleniyor. Onaylandıktan sonra tüm özelliklere erişebileceksiniz.\n\nBu işlem genellikle 24 saat içinde tamamlanır.\n\nSorularınız varsa {{supportEmail}} adresinden bize ulaşabilirsiniz.\n\n{{companyName}} Ekibi\n\n© {{year}} {{companyName}}`,
+            variables: ['firstName', 'supportEmail', 'companyName', 'year']
+          },
+          create: {
+            type: template,
+            name: 'Kaydınız Alındı',
+            description: 'Kullanıcıya gönderilen kayıt doğrulama emaili',
+            subject: 'Kaydınız Alındı - Admin Onayı Bekleniyor',
+            htmlContent: `<div style="background:#f6f8fb;padding:24px;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111827;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
+    <tr>
+      <td style="background:#2563eb;color:#ffffff;padding:20px 24px;font-size:18px;font-weight:700;text-align:center;">
+        {{companyName}}
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:24px;">
+        <h2 style="margin:0 0 16px 0;font-size:20px;color:#111827;">Hoş Geldiniz!</h2>
+        <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">Merhaba {{firstName}},</p>
+        <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">{{companyName}}'a kayıt olduğunuz için teşekkür ederiz.</p>
+        <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">Kaydınız alındı ve admin onayı bekleniyor. Onaylandıktan sonra tüm özelliklere erişebileceksiniz.</p>
+        <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">Bu işlem genellikle 24 saat içinde tamamlanır.</p>
+        <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">Sorularınız varsa <a href="mailto:{{supportEmail}}" style="color:#2563eb;">bizimle iletişime geçebilirsiniz</a>.</p>
+        <p style="margin:0;line-height:1.6;color:#374151;">Hoş geldiniz!<br/>{{companyName}} Ekibi</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="background:#f9fafb;color:#6b7280;padding:16px 24px;font-size:12px;text-align:center;">
+        © {{year}} {{companyName}}
+      </td>
+    </tr>
+  </table>
+</div>`,
+            textContent: `Hoş Geldiniz!\n\nMerhaba {{firstName}},\n\n{{companyName}}'a kayıt olduğunuz için teşekkür ederiz.\n\nKaydınız alındı ve admin onayı bekleniyor. Onaylandıktan sonra tüm özelliklere erişebileceksiniz.\n\nBu işlem genellikle 24 saat içinde tamamlanır.\n\nSorularınız varsa {{supportEmail}} adresinden bize ulaşabilirsiniz.\n\n{{companyName}} Ekibi\n\n© {{year}} {{companyName}}`,
+            isActive: true,
+            variables: ['firstName', 'supportEmail', 'companyName', 'year']
+          }
+        })
+      }
+      // REGISTRATION_APPROVED template'i (ileride kullanılabilir)
+      else if (template === 'REGISTRATION_APPROVED') {
+        emailTemplate = await prisma.emailTemplate.upsert({
+          where: { type: template },
+          update: { isActive: true },
+          create: {
+            type: template,
+            name: 'Kaydınız Onaylandı',
+            description: 'Kullanıcının kaydı onaylandığında gönderilen email',
+            subject: 'Kaydınız Onaylandı - Giriş Yapabilirsiniz',
+            htmlContent: `<h2>Kaydınız Onaylandı!</h2>
+<p>Merhaba {{firstName}},</p>
+<p>Harika haberler! Kaydınız admin tarafından onaylandı.</p>
+<p>Artık <a href="{{appUrl}}/login">giriş yapıp</a> tüm özellikleri kullanabilirsiniz.</p>
+<p>Başlamak için hazırseniz, <a href="{{appUrl}}/login">buradan giriş yapabilirsiniz</a>.</p>
+<p>Başarılar!<br/>LeadPortal Ekibi</p>`,
+            textContent: `Kaydınız Onaylandı!\n\nMerhaba {{firstName}},\n\nHarika haberler! Kaydınız admin tarafından onaylandı.\n\nArtık giriş yapıp tüm özellikleri kullanabilirsiniz.\n\nGiriş: {{appUrl}}/login\n\nLeadPortal Ekibi`,
+            isActive: true,
+            variables: ['firstName', 'appUrl']
+          }
+        })
+      }
+      // Eğer template hala yoksa hata döndür
+      else if (!emailTemplate) {
+        console.error(`Email template not found or inactive: ${template}`)
+        return { success: false, error: 'Template not found' }
+      }
     }
 
     // Değişkenleri template'e yerleştir
@@ -334,12 +509,16 @@ export async function sendNotificationEmail({ to, template, variables = {} }) {
       textContent = textContent.replace(regex, variables[key] || '')
     })
 
-    return sendEmail({
+    console.log(`[EmailSender] Sending email - Subject: ${subject.substring(0, 50)}...`)
+    const result = await sendEmail({
       to,
       subject,
       html: htmlContent,
       text: textContent
     })
+    
+    console.log(`[EmailSender] Email send result: ${result?.success ? 'SUCCESS' : 'FAILED'}`)
+    return result
   } catch (error) {
     console.error('Notification email send error:', error)
     return { success: false, error: error.message }

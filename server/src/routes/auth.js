@@ -148,31 +148,54 @@ export default function authRouter(prisma) {
         // 2. Kayıt email adresine bildirim gönder
         if (settings?.registrationApprovalEmail) {
           try {
-            await sendNotificationEmail({
+            const userName = user.firstName || user.email.split('@')[0]
+            const currentYear = new Date().getFullYear()
+            console.log(`Sending registration notification email to: ${settings.registrationApprovalEmail}`)
+            const emailResult = await sendNotificationEmail({
               to: settings.registrationApprovalEmail,
               template: 'NEW_USER_REGISTRATION',
               variables: {
-                firstName: user.firstName || user.email.split('@')[0],
+                firstName: user.firstName || '',
+                lastName: user.lastName || '',
+                userName: userName,
                 email: user.email,
                 registrationDate: new Date().toLocaleDateString('tr-TR'),
-                appUrl: process.env.APP_URL || 'http://localhost:3000'
+                appUrl: process.env.APP_URL || 'http://localhost:3000',
+                companyName: settings.companyName || 'LeadPortal',
+                year: currentYear.toString()
               }
             })
+            if (emailResult?.success) {
+              console.log(`Registration email sent successfully to: ${settings.registrationApprovalEmail}`)
+            } else {
+              console.error(`Registration email failed: ${emailResult?.error || 'Unknown error'}`)
+            }
           } catch (error) {
             console.error('Registration email notification failed:', error)
           }
+        } else {
+          console.log('Registration approval email not configured in settings')
         }
 
         // 3. Kullanıcıya onay beklediğini bildir
         try {
-          await sendNotificationEmail({
+          const currentYear = new Date().getFullYear()
+          console.log(`Sending pending confirmation email to user: ${user.email}`)
+          const emailResult = await sendNotificationEmail({
             to: user.email,
             template: 'REGISTRATION_PENDING_CONFIRMATION',
             variables: {
               firstName: user.firstName || user.email.split('@')[0],
-              supportEmail: settings?.footerEmail || 'support@leadportal.com'
+              supportEmail: settings?.footerEmail || 'support@leadportal.com',
+              companyName: settings.companyName || 'LeadPortal',
+              year: currentYear.toString()
             }
           })
+          if (emailResult?.success) {
+            console.log(`Pending confirmation email sent successfully to: ${user.email}`)
+          } else {
+            console.error(`Pending confirmation email failed: ${emailResult?.error || 'Unknown error'}`)
+          }
         } catch (error) {
           console.error('User confirmation email failed:', error)
         }

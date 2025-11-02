@@ -13,12 +13,54 @@ import { sendNotificationEmail } from './emailService.js'
 export async function createNotification(userId, notificationTypeCode, title, message, data = null) {
   try {
     // Bildirim tipini bul
-    const notificationType = await prisma.notificationType.findUnique({
+    let notificationType = await prisma.notificationType.findUnique({
       where: { code: notificationTypeCode }
     })
 
+    // Eğer bildirim tipi yoksa, otomatik olarak oluştur
     if (!notificationType) {
-      throw new Error(`Notification type not found: ${notificationTypeCode}`)
+      console.log(`Notification type ${notificationTypeCode} not found, creating it...`)
+      
+      // USER_REGISTRATION_PENDING için özel oluştur
+      if (notificationTypeCode === 'USER_REGISTRATION_PENDING') {
+        notificationType = await prisma.notificationType.upsert({
+          where: { code: notificationTypeCode },
+          update: {},
+          create: {
+            code: notificationTypeCode,
+            name: 'Yeni Kayıt İsteği',
+            description: 'Yeni bir kullanıcı kayıt olmak istiyor',
+            category: 'ADMIN',
+            defaultEnabled: true,
+            emailEnabled: true,
+            inAppEnabled: true,
+            icon: 'mdi:account-plus',
+            isActive: true
+          }
+        })
+        
+        // Rol izinlerini de oluştur
+        const allUserTypes = await prisma.userType.findMany()
+        for (const userType of allUserTypes) {
+          const isAdmin = userType.id.includes('ADMIN')
+          await prisma.notificationRolePermission.upsert({
+            where: {
+              userTypeId_notificationTypeId: {
+                userTypeId: userType.id,
+                notificationTypeId: notificationType.id
+              }
+            },
+            update: { canReceive: isAdmin },
+            create: {
+              userTypeId: userType.id,
+              notificationTypeId: notificationType.id,
+              canReceive: isAdmin
+            }
+          })
+        }
+      } else {
+        throw new Error(`Notification type not found: ${notificationTypeCode}`)
+      }
     }
 
     // Kullanıcının bildirim tercihi var mı kontrol et
