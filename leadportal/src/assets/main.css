@@ -2091,7 +2091,7 @@ label { font-size: 12px; color: var(--muted); }
   }
   
   .modal-footer {
-    flex-direction: column;
+    flex-direction: row;
   }
   
   .modal-footer .btn {

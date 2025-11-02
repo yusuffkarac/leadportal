@@ -276,8 +276,8 @@ function scrollShowcaseLeft() {
 
 function handleMouseDown(e) {
   if (!scrollContainer.value) return
+  hasMoved.value = false // Her mousedown'da reset et
   isDragging.value = true
-  hasMoved.value = false
   const rect = scrollContainer.value.getBoundingClientRect()
   startX.value = e.pageX - rect.left
   scrollLeft.value = scrollContainer.value.scrollLeft
@@ -305,8 +305,8 @@ function handleMouseUp() {
 // Touch events için
 function handleTouchStart(e) {
   if (!scrollContainer.value) return
+  hasMoved.value = false // Her touch start'ta reset et
   isDragging.value = true
-  hasMoved.value = false
   const rect = scrollContainer.value.getBoundingClientRect()
   startX.value = e.touches[0].pageX - rect.left
   scrollLeft.value = scrollContainer.value.scrollLeft
@@ -537,7 +537,7 @@ onMounted(async () => {
         <div
           ref="scrollContainer"
           class="showcase-scroll-container"
-          :class="{ 'is-dragging': isDragging }"
+          :class="{ 'is-dragging': hasMoved }"
           @scroll="handleScroll"
           @mousedown="handleMouseDown"
           @touchstart="handleTouchStart"
@@ -1085,8 +1085,8 @@ onMounted(async () => {
   }
 
   .showcase-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    grid-auto-columns: minmax(300px, 1fr);
+    grid-template-columns: 1fr;
+    grid-auto-flow: row;
   }
 
   .scroll-indicator {
@@ -1279,8 +1279,8 @@ onMounted(async () => {
   }
 
   .showcase-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    grid-auto-columns: minmax(280px, 1fr);
+    grid-template-columns: 1fr;
+    grid-auto-flow: row;
   }
 
   .scroll-indicator {

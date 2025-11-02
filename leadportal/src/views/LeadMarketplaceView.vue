@@ -55,6 +55,7 @@ const isDraggingPremium = ref(false)
 const premiumStartX = ref(0)
 const premiumScrollLeft = ref(0)
 const hasMovedPremium = ref(false)
+const onCardMouseDown = ref(false)
 
 function updatePremiumScrollHint() {
   const el = premiumSliderContainer.value
@@ -95,8 +96,22 @@ function handlePremiumScroll(event) {
 // Premium slider drag-to-scroll handler'ları
 function handlePremiumMouseDown(e) {
   if (!premiumSliderContainer.value) return
+
+  hasMovedPremium.value = false // Her mousedown'da reset et
+
+  // Eğer kartın içinde tıklanıyorsa
+  if (e.target?.closest('.premium-card')) {
+    onCardMouseDown.value = true
+    const rect = premiumSliderContainer.value.getBoundingClientRect()
+    premiumStartX.value = e.pageX - rect.left
+    premiumScrollLeft.value = premiumSliderContainer.value.scrollLeft
+    isDraggingPremium.value = true
+    premiumSliderContainer.value.style.cursor = 'grabbing'
+    premiumSliderContainer.value.style.userSelect = 'none'
+    return
+  }
+
   isDraggingPremium.value = true
-  hasMovedPremium.value = false
   const rect = premiumSliderContainer.value.getBoundingClientRect()
   premiumStartX.value = e.pageX - rect.left
   premiumScrollLeft.value = premiumSliderContainer.value.scrollLeft
@@ -106,17 +121,24 @@ function handlePremiumMouseDown(e) {
 
 function handlePremiumMouseMove(e) {
   if (!isDraggingPremium.value || !premiumSliderContainer.value) return
-  e.preventDefault()
+
   const rect = premiumSliderContainer.value.getBoundingClientRect()
   const x = e.pageX - rect.left
-  const walk = (x - premiumStartX.value) * 1.5 // Scroll hızı çarpanı
-  premiumSliderContainer.value.scrollLeft = premiumScrollLeft.value - walk
-  hasMovedPremium.value = true
+  const distance = Math.abs(x - premiumStartX.value)
+
+  // Minimum 5px mesafe drag olarak kabul et
+  if (distance > 10) {
+    e.preventDefault()
+    const walk = (x - premiumStartX.value) * 1.5 // Scroll hızı çarpanı
+    premiumSliderContainer.value.scrollLeft = premiumScrollLeft.value - walk
+    hasMovedPremium.value = true
+  }
 }
 
 function handlePremiumMouseUp() {
   if (!premiumSliderContainer.value) return
   isDraggingPremium.value = false
+  onCardMouseDown.value = false
   premiumSliderContainer.value.style.cursor = 'grab'
   premiumSliderContainer.value.style.userSelect = ''
 }
@@ -124,8 +146,20 @@ function handlePremiumMouseUp() {
 // Touch events için
 function handlePremiumTouchStart(e) {
   if (!premiumSliderContainer.value) return
+
+  hasMovedPremium.value = false // Her touch start'ta reset et
+
+  // Eğer kartın içinde tıklanıyorsa
+  if (e.target?.closest('.premium-card')) {
+    onCardMouseDown.value = true
+    const rect = premiumSliderContainer.value.getBoundingClientRect()
+    premiumStartX.value = e.touches[0].pageX - rect.left
+    premiumScrollLeft.value = premiumSliderContainer.value.scrollLeft
+    isDraggingPremium.value = true
+    return
+  }
+
   isDraggingPremium.value = true
-  hasMovedPremium.value = false
   const rect = premiumSliderContainer.value.getBoundingClientRect()
   premiumStartX.value = e.touches[0].pageX - rect.left
   premiumScrollLeft.value = premiumSliderContainer.value.scrollLeft
@@ -133,23 +167,28 @@ function handlePremiumTouchStart(e) {
 
 function handlePremiumTouchMove(e) {
   if (!isDraggingPremium.value || !premiumSliderContainer.value) return
-  e.preventDefault()
+
   const rect = premiumSliderContainer.value.getBoundingClientRect()
   const x = e.touches[0].pageX - rect.left
-  const walk = (x - premiumStartX.value) * 1.5
-  premiumSliderContainer.value.scrollLeft = premiumScrollLeft.value - walk
-  hasMovedPremium.value = true
+  const distance = Math.abs(x - premiumStartX.value)
+
+  // Minimum 5px mesafe drag olarak kabul et
+  if (distance > 5) {
+    e.preventDefault()
+    const walk = (x - premiumStartX.value) * 1.5
+    premiumSliderContainer.value.scrollLeft = premiumScrollLeft.value - walk
+    hasMovedPremium.value = true
+  }
 }
 
 function handlePremiumTouchEnd() {
   isDraggingPremium.value = false
+  onCardMouseDown.value = false
 }
 
-// Premium card click handler - drag yoksa navigate et
-function handlePremiumCardClick(lead, event) {
+// Premium card click handler
+function handlePremiumCardClick(lead) {
   if (hasMovedPremium.value) {
-    event?.preventDefault()
-    event?.stopPropagation()
     hasMovedPremium.value = false
     return
   }
@@ -745,7 +784,7 @@ onUnmounted(() => {
           <div
             ref="premiumSliderContainer"
             class="premium-slider-container"
-            :class="{ 'is-dragging': isDraggingPremium }"
+            :class="{ 'is-dragging': hasMovedPremium }"
             @scroll="handlePremiumScroll"
             @mousedown="handlePremiumMouseDown"
             @touchstart="handlePremiumTouchStart"
@@ -753,7 +792,7 @@ onUnmounted(() => {
             @touchend="handlePremiumTouchEnd"
           >
             <div class="premium-slider">
-            <div class="premium-card" v-for="lead in premiumLeads" :key="lead.id" @click="handlePremiumCardClick(lead, $event)">
+            <div class="premium-card" v-for="lead in premiumLeads" :key="lead.id" @click="handlePremiumCardClick(lead)">
               <div class="premium-card-glow"></div>
               <div class="premium-card-header">
                 <div class="premium-card-title">
@@ -778,7 +817,7 @@ onUnmounted(() => {
                     <span v-else>{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
                   </span>
                 </div>
-                <div v-if="lead.instantBuyPrice" class="premium-instant-price">
+                <div v-if="lead.instantBuyPrice" class="premium-instant-price" @click.stop="openInstantBuyModal(lead, $event)" style="cursor: pointer;">
                   <span class="premium-instant-label">Anında Al</span>
                   <span class="premium-instant-amount">{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</span>
                 </div>
