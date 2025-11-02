@@ -1218,7 +1218,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <section :data-lead-type="leadType">
+  <section :data-lead-type="leadType" style='margin-top: 3%;'>
     <!-- Hero Section - Lead yoksa üstte -->
     <section v-if="!leads.length" class="hero-section">
       <div class="hero-content">
@@ -1452,7 +1452,10 @@ onUnmounted(() => {
               <th>Lead ID & Başlık</th>
               <th v-if="leadType === 'SOFORT_KAUF'">Fiyat</th>
               <th v-else>Fiyat & Teklif</th>
-              <th v-if="leadType !== 'SOFORT_KAUF'">Hızlı Teklif</th>
+              <th v-if="leadType !== 'SOFORT_KAUF'">
+                <span v-if="isAdmin">Son Teklif Veren</span>
+                <span v-else>Hızlı Teklif</span>
+              </th>
               <th>Kalan Süre</th>
               <th>İşlemler</th>
             </tr>
@@ -1507,7 +1510,15 @@ onUnmounted(() => {
                     
                   </div>
                 </div>
-                <span v-else class="text-muted">-</span>
+                <div v-else-if="isAdmin && lead.bids && lead.bids.length > 0" class="last-bidder-name">
+                  <span v-if="lead.bids[0].user">
+                    {{ lead.bids[0].user.firstName && lead.bids[0].user.lastName 
+                      ? `${lead.bids[0].user.firstName} ${lead.bids[0].user.lastName}` 
+                      : lead.bids[0].user.username || lead.bids[0].user.email || '-' }}
+                  </span>
+                  <span v-else class="text-muted">-</span>
+                </div>
+                <span v-else-if="!isAdmin" class="text-muted">-</span>
               </td>
               <td class="time-cell">
                 <div class="countdown-timer" :class="{ 'blinking': isTimeRemaining(lead.endsAt, 60) }">
@@ -1876,13 +1887,14 @@ onUnmounted(() => {
 <style scoped>
 /* Section Containers */
 .premium-section {
-  background: #f5f7fb;
-  border-radius: 24px;
-  padding: 32px 28px;
+
+
+
   margin: 0 auto 24px auto;
-  border: 1px solid rgba(15, 23, 42, 0.06);
+  padding: 0!important;
   max-width: 80%;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .map-section {
@@ -1893,6 +1905,7 @@ onUnmounted(() => {
   border: 1px solid rgba(15, 23, 42, 0.06);
   max-width: 80%;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .auctions-section {
@@ -1903,6 +1916,7 @@ onUnmounted(() => {
   border: 1px solid rgba(15, 23, 42, 0.06);
   max-width: 80%;
   width: 100%;
+  box-sizing: border-box;
 }
 
 /* Map Container */
@@ -2692,8 +2706,10 @@ onUnmounted(() => {
   .map-section,
   .auctions-section {
     max-width: 100%;
+    width: calc(100% - 32px);
     margin-left: 16px;
     margin-right: 16px;
+    box-sizing: border-box;
   }
 }
 
@@ -2702,8 +2718,11 @@ onUnmounted(() => {
   .map-section,
   .auctions-section {
     padding: 20px 16px;
+    width: calc(100% - 24px);
     margin-left: 12px;
     margin-right: 12px;
+    box-sizing: border-box;
+    max-width: 100%;
   }
 }
 
@@ -2711,9 +2730,12 @@ onUnmounted(() => {
   .premium-section,
   .map-section,
   .auctions-section {
+    width: calc(100% - 16px);
     margin-left: 8px;
     margin-right: 8px;
     padding: 16px 12px;
+    box-sizing: border-box;
+    max-width: 100%;
   }
 }
 
@@ -3195,6 +3217,14 @@ onUnmounted(() => {
   padding: 10px 14px !important;
   width: 190px;
   max-width: 190px;
+}
+
+/* Last Bidder Name (Admin) */
+.last-bidder-name {
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1f2937;
 }
 
 .quick-bid-inline {

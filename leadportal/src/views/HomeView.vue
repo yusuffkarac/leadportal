@@ -659,6 +659,9 @@ onMounted(async () => {
   padding: 64px 32px;
   overflow: hidden;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .hero::after {
@@ -759,6 +762,9 @@ onMounted(async () => {
   flex-direction: column;
   gap: 32px;
   text-align: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .features h2 {
@@ -819,6 +825,9 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 32px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .section-header {
@@ -861,6 +870,10 @@ onMounted(async () => {
 
 .showcase-wrapper {
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .showcase-scroll-buttons {
@@ -941,6 +954,8 @@ onMounted(async () => {
   cursor: grab;
   user-select: none;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .showcase-scroll-container.is-dragging {
@@ -975,6 +990,9 @@ onMounted(async () => {
   gap: 24px;
   grid-auto-flow: column;
   grid-auto-columns: minmax(360px, 1fr);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .stats {
@@ -986,6 +1004,9 @@ onMounted(async () => {
   flex-direction: column;
   gap: 28px;
   text-align: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .stats h2 {
@@ -1032,6 +1053,9 @@ onMounted(async () => {
 .cta {
   display: flex;
   justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .cta-card {
@@ -1087,9 +1111,12 @@ onMounted(async () => {
 @media (max-width: 768px) {
   .home-page {
     gap: 48px;
-    padding: 32px 20px 64px;
-    max-width: 95%;
-
+    padding: 32px 16px 64px;
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .features-grid,
@@ -1101,6 +1128,9 @@ onMounted(async () => {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     grid-auto-columns: minmax(280px, 1fr);
     gap: 12px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .scroll-indicator {
@@ -1178,9 +1208,12 @@ onMounted(async () => {
 @media (max-width: 520px) {
   .home-page {
     gap: 40px;
-    padding: 24px 16px 56px;
-    max-width: 95%;
-
+    padding: 24px 12px 56px;
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .hero {
@@ -1296,6 +1329,9 @@ onMounted(async () => {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     grid-auto-columns: minmax(260px, 1fr);
     gap: 10px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .scroll-indicator {

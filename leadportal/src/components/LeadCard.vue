@@ -313,6 +313,9 @@ const minBidAmount = computed(() => {
   gap: 12px;
   transition: all 0.2s ease;
   cursor: pointer;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .teklif-ver-btn{
@@ -334,6 +337,8 @@ const minBidAmount = computed(() => {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .card-top-left {
@@ -341,6 +346,8 @@ const minBidAmount = computed(() => {
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+  min-width: 0;
+  flex: 1;
 }
 
 .insurance-type-badge {
@@ -354,6 +361,10 @@ const minBidAmount = computed(() => {
   font-size: 0.6875rem;
   font-weight: 600;
   text-transform: uppercase;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .time-badge {
@@ -388,6 +399,8 @@ const minBidAmount = computed(() => {
 
 .card-top-right {
   margin-left: auto;
+  flex-shrink: 0;
+  min-width: 0;
 }
 
 .lead-id {
@@ -395,6 +408,11 @@ const minBidAmount = computed(() => {
   font-weight: 700;
   color: #0f172a;
   letter-spacing: 0.05em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100px;
+  display: block;
 }
 
 /* Card Meta */
@@ -404,6 +422,8 @@ const minBidAmount = computed(() => {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .location-info {
@@ -413,6 +433,15 @@ const minBidAmount = computed(() => {
   color: #64748b;
   font-size: 0.8125rem;
   font-weight: 500;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.location-info span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .location-info svg {
@@ -428,6 +457,16 @@ const minBidAmount = computed(() => {
   color: #f59e0b;
   font-size: 0.8125rem;
   font-weight: 600;
+  flex-shrink: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.quality-badge span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 120px;
 }
 
 .quality-badge svg {
@@ -443,6 +482,10 @@ const minBidAmount = computed(() => {
   font-weight: 700;
   color: #0f172a;
   line-height: 1.3;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 /* Price and Bidder Section */
@@ -454,7 +497,9 @@ const minBidAmount = computed(() => {
   flex-direction: row;
   gap: 6px;
   justify-content: space-between;
-  
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 .price-bidder-section span{
   color: #10b981!important;
@@ -466,6 +511,8 @@ const minBidAmount = computed(() => {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
+  min-width: 0;
+  flex: 1;
 }
 
 .price-amount-large {
@@ -473,6 +520,9 @@ const minBidAmount = computed(() => {
   font-weight: 700;
   color: #10b981;
   line-height: 1;
+  min-width: 0;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .bidder-info-line {
@@ -482,15 +532,25 @@ const minBidAmount = computed(() => {
   flex-wrap: wrap;
   font-size: 0.6875rem;
   color: #64748b;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .bidder-label {
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
 }
 
 .bidder-name {
   font-weight: 500;
   color: #475569;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 80px;
 }
 
 .bids-count-small {
@@ -498,6 +558,8 @@ const minBidAmount = computed(() => {
   color: #0f172a;
   margin-left: auto;
   font-size: 1.0rem;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 /* Quick Bid Section */
@@ -506,6 +568,9 @@ const minBidAmount = computed(() => {
   background: #f8fafc;
   border-radius: 8px;
   border: 1px solid #e2e8f0;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .quick-bid-input-group {
@@ -598,6 +663,9 @@ const minBidAmount = computed(() => {
 .action-buttons {
   display: flex;
   gap: 8px;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .bid-action-btn {
@@ -615,6 +683,9 @@ const minBidAmount = computed(() => {
   align-items: center;
   justify-content: center;
   gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .bid-action-btn:hover:not(:disabled) {
@@ -642,6 +713,9 @@ const minBidAmount = computed(() => {
   align-items: center;
   justify-content: center;
   gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .instant-buy-action-btn:hover {
@@ -740,35 +814,261 @@ const minBidAmount = computed(() => {
 }
 
 @media (max-width: 768px) {
+  .auction-card {
+    padding: 10px;
+    gap: 8px;
+    border-radius: 12px;
+  }
+
   .card-top-left {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .insurance-type-badge {
+    padding: 3px 6px;
+    font-size: 0.625rem;
+  }
+
+  .insurance-type-badge svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .time-badge {
+    padding: 3px 6px;
+    font-size: 0.625rem;
+  }
+
+  .time-badge svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .info-btn {
+    padding: 3px;
+  }
+
+  .info-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .lead-id {
+    font-size: 0.75rem;
+    max-width: 80px;
+  }
+
+  .card-meta {
+    gap: 8px;
+  }
+
+  .location-info {
+    font-size: 0.75rem;
+  }
+
+  .location-info svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .quality-badge {
+    font-size: 0.75rem;
+  }
+
+  .quality-badge svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .quality-badge span {
+    max-width: 90px;
+  }
+
+  .lead-title {
+    font-size: 0.875rem;
+    line-height: 1.2;
+  }
+
+  .price-bidder-section {
+    padding: 8px;
+    gap: 4px;
     flex-direction: column;
-    align-items: flex-start;
+  }
+
+  .price-row {
+    width: 100%;
+  }
+
+  .bidder-info-line {
+    width: 100%;
+  }
+
+  .price-amount-large {
+    font-size: 1.25rem;
+  }
+
+  .bidder-info-line {
+    font-size: 0.625rem;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .bidder-info-line svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .bids-count-small {
+    font-size: 0.75rem;
+  }
+
+  .quick-bid-section {
+    padding: 8px;
+  }
+
+  .quick-bid-input-group {
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+
+  .quick-bid-input {
+    padding: 6px 8px;
+    font-size: 0.75rem;
+  }
+
+  .quick-bid-submit-btn {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+
+  .quick-bid-submit-btn svg {
+    width: 16px;
+    height: 16px;
   }
 
   .quick-bid-suggestions {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .quick-bid-suggestion {
+    padding: 4px 6px;
+    font-size: 0.625rem;
+  }
+
+  .action-buttons {
+    gap: 6px;
+  }
+
+  .bid-action-btn {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    gap: 4px;
+  }
+
+  .bid-action-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .instant-buy-action-btn {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    gap: 4px;
+  }
+
+  .instant-buy-action-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .edit-action-btn {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    gap: 4px;
+  }
+
+  .edit-action-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .sofort-kauf-buy-btn {
+    padding: 8px 12px;
+    font-size: 0.8125rem;
+    gap: 6px;
+  }
+
+  .sofort-kauf-buy-btn svg {
+    width: 18px;
+    height: 18px;
   }
 
   .scheduled-badge {
-    padding: 10px 12px;
-    font-size: 0.8rem;
+    padding: 8px 10px;
+    font-size: 0.75rem;
+    margin-bottom: 8px;
+    gap: 6px;
+  }
+
+  .scheduled-badge svg {
+    width: 16px;
+    height: 16px;
   }
 }
 
 @media (max-width: 480px) {
-  .card-top-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .card-top-right {
-    margin-left: 0;
-    align-self: flex-end;
-  }
-
-  .action-buttons {
-    flex-direction: column;
+  .auction-card {
+    padding: 8px;
     gap: 6px;
+  }
+
+  .card-top-header {
+    gap: 6px;
+  }
+
+  .card-top-left {
+    gap: 3px;
+  }
+
+  .insurance-type-badge {
+    padding: 2px 5px;
+    font-size: 0.5625rem;
+  }
+
+  .time-badge {
+    padding: 2px 5px;
+    font-size: 0.5625rem;
+  }
+
+  .lead-id {
+    max-width: 70px;
+  }
+
+  .quality-badge span {
+    max-width: 70px;
+  }
+
+  .lead-title {
+    font-size: 0.8125rem;
+  }
+
+  .price-bidder-section {
+    flex-direction: column;
+  }
+
+  .price-row {
+    width: 100%;
+  }
+
+  .bidder-info-line {
+    font-size: 0.5625rem;
+    width: 100%;
+  }
+
+  .price-amount-large {
+    font-size: 1.125rem;
   }
 
   .quick-bid-input-group {
@@ -778,6 +1078,24 @@ const minBidAmount = computed(() => {
   .quick-bid-submit-btn {
     flex: 1 1 100%;
     width: 100%;
+    margin-top: 4px;
+  }
+
+  .quick-bid-suggestions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .bid-action-btn,
+  .instant-buy-action-btn,
+  .edit-action-btn,
+  .sofort-kauf-buy-btn {
+    padding: 6px 10px;
+    font-size: 0.6875rem;
   }
 }
 </style>
