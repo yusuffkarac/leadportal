@@ -1552,6 +1552,10 @@ watch(showMap, (newValue) => {
   gap: 12px;
   align-items: center;
   flex-wrap: wrap;
+
+    display: flex;
+    gap: 10px;
+
 }
 
 /* Filtreler */

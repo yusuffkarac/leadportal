@@ -887,6 +887,11 @@ onUnmounted(() => {
 .header-content {
   flex: 1;
 }
+.header-actions{
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+}
 
 .header-content h1 {
   margin: 0 0 8px;
