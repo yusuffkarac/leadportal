@@ -44,10 +44,8 @@ onUnmounted(() => {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: transparent;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(226, 232, 240, 0.5);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
@@ -59,7 +57,7 @@ onUnmounted(() => {
 }
 
 .scroll-to-top:hover {
-  background: transparent;
+  background: #f8fafc;
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
   color: #1f2937;
