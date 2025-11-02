@@ -940,6 +940,7 @@ onMounted(async () => {
   padding-bottom: 8px;
   cursor: grab;
   user-select: none;
+  width: 100%;
 }
 
 .showcase-scroll-container.is-dragging {
@@ -970,7 +971,7 @@ onMounted(async () => {
 
 .showcase-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: 24px;
   grid-auto-flow: column;
   grid-auto-columns: minmax(360px, 1fr);
@@ -1097,8 +1098,9 @@ onMounted(async () => {
   }
 
   .showcase-grid {
-    grid-template-columns: 1fr;
-    grid-auto-flow: row;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-auto-columns: minmax(280px, 1fr);
+    gap: 12px;
   }
 
   .scroll-indicator {
@@ -1291,8 +1293,9 @@ onMounted(async () => {
   }
 
   .showcase-grid {
-    grid-template-columns: 1fr;
-    grid-auto-flow: row;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-auto-columns: minmax(260px, 1fr);
+    gap: 10px;
   }
 
   .scroll-indicator {
