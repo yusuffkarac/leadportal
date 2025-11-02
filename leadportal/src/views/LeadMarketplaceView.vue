@@ -608,7 +608,7 @@ async function openLeadModal(mode, lead = null) {
   if (mode === 'new') {
     // Yeni lead için varsayılan değerleri yükle
     try {
-      const settingsResponse = await api.get('/api/settings', { headers: authHeaders() })
+      const settingsResponse = await api.get('/settings', { headers: authHeaders() })
       const settingsData = settingsResponse.data
 
       // Varsayılan bitiş tarihini hesapla (şu an + varsayılan gün sayısı)
@@ -953,11 +953,11 @@ async function saveLead() {
 
     if (modalMode.value === 'new') {
       // Yeni lead oluştur
-      await api.post('/api/leads', leadData, { headers: authHeaders() })
+      await api.post('/leads', leadData, { headers: authHeaders() })
       successMessage.value = 'Lead başarıyla oluşturuldu!'
     } else {
       // Mevcut lead'i güncelle
-      await api.put(`/api/leads/${editingLead.value.id}`, leadData, { headers: authHeaders() })
+      await api.put(`/leads/${editingLead.value.id}`, leadData, { headers: authHeaders() })
       successMessage.value = 'Lead başarıyla güncellendi!'
     }
 
