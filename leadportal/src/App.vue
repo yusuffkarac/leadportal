@@ -5,6 +5,7 @@ import UserProfile from './components/UserProfile.vue'
 import GlobalAlert from './components/GlobalAlert.vue'
 import NotificationDropdown from './components/NotificationDropdown.vue'
 import LeadSearchModal from './components/LeadSearchModal.vue'
+import ScrollToTop from './components/ScrollToTop.vue'
 import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue'
 import { checkPageAccess } from './utils/permissions.js'
 import defaultLogo from '@/assets/images/logo.png'
@@ -931,6 +932,9 @@ function closeAdminCategory() {
 
   <!-- Lead Search Modal -->
   <LeadSearchModal :show="showSearchModal" @close="closeSearchModal" />
+
+  <!-- Scroll to Top Button -->
+  <ScrollToTop />
 
 </template>
 

@@ -601,6 +601,7 @@ onMounted(() => {
 @media (max-width: 768px) {
   .preferences-container {
     padding: 16px;
+    max-width:95%;
   }
 
   .header-content h1 {
