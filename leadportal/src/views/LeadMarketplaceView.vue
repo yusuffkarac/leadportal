@@ -618,7 +618,19 @@ async function ensureZipcodesLoaded() {
 
 function initMap() {
   if (!window.L || !mapRoot.value || leafletMap) return
-  leafletMap = window.L.map(mapRoot.value).setView([51.1657, 10.4515], 3)
+
+  // Almanya sınırları (yaklaşık)
+  const germanyBounds = [
+    [47.0, 5.8],   // Güneybatı köşe
+    [55.8, 15.2]   // Kuzeydoğu köşe
+  ]
+
+  leafletMap = window.L.map(mapRoot.value, {
+    maxBounds: germanyBounds,
+    maxBoundsViscosity: 1.0,
+    minZoom: 5  // Minimum zoom seviyesi (dünyaya zoom out engelle)
+  }).setView([51.1657, 10.4515], 6)
+  
   window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '© OpenStreetMap contributors'
@@ -630,6 +642,11 @@ function updateMapMarkers() {
   if (!leafletMap || !markersLayer) return
   markersLayer.clearLayers()
   const bounds = []
+  const germanyBounds = [
+    [47.0, 5.8],   // Güneybatı köşe
+    [55.8, 15.2]   // Kuzeydoğu köşe
+  ]
+
   for (const lead of leads.value) {
     const pc = lead.postalCode || lead.postal || ''
     const info = zipcodeIndex.value.get(String(pc))
@@ -659,8 +676,13 @@ function updateMapMarkers() {
     marker.addTo(markersLayer)
     bounds.push([info.lat, info.lon])
   }
+  
+  // Haritayı leads'e göre fit et, ama almanya sınırlarını aşma
   if (bounds.length > 0) {
-    leafletMap.fitBounds(bounds, { padding: [20, 20] })
+    leafletMap.fitBounds(bounds, { padding: [20, 20], maxZoom: 10 })
+  } else {
+    // Lead yoksa almanya bounds'una fit et
+    leafletMap.fitBounds(germanyBounds, { padding: [20, 20], maxZoom: 6 })
   }
 }
 
