@@ -176,7 +176,7 @@ onMounted(async () => {
   <section>
     <div class="page-content">
       <div class="page-header">
-        <div class="header-content">
+        <div class="section-header">
           <h1>Lead Tipi Yetkilendirmeleri</h1>
           <p class="page-subtitle">Kullanıcı ve kullanıcı tipi bazında lead tipi görünürlüğünü ayarlayın</p>
         </div>

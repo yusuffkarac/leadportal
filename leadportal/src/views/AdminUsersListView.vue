@@ -7,6 +7,7 @@ const router = useRouter()
 const users = ref([])
 const isLoading = ref(true)
 const error = ref('')
+const pendingCount = ref(0)
 
 // Arama ve filtreleme
 const searchQuery = ref('')
@@ -69,6 +70,16 @@ async function loadUsers() {
   }
 }
 
+async function loadPendingCount() {
+  try {
+    const response = await api.get('/users/pending-registrations/list')
+    pendingCount.value = response.data.length
+  } catch (err) {
+    console.error('Onay bekleyen kullanıcı sayısı yüklenemedi:', err)
+    pendingCount.value = 0
+  }
+}
+
 function formatDate(date) {
   if (!date) return 'Hiç'
   return new Date(date).toLocaleString('tr-TR', {
@@ -99,11 +110,19 @@ function createUser() {
   router.push('/admin/users/new')
 }
 
+function goToPendingUsers() {
+  router.push('/admin/pending-users')
+}
+
 // Her 30 saniyede bir otomatik yenile (online durumları güncel tutmak için)
 let refreshInterval
 onMounted(() => {
   loadUsers()
-  refreshInterval = setInterval(loadUsers, 30000)
+  loadPendingCount()
+  refreshInterval = setInterval(() => {
+    loadUsers()
+    loadPendingCount()
+  }, 30000)
 })
 
 // Component unmount olduğunda interval'i temizle
@@ -122,13 +141,23 @@ onUnmounted(() => {
         <h1>Kullanıcı Yönetimi</h1>
         <p class="subtitle">Tüm kullanıcıları görüntüle ve yönet</p>
       </div>
-      <button class="create-btn" @click="createUser">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="5" x2="12" y2="19"/>
-          <line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
-        Yeni Kullanıcı
-      </button>
+      <div class="header-buttons">
+        <button class="pending-btn" @click="goToPendingUsers">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          Onay Bekleyen
+          <span v-if="pendingCount > 0" class="pending-badge">{{ pendingCount }}</span>
+        </button>
+        <button class="create-btn" @click="createUser">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Yeni Kullanıcı
+        </button>
+      </div>
     </div>
 
     <div class="filters-section">
@@ -276,6 +305,12 @@ onUnmounted(() => {
   gap: 1rem;
 }
 
+.header-buttons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
 .header-left h1 {
   margin: 0 0 0.5rem 0;
   font-size: 2rem;
@@ -285,6 +320,41 @@ onUnmounted(() => {
 .subtitle {
   color: var(--muted);
   font-size: 0.95rem;
+}
+
+.pending-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: white;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.pending-btn:hover {
+  background: var(--bg);
+  transform: translateY(-1px);
+}
+
+.pending-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: 0.25rem;
 }
 
 .create-btn {
@@ -615,6 +685,17 @@ onUnmounted(() => {
 
   .page-header {
     flex-direction: column;
+  }
+
+  .header-buttons {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .pending-btn,
+  .create-btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .filter-row {

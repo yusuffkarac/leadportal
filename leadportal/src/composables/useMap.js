@@ -54,7 +54,19 @@ export function useMap(mapKey = 'default') {
   // Harita initialize et
   function initMap() {
     if (!window.L || !mapRoot.value || leafletMap) return
-    leafletMap = window.L.map(mapRoot.value).setView([51.1657, 10.4515], 5)
+
+    // Almanya sınırları (yaklaşık)
+    const germanyBounds = [
+      [47.0, 5.8],   // Güneybatı köşe
+      [55.8, 15.2]   // Kuzeydoğu köşe
+    ]
+
+    leafletMap = window.L.map(mapRoot.value, {
+      maxBounds: germanyBounds,
+      maxBoundsViscosity: 1.0,
+      minZoom: 5  // Minimum zoom seviyesi (dünyaya zoom out engelle)
+    }).setView([51.1657, 10.4515], 6)
+
     window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap contributors'
@@ -67,14 +79,18 @@ export function useMap(mapKey = 'default') {
     if (!leafletMap || !markersLayer) return
     markersLayer.clearLayers()
     const bounds = []
-    
+    const germanyBounds = [
+      [47.0, 5.8],   // Güneybatı köşe
+      [55.8, 15.2]   // Kuzeydoğu köşe
+    ]
+
     for (const lead of leads) {
       // Satın alınan lead'ler için farklı veri yapısı
       const leadData = lead.lead || lead // Eğer lead.lead varsa (satın alınan lead), yoksa direkt lead
       const pc = leadData.postalCode || leadData.postal || ''
       const info = zipcodeIndex.value.get(String(pc))
       if (!info || isNaN(info.lat) || isNaN(info.lon)) continue
-      
+
       const marker = window.L.marker([info.lat, info.lon])
       const price = lead.amount || (leadData.bids && leadData.bids[0]?.amount) || leadData.startPrice
       const currency = settings?.defaultCurrency || 'EUR'
@@ -84,12 +100,12 @@ export function useMap(mapKey = 'default') {
       const chip = insType ? `<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid #e2e8f0;border-radius:999px;background:#f8fafc;color:#334155;font-size:12px">${insIcon}<span>${insType}</span></span>` : ''
       const postalChip = pc ? `<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid #e2e8f0;border-radius:999px;background:#fff;color:#334155;font-size:12px"><span class="iconify" data-icon="mdi:map-marker-outline" style="font-size:14px;color:#64748b"></span><span>${pc}</span></span>` : ''
       const tags = (chip || postalChip) ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 8px">${chip}${postalChip}</div>` : ''
-      
+
       // Satın alınan lead'ler için farklı popup
       const isPurchased = lead.amount !== undefined
       const priceLabel = isPurchased ? 'Satın Alma Fiyatı' : 'Fiyat'
       const priceColor = isPurchased ? '#059669' : '#0f766e'
-      
+
       const popupHtml = `
         <div style="min-width:220px;max-width:280px">
           <div style="font-weight:700;margin-bottom:2px;color:#0f172a;font-size:14px">${leadData.title}</div>
@@ -106,9 +122,13 @@ export function useMap(mapKey = 'default') {
       marker.addTo(markersLayer)
       bounds.push([info.lat, info.lon])
     }
-    
+
+    // Haritayı leads'e göre fit et, ama almanya sınırlarını aşma
     if (bounds.length > 0) {
-      leafletMap.fitBounds(bounds, { padding: [20, 20] })
+      leafletMap.fitBounds(bounds, { padding: [20, 20], maxZoom: 10 })
+    } else {
+      // Lead yoksa almanya bounds'una fit et
+      leafletMap.fitBounds(germanyBounds, { padding: [20, 20], maxZoom: 6 })
     }
   }
 

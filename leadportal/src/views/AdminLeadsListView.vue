@@ -716,7 +716,7 @@ watch(showMap, (newValue) => {
   <section>
     <div class="page-content">
       <div class="page-header">
-        <div class="header-content">
+        <div class="section-header">
           <h1>Tüm Leadler</h1>
           <p class="page-subtitle">Lead yönetimi ve düzenleme</p>
         </div>

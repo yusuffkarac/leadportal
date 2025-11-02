@@ -465,7 +465,7 @@ function closeAdminCategory() {
         </RouterLink>
 
         <!-- Leads Dropdown -->
-        <div class="leads-dropdown" @mouseenter="openLeadsDropdown" @mouseleave="closeLeadsDropdown">
+        <div v-if="isAuthed" class="leads-dropdown" @mouseenter="openLeadsDropdown" @mouseleave="closeLeadsDropdown">
           <RouterLink to="/leads" class="leads-trigger" style="background:none;border:none;display:flex;align-items:center;gap:4px;cursor:pointer;padding:0;">
             <Icon icon="mdi:briefcase-outline" width="16" height="16" />
             Leadler
@@ -694,7 +694,7 @@ function closeAdminCategory() {
         </RouterLink>
 
         <!-- Leads submenu in mobile -->
-        <div class="mobile-nav-section">
+        <div v-if="isAuthed" class="mobile-nav-section">
           <div class="mobile-nav-section-header">
             <Icon icon="mdi:briefcase-outline" width="20" height="20" />
             <span>Leadler</span>
@@ -1265,6 +1265,7 @@ nav a:first-of-type {
   }
 }
 
+
 /* Mobile Nav Section Styles */
 .mobile-nav-section-header {
   display: flex;
@@ -1571,6 +1572,7 @@ nav a:first-of-type {
 .search-btn:hover svg {
   transform: scale(1.1);
 }
+
 
 /* Mobile Search Button */
 .mobile-search-btn {

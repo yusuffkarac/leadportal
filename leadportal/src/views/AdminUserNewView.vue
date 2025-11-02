@@ -19,6 +19,7 @@ const query = ref('')
 const filterUserType = ref('')
 const sortKey = ref('lastActivity')
 const sortDir = ref('desc')
+const pendingCount = ref(0)
 
 function setSortKey(key) {
   if (sortKey.value === key) {
@@ -250,6 +251,16 @@ async function loadUsers() {
   }
 }
 
+async function loadPendingCount() {
+  try {
+    const { data } = await axios.get('/api/users/pending-registrations/list', { headers: authHeaders() })
+    pendingCount.value = data.length
+  } catch (e) {
+    console.error('Onay bekleyen kullanıcı sayısı yüklenemedi:', e)
+    pendingCount.value = 0
+  }
+}
+
 async function loadUserTypes() {
   try {
     const { data } = await axios.get('/api/user-types', { headers: authHeaders() })
@@ -407,7 +418,11 @@ let refreshInterval
 onMounted(() => {
   loadUsers()
   loadUserTypes()
-  refreshInterval = setInterval(loadUsers, 30000)
+  loadPendingCount()
+  refreshInterval = setInterval(() => {
+    loadUsers()
+    loadPendingCount()
+  }, 30000)
 })
 
 // Component unmount olduğunda interval'i temizle
@@ -423,7 +438,7 @@ onUnmounted(() => {
     <div class="page-content">
       <!-- Header -->
       <div class="page-header">
-        <div class="header-content">
+        <div class="section-header">
           <h1>Kullanıcılar</h1>
           <div class="header-stats">
             <p class="page-subtitle">{{ filteredUsers.length }} kullanıcı</p>
@@ -434,15 +449,13 @@ onUnmounted(() => {
           </div>
         </div>
         <div class="header-actions">
-          <router-link to="/admin/pending-users" class="btn btn-secondary">
+          <router-link to="/admin/pending-users" class="btn btn-secondary pending-btn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="11" cy="11" r="8"/>
               <path d="m21 21-4.35-4.35"/>
-              <circle cx="11" cy="8" r="1"/>
-              <path d="M11 11h.01"/>
-              <circle cx="16" cy="11" r="1"/>
             </svg>
             Onay Bekleyen
+            <span v-if="pendingCount > 0" class="pending-badge">{{ pendingCount }}</span>
           </router-link>
           <button class="btn btn-primary" @click="openNewUser">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1351,6 +1364,25 @@ onUnmounted(() => {
 
 .btn-secondary:hover {
   background: #e5e7eb;
+}
+
+.pending-btn {
+  position: relative;
+}
+
+.pending-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: 0.25rem;
 }
 
 .muted {

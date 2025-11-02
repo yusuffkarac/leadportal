@@ -145,7 +145,7 @@ onMounted(() => {
 <template>
   <div class="preferences-container">
     <div class="preferences-header">
-      <div class="header-content">
+      <div class="section-header">
         <h1>
           <Icon icon="mdi:bell-cog-outline" width="32" height="32" />
           Bildirim Tercihleri

@@ -2,7 +2,7 @@
   <div class="user-types-page">
     <div class="page-content">
       <div class="page-header">
-        <div class="header-content">
+        <div class="section-header">
           <h1>Kullanıcı Tipleri</h1>
           <p class="page-subtitle">Kullanıcı tiplerini yönetin ve yetkilendirmeleri ayarlayın</p>
         </div>
@@ -753,8 +753,9 @@ onMounted(() => {
 .section-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 2rem;
+  flex-direction: column;
 }
 
 .section-header h2 {
