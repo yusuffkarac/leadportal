@@ -655,6 +655,40 @@
                     Bu mesaj bakım modu sırasında kullanıcılara gösterilir
                   </small>
                 </div>
+
+                <div class="setting-group">
+                  <label class="setting-label">Kayıt Onayı Gerekli</label>
+                  <div class="toggle-container">
+                    <label class="toggle-switch">
+                      <input
+                        type="checkbox"
+                        v-model="settings.requireRegistrationApproval"
+                        @change="updateSettings"
+                      >
+                      <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label">
+                      {{ settings.requireRegistrationApproval ? 'Açık' : 'Kapalı' }}
+                    </span>
+                  </div>
+                  <small class="form-help">
+                    Açık olursa yeni kullanıcı kayıtları admin onayı bekleyecektir. Kapalı olursa kullanıcılar doğrudan giriş yapabilecektir.
+                  </small>
+                </div>
+
+                <div v-if="settings.requireRegistrationApproval" class="setting-group">
+                  <label class="setting-label">Kayıt Onay Bildirim E-posta Adresi</label>
+                  <input
+                    v-model="settings.registrationApprovalEmail"
+                    type="email"
+                    class="form-input"
+                    placeholder="admin@example.com"
+                    @input="updateSettings"
+                  >
+                  <small class="form-help">
+                    Yeni kayıt talepleri bu e-posta adresine bildirilecektir (opsiyonel)
+                  </small>
+                </div>
                 
                 <div class="save-section" style="justify-content:flex-end;">
                   <button class="btn btn-primary" @click="saveGeneralSettings" :disabled="savingGeneral">
@@ -765,7 +799,9 @@ const settings = ref({
   smtpUseTLS: false,
   smtpUseSSL: true,
   sessionTimeoutMinutes: 120,
-  sessionTimeoutMessage: 'Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.'
+  sessionTimeoutMessage: 'Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.',
+  requireRegistrationApproval: true,
+  registrationApprovalEmail: ''
 })
 
 // Iconify tabanlı picker kontrol durumu
