@@ -901,50 +901,66 @@ onMounted(() => {
 
 @media (max-width: 768px) {
   .balance-management {
-    padding: 1rem;
+    padding: 0.75rem;
     max-width: 100%;
   }
 
   .page-header {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
   }
 
   .page-header h1 {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
+    margin: 0 0 0.25rem 0;
   }
 
   .page-header p {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
+    margin: 0;
   }
 
   .content-wrapper {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 0.75rem;
   }
 
   .users-list {
-    padding: 1rem;
-    max-height: 450px;
+    padding: 0.75rem;
+    max-height: 400px;
     border-radius: 8px;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
   }
 
   .search-box {
-    padding: 0.75rem;
-    margin-bottom: 1rem;
-    gap: 0.5rem;
+    padding: 0.625rem;
+    margin-bottom: 0.75rem;
+    gap: 0.375rem;
   }
 
   .search-input {
-    font-size: 0.9375rem;
+    font-size: 0.8125rem;
   }
 
   .user-card {
-    padding: 0.875rem;
+    padding: 0.625rem;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .user-name {
+    font-size: 0.8125rem;
+    margin-bottom: 0.125rem;
+  }
+
+  .user-email {
+    font-size: 0.7rem;
+    margin-bottom: 0.125rem;
+  }
+
+  .user-type {
+    font-size: 0.65rem;
   }
 
   .balance-info {
@@ -953,16 +969,21 @@ onMounted(() => {
     justify-content: space-between;
     align-items: center;
     text-align: left;
-    padding-top: 0.75rem;
+    padding-top: 0.5rem;
     border-top: 1px solid #e5e7eb;
   }
 
   .balance-amount {
-    font-size: 1rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+
+  .balance-status {
+    font-size: 0.65rem;
   }
 
   .user-details {
-    padding: 1rem;
+    padding: 0.75rem;
     border-radius: 8px;
   }
 
@@ -970,9 +991,9 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.75rem;
-    margin-bottom: 1.25rem;
-    padding-bottom: 1rem;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
   }
 
   .details-header > div {
@@ -980,194 +1001,374 @@ onMounted(() => {
   }
 
   .details-header h2 {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 0.125rem 0;
+  }
+
+  .details-header p {
+    font-size: 0.75rem;
   }
 
   .btn-back {
     display: flex;
     width: 100%;
     justify-content: flex-start;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8125rem;
   }
 
   .btn-toggle {
     width: 100%;
     justify-content: center;
-    font-size: 0.9375rem;
-    padding: 0.875rem 1rem;
+    font-size: 0.8125rem;
+    padding: 0.625rem 0.75rem;
   }
 
   .balance-summary {
     grid-template-columns: 1fr;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
   }
 
   .summary-card {
-    padding: 1rem;
-    gap: 0.75rem;
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .summary-label {
+    font-size: 0.7rem;
+  }
+
+  .summary-value {
+    font-size: 0.9375rem;
   }
 
   .balance-operations {
     grid-template-columns: 1fr;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
   }
 
   .operation-form {
-    padding: 1.25rem;
+    padding: 0.75rem;
   }
 
   .operation-form h3 {
-    font-size: 1rem;
-    margin-bottom: 0.875rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 0.625rem 0;
   }
 
   .form-group {
-    margin-bottom: 0.875rem;
+    margin-bottom: 0.625rem;
+  }
+
+  .form-group:last-of-type {
+    margin-bottom: 0.75rem;
   }
 
   .form-group label {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     font-weight: 600;
+    margin-bottom: 0.25rem;
   }
 
   .form-input {
-    padding: 0.875rem;
-    font-size: 1rem;
+    padding: 0.625rem;
+    font-size: 0.9rem;
     border-radius: 6px;
   }
 
   .btn-primary,
   .btn-danger {
     width: 100%!important;
-    padding: 0.875rem 1rem !important;
-    font-size: 1rem;
+    padding: 0.625rem 0.75rem !important;
+    font-size: 0.875rem;
     border-radius: 6px;
     justify-content: center;
   }
 
   .transaction-history {
-    padding-top: 1rem;
+    padding-top: 0.75rem;
   }
 
   .transaction-history h3 {
-    font-size: 1rem;
-    margin-bottom: 0.875rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 0.625rem 0;
   }
 
   .transaction-item {
-    padding: 0.875rem;
-    gap: 0.75rem;
+    padding: 0.625rem;
+    gap: 0.5rem;
   }
 
-  .transaction-item svg {
-    flex-shrink: 0;
+  .transaction-details {
+    gap: 0.125rem;
   }
 
   .transaction-desc {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
+    margin-bottom: 0.125rem;
   }
 
   .transaction-date {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
   }
 
   .transaction-amount {
-    font-size: 0.9375rem;
+    font-size: 0.8125rem;
   }
 
   .no-selection {
-    padding: 2rem 1rem;
+    padding: 1.5rem 0.75rem;
+  }
+
+  .no-selection svg {
+    width: 48px;
+    height: 48px;
   }
 
   .no-selection p {
-    font-size: 1rem;
+    font-size: 0.9375rem;
   }
 
   .loading-state,
   .empty-state {
-    padding: 1.5rem;
+    padding: 1rem 0.75rem;
   }
 }
 
 @media (max-width: 480px) {
   .balance-management {
-    padding: 0.75rem;
+    padding: 0.5rem;
+  }
+
+  .page-header {
+    margin-bottom: 0.5rem;
   }
 
   .page-header h1 {
-    font-size: 1.25rem;
-    margin-bottom: 0.25rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 0.125rem 0;
   }
 
   .page-header p {
-    font-size: 0.8125rem;
+    font-size: 0.7rem;
+  }
+
+  .content-wrapper {
+    gap: 0.5rem;
   }
 
   .search-box {
-    padding: 0.625rem;
-    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    gap: 0.375rem;
+  }
+
+  .search-box svg {
+    width: 16px;
+  }
+
+  .search-input {
+    font-size: 0.75rem;
   }
 
   .users-list {
-    padding: 0.75rem;
-    max-height: 350px;
+    padding: 0.5rem;
+    max-height: 320px;
+    margin-bottom: 0.375rem;
   }
 
   .user-card {
-    padding: 0.75rem;
+    padding: 0.5rem;
+    gap: 0.375rem;
   }
 
   .user-name {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
+    margin-bottom: 0.0625rem;
   }
 
   .user-email {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
+    margin-bottom: 0.0625rem;
+  }
+
+  .user-type {
+    font-size: 0.6rem;
+  }
+
+  .balance-amount {
+    font-size: 0.8rem;
+  }
+
+  .balance-status {
+    font-size: 0.6rem;
+  }
+
+  .user-details {
+    padding: 0.5rem;
+  }
+
+  .details-header {
+    gap: 0.375rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
   }
 
   .details-header h2 {
-    font-size: 1.125rem;
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.0625rem 0;
   }
 
-  .balance-summary {
-    margin-bottom: 1rem;
+  .details-header p {
+    font-size: 0.65rem;
   }
 
-  .summary-card {
-    padding: 0.875rem;
-  }
-
-  .summary-label {
+  .btn-back {
+    padding: 0.5rem 0.625rem;
     font-size: 0.75rem;
   }
 
+  .btn-back svg {
+    width: 16px;
+  }
+
+  .btn-toggle {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.625rem;
+  }
+
+  .btn-toggle svg {
+    width: 18px;
+  }
+
+  .balance-summary {
+    gap: 0.375rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .summary-card {
+    padding: 0.625rem;
+    gap: 0.375rem;
+  }
+
+  .summary-card svg {
+    width: 18px;
+  }
+
+  .summary-label {
+    font-size: 0.65rem;
+    margin-bottom: 0.125rem;
+  }
+
   .summary-value {
-    font-size: 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .balance-operations {
+    gap: 0.375rem;
+    margin-bottom: 0.5rem;
   }
 
   .operation-form {
-    padding: 1rem;
+    padding: 0.625rem;
   }
 
   .operation-form h3 {
-    font-size: 0.9375rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .form-group {
+    margin-bottom: 0.5rem;
+  }
+
+  .form-group:last-of-type {
+    margin-bottom: 0.625rem;
+  }
+
+  .form-group label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-bottom: 0.125rem;
   }
 
   .form-input {
-    font-size: 1rem;
-    padding: 0.75rem;
+    padding: 0.5rem;
+    font-size: 0.85rem;
   }
 
   .btn-primary,
   .btn-danger {
-    font-size: 0.9375rem;
-    padding: 0.75rem !important;
+    font-size: 0.8rem;
+    padding: 0.5rem 0.625rem !important;
+  }
+
+  .btn-primary svg,
+  .btn-danger svg {
+    width: 16px;
+  }
+
+  .transaction-history {
+    padding-top: 0.5rem;
+  }
+
+  .transaction-history h3 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
   }
 
   .transaction-item {
-    padding: 0.75rem;
-    gap: 0.5rem;
+    padding: 0.5rem;
+    gap: 0.375rem;
+  }
+
+  .transaction-item svg {
+    width: 16px;
+  }
+
+  .transaction-desc {
+    font-size: 0.75rem;
+    margin-bottom: 0.0625rem;
+  }
+
+  .transaction-date {
+    font-size: 0.65rem;
+  }
+
+  .transaction-amount {
+    font-size: 0.75rem;
+  }
+
+  .no-selection {
+    padding: 1rem 0.5rem;
+  }
+
+  .no-selection svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .no-selection p {
+    font-size: 0.875rem;
+  }
+
+  .loading-state,
+  .empty-state {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .empty-state svg {
+    width: 40px;
   }
 }
 </style>
