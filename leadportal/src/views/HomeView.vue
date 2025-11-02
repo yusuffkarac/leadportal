@@ -287,12 +287,18 @@ function handleMouseDown(e) {
 
 function handleMouseMove(e) {
   if (!isDragging.value || !scrollContainer.value) return
-  e.preventDefault()
+
   const rect = scrollContainer.value.getBoundingClientRect()
   const x = e.pageX - rect.left
-  const walk = (x - startX.value) * 1.5 // Scroll hızı çarpanı
-  scrollContainer.value.scrollLeft = scrollLeft.value - walk
-  hasMoved.value = true
+  const distance = Math.abs(x - startX.value)
+
+  // Minimum 5px mesafe drag olarak kabul et
+  if (distance > 5) {
+    e.preventDefault()
+    const walk = (x - startX.value) * 1.5 // Scroll hızı çarpanı
+    scrollContainer.value.scrollLeft = scrollLeft.value - walk
+    hasMoved.value = true
+  }
 }
 
 function handleMouseUp() {
@@ -314,12 +320,18 @@ function handleTouchStart(e) {
 
 function handleTouchMove(e) {
   if (!isDragging.value || !scrollContainer.value) return
-  e.preventDefault()
+
   const rect = scrollContainer.value.getBoundingClientRect()
   const x = e.touches[0].pageX - rect.left
-  const walk = (x - startX.value) * 1.5
-  scrollContainer.value.scrollLeft = scrollLeft.value - walk
-  hasMoved.value = true
+  const distance = Math.abs(x - startX.value)
+
+  // Minimum 5px mesafe drag olarak kabul et
+  if (distance > 5) {
+    e.preventDefault()
+    const walk = (x - startX.value) * 1.5
+    scrollContainer.value.scrollLeft = scrollLeft.value - walk
+    hasMoved.value = true
+  }
 }
 
 function handleTouchEnd() {
