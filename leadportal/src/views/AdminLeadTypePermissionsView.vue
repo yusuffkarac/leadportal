@@ -864,7 +864,8 @@ onMounted(async () => {
 /* Responsive */
 @media (max-width: 768px) {
   .page-content {
-    padding: 1rem;
+    padding: 0rem;
+    max-width: 95%;
   }
 
   .permissions-grid {
@@ -872,7 +873,7 @@ onMounted(async () => {
   }
 
   .tabs-nav {
-    flex-direction: column;
+    flex-direction: row;
     gap: 0;
   }
 

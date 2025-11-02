@@ -15,7 +15,7 @@
             @click="activeTab = 'email'"
           >
             <Icon icon="mdi:email" width="20" height="20" />
-            Email Template'leri
+            Email Template
           </button>
           <button
             class="tab-button"
@@ -23,7 +23,7 @@
             @click="activeTab = 'sms'"
           >
             <Icon icon="mdi:cellphone" width="20" height="20" />
-            SMS Template'leri
+            SMS Template
           </button>
         </div>
       </div>
