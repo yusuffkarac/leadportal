@@ -613,10 +613,12 @@ function closeAdminCategory() {
             </div>
           </div>
         </div>
-        <button v-if="isAuthed" class="search-btn" @click="openSearchModal" title="Lead Ara">
+        <button v-if="isAuthed" class="search-btn desktop-search-btn" @click="openSearchModal" title="Lead Ara">
           <Icon icon="mdi:magnify" width="20" height="20" />
         </button>
-        <NotificationDropdown v-if="isAuthed" />
+        <div v-if="isAuthed" class="desktop-notification-wrapper">
+          <NotificationDropdown />
+        </div>
         <UserProfile
           v-if="isAuthed"
           :user="currentUser"
@@ -628,11 +630,19 @@ function closeAdminCategory() {
         />
       </div>
 
-      <!-- Mobile Menu Button -->
-      <button class="mobile-menu-btn" @click.stop="toggleMobileMenu">
-        <Icon v-if="!isMobileMenuOpen" icon="mdi:menu" width="24" height="24" />
-        <Icon v-else icon="mdi:close" width="24" height="24" />
-      </button>
+      <!-- Mobile Action Buttons (Search, Notification, Hamburger) -->
+      <div class="mobile-action-buttons">
+        <button v-if="isAuthed" class="search-btn mobile-search-btn" @click="openSearchModal" title="Lead Ara">
+          <Icon icon="mdi:magnify" width="20" height="20" />
+        </button>
+        <div v-if="isAuthed" class="mobile-notification-wrapper">
+          <NotificationDropdown />
+        </div>
+        <button class="mobile-menu-btn" @click.stop="toggleMobileMenu">
+          <Icon v-if="!isMobileMenuOpen" icon="mdi:menu" width="24" height="24" />
+          <Icon v-else icon="mdi:close" width="24" height="24" />
+        </button>
+      </div>
     </div>
 
     <!-- Mobile Menu Overlay -->
@@ -1573,9 +1583,41 @@ nav a:first-of-type {
   transform: scale(1.1);
 }
 
+/* Desktop only search and notification */
+.desktop-search-btn,
+.desktop-notification-wrapper {
+  display: none;
+}
 
-/* Mobile Search Button */
+@media (min-width: 1201px) {
+  .desktop-search-btn,
+  .desktop-notification-wrapper {
+    display: block;
+  }
+  
+  .mobile-action-buttons {
+    display: none !important;
+  }
+}
+
+/* Mobile Action Buttons Container */
+.mobile-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .mobile-search-btn {
+  margin-right: 0;
+}
+
+.mobile-notification-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+/* Mobile Search Button (in mobile menu) */
+.mobile-nav-link.mobile-search-btn {
   background: none;
   border: none;
   cursor: pointer;
@@ -1583,7 +1625,26 @@ nav a:first-of-type {
   text-align: left;
 }
 
-.mobile-search-btn:hover {
+.mobile-nav-link.mobile-search-btn:hover {
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+/* Hide mobile action buttons on desktop */
+@media (min-width: 1201px) {
+  .mobile-action-buttons {
+    display: none !important;
+  }
+}
+
+/* Show mobile action buttons on mobile */
+@media (max-width: 1200px) {
+  .mobile-action-buttons {
+    display: flex;
+  }
+  
+  .desktop-search-btn,
+  .desktop-notification-wrapper {
+    display: none !important;
+  }
 }
 </style>

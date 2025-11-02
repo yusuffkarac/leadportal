@@ -36,6 +36,20 @@ function closeDropdown() {
   }, 150)
 }
 
+// Toggle dropdown (mobil için)
+function toggleDropdown() {
+  if (isOpen.value) {
+    // Eğer kapatma timeout'u varsa iptal et
+    if (hoverTimeout.value) {
+      clearTimeout(hoverTimeout.value)
+      hoverTimeout.value = null
+    }
+    isOpen.value = false
+  } else {
+    openDropdown()
+  }
+}
+
 
 // Bildirimleri yükle
 async function loadNotifications() {
@@ -221,6 +235,7 @@ onUnmounted(() => {
   <div class="notification-dropdown">
     <button
       class="notification-button"
+      @click="toggleDropdown"
       @mouseenter="openDropdown"
       @mouseleave="closeDropdown"
       :aria-label="`${unreadCount} okunmamış bildirim`"
@@ -230,7 +245,7 @@ onUnmounted(() => {
     </button>
 
     <transition name="dropdown">
-      <div v-if="isOpen" class="dropdown-menu" @mouseenter="openDropdown" @mouseleave="closeDropdown">
+      <div v-if="isOpen" class="dropdown-menu" @click.stop @mouseenter="openDropdown" @mouseleave="closeDropdown">
         <div class="dropdown-header">
           <h3>Bildirimler</h3>
           <button

@@ -81,9 +81,7 @@ function getCityFromPostalCode(postalCode) {
 }
 
 function handleClick() {
-  if (!props.lead.isExpired) {
-    emit('click', props.lead)
-  }
+  emit('click', props.lead)
 }
 
 function handleShowDescription(event) {
@@ -266,7 +264,7 @@ const minBidAmount = computed(() => {
     <div class="action-buttons">
       <!-- Sofort Kauf için tek buton -->
       <button
-        v-if="lead.leadType === 'SOFORT_KAUF'"
+        v-if="lead.leadType === 'SOFORT_KAUF' && !isAdmin"
         class="sofort-kauf-buy-btn"
         @click="handleInstantBuy"
         :disabled="lead.isExpired || !lead.isActive || lead.isScheduled"
@@ -281,12 +279,11 @@ const minBidAmount = computed(() => {
         <button
           class="bid-action-btn"
           @click.stop="handleClick"
-          :disabled="lead.isExpired"
         >
           Detaylı Görünüm
         </button>
         <button
-          v-if="lead.instantBuyPrice && !lead.isExpired && lead.isActive && !lead.isScheduled"
+          v-if="lead.instantBuyPrice && !lead.isExpired && lead.isActive && !lead.isScheduled && !isAdmin"
           class="instant-buy-action-btn"
           @click="handleInstantBuy"
         >
@@ -295,7 +292,7 @@ const minBidAmount = computed(() => {
           <span style="font-weight: bolder">{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</span>
         </button>
         <!-- Edit button for admin -->
-        <button v-if="isAdmin" class="edit-action-btn" @click.stop="emit('editLead')">
+        <button v-if="isAdmin" class="edit-action-btn" @click.stop="emit('editLead')" :disabled="lead.isExpired">
           <Icon icon="mdi:pencil" width="20" height="20" />
           Düzenle
         </button>
@@ -654,7 +651,7 @@ const minBidAmount = computed(() => {
 .edit-action-btn {
   flex: 1;
   padding: 10px 12px;
-  background: #3b82f6;
+  background: #10b981!important;
   color: white;
   border: none;
   border-radius: 6px;

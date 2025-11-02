@@ -1582,8 +1582,12 @@ onMounted(() => {
 @media (max-width: 768px) {
   .admin-statistics {
     padding: 1rem;
+    max-width: 95%;
   }
+  .refresh-btn{
+    display: none;
 
+}
   .page-header {
     flex-direction: column;
   }

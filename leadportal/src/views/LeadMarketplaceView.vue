@@ -559,9 +559,7 @@ function authHeaders() {
 }
 
 function navigateToLead(lead) {
-  if (!lead.isExpired) {
-    window.location.href = `/lead/${lead.id}`
-  }
+  window.location.href = `/lead/${lead.id}`
 }
 
 function shareLead(lead, event) {
@@ -1296,7 +1294,7 @@ onUnmounted(() => {
                     <span v-else>{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
                   </span>
                 </div>
-                <div v-if="lead.instantBuyPrice" class="premium-instant-price" @click.stop="openInstantBuyModal(lead, $event)" style="cursor: pointer;">
+                <div v-if="lead.instantBuyPrice && !isAdmin" class="premium-instant-price" @click.stop="openInstantBuyModal(lead, $event)" style="cursor: pointer;">
                   <span class="premium-instant-label">Anında Al</span>
                   <span class="premium-instant-amount">{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</span>
                 </div>
@@ -1525,7 +1523,7 @@ onUnmounted(() => {
                     Satın Al
                   </button>
                   <!-- Detay (admin ise veya SOFORT_KAUF değilse) -->
-                  <button v-if="isAdmin || lead.leadType !== 'SOFORT_KAUF'" class="table-btn primary" @click="navigateToLead(lead)" :disabled="lead.isExpired">
+                  <button v-if="isAdmin || lead.leadType !== 'SOFORT_KAUF'" class="table-btn primary" @click="navigateToLead(lead)">
                     Detay
                   </button>
                   <!-- Lightning-bolt instant buy (admin değilse) -->
@@ -1533,7 +1531,7 @@ onUnmounted(() => {
                     <Icon icon="mdi:lightning-bolt" width="14" height="14" />
                   </button>
                   <!-- Edit (admin ise) -->
-                  <button v-if="isAdmin" class="table-btn info" @click="openLeadModal('edit', lead)">
+                  <button v-if="isAdmin" class="table-btn info" @click="openLeadModal('edit', lead)" :disabled="lead.isExpired">
                     <Icon icon="mdi:pencil" width="14" height="14" />
                     Düzenle
                   </button>
@@ -2419,7 +2417,7 @@ onUnmounted(() => {
 }
 
 .page-header-content .page-icon {
-  color: var(--primary, #3b82f6);
+  color: var(--primary, #10b981);
 }
 
 /* Sofort Kauf için turuncu renk */
@@ -3118,7 +3116,7 @@ onUnmounted(() => {
 }
 
 .table-btn.info {
-  background: #3b82f6;
+  background: #10b981;
   color: white;
   padding: 6px 8px;
 }
@@ -3559,7 +3557,7 @@ onUnmounted(() => {
 
 .items-per-page-select:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: #10b981;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -3643,8 +3641,8 @@ onUnmounted(() => {
 }
 
 .pagination-page.active {
-  background: #3b82f6;
-  border-color: #3b82f6;
+  background: #10b981;
+  border-color: #10b981;
   color: white;
   font-weight: 600;
 }
@@ -3885,7 +3883,7 @@ onUnmounted(() => {
 
 .form-input:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: #10b981;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -3999,7 +3997,7 @@ onUnmounted(() => {
 }
 
 .btn-primary {
-  background: #3b82f6;
+  background: #10b981;
   color: white;
 }
 

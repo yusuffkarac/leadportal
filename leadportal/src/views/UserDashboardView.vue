@@ -5,7 +5,7 @@
         <h1>Kişisel Dashboard</h1>
         <p class="subtitle">Satın alma performansınız ve aktivite analizleriniz</p>
       </div>
-      <button class="refresh-btn" @click="loadUserStats" :disabled="isLoading">
+     <button style= 'display: none!important' class="refresh-btn" @click="loadUserStats" :disabled="isLoading" >
         <Icon icon="mdi:refresh" width="18" height="18" />
         Yenile
       </button>
@@ -1209,6 +1209,11 @@ onMounted(() => {
   .user-dashboard {
     padding: 1rem;
   }
+
+  .user-dashboard {
+  max-width: 95%;
+
+}
 
   .page-header {
     flex-direction: column;

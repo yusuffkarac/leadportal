@@ -107,7 +107,6 @@ io.use((socket, next) => {
 })
 
 io.on('connection', (socket) => {
-  console.log('[Socket] Client connected:', socket.id, 'User:', socket.data.user?.id || 'anonymous')
 
   socket.on('join-lead', (leadId) => {
     socket.join(`lead:${leadId}`)

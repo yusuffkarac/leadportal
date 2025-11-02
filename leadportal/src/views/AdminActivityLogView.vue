@@ -955,6 +955,10 @@ onMounted(() => {
 @media (max-width: 768px) {
   .admin-activity-log {
     padding: 1rem;
+    max-width: 95%;
+  }
+  .refresh-btn{
+    display: none;
   }
 
   .page-header {
@@ -963,7 +967,7 @@ onMounted(() => {
   }
 
   .header-left {
-    text-align: center;
+    text-align: left ;
   }
 
   .refresh-btn {
