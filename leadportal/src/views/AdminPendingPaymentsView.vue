@@ -1488,6 +1488,7 @@ onMounted(async () => {
 @media (max-width: 768px) {
   .pending-payments {
     padding: 1rem;
+    max-width: 95%;
   }
 
   .page-header {

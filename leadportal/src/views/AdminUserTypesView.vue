@@ -1276,6 +1276,7 @@ input:checked + .toggle-slider:before {
 @media (max-width: 768px) {
   .user-types-page {
     padding: 1rem;
+    max-width: 95%;
   }
   
   .section-header {

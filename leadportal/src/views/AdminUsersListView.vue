@@ -681,6 +681,7 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .admin-users-list {
     padding: 1rem;
+    max-width: 95;
   }
 
   .page-header {
