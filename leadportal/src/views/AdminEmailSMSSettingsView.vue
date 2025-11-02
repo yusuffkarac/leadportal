@@ -2017,6 +2017,13 @@ onMounted(() => {
     grid-template-columns: 1fr;
   }
 
+  .admin-settings-page {
+  padding: 0;
+}
+  .page-content{
+    max-width: 95%;
+  }
+
   .tabs-nav {
     overflow-x: auto;
   }
