@@ -1207,7 +1207,7 @@ onMounted(() => {
 /* Responsive */
 @media (max-width: 768px) {
   .user-dashboard {
-    padding: 1rem;
+    padding: 0rem;
     max-width: 95%;
   }
 

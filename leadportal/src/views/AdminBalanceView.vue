@@ -413,6 +413,9 @@ onMounted(() => {
 
 .page-header {
   margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  
 }
 
 .page-header h1 {
@@ -860,7 +863,8 @@ onMounted(() => {
 
 @media (max-width: 768px) {
   .balance-management {
-    padding: 1rem;
+    padding: 0rem;
+    max-width: 95%;
   }
 
   .page-header h1 {

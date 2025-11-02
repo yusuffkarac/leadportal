@@ -1275,9 +1275,10 @@ a,
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 32px;
-  gap: 24px;
+  gap: 12px;
+  margin-top: 3%;
 }
 
 .header-content {

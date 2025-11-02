@@ -1898,14 +1898,12 @@ onUnmounted(() => {
 }
 
 .map-section {
-  background: #f5f7fb;
-  border-radius: 24px;
-  padding: 32px 28px;
+ 
   margin: 0 auto 24px auto;
-  border: 1px solid rgba(15, 23, 42, 0.06);
   max-width: 80%;
   width: 100%;
   box-sizing: border-box;
+  padding: 0!important;
 }
 
 .auctions-section {
@@ -2598,6 +2596,7 @@ onUnmounted(() => {
   text-align: center;
   display: flex;
   justify-content: center;
+  display: none!important;
 }
 
 .hero-content {
