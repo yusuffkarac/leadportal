@@ -1711,8 +1711,17 @@ onUnmounted(() => {
   }
 
   .page-header .btn {
-    width: 100%;
+    flex: 1;
     justify-content: center;
+    padding: 8px 12px;
+    font-size: 0.8125rem;
+  }
+  
+  .header-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    width: 100%;
   }
 
   .filters-section {
