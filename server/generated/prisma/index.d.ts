@@ -141,6 +141,15 @@ export namespace $Enums {
 export type LeadType = (typeof LeadType)[keyof typeof LeadType]
 
 
+export const UserApprovalStatus: {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+};
+
+export type UserApprovalStatus = (typeof UserApprovalStatus)[keyof typeof UserApprovalStatus]
+
+
 export const PaymentStatus: {
   PENDING: 'PENDING',
   COMPLETED: 'COMPLETED',
@@ -154,6 +163,10 @@ export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
 export type LeadType = $Enums.LeadType
 
 export const LeadType: typeof $Enums.LeadType
+
+export type UserApprovalStatus = $Enums.UserApprovalStatus
+
+export const UserApprovalStatus: typeof $Enums.UserApprovalStatus
 
 export type PaymentStatus = $Enums.PaymentStatus
 
@@ -2897,6 +2910,7 @@ export namespace Prisma {
     purchasedLeads: number
     watching: number
     leadTypePermissions: number
+    approvalsGiven: number
     activityLogs: number
     passwordResetTokens: number
     balanceTransactions: number
@@ -2910,6 +2924,7 @@ export namespace Prisma {
     purchasedLeads?: boolean | UserCountOutputTypeCountPurchasedLeadsArgs
     watching?: boolean | UserCountOutputTypeCountWatchingArgs
     leadTypePermissions?: boolean | UserCountOutputTypeCountLeadTypePermissionsArgs
+    approvalsGiven?: boolean | UserCountOutputTypeCountApprovalsGivenArgs
     activityLogs?: boolean | UserCountOutputTypeCountActivityLogsArgs
     passwordResetTokens?: boolean | UserCountOutputTypeCountPasswordResetTokensArgs
     balanceTransactions?: boolean | UserCountOutputTypeCountBalanceTransactionsArgs
@@ -2961,6 +2976,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountLeadTypePermissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserLeadTypePermissionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountApprovalsGivenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserWhereInput
   }
 
   /**
@@ -3227,6 +3249,10 @@ export namespace Prisma {
     ibanAddress: string | null
     ibanPostalCode: string | null
     ibanCity: string | null
+    approvalStatus: $Enums.UserApprovalStatus | null
+    registrationRejectionReason: string | null
+    approvedById: string | null
+    approvedAt: Date | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -3255,6 +3281,10 @@ export namespace Prisma {
     ibanAddress: string | null
     ibanPostalCode: string | null
     ibanCity: string | null
+    approvalStatus: $Enums.UserApprovalStatus | null
+    registrationRejectionReason: string | null
+    approvedById: string | null
+    approvedAt: Date | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -3283,6 +3313,10 @@ export namespace Prisma {
     ibanAddress: number
     ibanPostalCode: number
     ibanCity: number
+    approvalStatus: number
+    registrationRejectionReason: number
+    approvedById: number
+    approvedAt: number
     _all: number
   }
 
@@ -3321,6 +3355,10 @@ export namespace Prisma {
     ibanAddress?: true
     ibanPostalCode?: true
     ibanCity?: true
+    approvalStatus?: true
+    registrationRejectionReason?: true
+    approvedById?: true
+    approvedAt?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -3349,6 +3387,10 @@ export namespace Prisma {
     ibanAddress?: true
     ibanPostalCode?: true
     ibanCity?: true
+    approvalStatus?: true
+    registrationRejectionReason?: true
+    approvedById?: true
+    approvedAt?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -3377,6 +3419,10 @@ export namespace Prisma {
     ibanAddress?: true
     ibanPostalCode?: true
     ibanCity?: true
+    approvalStatus?: true
+    registrationRejectionReason?: true
+    approvedById?: true
+    approvedAt?: true
     _all?: true
   }
 
@@ -3492,6 +3538,10 @@ export namespace Prisma {
     ibanAddress: string | null
     ibanPostalCode: string | null
     ibanCity: string | null
+    approvalStatus: $Enums.UserApprovalStatus
+    registrationRejectionReason: string | null
+    approvedById: string | null
+    approvedAt: Date | null
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -3539,12 +3589,18 @@ export namespace Prisma {
     ibanAddress?: boolean
     ibanPostalCode?: boolean
     ibanCity?: boolean
+    approvalStatus?: boolean
+    registrationRejectionReason?: boolean
+    approvedById?: boolean
+    approvedAt?: boolean
     bids?: boolean | User$bidsArgs<ExtArgs>
     leads?: boolean | User$leadsArgs<ExtArgs>
     purchasedLeads?: boolean | User$purchasedLeadsArgs<ExtArgs>
     watching?: boolean | User$watchingArgs<ExtArgs>
     userType?: boolean | UserTypeDefaultArgs<ExtArgs>
     leadTypePermissions?: boolean | User$leadTypePermissionsArgs<ExtArgs>
+    approvedBy?: boolean | User$approvedByArgs<ExtArgs>
+    approvalsGiven?: boolean | User$approvalsGivenArgs<ExtArgs>
     activityLogs?: boolean | User$activityLogsArgs<ExtArgs>
     passwordResetTokens?: boolean | User$passwordResetTokensArgs<ExtArgs>
     balanceTransactions?: boolean | User$balanceTransactionsArgs<ExtArgs>
@@ -3579,7 +3635,12 @@ export namespace Prisma {
     ibanAddress?: boolean
     ibanPostalCode?: boolean
     ibanCity?: boolean
+    approvalStatus?: boolean
+    registrationRejectionReason?: boolean
+    approvedById?: boolean
+    approvedAt?: boolean
     userType?: boolean | UserTypeDefaultArgs<ExtArgs>
+    approvedBy?: boolean | User$approvedByArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3608,7 +3669,12 @@ export namespace Prisma {
     ibanAddress?: boolean
     ibanPostalCode?: boolean
     ibanCity?: boolean
+    approvalStatus?: boolean
+    registrationRejectionReason?: boolean
+    approvedById?: boolean
+    approvedAt?: boolean
     userType?: boolean | UserTypeDefaultArgs<ExtArgs>
+    approvedBy?: boolean | User$approvedByArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -3637,9 +3703,13 @@ export namespace Prisma {
     ibanAddress?: boolean
     ibanPostalCode?: boolean
     ibanCity?: boolean
+    approvalStatus?: boolean
+    registrationRejectionReason?: boolean
+    approvedById?: boolean
+    approvedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "passwordHash" | "userTypeId" | "createdAt" | "updatedAt" | "firstName" | "lastName" | "username" | "profileImage" | "lastActivity" | "lastIP" | "lastUserAgent" | "twoFactorEnabled" | "twoFactorSecret" | "isActive" | "balance" | "balanceEnabled" | "paymentMethod" | "ibanAccountHolder" | "ibanNumber" | "ibanBic" | "ibanAddress" | "ibanPostalCode" | "ibanCity", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "passwordHash" | "userTypeId" | "createdAt" | "updatedAt" | "firstName" | "lastName" | "username" | "profileImage" | "lastActivity" | "lastIP" | "lastUserAgent" | "twoFactorEnabled" | "twoFactorSecret" | "isActive" | "balance" | "balanceEnabled" | "paymentMethod" | "ibanAccountHolder" | "ibanNumber" | "ibanBic" | "ibanAddress" | "ibanPostalCode" | "ibanCity" | "approvalStatus" | "registrationRejectionReason" | "approvedById" | "approvedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     bids?: boolean | User$bidsArgs<ExtArgs>
     leads?: boolean | User$leadsArgs<ExtArgs>
@@ -3647,6 +3717,8 @@ export namespace Prisma {
     watching?: boolean | User$watchingArgs<ExtArgs>
     userType?: boolean | UserTypeDefaultArgs<ExtArgs>
     leadTypePermissions?: boolean | User$leadTypePermissionsArgs<ExtArgs>
+    approvedBy?: boolean | User$approvedByArgs<ExtArgs>
+    approvalsGiven?: boolean | User$approvalsGivenArgs<ExtArgs>
     activityLogs?: boolean | User$activityLogsArgs<ExtArgs>
     passwordResetTokens?: boolean | User$passwordResetTokensArgs<ExtArgs>
     balanceTransactions?: boolean | User$balanceTransactionsArgs<ExtArgs>
@@ -3656,9 +3728,11 @@ export namespace Prisma {
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     userType?: boolean | UserTypeDefaultArgs<ExtArgs>
+    approvedBy?: boolean | User$approvedByArgs<ExtArgs>
   }
   export type UserIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     userType?: boolean | UserTypeDefaultArgs<ExtArgs>
+    approvedBy?: boolean | User$approvedByArgs<ExtArgs>
   }
 
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3670,6 +3744,8 @@ export namespace Prisma {
       watching: Prisma.$LeadWatchPayload<ExtArgs>[]
       userType: Prisma.$UserTypePayload<ExtArgs>
       leadTypePermissions: Prisma.$UserLeadTypePermissionPayload<ExtArgs>[]
+      approvedBy: Prisma.$UserPayload<ExtArgs> | null
+      approvalsGiven: Prisma.$UserPayload<ExtArgs>[]
       activityLogs: Prisma.$ActivityLogPayload<ExtArgs>[]
       passwordResetTokens: Prisma.$PasswordResetTokenPayload<ExtArgs>[]
       balanceTransactions: Prisma.$BalanceTransactionPayload<ExtArgs>[]
@@ -3702,6 +3778,10 @@ export namespace Prisma {
       ibanAddress: string | null
       ibanPostalCode: string | null
       ibanCity: string | null
+      approvalStatus: $Enums.UserApprovalStatus
+      registrationRejectionReason: string | null
+      approvedById: string | null
+      approvedAt: Date | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -4102,6 +4182,8 @@ export namespace Prisma {
     watching<T extends User$watchingArgs<ExtArgs> = {}>(args?: Subset<T, User$watchingArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadWatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     userType<T extends UserTypeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserTypeDefaultArgs<ExtArgs>>): Prisma__UserTypeClient<$Result.GetResult<Prisma.$UserTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     leadTypePermissions<T extends User$leadTypePermissionsArgs<ExtArgs> = {}>(args?: Subset<T, User$leadTypePermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserLeadTypePermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    approvedBy<T extends User$approvedByArgs<ExtArgs> = {}>(args?: Subset<T, User$approvedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    approvalsGiven<T extends User$approvalsGivenArgs<ExtArgs> = {}>(args?: Subset<T, User$approvalsGivenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     activityLogs<T extends User$activityLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$activityLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     passwordResetTokens<T extends User$passwordResetTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$passwordResetTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     balanceTransactions<T extends User$balanceTransactionsArgs<ExtArgs> = {}>(args?: Subset<T, User$balanceTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BalanceTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4161,6 +4243,10 @@ export namespace Prisma {
     readonly ibanAddress: FieldRef<"User", 'String'>
     readonly ibanPostalCode: FieldRef<"User", 'String'>
     readonly ibanCity: FieldRef<"User", 'String'>
+    readonly approvalStatus: FieldRef<"User", 'UserApprovalStatus'>
+    readonly registrationRejectionReason: FieldRef<"User", 'String'>
+    readonly approvedById: FieldRef<"User", 'String'>
+    readonly approvedAt: FieldRef<"User", 'DateTime'>
   }
     
 
@@ -4674,6 +4760,49 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: UserLeadTypePermissionScalarFieldEnum | UserLeadTypePermissionScalarFieldEnum[]
+  }
+
+  /**
+   * User.approvedBy
+   */
+  export type User$approvedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * User.approvalsGiven
+   */
+  export type User$approvalsGivenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    cursor?: UserWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
   }
 
   /**
@@ -9704,6 +9833,8 @@ export namespace Prisma {
     tradeRegisterNumber: string | null
     sessionTimeoutMinutes: number | null
     sessionTimeoutMessage: string | null
+    requireRegistrationApproval: boolean | null
+    registrationApprovalEmail: string | null
   }
 
   export type SettingsMaxAggregateOutputType = {
@@ -9762,6 +9893,8 @@ export namespace Prisma {
     tradeRegisterNumber: string | null
     sessionTimeoutMinutes: number | null
     sessionTimeoutMessage: string | null
+    requireRegistrationApproval: boolean | null
+    registrationApprovalEmail: string | null
   }
 
   export type SettingsCountAggregateOutputType = {
@@ -9827,6 +9960,8 @@ export namespace Prisma {
     tradeRegisterNumber: number
     sessionTimeoutMinutes: number
     sessionTimeoutMessage: number
+    requireRegistrationApproval: number
+    registrationApprovalEmail: number
     _all: number
   }
 
@@ -9903,6 +10038,8 @@ export namespace Prisma {
     tradeRegisterNumber?: true
     sessionTimeoutMinutes?: true
     sessionTimeoutMessage?: true
+    requireRegistrationApproval?: true
+    registrationApprovalEmail?: true
   }
 
   export type SettingsMaxAggregateInputType = {
@@ -9961,6 +10098,8 @@ export namespace Prisma {
     tradeRegisterNumber?: true
     sessionTimeoutMinutes?: true
     sessionTimeoutMessage?: true
+    requireRegistrationApproval?: true
+    registrationApprovalEmail?: true
   }
 
   export type SettingsCountAggregateInputType = {
@@ -10026,6 +10165,8 @@ export namespace Prisma {
     tradeRegisterNumber?: true
     sessionTimeoutMinutes?: true
     sessionTimeoutMessage?: true
+    requireRegistrationApproval?: true
+    registrationApprovalEmail?: true
     _all?: true
   }
 
@@ -10178,6 +10319,8 @@ export namespace Prisma {
     tradeRegisterNumber: string
     sessionTimeoutMinutes: number
     sessionTimeoutMessage: string
+    requireRegistrationApproval: boolean
+    registrationApprovalEmail: string | null
     _count: SettingsCountAggregateOutputType | null
     _avg: SettingsAvgAggregateOutputType | null
     _sum: SettingsSumAggregateOutputType | null
@@ -10262,6 +10405,8 @@ export namespace Prisma {
     tradeRegisterNumber?: boolean
     sessionTimeoutMinutes?: boolean
     sessionTimeoutMessage?: boolean
+    requireRegistrationApproval?: boolean
+    registrationApprovalEmail?: boolean
   }, ExtArgs["result"]["settings"]>
 
   export type SettingsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -10327,6 +10472,8 @@ export namespace Prisma {
     tradeRegisterNumber?: boolean
     sessionTimeoutMinutes?: boolean
     sessionTimeoutMessage?: boolean
+    requireRegistrationApproval?: boolean
+    registrationApprovalEmail?: boolean
   }, ExtArgs["result"]["settings"]>
 
   export type SettingsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -10392,6 +10539,8 @@ export namespace Prisma {
     tradeRegisterNumber?: boolean
     sessionTimeoutMinutes?: boolean
     sessionTimeoutMessage?: boolean
+    requireRegistrationApproval?: boolean
+    registrationApprovalEmail?: boolean
   }, ExtArgs["result"]["settings"]>
 
   export type SettingsSelectScalar = {
@@ -10457,9 +10606,11 @@ export namespace Prisma {
     tradeRegisterNumber?: boolean
     sessionTimeoutMinutes?: boolean
     sessionTimeoutMessage?: boolean
+    requireRegistrationApproval?: boolean
+    registrationApprovalEmail?: boolean
   }
 
-  export type SettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "leadIdFormat" | "customFormat" | "leadPrefix" | "startingNumber" | "numberType" | "defaultCurrency" | "defaultAuctionDays" | "defaultMinIncrement" | "homepageHeroEyebrow" | "homepageHeroTitle" | "homepageHeroHighlight" | "homepageHeroTitleSuffix" | "homepageHeroSubtitle" | "homepageHeroPrimaryCtaText" | "homepageHeroPrimaryCtaLink" | "homepageHeroSecondaryCtaText" | "homepageHeroSecondaryCtaLink" | "homepageFeatureHeading" | "homepageFeatures" | "homepageShowcaseEyebrow" | "homepageShowcaseTitle" | "homepageShowcaseCtaText" | "homepageShowcaseCtaLink" | "homepageStatsEyebrow" | "homepageStatsTitle" | "homepageStats" | "homepageCtaTitle" | "homepageCtaSubtitle" | "homepageCtaPrimaryText" | "homepageCtaPrimaryLink" | "homepageCtaSecondaryText" | "homepageCtaSecondaryLink" | "enableBiddingHours" | "biddingStartHour" | "biddingEndHour" | "maintenanceMode" | "maintenanceMessage" | "smtpHost" | "smtpPort" | "smtpUser" | "smtpPass" | "smtpFromName" | "smtpUseTLS" | "smtpUseSSL" | "createdAt" | "updatedAt" | "companyLogoUrl" | "companyName" | "faviconUrl" | "footerDescription" | "footerEmail" | "footerNote" | "footerPhone" | "insuranceTypes" | "legalLinks" | "servicesLinks" | "socialMedia" | "supportLinks" | "tradeRegisterNumber" | "sessionTimeoutMinutes" | "sessionTimeoutMessage", ExtArgs["result"]["settings"]>
+  export type SettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "leadIdFormat" | "customFormat" | "leadPrefix" | "startingNumber" | "numberType" | "defaultCurrency" | "defaultAuctionDays" | "defaultMinIncrement" | "homepageHeroEyebrow" | "homepageHeroTitle" | "homepageHeroHighlight" | "homepageHeroTitleSuffix" | "homepageHeroSubtitle" | "homepageHeroPrimaryCtaText" | "homepageHeroPrimaryCtaLink" | "homepageHeroSecondaryCtaText" | "homepageHeroSecondaryCtaLink" | "homepageFeatureHeading" | "homepageFeatures" | "homepageShowcaseEyebrow" | "homepageShowcaseTitle" | "homepageShowcaseCtaText" | "homepageShowcaseCtaLink" | "homepageStatsEyebrow" | "homepageStatsTitle" | "homepageStats" | "homepageCtaTitle" | "homepageCtaSubtitle" | "homepageCtaPrimaryText" | "homepageCtaPrimaryLink" | "homepageCtaSecondaryText" | "homepageCtaSecondaryLink" | "enableBiddingHours" | "biddingStartHour" | "biddingEndHour" | "maintenanceMode" | "maintenanceMessage" | "smtpHost" | "smtpPort" | "smtpUser" | "smtpPass" | "smtpFromName" | "smtpUseTLS" | "smtpUseSSL" | "createdAt" | "updatedAt" | "companyLogoUrl" | "companyName" | "faviconUrl" | "footerDescription" | "footerEmail" | "footerNote" | "footerPhone" | "insuranceTypes" | "legalLinks" | "servicesLinks" | "socialMedia" | "supportLinks" | "tradeRegisterNumber" | "sessionTimeoutMinutes" | "sessionTimeoutMessage" | "requireRegistrationApproval" | "registrationApprovalEmail", ExtArgs["result"]["settings"]>
 
   export type $SettingsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Settings"
@@ -10527,6 +10678,8 @@ export namespace Prisma {
       tradeRegisterNumber: string
       sessionTimeoutMinutes: number
       sessionTimeoutMessage: string
+      requireRegistrationApproval: boolean
+      registrationApprovalEmail: string | null
     }, ExtArgs["result"]["settings"]>
     composites: {}
   }
@@ -11012,6 +11165,8 @@ export namespace Prisma {
     readonly tradeRegisterNumber: FieldRef<"Settings", 'String'>
     readonly sessionTimeoutMinutes: FieldRef<"Settings", 'Int'>
     readonly sessionTimeoutMessage: FieldRef<"Settings", 'String'>
+    readonly requireRegistrationApproval: FieldRef<"Settings", 'Boolean'>
+    readonly registrationApprovalEmail: FieldRef<"Settings", 'String'>
   }
     
 
@@ -30125,7 +30280,11 @@ export namespace Prisma {
     ibanBic: 'ibanBic',
     ibanAddress: 'ibanAddress',
     ibanPostalCode: 'ibanPostalCode',
-    ibanCity: 'ibanCity'
+    ibanCity: 'ibanCity',
+    approvalStatus: 'approvalStatus',
+    registrationRejectionReason: 'registrationRejectionReason',
+    approvedById: 'approvedById',
+    approvedAt: 'approvedAt'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -30263,7 +30422,9 @@ export namespace Prisma {
     supportLinks: 'supportLinks',
     tradeRegisterNumber: 'tradeRegisterNumber',
     sessionTimeoutMinutes: 'sessionTimeoutMinutes',
-    sessionTimeoutMessage: 'sessionTimeoutMessage'
+    sessionTimeoutMessage: 'sessionTimeoutMessage',
+    requireRegistrationApproval: 'requireRegistrationApproval',
+    registrationApprovalEmail: 'registrationApprovalEmail'
   };
 
   export type SettingsScalarFieldEnum = (typeof SettingsScalarFieldEnum)[keyof typeof SettingsScalarFieldEnum]
@@ -30606,6 +30767,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'UserApprovalStatus'
+   */
+  export type EnumUserApprovalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserApprovalStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'UserApprovalStatus[]'
+   */
+  export type ListEnumUserApprovalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserApprovalStatus[]'>
+    
+
+
+  /**
    * Reference to a field of type 'LeadType'
    */
   export type EnumLeadTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LeadType'>
@@ -30693,12 +30868,18 @@ export namespace Prisma {
     ibanAddress?: StringNullableFilter<"User"> | string | null
     ibanPostalCode?: StringNullableFilter<"User"> | string | null
     ibanCity?: StringNullableFilter<"User"> | string | null
+    approvalStatus?: EnumUserApprovalStatusFilter<"User"> | $Enums.UserApprovalStatus
+    registrationRejectionReason?: StringNullableFilter<"User"> | string | null
+    approvedById?: StringNullableFilter<"User"> | string | null
+    approvedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     bids?: BidListRelationFilter
     leads?: LeadListRelationFilter
     purchasedLeads?: LeadSaleListRelationFilter
     watching?: LeadWatchListRelationFilter
     userType?: XOR<UserTypeScalarRelationFilter, UserTypeWhereInput>
     leadTypePermissions?: UserLeadTypePermissionListRelationFilter
+    approvedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    approvalsGiven?: UserListRelationFilter
     activityLogs?: ActivityLogListRelationFilter
     passwordResetTokens?: PasswordResetTokenListRelationFilter
     balanceTransactions?: BalanceTransactionListRelationFilter
@@ -30732,12 +30913,18 @@ export namespace Prisma {
     ibanAddress?: SortOrderInput | SortOrder
     ibanPostalCode?: SortOrderInput | SortOrder
     ibanCity?: SortOrderInput | SortOrder
+    approvalStatus?: SortOrder
+    registrationRejectionReason?: SortOrderInput | SortOrder
+    approvedById?: SortOrderInput | SortOrder
+    approvedAt?: SortOrderInput | SortOrder
     bids?: BidOrderByRelationAggregateInput
     leads?: LeadOrderByRelationAggregateInput
     purchasedLeads?: LeadSaleOrderByRelationAggregateInput
     watching?: LeadWatchOrderByRelationAggregateInput
     userType?: UserTypeOrderByWithRelationInput
     leadTypePermissions?: UserLeadTypePermissionOrderByRelationAggregateInput
+    approvedBy?: UserOrderByWithRelationInput
+    approvalsGiven?: UserOrderByRelationAggregateInput
     activityLogs?: ActivityLogOrderByRelationAggregateInput
     passwordResetTokens?: PasswordResetTokenOrderByRelationAggregateInput
     balanceTransactions?: BalanceTransactionOrderByRelationAggregateInput
@@ -30774,12 +30961,18 @@ export namespace Prisma {
     ibanAddress?: StringNullableFilter<"User"> | string | null
     ibanPostalCode?: StringNullableFilter<"User"> | string | null
     ibanCity?: StringNullableFilter<"User"> | string | null
+    approvalStatus?: EnumUserApprovalStatusFilter<"User"> | $Enums.UserApprovalStatus
+    registrationRejectionReason?: StringNullableFilter<"User"> | string | null
+    approvedById?: StringNullableFilter<"User"> | string | null
+    approvedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     bids?: BidListRelationFilter
     leads?: LeadListRelationFilter
     purchasedLeads?: LeadSaleListRelationFilter
     watching?: LeadWatchListRelationFilter
     userType?: XOR<UserTypeScalarRelationFilter, UserTypeWhereInput>
     leadTypePermissions?: UserLeadTypePermissionListRelationFilter
+    approvedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    approvalsGiven?: UserListRelationFilter
     activityLogs?: ActivityLogListRelationFilter
     passwordResetTokens?: PasswordResetTokenListRelationFilter
     balanceTransactions?: BalanceTransactionListRelationFilter
@@ -30813,6 +31006,10 @@ export namespace Prisma {
     ibanAddress?: SortOrderInput | SortOrder
     ibanPostalCode?: SortOrderInput | SortOrder
     ibanCity?: SortOrderInput | SortOrder
+    approvalStatus?: SortOrder
+    registrationRejectionReason?: SortOrderInput | SortOrder
+    approvedById?: SortOrderInput | SortOrder
+    approvedAt?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -30849,6 +31046,10 @@ export namespace Prisma {
     ibanAddress?: StringNullableWithAggregatesFilter<"User"> | string | null
     ibanPostalCode?: StringNullableWithAggregatesFilter<"User"> | string | null
     ibanCity?: StringNullableWithAggregatesFilter<"User"> | string | null
+    approvalStatus?: EnumUserApprovalStatusWithAggregatesFilter<"User"> | $Enums.UserApprovalStatus
+    registrationRejectionReason?: StringNullableWithAggregatesFilter<"User"> | string | null
+    approvedById?: StringNullableWithAggregatesFilter<"User"> | string | null
+    approvedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   }
 
   export type LeadWhereInput = {
@@ -31292,6 +31493,8 @@ export namespace Prisma {
     tradeRegisterNumber?: StringFilter<"Settings"> | string
     sessionTimeoutMinutes?: IntFilter<"Settings"> | number
     sessionTimeoutMessage?: StringFilter<"Settings"> | string
+    requireRegistrationApproval?: BoolFilter<"Settings"> | boolean
+    registrationApprovalEmail?: StringNullableFilter<"Settings"> | string | null
   }
 
   export type SettingsOrderByWithRelationInput = {
@@ -31357,6 +31560,8 @@ export namespace Prisma {
     tradeRegisterNumber?: SortOrder
     sessionTimeoutMinutes?: SortOrder
     sessionTimeoutMessage?: SortOrder
+    requireRegistrationApproval?: SortOrder
+    registrationApprovalEmail?: SortOrderInput | SortOrder
   }
 
   export type SettingsWhereUniqueInput = Prisma.AtLeast<{
@@ -31425,6 +31630,8 @@ export namespace Prisma {
     tradeRegisterNumber?: StringFilter<"Settings"> | string
     sessionTimeoutMinutes?: IntFilter<"Settings"> | number
     sessionTimeoutMessage?: StringFilter<"Settings"> | string
+    requireRegistrationApproval?: BoolFilter<"Settings"> | boolean
+    registrationApprovalEmail?: StringNullableFilter<"Settings"> | string | null
   }, "id">
 
   export type SettingsOrderByWithAggregationInput = {
@@ -31490,6 +31697,8 @@ export namespace Prisma {
     tradeRegisterNumber?: SortOrder
     sessionTimeoutMinutes?: SortOrder
     sessionTimeoutMessage?: SortOrder
+    requireRegistrationApproval?: SortOrder
+    registrationApprovalEmail?: SortOrderInput | SortOrder
     _count?: SettingsCountOrderByAggregateInput
     _avg?: SettingsAvgOrderByAggregateInput
     _max?: SettingsMaxOrderByAggregateInput
@@ -31563,6 +31772,8 @@ export namespace Prisma {
     tradeRegisterNumber?: StringWithAggregatesFilter<"Settings"> | string
     sessionTimeoutMinutes?: IntWithAggregatesFilter<"Settings"> | number
     sessionTimeoutMessage?: StringWithAggregatesFilter<"Settings"> | string
+    requireRegistrationApproval?: BoolWithAggregatesFilter<"Settings"> | boolean
+    registrationApprovalEmail?: StringNullableWithAggregatesFilter<"Settings"> | string | null
   }
 
   export type UserTypeWhereInput = {
@@ -32791,12 +33002,17 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedAt?: Date | string | null
     bids?: BidCreateNestedManyWithoutUserInput
     leads?: LeadCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchCreateNestedManyWithoutUserInput
     userType: UserTypeCreateNestedOneWithoutUsersInput
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
+    approvedBy?: UserCreateNestedOneWithoutApprovalsGivenInput
+    approvalsGiven?: UserCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
@@ -32830,11 +33046,16 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
+    approvalsGiven?: UserUncheckedCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
@@ -32867,12 +33088,17 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUpdateManyWithoutUserNestedInput
     userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
+    approvedBy?: UserUpdateOneWithoutApprovalsGivenNestedInput
+    approvalsGiven?: UserUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
@@ -32906,11 +33132,16 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
+    approvalsGiven?: UserUncheckedUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -32944,6 +33175,10 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -32971,6 +33206,9 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -32999,6 +33237,10 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type LeadCreateInput = {
@@ -33475,6 +33717,8 @@ export namespace Prisma {
     tradeRegisterNumber?: string
     sessionTimeoutMinutes?: number
     sessionTimeoutMessage?: string
+    requireRegistrationApproval?: boolean
+    registrationApprovalEmail?: string | null
   }
 
   export type SettingsUncheckedCreateInput = {
@@ -33540,6 +33784,8 @@ export namespace Prisma {
     tradeRegisterNumber?: string
     sessionTimeoutMinutes?: number
     sessionTimeoutMessage?: string
+    requireRegistrationApproval?: boolean
+    registrationApprovalEmail?: string | null
   }
 
   export type SettingsUpdateInput = {
@@ -33605,6 +33851,8 @@ export namespace Prisma {
     tradeRegisterNumber?: StringFieldUpdateOperationsInput | string
     sessionTimeoutMinutes?: IntFieldUpdateOperationsInput | number
     sessionTimeoutMessage?: StringFieldUpdateOperationsInput | string
+    requireRegistrationApproval?: BoolFieldUpdateOperationsInput | boolean
+    registrationApprovalEmail?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SettingsUncheckedUpdateInput = {
@@ -33670,6 +33918,8 @@ export namespace Prisma {
     tradeRegisterNumber?: StringFieldUpdateOperationsInput | string
     sessionTimeoutMinutes?: IntFieldUpdateOperationsInput | number
     sessionTimeoutMessage?: StringFieldUpdateOperationsInput | string
+    requireRegistrationApproval?: BoolFieldUpdateOperationsInput | boolean
+    registrationApprovalEmail?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SettingsCreateManyInput = {
@@ -33735,6 +33985,8 @@ export namespace Prisma {
     tradeRegisterNumber?: string
     sessionTimeoutMinutes?: number
     sessionTimeoutMessage?: string
+    requireRegistrationApproval?: boolean
+    registrationApprovalEmail?: string | null
   }
 
   export type SettingsUpdateManyMutationInput = {
@@ -33800,6 +34052,8 @@ export namespace Prisma {
     tradeRegisterNumber?: StringFieldUpdateOperationsInput | string
     sessionTimeoutMinutes?: IntFieldUpdateOperationsInput | number
     sessionTimeoutMessage?: StringFieldUpdateOperationsInput | string
+    requireRegistrationApproval?: BoolFieldUpdateOperationsInput | boolean
+    registrationApprovalEmail?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SettingsUncheckedUpdateManyInput = {
@@ -33865,6 +34119,8 @@ export namespace Prisma {
     tradeRegisterNumber?: StringFieldUpdateOperationsInput | string
     sessionTimeoutMinutes?: IntFieldUpdateOperationsInput | number
     sessionTimeoutMessage?: StringFieldUpdateOperationsInput | string
+    requireRegistrationApproval?: BoolFieldUpdateOperationsInput | boolean
+    registrationApprovalEmail?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserTypeCreateInput = {
@@ -35223,6 +35479,13 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type EnumUserApprovalStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserApprovalStatus | EnumUserApprovalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.UserApprovalStatus[] | ListEnumUserApprovalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserApprovalStatus[] | ListEnumUserApprovalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserApprovalStatusFilter<$PrismaModel> | $Enums.UserApprovalStatus
+  }
+
   export type BidListRelationFilter = {
     every?: BidWhereInput
     some?: BidWhereInput
@@ -35256,6 +35519,17 @@ export namespace Prisma {
     every?: UserLeadTypePermissionWhereInput
     some?: UserLeadTypePermissionWhereInput
     none?: UserLeadTypePermissionWhereInput
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
+  export type UserListRelationFilter = {
+    every?: UserWhereInput
+    some?: UserWhereInput
+    none?: UserWhereInput
   }
 
   export type ActivityLogListRelationFilter = {
@@ -35313,6 +35587,10 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type UserOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type ActivityLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -35359,6 +35637,10 @@ export namespace Prisma {
     ibanAddress?: SortOrder
     ibanPostalCode?: SortOrder
     ibanCity?: SortOrder
+    approvalStatus?: SortOrder
+    registrationRejectionReason?: SortOrder
+    approvedById?: SortOrder
+    approvedAt?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
@@ -35391,6 +35673,10 @@ export namespace Prisma {
     ibanAddress?: SortOrder
     ibanPostalCode?: SortOrder
     ibanCity?: SortOrder
+    approvalStatus?: SortOrder
+    registrationRejectionReason?: SortOrder
+    approvedById?: SortOrder
+    approvedAt?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -35419,6 +35705,10 @@ export namespace Prisma {
     ibanAddress?: SortOrder
     ibanPostalCode?: SortOrder
     ibanCity?: SortOrder
+    approvalStatus?: SortOrder
+    registrationRejectionReason?: SortOrder
+    approvedById?: SortOrder
+    approvedAt?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
@@ -35511,6 +35801,16 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type EnumUserApprovalStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserApprovalStatus | EnumUserApprovalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.UserApprovalStatus[] | ListEnumUserApprovalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserApprovalStatus[] | ListEnumUserApprovalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserApprovalStatusWithAggregatesFilter<$PrismaModel> | $Enums.UserApprovalStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumUserApprovalStatusFilter<$PrismaModel>
+    _max?: NestedEnumUserApprovalStatusFilter<$PrismaModel>
   }
 
   export type EnumLeadTypeFilter<$PrismaModel = never> = {
@@ -35942,6 +36242,8 @@ export namespace Prisma {
     tradeRegisterNumber?: SortOrder
     sessionTimeoutMinutes?: SortOrder
     sessionTimeoutMessage?: SortOrder
+    requireRegistrationApproval?: SortOrder
+    registrationApprovalEmail?: SortOrder
   }
 
   export type SettingsAvgOrderByAggregateInput = {
@@ -36008,6 +36310,8 @@ export namespace Prisma {
     tradeRegisterNumber?: SortOrder
     sessionTimeoutMinutes?: SortOrder
     sessionTimeoutMessage?: SortOrder
+    requireRegistrationApproval?: SortOrder
+    registrationApprovalEmail?: SortOrder
   }
 
   export type SettingsMinOrderByAggregateInput = {
@@ -36066,6 +36370,8 @@ export namespace Prisma {
     tradeRegisterNumber?: SortOrder
     sessionTimeoutMinutes?: SortOrder
     sessionTimeoutMessage?: SortOrder
+    requireRegistrationApproval?: SortOrder
+    registrationApprovalEmail?: SortOrder
   }
 
   export type SettingsSumOrderByAggregateInput = {
@@ -36134,12 +36440,6 @@ export namespace Prisma {
     none?: LeadTypePermissionWhereInput
   }
 
-  export type UserListRelationFilter = {
-    every?: UserWhereInput
-    some?: UserWhereInput
-    none?: UserWhereInput
-  }
-
   export type UserTypePermissionListRelationFilter = {
     every?: UserTypePermissionWhereInput
     some?: UserTypePermissionWhereInput
@@ -36153,10 +36453,6 @@ export namespace Prisma {
   }
 
   export type LeadTypePermissionOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type UserOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -36839,6 +37135,19 @@ export namespace Prisma {
     connect?: UserLeadTypePermissionWhereUniqueInput | UserLeadTypePermissionWhereUniqueInput[]
   }
 
+  export type UserCreateNestedOneWithoutApprovalsGivenInput = {
+    create?: XOR<UserCreateWithoutApprovalsGivenInput, UserUncheckedCreateWithoutApprovalsGivenInput>
+    connectOrCreate?: UserCreateOrConnectWithoutApprovalsGivenInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedManyWithoutApprovedByInput = {
+    create?: XOR<UserCreateWithoutApprovedByInput, UserUncheckedCreateWithoutApprovedByInput> | UserCreateWithoutApprovedByInput[] | UserUncheckedCreateWithoutApprovedByInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutApprovedByInput | UserCreateOrConnectWithoutApprovedByInput[]
+    createMany?: UserCreateManyApprovedByInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
   export type ActivityLogCreateNestedManyWithoutUserInput = {
     create?: XOR<ActivityLogCreateWithoutUserInput, ActivityLogUncheckedCreateWithoutUserInput> | ActivityLogCreateWithoutUserInput[] | ActivityLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ActivityLogCreateOrConnectWithoutUserInput | ActivityLogCreateOrConnectWithoutUserInput[]
@@ -36909,6 +37218,13 @@ export namespace Prisma {
     connect?: UserLeadTypePermissionWhereUniqueInput | UserLeadTypePermissionWhereUniqueInput[]
   }
 
+  export type UserUncheckedCreateNestedManyWithoutApprovedByInput = {
+    create?: XOR<UserCreateWithoutApprovedByInput, UserUncheckedCreateWithoutApprovedByInput> | UserCreateWithoutApprovedByInput[] | UserUncheckedCreateWithoutApprovedByInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutApprovedByInput | UserCreateOrConnectWithoutApprovedByInput[]
+    createMany?: UserCreateManyApprovedByInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
   export type ActivityLogUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<ActivityLogCreateWithoutUserInput, ActivityLogUncheckedCreateWithoutUserInput> | ActivityLogCreateWithoutUserInput[] | ActivityLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ActivityLogCreateOrConnectWithoutUserInput | ActivityLogCreateOrConnectWithoutUserInput[]
@@ -36970,6 +37286,10 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type EnumUserApprovalStatusFieldUpdateOperationsInput = {
+    set?: $Enums.UserApprovalStatus
   }
 
   export type BidUpdateManyWithoutUserNestedInput = {
@@ -37048,6 +37368,30 @@ export namespace Prisma {
     update?: UserLeadTypePermissionUpdateWithWhereUniqueWithoutUserInput | UserLeadTypePermissionUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: UserLeadTypePermissionUpdateManyWithWhereWithoutUserInput | UserLeadTypePermissionUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: UserLeadTypePermissionScalarWhereInput | UserLeadTypePermissionScalarWhereInput[]
+  }
+
+  export type UserUpdateOneWithoutApprovalsGivenNestedInput = {
+    create?: XOR<UserCreateWithoutApprovalsGivenInput, UserUncheckedCreateWithoutApprovalsGivenInput>
+    connectOrCreate?: UserCreateOrConnectWithoutApprovalsGivenInput
+    upsert?: UserUpsertWithoutApprovalsGivenInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutApprovalsGivenInput, UserUpdateWithoutApprovalsGivenInput>, UserUncheckedUpdateWithoutApprovalsGivenInput>
+  }
+
+  export type UserUpdateManyWithoutApprovedByNestedInput = {
+    create?: XOR<UserCreateWithoutApprovedByInput, UserUncheckedCreateWithoutApprovedByInput> | UserCreateWithoutApprovedByInput[] | UserUncheckedCreateWithoutApprovedByInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutApprovedByInput | UserCreateOrConnectWithoutApprovedByInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutApprovedByInput | UserUpsertWithWhereUniqueWithoutApprovedByInput[]
+    createMany?: UserCreateManyApprovedByInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutApprovedByInput | UserUpdateWithWhereUniqueWithoutApprovedByInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutApprovedByInput | UserUpdateManyWithWhereWithoutApprovedByInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
   export type ActivityLogUpdateManyWithoutUserNestedInput = {
@@ -37188,6 +37532,20 @@ export namespace Prisma {
     update?: UserLeadTypePermissionUpdateWithWhereUniqueWithoutUserInput | UserLeadTypePermissionUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: UserLeadTypePermissionUpdateManyWithWhereWithoutUserInput | UserLeadTypePermissionUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: UserLeadTypePermissionScalarWhereInput | UserLeadTypePermissionScalarWhereInput[]
+  }
+
+  export type UserUncheckedUpdateManyWithoutApprovedByNestedInput = {
+    create?: XOR<UserCreateWithoutApprovedByInput, UserUncheckedCreateWithoutApprovedByInput> | UserCreateWithoutApprovedByInput[] | UserUncheckedCreateWithoutApprovedByInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutApprovedByInput | UserCreateOrConnectWithoutApprovedByInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutApprovedByInput | UserUpsertWithWhereUniqueWithoutApprovedByInput[]
+    createMany?: UserCreateManyApprovedByInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutApprovedByInput | UserUpdateWithWhereUniqueWithoutApprovedByInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutApprovedByInput | UserUpdateManyWithWhereWithoutApprovedByInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
   export type ActivityLogUncheckedUpdateManyWithoutUserNestedInput = {
@@ -38082,6 +38440,13 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type NestedEnumUserApprovalStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserApprovalStatus | EnumUserApprovalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.UserApprovalStatus[] | ListEnumUserApprovalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserApprovalStatus[] | ListEnumUserApprovalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserApprovalStatusFilter<$PrismaModel> | $Enums.UserApprovalStatus
+  }
+
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -38188,6 +38553,16 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type NestedEnumUserApprovalStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserApprovalStatus | EnumUserApprovalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.UserApprovalStatus[] | ListEnumUserApprovalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserApprovalStatus[] | ListEnumUserApprovalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserApprovalStatusWithAggregatesFilter<$PrismaModel> | $Enums.UserApprovalStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumUserApprovalStatusFilter<$PrismaModel>
+    _max?: NestedEnumUserApprovalStatusFilter<$PrismaModel>
   }
 
   export type NestedEnumLeadTypeFilter<$PrismaModel = never> = {
@@ -38518,6 +38893,189 @@ export namespace Prisma {
 
   export type UserLeadTypePermissionCreateManyUserInputEnvelope = {
     data: UserLeadTypePermissionCreateManyUserInput | UserLeadTypePermissionCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserCreateWithoutApprovalsGivenInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    firstName?: string | null
+    lastName?: string | null
+    username?: string | null
+    profileImage?: string | null
+    lastActivity?: Date | string | null
+    lastIP?: string | null
+    lastUserAgent?: string | null
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedAt?: Date | string | null
+    bids?: BidCreateNestedManyWithoutUserInput
+    leads?: LeadCreateNestedManyWithoutOwnerInput
+    purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
+    watching?: LeadWatchCreateNestedManyWithoutUserInput
+    userType: UserTypeCreateNestedOneWithoutUsersInput
+    leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
+    approvedBy?: UserCreateNestedOneWithoutApprovalsGivenInput
+    activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutApprovalsGivenInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    userTypeId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    firstName?: string | null
+    lastName?: string | null
+    username?: string | null
+    profileImage?: string | null
+    lastActivity?: Date | string | null
+    lastIP?: string | null
+    lastUserAgent?: string | null
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    bids?: BidUncheckedCreateNestedManyWithoutUserInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
+    purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
+    watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
+    leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
+    activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutApprovalsGivenInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutApprovalsGivenInput, UserUncheckedCreateWithoutApprovalsGivenInput>
+  }
+
+  export type UserCreateWithoutApprovedByInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    firstName?: string | null
+    lastName?: string | null
+    username?: string | null
+    profileImage?: string | null
+    lastActivity?: Date | string | null
+    lastIP?: string | null
+    lastUserAgent?: string | null
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedAt?: Date | string | null
+    bids?: BidCreateNestedManyWithoutUserInput
+    leads?: LeadCreateNestedManyWithoutOwnerInput
+    purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
+    watching?: LeadWatchCreateNestedManyWithoutUserInput
+    userType: UserTypeCreateNestedOneWithoutUsersInput
+    leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
+    approvalsGiven?: UserCreateNestedManyWithoutApprovedByInput
+    activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutApprovedByInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    userTypeId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    firstName?: string | null
+    lastName?: string | null
+    username?: string | null
+    profileImage?: string | null
+    lastActivity?: Date | string | null
+    lastIP?: string | null
+    lastUserAgent?: string | null
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedAt?: Date | string | null
+    bids?: BidUncheckedCreateNestedManyWithoutUserInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
+    purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
+    watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
+    leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
+    approvalsGiven?: UserUncheckedCreateNestedManyWithoutApprovedByInput
+    activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutApprovedByInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutApprovedByInput, UserUncheckedCreateWithoutApprovedByInput>
+  }
+
+  export type UserCreateManyApprovedByInputEnvelope = {
+    data: UserCreateManyApprovedByInput | UserCreateManyApprovedByInput[]
     skipDuplicates?: boolean
   }
 
@@ -38870,6 +39428,152 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"UserLeadTypePermission"> | Date | string
   }
 
+  export type UserUpsertWithoutApprovalsGivenInput = {
+    update: XOR<UserUpdateWithoutApprovalsGivenInput, UserUncheckedUpdateWithoutApprovalsGivenInput>
+    create: XOR<UserCreateWithoutApprovalsGivenInput, UserUncheckedCreateWithoutApprovalsGivenInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutApprovalsGivenInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutApprovalsGivenInput, UserUncheckedUpdateWithoutApprovalsGivenInput>
+  }
+
+  export type UserUpdateWithoutApprovalsGivenInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImage?: NullableStringFieldUpdateOperationsInput | string | null
+    lastActivity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastIP?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUserAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bids?: BidUpdateManyWithoutUserNestedInput
+    leads?: LeadUpdateManyWithoutOwnerNestedInput
+    purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
+    watching?: LeadWatchUpdateManyWithoutUserNestedInput
+    userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
+    leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
+    approvedBy?: UserUpdateOneWithoutApprovalsGivenNestedInput
+    activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutApprovalsGivenInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    userTypeId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImage?: NullableStringFieldUpdateOperationsInput | string | null
+    lastActivity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastIP?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUserAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bids?: BidUncheckedUpdateManyWithoutUserNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
+    purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
+    watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
+    leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
+    activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUpsertWithWhereUniqueWithoutApprovedByInput = {
+    where: UserWhereUniqueInput
+    update: XOR<UserUpdateWithoutApprovedByInput, UserUncheckedUpdateWithoutApprovedByInput>
+    create: XOR<UserCreateWithoutApprovedByInput, UserUncheckedCreateWithoutApprovedByInput>
+  }
+
+  export type UserUpdateWithWhereUniqueWithoutApprovedByInput = {
+    where: UserWhereUniqueInput
+    data: XOR<UserUpdateWithoutApprovedByInput, UserUncheckedUpdateWithoutApprovedByInput>
+  }
+
+  export type UserUpdateManyWithWhereWithoutApprovedByInput = {
+    where: UserScalarWhereInput
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutApprovedByInput>
+  }
+
+  export type UserScalarWhereInput = {
+    AND?: UserScalarWhereInput | UserScalarWhereInput[]
+    OR?: UserScalarWhereInput[]
+    NOT?: UserScalarWhereInput | UserScalarWhereInput[]
+    id?: StringFilter<"User"> | string
+    email?: StringFilter<"User"> | string
+    passwordHash?: StringFilter<"User"> | string
+    userTypeId?: StringFilter<"User"> | string
+    createdAt?: DateTimeFilter<"User"> | Date | string
+    updatedAt?: DateTimeFilter<"User"> | Date | string
+    firstName?: StringNullableFilter<"User"> | string | null
+    lastName?: StringNullableFilter<"User"> | string | null
+    username?: StringNullableFilter<"User"> | string | null
+    profileImage?: StringNullableFilter<"User"> | string | null
+    lastActivity?: DateTimeNullableFilter<"User"> | Date | string | null
+    lastIP?: StringNullableFilter<"User"> | string | null
+    lastUserAgent?: StringNullableFilter<"User"> | string | null
+    twoFactorEnabled?: BoolFilter<"User"> | boolean
+    twoFactorSecret?: StringNullableFilter<"User"> | string | null
+    isActive?: BoolFilter<"User"> | boolean
+    balance?: FloatFilter<"User"> | number
+    balanceEnabled?: BoolFilter<"User"> | boolean
+    paymentMethod?: StringFilter<"User"> | string
+    ibanAccountHolder?: StringNullableFilter<"User"> | string | null
+    ibanNumber?: StringNullableFilter<"User"> | string | null
+    ibanBic?: StringNullableFilter<"User"> | string | null
+    ibanAddress?: StringNullableFilter<"User"> | string | null
+    ibanPostalCode?: StringNullableFilter<"User"> | string | null
+    ibanCity?: StringNullableFilter<"User"> | string | null
+    approvalStatus?: EnumUserApprovalStatusFilter<"User"> | $Enums.UserApprovalStatus
+    registrationRejectionReason?: StringNullableFilter<"User"> | string | null
+    approvedById?: StringNullableFilter<"User"> | string | null
+    approvedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+  }
+
   export type ActivityLogUpsertWithWhereUniqueWithoutUserInput = {
     where: ActivityLogWhereUniqueInput
     update: XOR<ActivityLogUpdateWithoutUserInput, ActivityLogUncheckedUpdateWithoutUserInput>
@@ -39074,11 +39778,16 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedAt?: Date | string | null
     bids?: BidCreateNestedManyWithoutUserInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchCreateNestedManyWithoutUserInput
     userType: UserTypeCreateNestedOneWithoutUsersInput
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
+    approvedBy?: UserCreateNestedOneWithoutApprovalsGivenInput
+    approvalsGiven?: UserCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
@@ -39112,10 +39821,15 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
+    approvalsGiven?: UserUncheckedCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
@@ -39237,11 +39951,16 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUpdateManyWithoutUserNestedInput
     userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
+    approvedBy?: UserUpdateOneWithoutApprovalsGivenNestedInput
+    approvalsGiven?: UserUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
@@ -39275,10 +39994,15 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
+    approvalsGiven?: UserUncheckedUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -39427,11 +40151,16 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedAt?: Date | string | null
     leads?: LeadCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchCreateNestedManyWithoutUserInput
     userType: UserTypeCreateNestedOneWithoutUsersInput
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
+    approvedBy?: UserCreateNestedOneWithoutApprovalsGivenInput
+    approvalsGiven?: UserCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
@@ -39465,10 +40194,15 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
+    approvalsGiven?: UserUncheckedCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
@@ -39582,11 +40316,16 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUpdateManyWithoutUserNestedInput
     userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
+    approvedBy?: UserUpdateOneWithoutApprovalsGivenNestedInput
+    approvalsGiven?: UserUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
@@ -39620,10 +40359,15 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
+    approvalsGiven?: UserUncheckedUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -39715,11 +40459,16 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedAt?: Date | string | null
     bids?: BidCreateNestedManyWithoutUserInput
     leads?: LeadCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
     userType: UserTypeCreateNestedOneWithoutUsersInput
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
+    approvedBy?: UserCreateNestedOneWithoutApprovalsGivenInput
+    approvalsGiven?: UserCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
@@ -39753,10 +40502,15 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
+    approvalsGiven?: UserUncheckedCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
@@ -39870,11 +40624,16 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
     userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
+    approvedBy?: UserUpdateOneWithoutApprovalsGivenNestedInput
+    approvalsGiven?: UserUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
@@ -39908,10 +40667,15 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
+    approvalsGiven?: UserUncheckedUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -39944,11 +40708,16 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedAt?: Date | string | null
     bids?: BidCreateNestedManyWithoutUserInput
     leads?: LeadCreateNestedManyWithoutOwnerInput
     watching?: LeadWatchCreateNestedManyWithoutUserInput
     userType: UserTypeCreateNestedOneWithoutUsersInput
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
+    approvedBy?: UserCreateNestedOneWithoutApprovalsGivenInput
+    approvalsGiven?: UserCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
@@ -39982,10 +40751,15 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
+    approvalsGiven?: UserUncheckedCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
@@ -40093,11 +40867,16 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     watching?: LeadWatchUpdateManyWithoutUserNestedInput
     userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
+    approvedBy?: UserUpdateOneWithoutApprovalsGivenNestedInput
+    approvalsGiven?: UserUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
@@ -40131,10 +40910,15 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
+    approvalsGiven?: UserUncheckedUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -40257,11 +41041,16 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedAt?: Date | string | null
     bids?: BidCreateNestedManyWithoutUserInput
     leads?: LeadCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchCreateNestedManyWithoutUserInput
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
+    approvedBy?: UserCreateNestedOneWithoutApprovalsGivenInput
+    approvalsGiven?: UserCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
@@ -40294,11 +41083,16 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
+    approvalsGiven?: UserUncheckedCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
@@ -40408,37 +41202,6 @@ export namespace Prisma {
   export type UserUpdateManyWithWhereWithoutUserTypeInput = {
     where: UserScalarWhereInput
     data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutUserTypeInput>
-  }
-
-  export type UserScalarWhereInput = {
-    AND?: UserScalarWhereInput | UserScalarWhereInput[]
-    OR?: UserScalarWhereInput[]
-    NOT?: UserScalarWhereInput | UserScalarWhereInput[]
-    id?: StringFilter<"User"> | string
-    email?: StringFilter<"User"> | string
-    passwordHash?: StringFilter<"User"> | string
-    userTypeId?: StringFilter<"User"> | string
-    createdAt?: DateTimeFilter<"User"> | Date | string
-    updatedAt?: DateTimeFilter<"User"> | Date | string
-    firstName?: StringNullableFilter<"User"> | string | null
-    lastName?: StringNullableFilter<"User"> | string | null
-    username?: StringNullableFilter<"User"> | string | null
-    profileImage?: StringNullableFilter<"User"> | string | null
-    lastActivity?: DateTimeNullableFilter<"User"> | Date | string | null
-    lastIP?: StringNullableFilter<"User"> | string | null
-    lastUserAgent?: StringNullableFilter<"User"> | string | null
-    twoFactorEnabled?: BoolFilter<"User"> | boolean
-    twoFactorSecret?: StringNullableFilter<"User"> | string | null
-    isActive?: BoolFilter<"User"> | boolean
-    balance?: FloatFilter<"User"> | number
-    balanceEnabled?: BoolFilter<"User"> | boolean
-    paymentMethod?: StringFilter<"User"> | string
-    ibanAccountHolder?: StringNullableFilter<"User"> | string | null
-    ibanNumber?: StringNullableFilter<"User"> | string | null
-    ibanBic?: StringNullableFilter<"User"> | string | null
-    ibanAddress?: StringNullableFilter<"User"> | string | null
-    ibanPostalCode?: StringNullableFilter<"User"> | string | null
-    ibanCity?: StringNullableFilter<"User"> | string | null
   }
 
   export type UserTypePermissionUpsertWithWhereUniqueWithoutUserTypeInput = {
@@ -40743,11 +41506,16 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedAt?: Date | string | null
     bids?: BidCreateNestedManyWithoutUserInput
     leads?: LeadCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchCreateNestedManyWithoutUserInput
     userType: UserTypeCreateNestedOneWithoutUsersInput
+    approvedBy?: UserCreateNestedOneWithoutApprovalsGivenInput
+    approvalsGiven?: UserCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
@@ -40781,10 +41549,15 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
+    approvalsGiven?: UserUncheckedCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
@@ -40833,11 +41606,16 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUpdateManyWithoutUserNestedInput
     userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
+    approvedBy?: UserUpdateOneWithoutApprovalsGivenNestedInput
+    approvalsGiven?: UserUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
@@ -40871,10 +41649,15 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
+    approvalsGiven?: UserUncheckedUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -40907,12 +41690,17 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedAt?: Date | string | null
     bids?: BidCreateNestedManyWithoutUserInput
     leads?: LeadCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchCreateNestedManyWithoutUserInput
     userType: UserTypeCreateNestedOneWithoutUsersInput
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
+    approvedBy?: UserCreateNestedOneWithoutApprovalsGivenInput
+    approvalsGiven?: UserCreateNestedManyWithoutApprovedByInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -40945,11 +41733,16 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
+    approvalsGiven?: UserUncheckedCreateNestedManyWithoutApprovedByInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -40997,12 +41790,17 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUpdateManyWithoutUserNestedInput
     userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
+    approvedBy?: UserUpdateOneWithoutApprovalsGivenNestedInput
+    approvalsGiven?: UserUpdateManyWithoutApprovedByNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -41035,11 +41833,16 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
+    approvalsGiven?: UserUncheckedUpdateManyWithoutApprovedByNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -41071,12 +41874,17 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedAt?: Date | string | null
     bids?: BidCreateNestedManyWithoutUserInput
     leads?: LeadCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchCreateNestedManyWithoutUserInput
     userType: UserTypeCreateNestedOneWithoutUsersInput
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
+    approvedBy?: UserCreateNestedOneWithoutApprovalsGivenInput
+    approvalsGiven?: UserCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -41109,11 +41917,16 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
+    approvalsGiven?: UserUncheckedCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -41161,12 +41974,17 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUpdateManyWithoutUserNestedInput
     userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
+    approvedBy?: UserUpdateOneWithoutApprovalsGivenNestedInput
+    approvalsGiven?: UserUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -41199,11 +42017,16 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
+    approvalsGiven?: UserUncheckedUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -41235,12 +42058,17 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedAt?: Date | string | null
     bids?: BidCreateNestedManyWithoutUserInput
     leads?: LeadCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchCreateNestedManyWithoutUserInput
     userType: UserTypeCreateNestedOneWithoutUsersInput
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
+    approvedBy?: UserCreateNestedOneWithoutApprovalsGivenInput
+    approvalsGiven?: UserCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -41273,11 +42101,16 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
+    approvalsGiven?: UserUncheckedCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -41325,12 +42158,17 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUpdateManyWithoutUserNestedInput
     userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
+    approvedBy?: UserUpdateOneWithoutApprovalsGivenNestedInput
+    approvalsGiven?: UserUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -41363,11 +42201,16 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
+    approvalsGiven?: UserUncheckedUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -41536,12 +42379,17 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedAt?: Date | string | null
     bids?: BidCreateNestedManyWithoutUserInput
     leads?: LeadCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchCreateNestedManyWithoutUserInput
     userType: UserTypeCreateNestedOneWithoutUsersInput
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
+    approvedBy?: UserCreateNestedOneWithoutApprovalsGivenInput
+    approvalsGiven?: UserCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
@@ -41574,11 +42422,16 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
+    approvalsGiven?: UserUncheckedCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
@@ -41665,12 +42518,17 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUpdateManyWithoutUserNestedInput
     userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
+    approvedBy?: UserUpdateOneWithoutApprovalsGivenNestedInput
+    approvalsGiven?: UserUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
@@ -41703,11 +42561,16 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
+    approvalsGiven?: UserUncheckedUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -41784,12 +42647,17 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedAt?: Date | string | null
     bids?: BidCreateNestedManyWithoutUserInput
     leads?: LeadCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchCreateNestedManyWithoutUserInput
     userType: UserTypeCreateNestedOneWithoutUsersInput
     leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
+    approvedBy?: UserCreateNestedOneWithoutApprovalsGivenInput
+    approvalsGiven?: UserCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
@@ -41822,11 +42690,16 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
     bids?: BidUncheckedCreateNestedManyWithoutUserInput
     leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
     watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
+    approvalsGiven?: UserUncheckedCreateNestedManyWithoutApprovedByInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
@@ -41913,12 +42786,17 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUpdateManyWithoutUserNestedInput
     userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
+    approvedBy?: UserUpdateOneWithoutApprovalsGivenNestedInput
+    approvalsGiven?: UserUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
@@ -41951,11 +42829,16 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
+    approvalsGiven?: UserUncheckedUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -42217,6 +43100,37 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type UserCreateManyApprovedByInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    userTypeId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    firstName?: string | null
+    lastName?: string | null
+    username?: string | null
+    profileImage?: string | null
+    lastActivity?: Date | string | null
+    lastIP?: string | null
+    lastUserAgent?: string | null
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedAt?: Date | string | null
+  }
+
   export type ActivityLogCreateManyUserInput = {
     id?: string
     action: string
@@ -42457,6 +43371,121 @@ export namespace Prisma {
     hasAccess?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserUpdateWithoutApprovedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImage?: NullableStringFieldUpdateOperationsInput | string | null
+    lastActivity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastIP?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUserAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bids?: BidUpdateManyWithoutUserNestedInput
+    leads?: LeadUpdateManyWithoutOwnerNestedInput
+    purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
+    watching?: LeadWatchUpdateManyWithoutUserNestedInput
+    userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
+    leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
+    approvalsGiven?: UserUpdateManyWithoutApprovedByNestedInput
+    activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutApprovedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    userTypeId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImage?: NullableStringFieldUpdateOperationsInput | string | null
+    lastActivity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastIP?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUserAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bids?: BidUncheckedUpdateManyWithoutUserNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
+    purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
+    watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
+    leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
+    approvalsGiven?: UserUncheckedUpdateManyWithoutApprovedByNestedInput
+    activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateManyWithoutApprovedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    userTypeId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImage?: NullableStringFieldUpdateOperationsInput | string | null
+    lastActivity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastIP?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUserAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ActivityLogUpdateWithoutUserInput = {
@@ -42705,6 +43734,10 @@ export namespace Prisma {
     ibanAddress?: string | null
     ibanPostalCode?: string | null
     ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
   }
 
   export type UserTypePermissionCreateManyUserTypeInput = {
@@ -42771,11 +43804,16 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUpdateManyWithoutUserNestedInput
     leads?: LeadUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUpdateManyWithoutUserNestedInput
     leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
+    approvedBy?: UserUpdateOneWithoutApprovalsGivenNestedInput
+    approvalsGiven?: UserUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
@@ -42808,11 +43846,16 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bids?: BidUncheckedUpdateManyWithoutUserNestedInput
     leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
     watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
     leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
+    approvalsGiven?: UserUncheckedUpdateManyWithoutApprovedByNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -42845,6 +43888,10 @@ export namespace Prisma {
     ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
     ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserTypePermissionUpdateWithoutUserTypeInput = {

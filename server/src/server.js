@@ -122,6 +122,7 @@ io.on('connection', (socket) => {
 function requireAuth(req, res, next) {
   const auth = req.headers.authorization
   if (!auth) return res.status(401).json({ error: 'Unauthorized' })
+  console.log('auth', auth)
   const token = auth.split(' ')[1]
   try {
     req.user = jwt.verify(token, process.env.JWT_SECRET)
@@ -132,6 +133,7 @@ function requireAuth(req, res, next) {
 }
 
 function requireAdmin(req, res, next) {
+  console.log('requireAdmin', req.user)
   if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') return res.status(403).json({ error: 'Forbidden' })
   next()
 }

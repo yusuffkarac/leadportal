@@ -10,42 +10,48 @@ datasource db {
 }
 
 model User {
-  id                  String                   @id @default(cuid())
-  email               String                   @unique
-  passwordHash        String
-  userTypeId          String
-  createdAt           DateTime                 @default(now())
-  updatedAt           DateTime                 @updatedAt
-  firstName           String?
-  lastName            String?
-  username            String?                  @unique
-  profileImage        String?
-  lastActivity        DateTime?                // Son aktivite zamanı
-  lastIP              String?                  // Son bağlantı IP adresi
-  lastUserAgent       String?                  // Son kullanılan tarayıcı/cihaz bilgisi
-  twoFactorEnabled    Boolean                  @default(false) // 2FA aktif mi?
-  twoFactorSecret     String?                  // 2FA secret key (şifreli)
-  isActive            Boolean                  @default(true) // Kullanıcı aktif mi?
-  balance             Float                    @default(0) // Kullanıcı bakiyesi
-  balanceEnabled      Boolean                  @default(true) // Bakiye özelliği aktif mi?
-  paymentMethod       String                   @default("balance") // "balance" veya "iban"
-  ibanAccountHolder   String?                  // IBAN hesap sahibi
-  ibanNumber          String?                  // IBAN numarası (şifreli)
-  ibanBic             String?                  // BIC/SWIFT kodu
-  ibanAddress         String?                  // Adres
-  ibanPostalCode      String?                  // Posta kodu
-  ibanCity            String?                  // Şehir
-  bids                Bid[]
-  leads               Lead[]                   @relation("LeadOwner")
-  purchasedLeads      LeadSale[]               @relation("LeadBuyer")
-  watching            LeadWatch[]
-  userType            UserType                 @relation(fields: [userTypeId], references: [id])
-  leadTypePermissions UserLeadTypePermission[] @relation("UserLeadTypePermissions")
-  activityLogs            ActivityLog[]
-  passwordResetTokens     PasswordResetToken[]
-  balanceTransactions     BalanceTransaction[]
-  notifications           Notification[]
-  notificationPreferences NotificationPreference[]
+  id                              String                   @id @default(cuid())
+  email                           String                   @unique
+  passwordHash                    String
+  userTypeId                      String
+  createdAt                       DateTime                 @default(now())
+  updatedAt                       DateTime                 @updatedAt
+  firstName                       String?
+  lastName                        String?
+  username                        String?                  @unique
+  profileImage                    String?
+  lastActivity                    DateTime?                // Son aktivite zamanı
+  lastIP                          String?                  // Son bağlantı IP adresi
+  lastUserAgent                   String?                  // Son kullanılan tarayıcı/cihaz bilgisi
+  twoFactorEnabled                Boolean                  @default(false) // 2FA aktif mi?
+  twoFactorSecret                 String?                  // 2FA secret key (şifreli)
+  isActive                        Boolean                  @default(true) // Kullanıcı aktif mi?
+  balance                         Float                    @default(0) // Kullanıcı bakiyesi
+  balanceEnabled                  Boolean                  @default(true) // Bakiye özelliği aktif mi?
+  paymentMethod                   String                   @default("balance") // "balance" veya "iban"
+  ibanAccountHolder               String?                  // IBAN hesap sahibi
+  ibanNumber                      String?                  // IBAN numarası (şifreli)
+  ibanBic                         String?                  // BIC/SWIFT kodu
+  ibanAddress                     String?                  // Adres
+  ibanPostalCode                  String?                  // Posta kodu
+  ibanCity                        String?                  // Şehir
+  approvalStatus                  UserApprovalStatus       @default(PENDING) // Kayıt onay durumu
+  registrationRejectionReason     String?                  // Red sebebi (admin notu)
+  approvedById                    String?                  // Onaylayan admin
+  approvedAt                      DateTime?                // Onay tarihi
+  bids                            Bid[]
+  leads                           Lead[]                   @relation("LeadOwner")
+  purchasedLeads                  LeadSale[]               @relation("LeadBuyer")
+  watching                        LeadWatch[]
+  userType                        UserType                 @relation(fields: [userTypeId], references: [id])
+  leadTypePermissions             UserLeadTypePermission[] @relation("UserLeadTypePermissions")
+  approvedBy                      User?                    @relation("ApprovedByAdmin", fields: [approvedById], references: [id])
+  approvalsGiven                  User[]                   @relation("ApprovedByAdmin")
+  activityLogs                    ActivityLog[]
+  passwordResetTokens             PasswordResetToken[]
+  balanceTransactions             BalanceTransaction[]
+  notifications                   Notification[]
+  notificationPreferences         NotificationPreference[]
 }
 
 model Lead {
@@ -80,6 +86,12 @@ model Lead {
 enum LeadType {
   AUCTION       // Açık artırma
   SOFORT_KAUF   // Anında satın alma
+}
+
+enum UserApprovalStatus {
+  PENDING       // Onay bekleme durumunda
+  APPROVED      // Onaylanmış
+  REJECTED      // Reddedilmiş
 }
 
 model Bid {
@@ -192,6 +204,8 @@ model Settings {
   tradeRegisterNumber String   @default("İstanbul Ticaret Sicil No: 12345")
   sessionTimeoutMinutes Int     @default(120) // Dakika cinsinden oturum timeout süresi (default 2 saat)
   sessionTimeoutMessage String  @default("Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.") // Logout sonrası gösterilecek mesaj
+  requireRegistrationApproval Boolean @default(true) // Yeni kayıtlar admin onayı gerektirsin mi?
+  registrationApprovalEmail String? // Yeni kayıt bildirimleri için email adresi
 }
 
 model UserType {

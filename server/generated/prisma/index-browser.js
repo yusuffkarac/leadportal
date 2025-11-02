@@ -145,7 +145,11 @@ exports.Prisma.UserScalarFieldEnum = {
   ibanBic: 'ibanBic',
   ibanAddress: 'ibanAddress',
   ibanPostalCode: 'ibanPostalCode',
-  ibanCity: 'ibanCity'
+  ibanCity: 'ibanCity',
+  approvalStatus: 'approvalStatus',
+  registrationRejectionReason: 'registrationRejectionReason',
+  approvedById: 'approvedById',
+  approvedAt: 'approvedAt'
 };
 
 exports.Prisma.LeadScalarFieldEnum = {
@@ -268,7 +272,9 @@ exports.Prisma.SettingsScalarFieldEnum = {
   supportLinks: 'supportLinks',
   tradeRegisterNumber: 'tradeRegisterNumber',
   sessionTimeoutMinutes: 'sessionTimeoutMinutes',
-  sessionTimeoutMessage: 'sessionTimeoutMessage'
+  sessionTimeoutMessage: 'sessionTimeoutMessage',
+  requireRegistrationApproval: 'requireRegistrationApproval',
+  registrationApprovalEmail: 'registrationApprovalEmail'
 };
 
 exports.Prisma.UserTypeScalarFieldEnum = {
@@ -483,6 +489,12 @@ exports.Prisma.JsonNullValueFilter = {
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
 };
+exports.UserApprovalStatus = exports.$Enums.UserApprovalStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+};
+
 exports.LeadType = exports.$Enums.LeadType = {
   AUCTION: 'AUCTION',
   SOFORT_KAUF: 'SOFORT_KAUF'

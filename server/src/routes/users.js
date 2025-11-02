@@ -3,6 +3,9 @@ import { z } from 'zod'
 import bcrypt from 'bcrypt'
 import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activityLogger.js'
 import { subtractMinutes, createDate } from '../utils/dateTimeUtils.js'
+import { sendNotificationEmail } from '../utils/emailSender.js'
+import { createNotification } from '../services/notificationService.js'
+import { requireAdmin } from '../middleware/auth.js'
 
 const createSchema = z.object({
   email: z.string().email('Geçerli bir email adresi giriniz'),
@@ -257,6 +260,219 @@ export default function usersRouter(prisma) {
     } catch (error) {
       console.error('Delete user error:', error)
       res.status(500).json({ error: 'Kullanıcı silinirken bir hata oluştu' })
+    }
+  })
+
+  // Onay bekleyen kullanıcıları getir
+  router.get('/pending-registrations/list', requireAdmin, async (req, res) => {
+    try {
+      const users = await prisma.user.findMany({
+        where: { approvalStatus: 'PENDING' },
+        include: { userType: true },
+        orderBy: { createdAt: 'desc' }
+      })
+
+      // Hassas bilgileri çıkar
+      const safeUsers = users.map(user => ({
+        ...user,
+        passwordHash: undefined
+      }))
+
+      res.json(safeUsers)
+    } catch (error) {
+      console.error('Get pending users error:', error)
+      res.status(500).json({ error: 'Onay bekleyen kullanıcılar alınırken hata oluştu' })
+    }
+  })
+
+  // Kullanıcı kaydını onayla
+  router.put('/:id/approve', requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params
+      // Approver ID'yi authenticated user'dan al
+      const approverUserId = req.user?.id
+
+      // Kullanıcıyı bul
+      const user = await prisma.user.findUnique({
+        where: { id },
+        include: { userType: true }
+      })
+
+      if (!user) {
+        return res.status(404).json({ error: 'Kullanıcı bulunamadı' })
+      }
+
+      if (user.approvalStatus !== 'PENDING') {
+        return res.status(400).json({ error: 'Bu kullanıcı onay beklemediği için işlem yapılamaz' })
+      }
+
+      // Kullanıcıyı onayla
+      const approvedUser = await prisma.user.update({
+        where: { id },
+        data: {
+          isActive: true,
+          approvalStatus: 'APPROVED',
+          approvedById: approverUserId,
+          approvedAt: new Date()
+        },
+        include: { userType: true }
+      })
+
+      // Kullanıcıya onay mailini gönder
+      try {
+        const settings = await prisma.settings.findUnique({
+          where: { id: 'default' }
+        })
+
+        await sendNotificationEmail({
+          to: user.email,
+          template: 'REGISTRATION_APPROVED',
+          variables: {
+            firstName: user.firstName || user.email.split('@')[0],
+            appUrl: process.env.APP_URL || 'http://localhost:3000'
+          }
+        })
+      } catch (error) {
+        console.error('Approval email send error:', error)
+      }
+
+      // Activity log
+      try {
+        const { ipAddress, userAgent } = extractRequestInfo(req)
+        await logActivity({
+          userId: approverUserId,
+          action: 'USER_APPROVED',
+          details: { userEmail: user.email, userId: user.id },
+          entityType: 'user',
+          entityId: user.id,
+          ipAddress,
+          userAgent
+        })
+      } catch (e) {
+        console.error('Activity log error:', e.message)
+      }
+
+      res.json({ ok: true, user: approvedUser })
+    } catch (error) {
+      console.error('Approve user error:', error)
+      res.status(500).json({ error: 'Kullanıcı onaylanırken hata oluştu' })
+    }
+  })
+
+  // Kullanıcı kaydını reddet
+  router.put('/:id/reject', requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params
+      const { rejectReason = '' } = req.body
+      // Approver ID'yi authenticated user'dan al
+      const approverUserId = req.user?.id
+
+      // Kullanıcıyı bul
+      const user = await prisma.user.findUnique({
+        where: { id }
+      })
+
+      if (!user) {
+        return res.status(404).json({ error: 'Kullanıcı bulunamadı' })
+      }
+
+      if (user.approvalStatus !== 'PENDING') {
+        return res.status(400).json({ error: 'Bu kullanıcı onay beklemediği için işlem yapılamaz' })
+      }
+
+      // Kullanıcı kaydını güncelle (REJECTED)
+      await prisma.user.update({
+        where: { id },
+        data: {
+          approvalStatus: 'REJECTED',
+          registrationRejectionReason: rejectReason || null,
+          approvedById: approverUserId,
+          approvedAt: new Date()
+        }
+      })
+
+      // Kullanıcıya red mailini gönder
+      try {
+        const settings = await prisma.settings.findUnique({
+          where: { id: 'default' }
+        })
+
+        await sendNotificationEmail({
+          to: user.email,
+          template: 'REGISTRATION_REJECTED',
+          variables: {
+            firstName: user.firstName || user.email.split('@')[0],
+            supportEmail: settings?.footerEmail || 'support@leadportal.com'
+          }
+        })
+      } catch (error) {
+        console.error('Rejection email send error:', error)
+      }
+
+      // Activity log
+      try {
+        const { ipAddress, userAgent } = extractRequestInfo(req)
+        await logActivity({
+          userId: approverUserId,
+          action: 'USER_REJECTED',
+          details: { userEmail: user.email, userId: user.id, reason: rejectReason },
+          entityType: 'user',
+          entityId: user.id,
+          ipAddress,
+          userAgent
+        })
+      } catch (e) {
+        console.error('Activity log error:', e.message)
+      }
+
+      res.json({ ok: true })
+    } catch (error) {
+      console.error('Reject user error:', error)
+      res.status(500).json({ error: 'Kullanıcı reddedilirken hata oluştu' })
+    }
+  })
+
+  // Onaylanmış kullanıcıları getir
+  router.get('/approved-registrations/list', requireAdmin, async (req, res) => {
+    try {
+      const users = await prisma.user.findMany({
+        where: { approvalStatus: 'APPROVED' },
+        include: { userType: true, approvedBy: { select: { email: true, firstName: true, lastName: true } } },
+        orderBy: { approvedAt: 'desc' }
+      })
+
+      // Hassas bilgileri çıkar
+      const safeUsers = users.map(user => ({
+        ...user,
+        passwordHash: undefined
+      }))
+
+      res.json(safeUsers)
+    } catch (error) {
+      console.error('Get approved users error:', error)
+      res.status(500).json({ error: 'Onaylanmış kullanıcılar alınırken hata oluştu' })
+    }
+  })
+
+  // Reddedilmiş kullanıcıları getir
+  router.get('/rejected-registrations/list', requireAdmin, async (req, res) => {
+    try {
+      const users = await prisma.user.findMany({
+        where: { approvalStatus: 'REJECTED' },
+        include: { userType: true, approvedBy: { select: { email: true, firstName: true, lastName: true } } },
+        orderBy: { approvedAt: 'desc' }
+      })
+
+      // Hassas bilgileri çıkar
+      const safeUsers = users.map(user => ({
+        ...user,
+        passwordHash: undefined
+      }))
+
+      res.json(safeUsers)
+    } catch (error) {
+      console.error('Get rejected users error:', error)
+      res.status(500).json({ error: 'Reddedilmiş kullanıcılar alınırken hata oluştu' })
     }
   })
 

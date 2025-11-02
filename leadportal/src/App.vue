@@ -491,6 +491,10 @@ function closeAdminCategory() {
           <Icon icon="mdi:login-variant" width="16" height="16" />
           <span>Giriş</span>
         </RouterLink>
+        <RouterLink v-if="!isAuthed" to="/register">
+          <Icon icon="mdi:account-plus-outline" width="16" height="16" />
+          <span>Kayıt Ol</span>
+        </RouterLink>
         
         <!-- Admin Dropdown -->
         <div v-if="isAuthed && (userTypeId === 'ADMIN' || userTypeId === 'SUPERADMIN')" class="admin-dropdown" @mouseenter="openAdminDropdown" @mouseleave="closeAdminDropdown">
@@ -719,7 +723,11 @@ function closeAdminCategory() {
           <Icon icon="mdi:login-variant" width="20" height="20" />
           <span>Giriş</span>
         </RouterLink>
-        
+        <RouterLink v-if="!isAuthed" to="/register" @click="closeMobileMenu" class="mobile-nav-link">
+          <Icon icon="mdi:account-plus-outline" width="20" height="20" />
+          <span>Kayıt Ol</span>
+        </RouterLink>
+
         <!-- Admin Section -->
         <div v-if="isAuthed && (userTypeId === 'ADMIN' || userTypeId === 'SUPERADMIN')" class="mobile-admin-section">
           <!-- Yönetim Kategorisi -->

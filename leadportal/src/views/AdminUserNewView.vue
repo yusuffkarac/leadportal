@@ -433,13 +433,25 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
-        <button class="btn btn-primary" @click="openNewUser">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="5" x2="12" y2="19"/>
-            <line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
-          Yeni Kullanıcı
-        </button>
+        <div class="header-actions">
+          <router-link to="/admin/pending-users" class="btn btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+              <circle cx="11" cy="8" r="1"/>
+              <path d="M11 11h.01"/>
+              <circle cx="16" cy="11" r="1"/>
+            </svg>
+            Onay Bekleyen
+          </router-link>
+          <button class="btn btn-primary" @click="openNewUser">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Yeni Kullanıcı
+          </button>
+        </div>
       </div>
 
       <!-- Filters -->

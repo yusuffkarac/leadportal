@@ -9,11 +9,15 @@ import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activit
 import speakeasy from 'speakeasy'
 import crypto from 'crypto'
 import { now, addMilliseconds } from '../utils/dateTimeUtils.js'
-import { sendPasswordResetEmail } from '../utils/emailSender.js'
+import { sendPasswordResetEmail, sendNotificationEmail } from '../utils/emailSender.js'
+import { createNotification } from '../services/notificationService.js'
 
 const registerSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(6)
+  password: z.string().min(6),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  username: z.string().optional()
 })
 
 const loginSchema = z.object({
@@ -77,23 +81,115 @@ export default function authRouter(prisma) {
   const router = Router()
 
   router.post('/register', async (req, res) => {
-    const parse = registerSchema.safeParse(req.body)
-    if (!parse.success) return res.status(400).json({ error: 'Invalid input' })
-    const { email, password } = parse.data
-    const existing = await prisma.user.findUnique({ where: { email } })
-    if (existing) return res.status(409).json({ error: 'Email already in use' })
-    
-    // Default user type - ilk oluşturulan user type'ı al
-    const defaultUserType = await prisma.userType.findFirst({ where: { isActive: true } })
-    if (!defaultUserType) return res.status(500).json({ error: 'No user type available' })
-    
-    const passwordHash = await bcrypt.hash(password, 10)
-    const user = await prisma.user.create({ 
-      data: { email, passwordHash, userTypeId: defaultUserType.id },
-      include: { userType: true }
-    })
-    const token = jwt.sign({ id: user.id, email: user.email, userTypeId: user.userTypeId }, process.env.JWT_SECRET, { expiresIn: '7d' })
-    res.json({ token, user: { id: user.id, email: user.email, userType: user.userType } })
+    try {
+      const parse = registerSchema.safeParse(req.body)
+      if (!parse.success) return res.status(400).json({ error: 'Invalid input' })
+      const { email, password, firstName, lastName, username } = parse.data
+
+      // Email zaten kullanımda mı kontrol et
+      const existing = await prisma.user.findUnique({ where: { email } })
+      if (existing && existing.approvalStatus !== 'REJECTED') {
+        return res.status(409).json({ error: 'Email already in use' })
+      }
+
+      // Settings'den kayıt onay ayarlarını al
+      const settings = await prisma.settings.findUnique({
+        where: { id: 'default' }
+      })
+
+      const requireApproval = settings?.requireRegistrationApproval ?? true
+
+      // Default user type - USER tipini al
+      const defaultUserType = await prisma.userType.findUnique({ where: { id: 'USER' } })
+      if (!defaultUserType || !defaultUserType.isActive) return res.status(500).json({ error: 'No user type available' })
+
+      const passwordHash = await bcrypt.hash(password, 10)
+
+      // Eğer reddedilmiş bir kayıt varsa, onu sil ve yeni olanı oluştur
+      if (existing && existing.approvalStatus === 'REJECTED') {
+        await prisma.user.delete({ where: { id: existing.id } })
+      }
+
+      const user = await prisma.user.create({
+        data: {
+          email,
+          passwordHash,
+          firstName: firstName || undefined,
+          lastName: lastName || undefined,
+          username: username || undefined,
+          userTypeId: defaultUserType.id,
+          isActive: !requireApproval, // requireApproval true ise isActive false
+          approvalStatus: requireApproval ? 'PENDING' : 'APPROVED'
+        },
+        include: { userType: true }
+      })
+
+      // Onay gerekiyorsa
+      if (requireApproval) {
+        // 1. Admin'lere bildirim gönder
+        const admins = await prisma.user.findMany({
+          where: { userTypeId: { in: ['ADMIN', 'FULL_ADMIN'] } }
+        })
+
+        for (const admin of admins) {
+          try {
+            await createNotification(
+              admin.id,
+              'USER_REGISTRATION_PENDING',
+              'Yeni Kayıt İsteği',
+              `${user.email} adresinden yeni bir kayıt talebiniz var.`,
+              { userId: user.id }
+            )
+          } catch (error) {
+            console.error('Admin notification creation failed:', error)
+          }
+        }
+
+        // 2. Kayıt email adresine bildirim gönder
+        if (settings?.registrationApprovalEmail) {
+          try {
+            await sendNotificationEmail({
+              to: settings.registrationApprovalEmail,
+              template: 'NEW_USER_REGISTRATION',
+              variables: {
+                firstName: user.firstName || user.email.split('@')[0],
+                email: user.email,
+                registrationDate: new Date().toLocaleDateString('tr-TR'),
+                appUrl: process.env.APP_URL || 'http://localhost:3000'
+              }
+            })
+          } catch (error) {
+            console.error('Registration email notification failed:', error)
+          }
+        }
+
+        // 3. Kullanıcıya onay beklediğini bildir
+        try {
+          await sendNotificationEmail({
+            to: user.email,
+            template: 'REGISTRATION_PENDING_CONFIRMATION',
+            variables: {
+              firstName: user.firstName || user.email.split('@')[0],
+              supportEmail: settings?.footerEmail || 'support@leadportal.com'
+            }
+          })
+        } catch (error) {
+          console.error('User confirmation email failed:', error)
+        }
+
+        return res.json({
+          message: 'Kaydınız alındı. Admin onayı bekleniyor. Onaylandıktan sonra giriş yapabileceksiniz.',
+          user: { id: user.id, email: user.email }
+        })
+      }
+
+      // Onay gerekli değilse, hemen giriş yapabilir
+      const token = jwt.sign({ id: user.id, email: user.email, userTypeId: user.userTypeId }, process.env.JWT_SECRET, { expiresIn: '7d' })
+      res.json({ token, user: { id: user.id, email: user.email, userType: user.userType } })
+    } catch (error) {
+      console.error('Register error:', error)
+      res.status(500).json({ error: 'Registration failed' })
+    }
   })
 
   router.post('/login', async (req, res) => {
@@ -112,12 +208,21 @@ export default function authRouter(prisma) {
       include: { userType: true }
     })
     if (!user) return res.status(401).json({ error: 'Invalid credentials' })
-    
+
+    // Kayıt onay durumu kontrolü
+    if (user.approvalStatus === 'PENDING') {
+      return res.status(401).json({ error: 'Hesabınız onay bekliyor. Lütfen admin onayı için beklemeye devam edin.' })
+    }
+
+    if (user.approvalStatus === 'REJECTED') {
+      return res.status(401).json({ error: 'Kayıt talebiniz reddedilmiştir. Lütfen yeniden kayıt olmayı deneyin.' })
+    }
+
     // Deaktif kullanıcı kontrolü
     if (user.isActive === false) {
       return res.status(401).json({ error: 'Hesabınız deaktif edilmiştir' })
     }
-    
+
     const ok = await bcrypt.compare(password, user.passwordHash)
     if (!ok) return res.status(401).json({ error: 'Invalid credentials' })
 

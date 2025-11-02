@@ -39,6 +39,7 @@ async function seedData() {
       { id: '/admin', name: 'Admin Panel', description: 'Admin paneli' },
       { id: '/admin/leads', name: 'Lead Yönetimi', description: 'Lead yönetim sayfası' },
       { id: '/admin/users', name: 'Kullanıcı Yönetimi', description: 'Kullanıcı yönetim sayfası' },
+      { id: '/admin/pending-users', name: 'Onay Bekleyen Kullanıcılar', description: 'Kayıt onayını bekleyen kullanıcılar' },
       { id: '/admin/settings', name: 'Ayarlar', description: 'Uygulama ayarları' },
       { id: '/admin/user-types', name: 'Kullanıcı Tipleri', description: 'Kullanıcı tipi yönetimi' }
     ]
@@ -62,6 +63,7 @@ async function seedData() {
       { userTypeId: 'FULL_ADMIN', pageId: '/admin', hasAccess: true },
       { userTypeId: 'FULL_ADMIN', pageId: '/admin/leads', hasAccess: true },
       { userTypeId: 'FULL_ADMIN', pageId: '/admin/users', hasAccess: true },
+      { userTypeId: 'FULL_ADMIN', pageId: '/admin/pending-users', hasAccess: true },
       { userTypeId: 'FULL_ADMIN', pageId: '/admin/settings', hasAccess: true },
       { userTypeId: 'FULL_ADMIN', pageId: '/admin/user-types', hasAccess: true },
       
@@ -73,6 +75,7 @@ async function seedData() {
       { userTypeId: 'ADMIN', pageId: '/admin', hasAccess: true },
       { userTypeId: 'ADMIN', pageId: '/admin/leads', hasAccess: true },
       { userTypeId: 'ADMIN', pageId: '/admin/users', hasAccess: true },
+      { userTypeId: 'ADMIN', pageId: '/admin/pending-users', hasAccess: true },
       
       // Full User - Tüm kullanıcı sayfalarına erişim
       { userTypeId: 'FULL_USER', pageId: '/', hasAccess: true },
@@ -250,6 +253,18 @@ async function seedData() {
         emailEnabled: true,
         inAppEnabled: true,
         icon: 'mdi:cash-check'
+      },
+
+      // ADMIN kategorisi
+      {
+        code: 'USER_REGISTRATION_PENDING',
+        name: 'Yeni Kayıt İsteği',
+        description: 'Yeni bir kullanıcı kayıt olmak istiyor',
+        category: 'ADMIN',
+        defaultEnabled: true,
+        emailEnabled: true,
+        inAppEnabled: true,
+        icon: 'mdi:account-plus'
       }
     ]
 

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import LeadDetailView from '../views/LeadDetailView.vue'
 import LoginView from '../views/LoginView.vue'
+import RegisterView from '../views/RegisterView.vue'
 import AdminLeadsListView from '../views/AdminLeadsListView.vue'
 import AdminLeadEditView from '../views/AdminLeadEditView.vue'
 import AdminUserNewView from '../views/AdminUserNewView.vue'
@@ -27,6 +28,7 @@ import AdminBalanceView from '../views/AdminBalanceView.vue'
 import NotificationPreferencesView from '../views/NotificationPreferencesView.vue'
 import AdminNotificationSettingsView from '../views/AdminNotificationSettingsView.vue'
 import AdminPendingPaymentsView from '../views/AdminPendingPaymentsView.vue'
+import AdminPendingUsersView from '../views/admin/PendingUsersView.vue'
 
 export const appRoutes = [
     {
@@ -64,6 +66,11 @@ export const appRoutes = [
       path: '/login',
       name: 'login',
       component: LoginView,
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: RegisterView,
     },
     {
       path: '/admin/leads',
@@ -210,6 +217,12 @@ export const appRoutes = [
       component: AdminNotificationSettingsView,
       meta: { requiresAdmin: true },
     },
+    {
+      path: '/admin/pending-users',
+      name: 'admin-pending-users',
+      component: AdminPendingUsersView,
+      meta: { requiresAdmin: true },
+    },
 ]
 
 const router = createRouter({
@@ -231,8 +244,8 @@ router.beforeEach(async (to, from, next) => {
     
     console.log('Permission check - token:', !!token, 'userTypeId:', userTypeId, 'path:', to.path)
     
-    // Login, şifre sıfırlama ve forbidden sayfalarına herkes erişebilir
-    if (to.path === '/forbidden' || to.path === '/login' || to.path === '/forgot-password' || to.path === '/reset-password') {
+    // Login, kayıt, şifre sıfırlama ve forbidden sayfalarına herkes erişebilir
+    if (to.path === '/forbidden' || to.path === '/login' || to.path === '/register' || to.path === '/forgot-password' || to.path === '/reset-password') {
       console.log('Allowing access to:', to.path)
       next()
       return

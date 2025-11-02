@@ -302,7 +302,52 @@ LeadPortal
   })
 }
 
+/**
+ * Şablon kullanarak bildirim emaili gönder
+ * @param {Object} options
+ * @param {string} options.to - Alıcı email adresi
+ * @param {string} options.template - Template türü
+ * @param {Object} options.variables - Şablon değişkenleri
+ */
+export async function sendNotificationEmail({ to, template, variables = {} }) {
+  try {
+    // Email template'i bul
+    const emailTemplate = await prisma.emailTemplate.findUnique({
+      where: { type: template }
+    })
+
+    if (!emailTemplate || !emailTemplate.isActive) {
+      console.error(`Email template not found or inactive: ${template}`)
+      return { success: false, error: 'Template not found' }
+    }
+
+    // Değişkenleri template'e yerleştir
+    let subject = emailTemplate.subject
+    let htmlContent = emailTemplate.htmlContent
+    let textContent = emailTemplate.textContent || ''
+
+    // Basit variable replacement
+    Object.keys(variables).forEach(key => {
+      const regex = new RegExp(`{{${key}}}`, 'g')
+      subject = subject.replace(regex, variables[key] || '')
+      htmlContent = htmlContent.replace(regex, variables[key] || '')
+      textContent = textContent.replace(regex, variables[key] || '')
+    })
+
+    return sendEmail({
+      to,
+      subject,
+      html: htmlContent,
+      text: textContent
+    })
+  } catch (error) {
+    console.error('Notification email send error:', error)
+    return { success: false, error: error.message }
+  }
+}
+
 export default {
   sendEmail,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  sendNotificationEmail
 }
