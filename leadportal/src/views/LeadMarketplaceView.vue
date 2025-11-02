@@ -44,6 +44,49 @@ const isSubmittingBid = ref({})
 const showDescriptionModal = ref(false)
 const selectedDescription = ref(null)
 
+// Admin features - Route path'ine bakarak kontrol et
+const isAdmin = computed(() => {
+  // /admin yolunda ise admin modunda
+  return route.path.startsWith('/admin')
+})
+const pendingPaymentsCount = ref(0)
+const showLeadModal = ref(false)
+const modalMode = ref('new') // 'new' veya 'edit'
+const editingLead = ref(null)
+const leadForm = ref({
+  title: '',
+  description: '',
+  privateDetails: '',
+  postalCode: '',
+  leadType: 'AUCTION',
+  startPrice: '',
+  minIncrement: '',
+  buyNowPrice: '',
+  insuranceType: '',
+  startsAt: '',
+  endsAt: '',
+  isActive: true,
+  isShowcase: false,
+  isPremium: false
+})
+const errorMessage = ref('')
+const successMessage = ref('')
+
+// Postal code autocomplete
+const showPostalCodeDropdown = ref(false)
+const postalCodeSearch = ref('')
+const postalCodeResults = ref([])
+const postalCodeInputFocused = ref(false)
+const selectedPostalCodeIndex = ref(-1)
+const postalCodeDropdownRef = ref(null)
+
+// Formleadport integration
+const formleadportFormId = ref('')
+const formleadportData = ref(null)
+const showFormPreview = ref(false)
+const isLoadingFormData = ref(false)
+const formleadportError = ref('')
+
 // Premium slider kaydırma ipucu
 const premiumSliderContainer = ref(null)
 const showRightScrollHint = ref(false)
@@ -469,14 +512,23 @@ function clearFilters() {
 }
 
 async function fetchLeads() {
-  // Route'a göre lead tipini filtrele
-  const { data } = await api.get(`/leads?leadType=${leadType.value}`)
+  // Admin ise tüm lead'leri al, değilse sadece belirli tipteki lead'leri al
+  let response
+  if (isAdmin.value) {
+    // Admin: tüm lead'leri getir
+    response = await api.get('/leads/admin/list', { headers: authHeaders() })
+  } else {
+    // User: route'a göre filtrele
+    response = await api.get(`/leads?leadType=${leadType.value}`)
+  }
+  const { data } = response
+
   // Lead'lerin aktif durumunu endsAt tarihine göre güncelle
   allLeads.value = data.map(lead => {
     const now = new Date()
     const endDate = new Date(lead.endsAt)
     const isExpired = endDate < now
-    
+
     return {
       ...lead,
       isActive: lead.isActive && !isExpired,
@@ -488,6 +540,16 @@ async function fetchLeads() {
   // Tüm listelenen lead odalarına katıl, canlı güncellemeleri al
   for (const l of allLeads.value) {
     socket.emit('join-lead', l.id)
+  }
+}
+
+async function fetchPendingPayments() {
+  try {
+    const response = await api.get('/lead-sales/admin/pending', { headers: authHeaders() })
+    pendingPaymentsCount.value = response.data?.length || 0
+  } catch (error) {
+    console.error('Bekleyen ödemeler yüklenemedi:', error)
+    pendingPaymentsCount.value = 0
   }
 }
 
@@ -532,6 +594,398 @@ function openInstantBuyModal(lead, event) {
   }
   selectedLead.value = lead
   showInstantBuyModal.value = true
+}
+
+async function openLeadModal(mode, lead = null) {
+  modalMode.value = mode
+  showLeadModal.value = true
+  errorMessage.value = ''
+  successMessage.value = ''
+  formleadportFormId.value = ''
+  formleadportData.value = null
+  formleadportError.value = ''
+
+  if (mode === 'new') {
+    // Yeni lead için varsayılan değerleri yükle
+    try {
+      const settingsResponse = await api.get('/api/settings', { headers: authHeaders() })
+      const settingsData = settingsResponse.data
+
+      // Varsayılan bitiş tarihini hesapla (şu an + varsayılan gün sayısı)
+      const now = new Date()
+      const defaultEndDate = new Date(now.getTime() + (settingsData.defaultAuctionDays || 7) * 24 * 60 * 60 * 1000)
+      const formattedEndDate = defaultEndDate.toISOString().slice(0, 16)
+
+      leadForm.value = {
+        title: '',
+        description: '',
+        privateDetails: '',
+        startPrice: '',
+        minIncrement: settingsData.defaultMinIncrement || 10,
+        buyNowPrice: '',
+        startsAt: '',
+        endsAt: formattedEndDate,
+        postalCode: '',
+        insuranceType: '',
+        leadType: 'AUCTION',
+        isActive: true,
+        isShowcase: false,
+        isPremium: false
+      }
+      postalCodeSearch.value = ''
+      postalCodeResults.value = []
+    } catch (error) {
+      // Hata durumunda varsayılan değerleri kullan
+      const now = new Date()
+      const defaultEndDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+      const formattedEndDate = defaultEndDate.toISOString().slice(0, 16)
+
+      leadForm.value = {
+        title: '',
+        description: '',
+        privateDetails: '',
+        leadType: 'AUCTION',
+        startPrice: '',
+        minIncrement: 10,
+        buyNowPrice: '',
+        startsAt: '',
+        endsAt: formattedEndDate,
+        postalCode: '',
+        insuranceType: '',
+        isActive: true,
+        isShowcase: false,
+        isPremium: false
+      }
+      postalCodeSearch.value = ''
+      postalCodeResults.value = []
+    }
+  } else if (mode === 'edit' && lead) {
+    // Edit için mevcut lead verilerini yükle
+    editingLead.value = lead
+    leadForm.value = {
+      title: lead.title,
+      description: lead.description || '',
+      privateDetails: lead.privateDetails || '',
+      leadType: lead.leadType || 'AUCTION',
+      startPrice: lead.startPrice.toString(),
+      minIncrement: lead.minIncrement.toString(),
+      buyNowPrice: lead.instantBuyPrice ? lead.instantBuyPrice.toString() : '',
+      startsAt: lead.startsAt ? new Date(lead.startsAt).toISOString().slice(0, 16) : '',
+      endsAt: lead.endsAt ? new Date(lead.endsAt).toISOString().slice(0, 16) : '',
+      isActive: true, // Lead her zaman aktif
+      postalCode: lead.postalCode || '',
+      insuranceType: lead.insuranceType || '',
+      isShowcase: !!lead.isShowcase,
+      isPremium: !!lead.isPremium
+    }
+    // Posta kodu için sadece posta kodu numarasını göster
+    postalCodeSearch.value = lead.postalCode || ''
+  }
+}
+
+// Postal Code Functions
+async function searchPostalCodes(query) {
+  if (!query || query.length < 2) {
+    postalCodeResults.value = []
+    return
+  }
+
+  try {
+    const res = await fetch('/zipcodes.json')
+    const zipcodes = await res.json()
+
+    const filtered = zipcodes
+      .filter(z =>
+        z.postal && z.postal.toString().includes(query) ||
+        z.name && z.name.toLowerCase().includes(query.toLowerCase())
+      )
+      .slice(0, 40)
+      .map(z => ({
+        postal: z.postal,
+        name: z.name,
+        display: `${z.postal} - ${z.name}`
+      }))
+
+    postalCodeResults.value = filtered
+  } catch (error) {
+    console.error('Posta kodu arama hatası:', error)
+    postalCodeResults.value = []
+  }
+}
+
+function selectPostalCode(zipcode) {
+  leadForm.value.postalCode = zipcode.postal
+  postalCodeSearch.value = zipcode.postal
+  showPostalCodeDropdown.value = false
+}
+
+function onPostalCodeFocus() {
+  postalCodeInputFocused.value = true
+  if (postalCodeSearch.value) {
+    showPostalCodeDropdown.value = true
+  }
+}
+
+function onPostalCodeBlur() {
+  setTimeout(() => {
+    postalCodeInputFocused.value = false
+    showPostalCodeDropdown.value = false
+  }, 200)
+}
+
+function onPostalCodeInput() {
+  leadForm.value.postalCode = postalCodeSearch.value
+  selectedPostalCodeIndex.value = -1
+  if (postalCodeSearch.value.length >= 2) {
+    searchPostalCodes(postalCodeSearch.value)
+    showPostalCodeDropdown.value = true
+  } else {
+    postalCodeResults.value = []
+    showPostalCodeDropdown.value = false
+  }
+}
+
+function scrollToSelectedItem() {
+  if (!postalCodeDropdownRef.value || selectedPostalCodeIndex.value < 0) {
+    return
+  }
+
+  const dropdown = postalCodeDropdownRef.value
+  const selectedItem = dropdown.children[selectedPostalCodeIndex.value]
+
+  if (!selectedItem) return
+
+  const dropdownRect = dropdown.getBoundingClientRect()
+  const itemRect = selectedItem.getBoundingClientRect()
+
+  if (itemRect.top < dropdownRect.top) {
+    selectedItem.scrollIntoView({ block: 'start', behavior: 'smooth' })
+  } else if (itemRect.bottom > dropdownRect.bottom) {
+    selectedItem.scrollIntoView({ block: 'end', behavior: 'smooth' })
+  }
+}
+
+function onPostalCodeKeydown(event) {
+  if (!showPostalCodeDropdown.value || postalCodeResults.value.length === 0) {
+    return
+  }
+
+  switch (event.key) {
+    case 'ArrowDown':
+      event.preventDefault()
+      selectedPostalCodeIndex.value = Math.min(
+        selectedPostalCodeIndex.value + 1,
+        postalCodeResults.value.length - 1
+      )
+      setTimeout(() => scrollToSelectedItem(), 0)
+      break
+    case 'ArrowUp':
+      event.preventDefault()
+      selectedPostalCodeIndex.value = Math.max(selectedPostalCodeIndex.value - 1, -1)
+      setTimeout(() => scrollToSelectedItem(), 0)
+      break
+    case 'Enter':
+      event.preventDefault()
+      if (selectedPostalCodeIndex.value >= 0 && selectedPostalCodeIndex.value < postalCodeResults.value.length) {
+        selectPostalCode(postalCodeResults.value[selectedPostalCodeIndex.value])
+      }
+      break
+    case 'Escape':
+      showPostalCodeDropdown.value = false
+      selectedPostalCodeIndex.value = -1
+      break
+  }
+}
+
+function handleClickOutside(event) {
+  const postalCodeContainer = event.target.closest('.postal-code-container')
+  if (!postalCodeContainer && showPostalCodeDropdown.value) {
+    showPostalCodeDropdown.value = false
+  }
+}
+
+// Formleadport Functions
+async function fetchFormleadportData() {
+  if (!formleadportFormId.value.trim()) {
+    formleadportError.value = 'Lütfen form numarası girin'
+    return
+  }
+
+  isLoadingFormData.value = true
+  formleadportError.value = ''
+
+  try {
+    const { data } = await api.get(`/leads/formleadport-data/${formleadportFormId.value}`, {
+      headers: authHeaders()
+    })
+
+    if (data.success) {
+      formleadportData.value = data.data
+      showFormPreview.value = true
+    } else {
+      formleadportError.value = data.error || 'Form verileri alınamadı'
+    }
+  } catch (e) {
+    const status = e?.response?.status
+    const data = e?.response?.data
+
+    if (status === 404) {
+      formleadportError.value = 'Bu form numarası bulunamadı'
+    } else if (status === 401) {
+      formleadportError.value = 'Yetkilendirme hatası'
+    } else if (status === 429) {
+      formleadportError.value = 'Çok fazla istek gönderildi, lütfen bekleyin'
+    } else {
+      formleadportError.value = data?.error || 'Form verileri alınamadı'
+    }
+  } finally {
+    isLoadingFormData.value = false
+  }
+}
+
+function useFormleadportData() {
+  if (!formleadportData.value) return
+
+  const formData = formleadportData.value
+
+  leadForm.value.title = `${formData.firma_adi} - ${formData.musteri_isim} ${formData.musteri_soyisim}`
+  leadForm.value.description = `Müşteri: ${formData.musteri_isim} ${formData.musteri_soyisim}\nFirma: ${formData.firma_adi}\nTelefon: ${formData.telefon || 'Belirtilmemiş'}\nEmail: ${formData.email || 'Belirtilmemiş'}`
+  leadForm.value.postalCode = formData.posta_kodu || ''
+  postalCodeSearch.value = formData.posta_kodu || ''
+
+  if (formData.sigorta) {
+    const sigortaMapping = {
+      'Özel': 'Sağlık',
+      'Yasal': 'Sağlık',
+      'Sigorta Yok': 'Sağlık'
+    }
+    leadForm.value.insuranceType = sigortaMapping[formData.sigorta] || 'Sağlık'
+  }
+
+  leadForm.value.privateDetails = `FORMLEADPORT VERİLERİ:
+Form ID: ${formData.form_id}
+Müşteri: ${formData.musteri_isim} ${formData.musteri_soyisim}
+Cinsiyet: ${formData.musteri_cinsiyet || 'Belirtilmemiş'}
+Doğum Tarihi: ${formData.musteri_dogum_tarihi || 'Belirtilmemiş'}
+Email: ${formData.email || 'Belirtilmemiş'}
+Telefon: ${formData.telefon || 'Belirtilmemiş'}
+Sabit Telefon: ${formData.sabit_telefon || 'Belirtilmemiş'}
+Firma: ${formData.firma_adi}
+Adres: ${formData.adres || 'Belirtilmemiş'}
+Şehir: ${formData.sehir || 'Belirtilmemiş'}
+Medeni Durum: ${formData.medeni_durum || 'Belirtilmemiş'}
+Çalışma Durumu: ${formData.calisma_durumu || 'Belirtilmemiş'}
+Sigorta: ${formData.sigorta || 'Belirtilmemiş'}
+Sigorta Şirketi: ${formData.sigorta_sirket || 'Belirtilmemiş'}
+Randevu Tarihi: ${formData.randevu_tarihi || 'Belirtilmemiş'}
+Randevu Tipi: ${formData.randevu_tipi || 'Belirtilmemiş'}
+
+ORİJİNAL FORMLEADPORT VERİLERİ:
+${JSON.stringify(formData, null, 2)}`
+
+  showFormPreview.value = false
+  formleadportError.value = ''
+}
+
+function closeFormPreview() {
+  showFormPreview.value = false
+  formleadportData.value = null
+  formleadportError.value = ''
+}
+
+function closeLeadModal() {
+  showLeadModal.value = false
+  errorMessage.value = ''
+  successMessage.value = ''
+  formleadportFormId.value = ''
+  formleadportData.value = null
+  formleadportError.value = ''
+  showFormPreview.value = false
+}
+
+async function saveLead() {
+  try {
+    errorMessage.value = ''
+
+    // Validation
+    if (!leadForm.value.title.trim()) {
+      errorMessage.value = 'Başlık gerekli'
+      return
+    }
+    if (!leadForm.value.startPrice || parseFloat(leadForm.value.startPrice) <= 0) {
+      errorMessage.value = 'Geçerli başlangıç fiyatı girin'
+      return
+    }
+    if (!leadForm.value.minIncrement || parseFloat(leadForm.value.minIncrement) <= 0) {
+      errorMessage.value = 'Geçerli minimum artış girin'
+      return
+    }
+    if (!leadForm.value.endsAt) {
+      errorMessage.value = 'Bitiş tarihi gerekli'
+      return
+    }
+
+    // Başlangıç tarihi kontrolü: eğer verilmişse bitiş tarihinden önce olmalı
+    if (leadForm.value.startsAt && leadForm.value.endsAt) {
+      const start = new Date(leadForm.value.startsAt)
+      const end = new Date(leadForm.value.endsAt)
+      if (start >= end) {
+        errorMessage.value = 'Başlangıç tarihi bitiş tarihinden önce olmalıdır.'
+        return
+      }
+    }
+
+    const leadData = {
+      ...leadForm.value,
+      privateDetails: leadForm.value.privateDetails || undefined,
+      postalCode: leadForm.value.postalCode || undefined,
+      leadType: leadForm.value.leadType || 'AUCTION',
+      startPrice: parseFloat(leadForm.value.startPrice),
+      minIncrement: parseFloat(leadForm.value.minIncrement),
+      instantBuyPrice: leadForm.value.buyNowPrice ? parseFloat(leadForm.value.buyNowPrice) : null,
+      insuranceType: leadForm.value.insuranceType || undefined,
+      startsAt: leadForm.value.startsAt || undefined,
+      endsAt: leadForm.value.endsAt,
+      isActive: true,
+      isShowcase: !!leadForm.value.isShowcase,
+      isPremium: !!leadForm.value.isPremium
+    }
+
+    if (modalMode.value === 'new') {
+      // Yeni lead oluştur
+      await api.post('/api/leads', leadData, { headers: authHeaders() })
+      successMessage.value = 'Lead başarıyla oluşturuldu!'
+    } else {
+      // Mevcut lead'i güncelle
+      await api.put(`/api/leads/${editingLead.value.id}`, leadData, { headers: authHeaders() })
+      successMessage.value = 'Lead başarıyla güncellendi!'
+    }
+
+    await fetchLeads()
+
+    setTimeout(() => {
+      closeLeadModal()
+    }, 1500)
+
+  } catch (error) {
+    let backendMessage = ''
+
+    if (error.response?.data) {
+      if (error.response.data.message) {
+        backendMessage = error.response.data.message
+      } else if (error.response.data.error) {
+        backendMessage = error.response.data.error
+        if (error.response.data.issues && error.response.data.issues.length > 0) {
+          const issueMessages = error.response.data.issues.map(issue => issue.message).join(', ')
+          backendMessage += `: ${issueMessages}`
+        }
+      }
+    }
+
+    errorMessage.value = backendMessage
+      ? `Lead ${modalMode.value === 'new' ? 'oluşturulamadı' : 'güncellenemedi'}: ${backendMessage}`
+      : `Lead ${modalMode.value === 'new' ? 'oluşturulamadı' : 'güncellenemedi'}`
+  }
 }
 
 function closeInstantBuyModal() {
@@ -699,6 +1153,9 @@ onMounted(async () => {
   loadFilters() // Filtreleri yükle
   await loadSettings()
   await fetchLeads()
+  if (isAdmin.value) {
+    await fetchPendingPayments()
+  }
   await ensureZipcodesLoaded()
   initMap()
   updateMapMarkers()
@@ -782,8 +1239,8 @@ onUnmounted(() => {
       </div>
     </section>
 
-    <!-- Premium Vitrin Alanı -->
-    <div v-if="premiumLeads.length > 0" class="premium-section">
+    <!-- Premium Vitrin Alanı (Admin için gizli) -->
+    <div v-if="premiumLeads.length > 0 && !isAdmin" class="premium-section">
       <div class="premium-showcase">
         <div class="premium-header">
           <div class="premium-title">
@@ -899,6 +1356,11 @@ onUnmounted(() => {
           </div>
         </div>
         <div class="header-actions">
+          <!-- Yeni Lead Oluştur (Admin için) -->
+          <button v-if="isAdmin" class="btn-new-lead" @click="openLeadModal('new')">
+            <Icon icon="mdi:plus" width="18" height="18" />
+            Yeni Lead
+          </button>
           <button class="view-toggle-btn" @click="toggleMapVisibility" :title="showMap ? 'Haritayı Gizle' : 'Haritayı Göster'">
             <Icon v-if="showMap" icon="mdi:map-marker-off" width="20" height="20" />
             <Icon v-else icon="mdi:map-outline" width="20" height="20" />
@@ -914,7 +1376,22 @@ onUnmounted(() => {
           </button>
         </div>
       </div>
-      
+
+      <!-- Pending Payments Alert (Admin için) -->
+      <div v-if="isAdmin && pendingPaymentsCount > 0" class="pending-payments-alert">
+        <div class="alert-content">
+          <Icon icon="mdi:clock-alert-outline" width="24" />
+          <div>
+            <strong>{{ pendingPaymentsCount }} bekleyen IBAN ödemesi var!</strong>
+            <p>IBAN ile yapılan ödemeler admin onayı bekliyor.</p>
+          </div>
+        </div>
+        <router-link to="/admin/pending-payments" class="alert-button">
+          <Icon icon="mdi:eye" width="18" />
+          Ödemeleri Görüntüle
+        </router-link>
+      </div>
+
       <!-- Filtre Paneli -->
       <div v-if="showFilters" class="filters-panel">
         <div class="filters-grid">
@@ -1009,8 +1486,8 @@ onUnmounted(() => {
                   <div class="bid-count-bottom">{{ lead.bids ? lead.bids.length : 0 }} teklif</div>
                 </div>
               </td>
-              <td v-if="lead.leadType !== 'SOFORT_KAUF'">
-                <div v-if="!lead.isExpired && lead.isActive" class="quick-bid-cell" @click.stop>
+              <td v-if="lead.leadType !== 'SOFORT_KAUF' || isAdmin">
+                <div v-if="!lead.isExpired && lead.isActive && !isAdmin" class="quick-bid-cell" @click.stop>
                   <div class="quick-bid-inline">
                     <input
                       type="number"
@@ -1042,15 +1519,23 @@ onUnmounted(() => {
               </td>
               <td>
                 <div class="table-actions">
-                  <button v-if="lead.leadType === 'SOFORT_KAUF'" class="table-btn success" @click="openInstantBuyModal(lead, $event)" :disabled="lead.isExpired || !lead.isActive">
+                  <!-- Satın Al (admin değilse ve SOFORT_KAUF ise) -->
+                  <button v-if="lead.leadType === 'SOFORT_KAUF' && !isAdmin" class="table-btn success" @click="openInstantBuyModal(lead, $event)" :disabled="lead.isExpired || !lead.isActive">
                     <Icon icon="mdi:shopping-cart" width="14" height="14" />
                     Satın Al
                   </button>
-                  <button v-else class="table-btn primary" @click="navigateToLead(lead)" :disabled="lead.isExpired">
+                  <!-- Detay (admin ise veya SOFORT_KAUF değilse) -->
+                  <button v-if="isAdmin || lead.leadType !== 'SOFORT_KAUF'" class="table-btn primary" @click="navigateToLead(lead)" :disabled="lead.isExpired">
                     Detay
                   </button>
-                  <button v-if="lead.leadType !== 'SOFORT_KAUF' && lead.instantBuyPrice && !lead.isExpired" class="table-btn success" @click="openInstantBuyModal(lead, $event)">
+                  <!-- Lightning-bolt instant buy (admin değilse) -->
+                  <button v-if="lead.leadType !== 'SOFORT_KAUF' && lead.instantBuyPrice && !lead.isExpired && !isAdmin" class="table-btn success" @click="openInstantBuyModal(lead, $event)">
                     <Icon icon="mdi:lightning-bolt" width="14" height="14" />
+                  </button>
+                  <!-- Edit (admin ise) -->
+                  <button v-if="isAdmin" class="table-btn info" @click="openLeadModal('edit', lead)">
+                    <Icon icon="mdi:pencil" width="14" height="14" />
+                    Düzenle
                   </button>
                 </div>
               </td>
@@ -1066,12 +1551,14 @@ onUnmounted(() => {
           :key="lead.id"
           :lead="lead"
           :settings="settings"
-          :show-quick-bid="!lead.isExpired && lead.isActive"
+          :show-quick-bid="!lead.isExpired && lead.isActive && !isAdmin"
+          :is-admin="isAdmin"
           :zipcode-index="zipcodeIndex"
           @click="navigateToLead"
           @show-description="showDescription"
           @instant-buy="openInstantBuyModal"
           @submit-bid="submitQuickBid"
+          @edit-lead="openLeadModal('edit', lead)"
         />
       </div>
 
@@ -1172,6 +1659,207 @@ onUnmounted(() => {
           <button class="btn btn-secondary" @click="closeDescriptionModal">
             Schließen
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lead Edit Modal (Admin için) -->
+    <div v-if="showLeadModal" class="lead-modal-overlay" @click.self="showLeadModal = false">
+      <div class="lead-modal-content">
+        <div class="lead-modal-header">
+          <h2>{{ modalMode === 'edit' ? 'Lead Düzenle' : 'Yeni Lead Oluştur' }}</h2>
+          <button class="close-btn" @click="showLeadModal = false">
+            <Icon icon="mdi:close" width="24" height="24" />
+          </button>
+        </div>
+        <div class="lead-modal-body">
+          <div v-if="errorMessage" class="alert alert-error">{{ errorMessage }}</div>
+          <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
+
+          <!-- Formleadport Integration -->
+          <div class="form-group">
+            <label>Formleadport Form Numarası (Opsiyonel)</label>
+            <div style="display: flex; gap: 8px;">
+              <input
+                v-model="formleadportFormId"
+                type="text"
+                class="form-input"
+                placeholder="Örn: 123456"
+                maxlength="6"
+                @keyup.enter="fetchFormleadportData"
+                style="flex: 1;"
+              />
+              <button
+                class="btn btn-primary"
+                @click="fetchFormleadportData"
+                :disabled="isLoadingFormData"
+                style="white-space: nowrap; padding: 10px 16px;"
+              >
+                {{ isLoadingFormData ? 'Yükleniyor...' : 'Getir' }}
+              </button>
+            </div>
+            <div v-if="formleadportError" style="color: #ef4444; font-size: 0.875rem; margin-top: 4px;">
+              {{ formleadportError }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Başlık *</label>
+            <input v-model="leadForm.title" type="text" class="form-input" placeholder="Lead başlığı" />
+          </div>
+
+          <div class="form-group">
+            <label>Açıklama *</label>
+            <textarea v-model="leadForm.description" class="form-input" rows="4" placeholder="Lead açıklaması"></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group postal-code-container">
+              <label>Posta Kodu</label>
+              <input
+                v-model="postalCodeSearch"
+                type="text"
+                class="form-input"
+                placeholder="Posta kodu"
+                @focus="onPostalCodeFocus"
+                @blur="onPostalCodeBlur"
+                @input="onPostalCodeInput"
+                @keydown="onPostalCodeKeydown"
+              />
+              <div v-if="showPostalCodeDropdown && postalCodeResults.length > 0" class="postal-code-dropdown" ref="postalCodeDropdownRef">
+                <div
+                  v-for="(result, index) in postalCodeResults"
+                  :key="result.postal"
+                  class="postal-code-item"
+                  :class="{ selected: index === selectedPostalCodeIndex }"
+                  @click="selectPostalCode(result)"
+                  @mousedown.prevent
+                >
+                  {{ result.display }}
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Sigorta Tipi</label>
+              <select v-model="leadForm.insuranceType" class="form-input">
+                <option value="">Seçiniz</option>
+                <option v-for="type in insuranceTypeNames" :key="type" :value="type">{{ type }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Başlangıç Fiyatı (€) *</label>
+              <input v-model="leadForm.startPrice" type="number" class="form-input" placeholder="0.00" />
+            </div>
+            <div class="form-group">
+              <label>Minimum Artış (€)</label>
+              <input v-model="leadForm.minIncrement" type="number" class="form-input" placeholder="0.00" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Anında Satın Alma Fiyatı (€)</label>
+              <input v-model="leadForm.buyNowPrice" type="number" class="form-input" placeholder="0.00" />
+            </div>
+            <div class="form-group">
+              <label>Lead Tipi</label>
+              <select v-model="leadForm.leadType" class="form-input">
+                <option value="AUCTION">Açık Artırma</option>
+                <option value="SOFORT_KAUF">Sofort Kauf</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Başlama Tarihi</label>
+              <input v-model="leadForm.startsAt" type="datetime-local" class="form-input" />
+            </div>
+            <div class="form-group">
+              <label>Bitiş Tarihi *</label>
+              <input v-model="leadForm.endsAt" type="datetime-local" class="form-input" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Özel Detaylar</label>
+            <textarea v-model="leadForm.privateDetails" class="form-input" rows="3" placeholder="Satın alan kullanıcı için özel detaylar"></textarea>
+          </div>
+
+          <div class="form-checkboxes">
+            <label class="checkbox-label">
+              <input v-model="leadForm.isShowcase" type="checkbox" />
+              <span>Vitrin (Premium)</span>
+            </label>
+            <label class="checkbox-label">
+              <input v-model="leadForm.isPremium" type="checkbox" />
+              <span>Premium Lead</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="lead-modal-footer">
+          <button class="btn btn-secondary" @click="showLeadModal = false">İptal</button>
+          <button class="btn btn-primary" @click="saveLead">Kaydet</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formleadport Form Preview Modal -->
+    <div v-if="showFormPreview" class="lead-modal-overlay" @click.self="closeFormPreview">
+      <div class="lead-modal-content" style="max-width: 600px;">
+        <div class="lead-modal-header">
+          <h2>Formleadport Form Verileri</h2>
+          <button class="close-btn" @click="closeFormPreview">
+            <Icon icon="mdi:close" />
+          </button>
+        </div>
+        <div class="lead-modal-body" style="max-height: 60vh; overflow-y: auto;">
+          <div v-if="formleadportData" style="font-size: 0.875rem; line-height: 1.6;">
+            <div style="margin-bottom: 12px;">
+              <strong>Müşteri Adı:</strong> {{ formleadportData.musteri_isim }} {{ formleadportData.musteri_soyisim }}
+            </div>
+            <div style="margin-bottom: 12px;">
+              <strong>Firma:</strong> {{ formleadportData.firma_adi }}
+            </div>
+            <div style="margin-bottom: 12px;">
+              <strong>Email:</strong> {{ formleadportData.email || 'Belirtilmemiş' }}
+            </div>
+            <div style="margin-bottom: 12px;">
+              <strong>Telefon:</strong> {{ formleadportData.telefon || 'Belirtilmemiş' }}
+            </div>
+            <div style="margin-bottom: 12px;">
+              <strong>Adres:</strong> {{ formleadportData.adres || 'Belirtilmemiş' }}
+            </div>
+            <div style="margin-bottom: 12px;">
+              <strong>Şehir:</strong> {{ formleadportData.sehir || 'Belirtilmemiş' }}
+            </div>
+            <div style="margin-bottom: 12px;">
+              <strong>Posta Kodu:</strong> {{ formleadportData.posta_kodu || 'Belirtilmemiş' }}
+            </div>
+            <div style="margin-bottom: 12px;">
+              <strong>Sigorta:</strong> {{ formleadportData.sigorta || 'Belirtilmemiş' }}
+            </div>
+            <div style="margin-bottom: 12px;">
+              <strong>Sigorta Şirketi:</strong> {{ formleadportData.sigorta_sirket || 'Belirtilmemiş' }}
+            </div>
+            <div style="margin-bottom: 12px;">
+              <strong>Randevu Tarihi:</strong> {{ formleadportData.randevu_tarihi || 'Belirtilmemiş' }}
+            </div>
+            <div style="margin-bottom: 12px;">
+              <strong>Medeni Durum:</strong> {{ formleadportData.medeni_durum || 'Belirtilmemiş' }}
+            </div>
+            <div style="margin-bottom: 12px;">
+              <strong>Çalışma Durumu:</strong> {{ formleadportData.calisma_durumu || 'Belirtilmemiş' }}
+            </div>
+          </div>
+        </div>
+        <div class="lead-modal-footer">
+          <button class="btn btn-secondary" @click="closeFormPreview">İptal</button>
+          <button class="btn btn-primary" @click="useFormleadportData">Formu Doldur</button>
         </div>
       </div>
     </div>
@@ -1779,6 +2467,33 @@ onUnmounted(() => {
   font-size: 1.2rem;
   line-height: 1;
   margin-left: -4px;
+}
+
+/* Yeni Lead Oluştur Butonu */
+.btn-new-lead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-new-lead:hover {
+  background: #059669;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-new-lead:active {
+  transform: translateY(0);
 }
 
 /* Filtre Paneli */
@@ -2402,6 +3117,16 @@ onUnmounted(() => {
   background: #059669;
 }
 
+.table-btn.info {
+  background: #3b82f6;
+  color: white;
+  padding: 6px 8px;
+}
+
+.table-btn.info:hover {
+  background: #2563eb;
+}
+
 /* Lead ID Badge */
 .lead-id-badge {
   font-size: 0.65rem;
@@ -2982,6 +3707,331 @@ onUnmounted(() => {
     height: 28px;
     font-size: 0.7rem;
     padding: 0 4px;
+  }
+}
+
+/* Pending Payments Alert */
+.pending-payments-alert {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alert-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.alert-content svg {
+  color: #d97706;
+  flex-shrink: 0;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+.alert-content strong {
+  display: block;
+  font-size: 1rem;
+  color: #92400e;
+  margin-bottom: 0.25rem;
+}
+
+.alert-content p {
+  font-size: 0.875rem;
+  color: #78350f;
+  margin: 0;
+}
+
+.alert-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #f59e0b;
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.alert-button:hover {
+  background: #d97706;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+}
+
+@media (max-width: 768px) {
+  .pending-payments-alert {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .alert-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Lead Edit Modal */
+.lead-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.lead-modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.lead-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.lead-modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #64748b;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #0f172a;
+}
+
+.lead-modal-body {
+  padding: 24px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 0.875rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.postal-code-container {
+  position: relative;
+}
+
+.postal-code-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.postal-code-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #334155;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.2s;
+}
+
+.postal-code-item:hover {
+  background-color: #f0f9ff;
+  color: #1e40af;
+}
+
+.postal-code-item.selected {
+  background-color: #dbeafe;
+  color: #1e40af;
+  font-weight: 500;
+}
+
+.postal-code-item:last-child {
+  border-bottom: none;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #334155;
+  user-select: none;
+}
+
+.checkbox-label input {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+}
+
+.alert-error {
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #7f1d1d;
+}
+
+.alert-success {
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+}
+
+.lead-modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+}
+
+.btn-secondary {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.btn-secondary:hover {
+  background: #cbd5e1;
+}
+
+@media (max-width: 640px) {
+  .lead-modal-content {
+    width: 95%;
+    max-height: 95vh;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .lead-modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .btn {
+    width: 100%;
   }
 }
 

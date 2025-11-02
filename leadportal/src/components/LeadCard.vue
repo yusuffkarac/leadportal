@@ -16,13 +16,17 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  isAdmin: {
+    type: Boolean,
+    default: false
+  },
   zipcodeIndex: {
     type: Map,
     default: () => new Map()
   }
 })
 
-const emit = defineEmits(['click', 'showDescription', 'instantBuy', 'submitBid', 'shareLead'])
+const emit = defineEmits(['click', 'showDescription', 'instantBuy', 'submitBid', 'editLead', 'shareLead'])
 
 const quickBidAmount = ref('')
 const isSubmittingBid = ref(false)
@@ -289,6 +293,11 @@ const minBidAmount = computed(() => {
           <Icon icon="mdi:lightning-bolt" width="20" height="20" />
           Sofort Kaufen
           <span style="font-weight: bolder">{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</span>
+        </button>
+        <!-- Edit button for admin -->
+        <button v-if="isAdmin" class="edit-action-btn" @click.stop="emit('editLead')">
+          <Icon icon="mdi:pencil" width="20" height="20" />
+          Düzenle
         </button>
       </template>
     </div>
@@ -640,6 +649,27 @@ const minBidAmount = computed(() => {
 
 .instant-buy-action-btn:hover {
   background: #f59e0b;
+}
+
+.edit-action-btn {
+  flex: 1;
+  padding: 10px 12px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.edit-action-btn:hover {
+  background: #2563eb;
 }
 
 /* Sofort Kauf Price Section */

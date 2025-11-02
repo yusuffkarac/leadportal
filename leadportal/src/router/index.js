@@ -75,7 +75,7 @@ export const appRoutes = [
     {
       path: '/admin/leads',
       name: 'admin-leads',
-      component: AdminLeadsListView,
+      component: LeadMarketplaceView,
       meta: { requiresAdmin: true },
     },
     {
