@@ -618,19 +618,7 @@ async function ensureZipcodesLoaded() {
 
 function initMap() {
   if (!window.L || !mapRoot.value || leafletMap) return
-
-  // Almanya sınırları (yaklaşık)
-  const germanyBounds = [
-    [47.0, 5.8],   // Güneybatı köşe
-    [55.8, 15.2]   // Kuzeydoğu köşe
-  ]
-
-  leafletMap = window.L.map(mapRoot.value, {
-    maxBounds: germanyBounds,
-    maxBoundsViscosity: 1.0,
-    minZoom: 5  // Minimum zoom seviyesi (dünyaya zoom out engelle)
-  }).setView([51.1657, 10.4515], 6)  // Başlangıç zoom seviyesi artırıldı
-
+  leafletMap = window.L.map(mapRoot.value).setView([51.1657, 10.4515], 3)
   window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '© OpenStreetMap contributors'
@@ -642,11 +630,6 @@ function updateMapMarkers() {
   if (!leafletMap || !markersLayer) return
   markersLayer.clearLayers()
   const bounds = []
-  const germanyBounds = [
-    [47.0, 5.8],   // Güneybatı köşe
-    [55.8, 15.2]   // Kuzeydoğu köşe
-  ]
-
   for (const lead of leads.value) {
     const pc = lead.postalCode || lead.postal || ''
     const info = zipcodeIndex.value.get(String(pc))
@@ -676,13 +659,8 @@ function updateMapMarkers() {
     marker.addTo(markersLayer)
     bounds.push([info.lat, info.lon])
   }
-
-  // Haritayı leads'e göre fit et, ama almanya sınırlarını aşma
   if (bounds.length > 0) {
-    leafletMap.fitBounds(bounds, { padding: [20, 20], maxZoom: 10 })
-  } else {
-    // Lead yoksa almanya bounds'una fit et
-    leafletMap.fitBounds(germanyBounds, { padding: [20, 20], maxZoom: 6 })
+    leafletMap.fitBounds(bounds, { padding: [20, 20] })
   }
 }
 
@@ -974,15 +952,11 @@ onUnmounted(() => {
         <table class="leads-table">
           <thead>
             <tr>
-              <th>Lead</th>
-              <th>Sigorta Tipi</th>
+              <th>Lead ID & Başlık</th>
               <th v-if="leadType === 'SOFORT_KAUF'">Fiyat</th>
-              <th v-else>Başlangıç Fiyatı</th>
-              <th v-if="leadType !== 'SOFORT_KAUF'">Güncel Teklif</th>
-              <th v-if="leadType !== 'SOFORT_KAUF'">Anında Al</th>
-              <th v-if="leadType !== 'SOFORT_KAUF'">Teklif Sayısı</th>
-              <th>Kalan Süre</th>
+              <th v-else>Fiyat & Teklif</th>
               <th v-if="leadType !== 'SOFORT_KAUF'">Hızlı Teklif</th>
+              <th>Kalan Süre</th>
               <th>İşlemler</th>
             </tr>
           </thead>
@@ -990,48 +964,30 @@ onUnmounted(() => {
             <tr v-for="lead in displayedLeads" :key="lead.id" class="table-row" :class="{ 'expired-row': lead.isExpired, 'critical-time': isTimeRemaining(lead.endsAt, 60) }">
               <td class="lead-cell">
                 <div class="lead-info">
+                  <Icon v-if="lead.insuranceType" :icon="getInsuranceTypeIcon(lead.insuranceType)" class="table-icon" width="16" height="16" />
                   <div>
-                    <div class="lead-title-text">{{ lead.title }}</div>
-                    <div class="lead-description-text">{{ lead.description?.substring(0, 60) }}...</div>
+                    <div class="lead-id-badge">{{ lead.id }}</div>
+                    <div class="lead-title-text">
+                      <span v-if="lead.insuranceType" class="insurance-type-inline" :style="{ backgroundColor: getInsuranceTypeColor(lead.insuranceType) }">{{ lead.insuranceType }}</span>
+                      {{ lead.title }}
+                    </div>
+                   <!-- <div class="lead-description-text">{{ lead.description?.substring(0, 60) }}...</div>-->
                   </div>
                 </div>
               </td>
               <td>
-                <span class="insurance-badge">{{ lead.insuranceType || '-' }}</span>
-              </td>
-              <td v-if="leadType === 'SOFORT_KAUF'">
-                <div class="price-cell">
+                <div v-if="lead.leadType === 'SOFORT_KAUF'" class="price-only-cell">
                   <span class="current-price">{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
                 </div>
-              </td>
-              <td v-else>
-                <div class="price-cell">
-                  <span class="start-price">{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
+                <div v-else class="price-and-bid-cell">
+                  <div class="price-top">
+                    <span v-if="lead.bids && lead.bids.length">{{ formatPrice(lead.bids[0].amount, settings.defaultCurrency) }}</span>
+                    <span v-else>{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
+                  </div>
+                  <div class="bid-count-bottom">{{ lead.bids ? lead.bids.length : 0 }} teklif</div>
                 </div>
               </td>
-              <td v-if="leadType !== 'SOFORT_KAUF'">
-                <div class="price-cell">
-                  <span class="current-price">
-                    {{ formatPrice(lead.bids?.[0]?.amount || lead.startPrice, settings.defaultCurrency) }}
-                  </span>
-                </div>
-              </td>
-              <td v-if="leadType !== 'SOFORT_KAUF'">
-                <span v-if="lead.instantBuyPrice" class="instant-price-badge">
-                  {{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}
-                </span>
-                <span v-else class="text-muted">-</span>
-              </td>
-              <td v-if="leadType !== 'SOFORT_KAUF'">
-                <span class="bid-count">{{ lead.bids?.length || 0 }}</span>
-              </td>
-              <td>
-                <div class="countdown-timer" :class="{ 'blinking': isTimeRemaining(lead.endsAt, 60) }">
-                  <Icon icon="mdi:clock" width="16" height="16" />
-                  <span class="time-text">{{ formatTimeRemaining(lead.endsAt) }}</span>
-                </div>
-              </td>
-              <td v-if="leadType !== 'SOFORT_KAUF'">
+              <td v-if="lead.leadType !== 'SOFORT_KAUF'">
                 <div v-if="!lead.isExpired && lead.isActive" class="quick-bid-cell" @click.stop>
                   <div class="quick-bid-inline">
                     <input
@@ -1047,16 +1003,24 @@ onUnmounted(() => {
                       @click="submitQuickBid(lead, quickBidAmounts[lead.id])"
                       :disabled="!quickBidAmounts[lead.id] || quickBidAmounts[lead.id] <= 0"
                     >
-                      <Icon icon="mdi:gavel" width="14" height="14" />
+                     
                       Teklif
+                       <Icon icon="mdi:gavel" width="14" height="14" />
                     </button>
+                    
                   </div>
                 </div>
                 <span v-else class="text-muted">-</span>
               </td>
+              <td class="time-cell">
+                <div class="countdown-timer" :class="{ 'blinking': isTimeRemaining(lead.endsAt, 60) }">
+                  <Icon icon="mdi:clock" width="16" height="16" />
+                  <span class="time-text">{{ formatTimeRemaining(lead.endsAt) }}</span>
+                </div>
+              </td>
               <td>
                 <div class="table-actions">
-                  <button v-if="lead.leadType === 'SOFORT_KAUF'" class="table-btn primary" @click="openInstantBuyModal(lead, $event)" :disabled="lead.isExpired || !lead.isActive">
+                  <button v-if="lead.leadType === 'SOFORT_KAUF'" class="table-btn success" @click="openInstantBuyModal(lead, $event)" :disabled="lead.isExpired || !lead.isActive">
                     <Icon icon="mdi:shopping-cart" width="14" height="14" />
                     Satın Al
                   </button>
@@ -2312,12 +2276,6 @@ onUnmounted(() => {
   text-align: left;
 }
 
-.start-price {
-  font-weight: 600;
-  color: #6b7280;
-  font-size: 0.875rem;
-}
-
 .current-price {
   font-weight: 700;
   color: #059669;
@@ -2336,139 +2294,6 @@ onUnmounted(() => {
 
 .text-muted {
   color: #9ca3af;
-}
-
-.bid-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 28px;
-  height: 28px;
-  padding: 0 8px;
-  background: #f3f4f6;
-  border-radius: 6px;
-  font-weight: 600;
-  color: #374151;
-}
-
-.table-actions {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-
-.table-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.table-btn.primary {
-  background: #1f2937;
-  color: white;
-}
-
-.table-btn.primary:hover {
-  background: #111827;
-}
-
-.table-btn.success {
-  background: #10b981;
-  color: white;
-}
-
-.table-btn.success:hover {
-  background: #059669;
-}
-
-.table-btn.secondary {
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
-}
-
-.table-btn.secondary:hover {
-  background: #e5e7eb;
-}
-
-.countdown-timer {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-}
-
-.countdown-timer.blinking {
-  color: #dc2626;
-  animation: blinking 1s infinite;
-}
-
-@keyframes blinking {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0.5; }
-}
-
-/* Tablo Responsive */
-@media (max-width: 1200px) {
-  .leads-table {
-    font-size: 0.8125rem;
-  }
-
-  .leads-table th,
-  .leads-table td {
-    padding: 10px 12px;
-  }
-
-  .lead-cell {
-    min-width: 200px;
-    max-width: 280px;
-  }
-}
-
-@media (max-width: 768px) {
-  .table-view {
-    border-radius: 8px;
-  }
-
-  .leads-table {
-    font-size: 0.75rem;
-  }
-
-  .leads-table th,
-  .leads-table td {
-    padding: 8px 10px;
-  }
-
-  .lead-description-text {
-    display: none;
-  }
-
-  .insurance-badge,
-  .instant-price-badge {
-    font-size: 0.6875rem;
-    padding: 3px 8px;
-  }
-
-  .table-actions {
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .table-btn {
-    padding: 4px 8px;
-    font-size: 0.6875rem;
-  }
 }
 
 .time-remaining {
