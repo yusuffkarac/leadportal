@@ -2203,6 +2203,10 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+:deep(.leaflet-popup-content-wrapper) {
+  padding: 1.5rem;
+}
+
 /* Section Containers */
 .premium-section {
 
