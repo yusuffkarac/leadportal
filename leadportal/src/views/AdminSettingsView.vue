@@ -277,92 +277,249 @@
         <!-- Uygulama Ayarları Tab -->
         <div v-if="activeTab === 'application'" class="tab-panel">
           <div class="settings-sections">
-            <!-- SMTP Ayarları -->
-            <div class="settings-section">
-              <div class="section-header-main">
-                <h2>SMTP Ayarları</h2>
-                <p>Uygulamanın e-posta gönderebilmesi için sunucu bilgileri</p>
+            <!-- Genel Ayarlar + SMTP Ayarları (Yan Yana) -->
+            <div class="settings-grid-row">
+              <!-- Genel Ayarlar -->
+              <div class="settings-section">
+                <div class="section-header-main">
+                  <h2>Genel Ayarlar</h2>
+                  <p>Diğer sistem ayarları</p>
+                </div>
+
+                <div class="settings-content">
+                  <div class="setting-group">
+                    <label class="setting-label">Varsayılan Para Birimi</label>
+                    <select v-model="settings.defaultCurrency" class="form-select" @change="updateSettings">
+                      <option value="EUR">Euro (€)</option>
+                      <option value="TRY">Türk Lirası (₺)</option>
+                      <option value="USD">Amerikan Doları ($)</option>
+                    </select>
+                  </div>
+
+                  <div class="setting-group">
+                    <label class="setting-label">Varsayılan Açık Artırma Süresi (Gün)</label>
+                    <input
+                      v-model.number="settings.defaultAuctionDays"
+                      type="number"
+                      class="form-input"
+                      min="1"
+                      max="30"
+                      @input="updateSettings"
+                    >
+                  </div>
+
+                  <div class="setting-group">
+                    <label class="setting-label">Varsayılan Minimum Artış</label>
+                    <input
+                      v-model.number="settings.defaultMinIncrement"
+                      type="number"
+                      class="form-input"
+                      min="1"
+                      step="0.01"
+                      @input="updateSettings"
+                    >
+                  </div>
+
+                  <!-- Oturum Zaman Aşımı (Genel Ayarlar içine taşındı) -->
+                  <div class="setting-group">
+                    <label class="setting-label">Oturum Zaman Aşımı Süresi (dakika)</label>
+                    <input
+                      v-model.number="settings.sessionTimeoutMinutes"
+                      type="number"
+                      min="1"
+                      max="10080"
+                      placeholder="120"
+                      class="form-input"
+                    />
+                    <small class="form-help">1-10080 dakika arası değer girin (1 dakika - 7 gün)</small>
+                  </div>
+                  <div class="setting-group">
+                    <label class="setting-label">Logout Mesajı</label>
+                    <textarea
+                      v-model="settings.sessionTimeoutMessage"
+                      placeholder="Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız."
+                      rows="4"
+                      class="form-textarea"
+                    ></textarea>
+                    <small class="form-help">Kullanıcı logout olduktan sonra login sayfasında gösterilecek mesaj</small>
+                  </div>
+
+                  <div class="setting-group">
+                    <label class="setting-label">Teklif Verme Saatleri Kısıtlaması</label>
+                    <div class="toggle-container">
+                      <label class="toggle-switch">
+                        <input
+                          type="checkbox"
+                          v-model="settings.enableBiddingHours"
+                          @change="updateSettings"
+                        >
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <span class="toggle-label">
+                        {{ settings.enableBiddingHours ? 'Açık' : 'Kapalı' }}
+                      </span>
+                    </div>
+                    <small class="form-help">
+                      Teklif verme saatlerini kısıtlamak için bu seçeneği aktif edin
+                    </small>
+                  </div>
+
+                  <div v-if="settings.enableBiddingHours" class="setting-group">
+                    <label class="setting-label">Teklif Verme Başlangıç Saati</label>
+                    <input
+                      v-model="settings.biddingStartHour"
+                      type="time"
+                      class="form-input"
+                      @input="updateSettings"
+                    >
+                    <small class="form-help">
+                      Kullanıcılar bu saatten itibaren teklif verebilir
+                    </small>
+                  </div>
+
+                  <div v-if="settings.enableBiddingHours" class="setting-group">
+                    <label class="setting-label">Teklif Verme Bitiş Saati</label>
+                    <input
+                      v-model="settings.biddingEndHour"
+                      type="time"
+                      class="form-input"
+                      @input="updateSettings"
+                    >
+                    <small class="form-help">
+                      Kullanıcılar bu saate kadar teklif verebilir
+                    </small>
+                  </div>
+
+                  <div class="setting-group">
+                    <label class="setting-label">Bakım Modu</label>
+                    <div class="toggle-container">
+                      <label class="toggle-switch">
+                        <input
+                          type="checkbox"
+                          v-model="settings.maintenanceMode"
+                          @change="updateSettings"
+                        >
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <span class="toggle-label">
+                        {{ settings.maintenanceMode ? 'Açık' : 'Kapalı' }}
+                      </span>
+                    </div>
+                    <small class="form-help">
+                      Bakım modu açıkken sadece admin kullanıcıları sisteme erişebilir
+                    </small>
+                  </div>
+
+                  <div v-if="settings.maintenanceMode" class="setting-group">
+                    <label class="setting-label">Bakım Mesajı</label>
+                    <textarea
+                      v-model="settings.maintenanceMessage"
+                      class="form-textarea"
+                      rows="3"
+                      placeholder="Kullanıcılara gösterilecek bakım mesajı"
+                      @input="updateSettings"
+                    ></textarea>
+                    <small class="form-help">
+                      Bu mesaj bakım modu sırasında kullanıcılara gösterilir
+                    </small>
+                  </div>
+
+                  <div class="setting-group">
+                    <label class="setting-label">Kayıt Onayı Gerekli</label>
+                    <div class="toggle-container">
+                      <label class="toggle-switch">
+                        <input
+                          type="checkbox"
+                          v-model="settings.requireRegistrationApproval"
+                          @change="updateSettings"
+                        >
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <span class="toggle-label">
+                        {{ settings.requireRegistrationApproval ? 'Açık' : 'Kapalı' }}
+                      </span>
+                    </div>
+                    <small class="form-help">
+                      Açık olursa yeni kullanıcı kayıtları admin onayı bekleyecektir. Kapalı olursa kullanıcılar doğrudan giriş yapabilecektir.
+                    </small>
+                  </div>
+
+                  <div v-if="settings.requireRegistrationApproval" class="setting-group">
+                    <label class="setting-label">Kayıt Onay Bildirim E-posta Adresi</label>
+                    <input
+                      v-model="settings.registrationApprovalEmail"
+                      type="email"
+                      class="form-input"
+                      placeholder="admin@example.com"
+                      @input="updateSettings"
+                    >
+                    <small class="form-help">
+                      Yeni kayıt talepleri bu e-posta adresine bildirilecektir (opsiyonel)
+                    </small>
+                  </div>
+                  
+                  <div class="save-section" style="justify-content:flex-end;">
+                    <button class="btn btn-primary" @click="saveGeneralSettings" :disabled="savingGeneral">
+                      <span v-if="savingGeneral" class="spinner-sm"></span>
+                      <span v-else>Genel Ayarları Kaydet</span>
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div class="settings-content">
-                <div class="setting-group">
-                  <label class="setting-label">SMTP Sunucu</label>
-                  <input v-model="settings.smtpHost" type="text" placeholder="smtp.example.com" />
+
+              <!-- SMTP Ayarları -->
+              <div class="settings-section">
+                <div class="section-header-main">
+                  <h2>SMTP Ayarları</h2>
+                  <p>Uygulamanın e-posta gönderebilmesi için sunucu bilgileri</p>
                 </div>
-                <div class="setting-group">
-                  <label class="setting-label">Port</label>
-                  <input v-model.number="settings.smtpPort" type="number" min="1" />
-                </div>
-                <div class="setting-group">
-                  <label class="setting-label">Kullanıcı Adı</label>
-                  <input v-model="settings.smtpUser" type="text" placeholder="user@example.com" />
-                </div>
-                <div class="setting-group">
-                  <label class="setting-label">Parola</label>
-                  <input v-model="settings.smtpPass" type="password" />
-                </div>
-                <div class="setting-group">
-                  <label class="setting-label">Gönderen Adı</label>
-                  <input v-model="settings.smtpFromName" type="text" placeholder="LeadPortal" />
-                </div>
-                <div class="setting-group">
-                  <div class="toggle-container">
-                    <label class="setting-label">TLS kullan</label>
-                    <input type="checkbox" v-model="settings.smtpUseTLS" />
+                <div class="settings-content">
+                  <div class="setting-group">
+                    <label class="setting-label">SMTP Sunucu</label>
+                    <input v-model="settings.smtpHost" type="text" placeholder="smtp.example.com" />
                   </div>
-                </div>
-                <div class="setting-group">
-                  <div class="toggle-container">
-                    <label class="setting-label">SSL kullan</label>
-                    <input type="checkbox" v-model="settings.smtpUseSSL" />
+                  <div class="setting-group">
+                    <label class="setting-label">Port</label>
+                    <input v-model.number="settings.smtpPort" type="number" min="1" />
                   </div>
-                </div>
-                <div>
-                  <button class="btn btn-primary" @click="saveGeneralSettings" :disabled="savingGeneral">
-                    <span v-if="savingGeneral" class="spinner-sm"></span>
-                    <span v-else>SMTP Kaydet</span>
-                  </button>
+                  <div class="setting-group">
+                    <label class="setting-label">Kullanıcı Adı</label>
+                    <input v-model="settings.smtpUser" type="text" placeholder="user@example.com" />
+                  </div>
+                  <div class="setting-group">
+                    <label class="setting-label">Parola</label>
+                    <input v-model="settings.smtpPass" type="password" />
+                  </div>
+                  <div class="setting-group">
+                    <label class="setting-label">Gönderen Adı</label>
+                    <input v-model="settings.smtpFromName" type="text" placeholder="LeadPortal" />
+                  </div>
+                  <div class="setting-group">
+                    <div class="toggle-container">
+                      <label class="setting-label">TLS kullan</label>
+                      <input type="checkbox" v-model="settings.smtpUseTLS" />
+                    </div>
+                  </div>
+                  <div class="setting-group">
+                    <div class="toggle-container">
+                      <label class="setting-label">SSL kullan</label>
+                      <input type="checkbox" v-model="settings.smtpUseSSL" />
+                    </div>
+                  </div>
+                  <div>
+                    <button class="btn btn-primary" @click="saveGeneralSettings" :disabled="savingGeneral">
+                      <span v-if="savingGeneral" class="spinner-sm"></span>
+                      <span v-else>SMTP Kaydet</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <!-- Session Timeout Settings -->
-            <div class="settings-section">
-              <div class="section-header-main">
-                <h2>Oturum Zaman Aşımı</h2>
-                <p>Hareketsizlik nedeniyle otomatik logout için zaman ve mesaj ayarları</p>
-              </div>
-              <div class="settings-content">
-                <div class="setting-group">
-                  <label class="setting-label">Zaman Aşımı Süresi (dakika)</label>
-                  <input
-                    v-model.number="settings.sessionTimeoutMinutes"
-                    type="number"
-                    min="1"
-                    max="10080"
-                    placeholder="120"
-                  />
-                  <small class="help">1-10080 dakika arası değer girin (1 dakika - 7 gün)</small>
-                </div>
-                <div class="setting-group">
-                  <label class="setting-label">Logout Mesajı</label>
-                  <textarea
-                    v-model="settings.sessionTimeoutMessage"
-                    placeholder="Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız."
-                    rows="4"
-                  ></textarea>
-                  <small class="help">Kullanıcı logout olduktan sonra login sayfasında gösterilecek mesaj</small>
-                </div>
-                <div>
-                  <button class="btn btn-primary" @click="saveGeneralSettings" :disabled="savingGeneral">
-                    <span v-if="savingGeneral" class="spinner-sm"></span>
-                    <span v-else>Kaydet</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Lead ID Format -->
-            <div class="settings-section">
+            <!-- Lead ID Format + Sigorta Türleri (Yan Yana) -->
+            <div class="settings-grid-row">
+              <!-- Lead ID Format -->
+              <div class="settings-section">
               <div class="section-header-main">
                 <h2>Lead ID Formatı</h2>
                 <p>Lead'lerin nasıl numaralandırılacağını belirleyin</p>
@@ -534,169 +691,6 @@
                 </div>
               </div>
             </div>
-
-            <!-- Genel Ayarlar -->
-            <div class="settings-section">
-              <div class="section-header-main">
-                <h2>Genel Ayarlar</h2>
-                <p>Diğer sistem ayarları</p>
-              </div>
-
-              <div class="settings-content">
-                <div class="setting-group">
-                  <label class="setting-label">Varsayılan Para Birimi</label>
-                  <select v-model="settings.defaultCurrency" class="form-select" @change="updateSettings">
-                    <option value="EUR">Euro (€)</option>
-                    <option value="TRY">Türk Lirası (₺)</option>
-                    <option value="USD">Amerikan Doları ($)</option>
-                  </select>
-                </div>
-
-                <div class="setting-group">
-                  <label class="setting-label">Varsayılan Açık Artırma Süresi (Gün)</label>
-                  <input
-                    v-model.number="settings.defaultAuctionDays"
-                    type="number"
-                    class="form-input"
-                    min="1"
-                    max="30"
-                    @input="updateSettings"
-                  >
-                </div>
-
-                <div class="setting-group">
-                  <label class="setting-label">Varsayılan Minimum Artış</label>
-                  <input
-                    v-model.number="settings.defaultMinIncrement"
-                    type="number"
-                    class="form-input"
-                    min="1"
-                    step="0.01"
-                    @input="updateSettings"
-                  >
-                </div>
-
-                <div class="setting-group">
-                  <label class="setting-label">Teklif Verme Saatleri Kısıtlaması</label>
-                  <div class="toggle-container">
-                    <label class="toggle-switch">
-                      <input
-                        type="checkbox"
-                        v-model="settings.enableBiddingHours"
-                        @change="updateSettings"
-                      >
-                      <span class="toggle-slider"></span>
-                    </label>
-                    <span class="toggle-label">
-                      {{ settings.enableBiddingHours ? 'Açık' : 'Kapalı' }}
-                    </span>
-                  </div>
-                  <small class="form-help">
-                    Teklif verme saatlerini kısıtlamak için bu seçeneği aktif edin
-                  </small>
-                </div>
-
-                <div v-if="settings.enableBiddingHours" class="setting-group">
-                  <label class="setting-label">Teklif Verme Başlangıç Saati</label>
-                  <input
-                    v-model="settings.biddingStartHour"
-                    type="time"
-                    class="form-input"
-                    @input="updateSettings"
-                  >
-                  <small class="form-help">
-                    Kullanıcılar bu saatten itibaren teklif verebilir
-                  </small>
-                </div>
-
-                <div v-if="settings.enableBiddingHours" class="setting-group">
-                  <label class="setting-label">Teklif Verme Bitiş Saati</label>
-                  <input
-                    v-model="settings.biddingEndHour"
-                    type="time"
-                    class="form-input"
-                    @input="updateSettings"
-                  >
-                  <small class="form-help">
-                    Kullanıcılar bu saate kadar teklif verebilir
-                  </small>
-                </div>
-
-                <div class="setting-group">
-                  <label class="setting-label">Bakım Modu</label>
-                  <div class="toggle-container">
-                    <label class="toggle-switch">
-                      <input
-                        type="checkbox"
-                        v-model="settings.maintenanceMode"
-                        @change="updateSettings"
-                      >
-                      <span class="toggle-slider"></span>
-                    </label>
-                    <span class="toggle-label">
-                      {{ settings.maintenanceMode ? 'Açık' : 'Kapalı' }}
-                    </span>
-                  </div>
-                  <small class="form-help">
-                    Bakım modu açıkken sadece admin kullanıcıları sisteme erişebilir
-                  </small>
-                </div>
-
-                <div v-if="settings.maintenanceMode" class="setting-group">
-                  <label class="setting-label">Bakım Mesajı</label>
-                  <textarea
-                    v-model="settings.maintenanceMessage"
-                    class="form-textarea"
-                    rows="3"
-                    placeholder="Kullanıcılara gösterilecek bakım mesajı"
-                    @input="updateSettings"
-                  ></textarea>
-                  <small class="form-help">
-                    Bu mesaj bakım modu sırasında kullanıcılara gösterilir
-                  </small>
-                </div>
-
-                <div class="setting-group">
-                  <label class="setting-label">Kayıt Onayı Gerekli</label>
-                  <div class="toggle-container">
-                    <label class="toggle-switch">
-                      <input
-                        type="checkbox"
-                        v-model="settings.requireRegistrationApproval"
-                        @change="updateSettings"
-                      >
-                      <span class="toggle-slider"></span>
-                    </label>
-                    <span class="toggle-label">
-                      {{ settings.requireRegistrationApproval ? 'Açık' : 'Kapalı' }}
-                    </span>
-                  </div>
-                  <small class="form-help">
-                    Açık olursa yeni kullanıcı kayıtları admin onayı bekleyecektir. Kapalı olursa kullanıcılar doğrudan giriş yapabilecektir.
-                  </small>
-                </div>
-
-                <div v-if="settings.requireRegistrationApproval" class="setting-group">
-                  <label class="setting-label">Kayıt Onay Bildirim E-posta Adresi</label>
-                  <input
-                    v-model="settings.registrationApprovalEmail"
-                    type="email"
-                    class="form-input"
-                    placeholder="admin@example.com"
-                    @input="updateSettings"
-                  >
-                  <small class="form-help">
-                    Yeni kayıt talepleri bu e-posta adresine bildirilecektir (opsiyonel)
-                  </small>
-                </div>
-                
-                <div class="save-section" style="justify-content:flex-end;">
-                  <button class="btn btn-primary" @click="saveGeneralSettings" :disabled="savingGeneral">
-                    <span v-if="savingGeneral" class="spinner-sm"></span>
-                    <span v-else>Genel Ayarları Kaydet</span>
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -1295,7 +1289,7 @@ onMounted(() => {
 <style scoped>
 /* Page */
 .admin-settings-page { min-height: 100vh; background: #f8fafc; padding: 2rem; overflow-x: hidden; }
-.page-content { max-width: 80%; margin: 0 auto; }
+.page-content { max-width: 95%; margin: 0 auto; }
 .page-header { margin-bottom: 32px; text-align: center; }
 .page-header h1 { font-size: 2.5rem; font-weight: 700; color: #1f2937; margin: 0 0 8px; }
 .page-subtitle { font-size: 1rem; color: #6b7280; margin: 0; }
@@ -1342,10 +1336,8 @@ onMounted(() => {
 
 /* Tab Content */
 .tab-content {
-  padding: 2rem;
-  background: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+
+
   animation: fadeIn 0.3s ease;
 }
 
@@ -1422,11 +1414,17 @@ onMounted(() => {
 
 /* Settings Sections */
 .settings-sections { display: flex; flex-direction: column; gap: 32px; }
-.settings-section { background: white; border-radius: 12px; padding: 32px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); border: 1px solid #f1f5f9; }
+.settings-grid-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+.settings-section { background: white; border-radius: 12px; padding: 32px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); border: 1px solid #f1f5f9; height: 100%; display: flex; flex-direction: column; }
 .section-header-main { margin-bottom: 24px; }
 .section-header-main h2 { font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 8px; }
 .section-header-main p { color: #64748b; font-size: 0.875rem; }
-.settings-content { display: flex; flex-direction: column; gap: 24px; }
+.settings-content { display: flex; flex-direction: column; gap: 24px; flex: 1; }
 
 /* Generic form controls */
 .settings-section input[type="text"],
@@ -1586,15 +1584,17 @@ input:checked + .toggle-slider:before { transform: translateX(26px); }
 /* Responsive */
 @media (max-width: 1024px) {
   .grid { grid-template-columns: 1fr; }
+  .settings-grid-row { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
-  .admin-settings-page { padding: 16px; }
+  .admin-settings-page { padding: 0px; }
   .page-header h1 { font-size: 2rem; }
   .tabs-nav { flex-wrap: wrap; }
   .tab-button { padding: 0.875rem 1rem; font-size: 0.875rem; }
-  .tab-content { padding: 1.5rem; }
+
   .settings-section { padding: 20px; }
+  .settings-grid-row { grid-template-columns: 1fr; }
   .link-item { grid-template-columns: 1fr; }
   .insurance-type-item-with-icon { grid-template-columns: 40px 1fr 36px; }
   .icon-picker { width: 100%; grid-column: 1 / -1; }

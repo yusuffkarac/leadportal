@@ -580,23 +580,40 @@ export default function leadsRouter(prisma, io) {
   router.delete('/:id', async (req, res) => {
     if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') return res.status(403).json({ error: 'Forbidden' })
 
-    const lead = await prisma.lead.findUnique({ where: { id: req.params.id } })
-    await prisma.lead.delete({ where: { id: req.params.id } })
+    try {
+      const lead = await prisma.lead.findUnique({ where: { id: req.params.id } })
 
-    // Log activity
-    const { ipAddress, userAgent } = extractRequestInfo(req)
-    await logActivity({
-      userId: req.user.id,
-      action: ActivityTypes.DELETE_LEAD,
-      details: { leadTitle: lead?.title },
-      entityType: 'lead',
-      entityId: req.params.id,
-      ipAddress,
-      userAgent
-    })
+      if (!lead) {
+        return res.status(404).json({ error: 'Lead not found' })
+      }
 
-    io.to(`lead:${req.params.id}`).emit('lead:deleted', { leadId: req.params.id })
-    res.json({ ok: true })
+      // Delete related LeadSale first (since it has foreign key to Lead)
+      await prisma.leadSale.deleteMany({ where: { leadId: req.params.id } })
+
+      // Delete the lead (Bid cascades automatically)
+      await prisma.lead.delete({ where: { id: req.params.id } })
+
+      // Log activity with deletion reason
+      const { ipAddress, userAgent } = extractRequestInfo(req)
+      await logActivity({
+        userId: req.user.id,
+        action: ActivityTypes.DELETE_LEAD,
+        details: {
+          leadTitle: lead?.title,
+          deletionReason: req.body?.deletionReason || 'No reason provided'
+        },
+        entityType: 'lead',
+        entityId: req.params.id,
+        ipAddress,
+        userAgent
+      })
+
+      io.to(`lead:${req.params.id}`).emit('lead:deleted', { leadId: req.params.id })
+      res.json({ ok: true })
+    } catch (error) {
+      console.error('Delete lead error:', error)
+      res.status(500).json({ error: error.message || 'Failed to delete lead' })
+    }
   })
 
   // Anında satın alma

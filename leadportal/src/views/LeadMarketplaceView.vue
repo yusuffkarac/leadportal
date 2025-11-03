@@ -72,6 +72,19 @@ const leadForm = ref({
 const errorMessage = ref('')
 const successMessage = ref('')
 
+// Delete confirmation modal
+const showDeleteConfirm = ref(false)
+const leadToDelete = ref(null)
+const isDeleting = ref(false)
+const deletionReason = ref('')
+const deletionReasonError = ref('')
+
+// Preview modal
+const showPreview = ref(false)
+const previewLead = ref(null)
+const previewLoadingBids = ref(false)
+const previewError = ref('')
+
 // Postal code autocomplete
 const showPostalCodeDropdown = ref(false)
 const postalCodeSearch = ref('')
@@ -986,6 +999,114 @@ async function saveLead() {
   }
 }
 
+function confirmDelete(lead) {
+  leadToDelete.value = lead
+  deletionReason.value = ''
+  deletionReasonError.value = ''
+  showDeleteConfirm.value = true
+}
+
+async function deleteLead() {
+  try {
+    deletionReasonError.value = ''
+
+    // Validation
+    if (!deletionReason.value.trim()) {
+      deletionReasonError.value = 'Silme sebebi gerekli'
+      return
+    }
+
+    if (deletionReason.value.trim().length < 10) {
+      deletionReasonError.value = 'Silme sebebi en az 10 karakter olmalıdır'
+      return
+    }
+
+    isDeleting.value = true
+    errorMessage.value = ''
+
+    await api.delete(`/leads/${leadToDelete.value.id}`, {
+      headers: authHeaders(),
+      data: {
+        deletionReason: deletionReason.value.trim()
+      }
+    })
+
+    successMessage.value = 'Lead başarıyla silindi!'
+    showDeleteConfirm.value = false
+    leadToDelete.value = null
+    deletionReason.value = ''
+
+    await fetchLeads()
+
+    setTimeout(() => {
+      closeLeadModal()
+    }, 1500)
+
+  } catch (error) {
+    let backendMessage = ''
+
+    if (error.response?.data) {
+      if (error.response.data.message) {
+        backendMessage = error.response.data.message
+      } else if (error.response.data.error) {
+        backendMessage = error.response.data.error
+      }
+    }
+
+    errorMessage.value = backendMessage ? `Lead silinemedi: ${backendMessage}` : 'Lead silinemedi'
+  } finally {
+    isDeleting.value = false
+  }
+}
+
+async function openPreview(lead) {
+  try {
+    previewError.value = ''
+    previewLoadingBids.value = true
+    showPreview.value = true
+
+    // Fetch lead details with bids
+    const { data } = await api.get(`/leads/${lead.id}`, { headers: authHeaders() })
+    previewLead.value = data
+  } catch (error) {
+    previewError.value = error.response?.data?.error || 'Lead bilgileri yüklenemedi'
+    console.error('Preview error:', error)
+  } finally {
+    previewLoadingBids.value = false
+  }
+}
+
+function closePreview() {
+  showPreview.value = false
+  previewLead.value = null
+  previewError.value = ''
+}
+
+async function toggleLeadActive() {
+  if (!previewLead.value) return
+
+  try {
+    previewError.value = ''
+    const newStatus = !previewLead.value.isActive
+
+    await api.put(
+      `/leads/${previewLead.value.id}`,
+      { isActive: newStatus },
+      { headers: authHeaders() }
+    )
+
+    // Update preview lead
+    previewLead.value.isActive = newStatus
+    successMessage.value = `Lead ${newStatus ? 'aktif' : 'pasif'} yapıldı!`
+
+    // Reload leads list
+    await fetchLeads()
+  } catch (error) {
+    previewError.value = error.response?.data?.error || 'Durum güncellenemedi'
+    console.error('Toggle error:', error)
+  }
+}
+
 function closeInstantBuyModal() {
   showInstantBuyModal.value = false
   selectedLead.value = null
@@ -1344,7 +1465,7 @@ onUnmounted(() => {
 
     <!-- Aktif Açık Artırmalar / Sofort Kauf -->
     <div class="auctions-section">
-      <div class="page-header">
+      <div class="page-header" style="align-items: flex-start!important">
         <div class="page-header-content">
          <!--   <Icon :icon="pageIcon" width="32" class="page-icon" /> -->
          
@@ -1538,7 +1659,12 @@ onUnmounted(() => {
                     Detay
                   </button>
                   <!-- Lightning-bolt instant buy (admin değilse) -->
-                  <button v-if="lead.leadType !== 'SOFORT_KAUF' && lead.instantBuyPrice && !lead.isExpired && !isAdmin" class="table-btn success" @click="openInstantBuyModal(lead, $event)">
+                 
+                  <!-- View (Gözat) -->
+                  <button class="table-btn secondary" @click="openPreview(lead)" title="Detayları görüntüle">
+                    <Icon icon="mdi:eye" width="14" height="14" />
+                  </button>
+                   <button v-if="lead.leadType !== 'SOFORT_KAUF' && lead.instantBuyPrice && !lead.isExpired && !isAdmin" class="table-btn success" @click="openInstantBuyModal(lead, $event)">
                     <Icon icon="mdi:lightning-bolt" width="14" height="14" />
                   </button>
                   <!-- Edit (admin ise) -->
@@ -1798,21 +1924,169 @@ onUnmounted(() => {
             <textarea v-model="leadForm.privateDetails" class="form-input" rows="3" placeholder="Satın alan kullanıcı için özel detaylar"></textarea>
           </div>
 
-          <div class="form-checkboxes">
-            <label class="checkbox-label">
-              <input v-model="leadForm.isShowcase" type="checkbox" />
+          <div class="form-switches">
+            <div class="switch-row">
               <span>Vitrin (Premium)</span>
-            </label>
-            <label class="checkbox-label">
-              <input v-model="leadForm.isPremium" type="checkbox" />
+              <label class="toggle-switch">
+                <input v-model="leadForm.isShowcase" type="checkbox" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="switch-row">
               <span>Premium Lead</span>
-            </label>
+              <label class="toggle-switch">
+                <input v-model="leadForm.isPremium" type="checkbox" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
           </div>
         </div>
 
         <div class="lead-modal-footer">
-          <button class="btn btn-secondary" @click="showLeadModal = false">İptal</button>
-          <button class="btn btn-primary" @click="saveLead">Kaydet</button>
+          <div style="display: flex; gap: 12px; width: 100%;">
+            <button v-if="modalMode === 'edit'" class="btn btn-danger" @click="confirmDelete(editingLead)" >
+              <Icon icon="mdi:delete" width="16" height="16" style="margin-right: 6px; vertical-align: middle;" />
+              Sil
+            </button>
+            <div style="display: flex; gap: 12px; flex: 1; justify-content: flex-end;">
+              <button class="btn btn-secondary" @click="showLeadModal = false">İptal</button>
+              <button class="btn btn-primary" @click="saveLead">Kaydet</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteConfirm && leadToDelete" class="lead-modal-overlay" @click.self="showDeleteConfirm = false">
+      <div class="lead-modal-content" style="max-width: 400px;">
+        <div class="lead-modal-header">
+          <h2>Lead'i Sil</h2>
+          <button class="close-btn" @click="showDeleteConfirm = false">
+            <Icon icon="mdi:close" width="24" height="24" />
+          </button>
+        </div>
+        <div class="lead-modal-body">
+          <p style="margin-bottom: 16px;">
+            <strong>{{ leadToDelete.title }}</strong> adlı lead'i silmek istediğinizden emin misiniz?
+          </p>
+          <p style="color: #666; font-size: 0.875rem; margin-bottom: 20px;">
+            Bu işlem geri alınamaz ve tüm veriler silinecektir.
+          </p>
+
+          <div class="form-group">
+            <label style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span>Silme Sebebi *</span>
+              <span style="font-size: 0.75rem; color: #666;">{{ deletionReason.length }}/10</span>
+            </label>
+            <textarea
+              v-model="deletionReason"
+              class="form-input"
+              rows="3"
+              placeholder="Lead'i neden silmek istiyorsunuz? (en az 10 karakter)"
+              style="resize: vertical; font-family: inherit;"
+            ></textarea>
+            <div v-if="deletionReasonError" style="color: #ef4444; font-size: 0.875rem; margin-top: 6px;">
+              {{ deletionReasonError }}
+            </div>
+          </div>
+        </div>
+        <div class="lead-modal-footer">
+          <button class="btn btn-secondary" @click="showDeleteConfirm = false" :disabled="isDeleting">İptal</button>
+          <button class="btn btn-danger" @click="deleteLead" :disabled="isDeleting">
+            {{ isDeleting ? 'Siliniyor...' : 'Evet, Sil' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lead Preview Modal -->
+    <div v-if="showPreview && previewLead" class="lead-modal-overlay" @click.self="closePreview">
+      <div class="preview-modal-content">
+        <div v-if="previewError" class="alert alert-error">{{ previewError }}</div>
+
+        <!-- Preview Header with Close -->
+        <div class="preview-header">
+        <h2> Önizleme</h2>
+          <button class="preview-close-btn" @click="closePreview">
+            
+            <Icon icon="mdi:close" width="20" height="20" />
+          </button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="preview-body">
+          <!-- Title and Description -->
+          <div class="preview-title-section">
+            <h2 class="preview-title">{{ previewLead.title }}</h2>
+            <p class="preview-description">{{ previewLead.description }}</p>
+          </div>
+
+          <!-- Insurance Type Badge -->
+          <div v-if="previewLead.insuranceType" class="preview-insurance-badge">
+            <span class="badge-text">{{ previewLead.insuranceType }}</span>
+          </div>
+
+          <!-- Price Info Section -->
+          <div class="preview-price-section">
+            <div class="preview-price-grid">
+              <div class="preview-price-item">
+                <div class="preview-label">Başlangıç Fiyatı</div>
+                <div class="preview-amount">€{{ previewLead.startPrice }}</div>
+              </div>
+              <div class="preview-price-item">
+                <div class="preview-label">Min Artış</div>
+                <div class="preview-amount">€{{ previewLead.minIncrement }}</div>
+              </div>
+              <div v-if="previewLead.instantBuyPrice" class="preview-price-item">
+                <div class="preview-label">Anında Satın Alma</div>
+                <div class="preview-amount preview-sofort">€{{ previewLead.instantBuyPrice }}</div>
+              </div>
+              <div class="preview-price-item">
+                <div class="preview-label">Bitiş Tarihi</div>
+                <div class="preview-amount">{{ new Date(previewLead.endsAt).toLocaleDateString('tr-TR') }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Private Details -->
+          <div v-if="previewLead.privateDetails" class="preview-private-section">
+            <strong>Özel Detaylar:</strong>
+            <pre class="preview-private-content">{{ previewLead.privateDetails }}</pre>
+          </div>
+
+          <!-- Bids Section -->
+          <div class="preview-bids-section">
+            <h3 class="preview-bids-title">Teklif Geçmişi ({{ previewLead.bids?.length || 0 }})</h3>
+
+            <div v-if="previewLoadingBids" class="preview-empty-state">
+              Teklifler yükleniyor...
+            </div>
+            <div v-else-if="!previewLead.bids?.length" class="preview-empty-state">
+              Henüz teklif yok
+            </div>
+            <div v-else class="preview-bids-list">
+              <div v-for="(bid, index) in previewLead.bids" :key="bid.id" class="preview-bid-item">
+                <div class="preview-bid-left">
+                  <div class="preview-bid-rank">{{ index + 1 }}.</div>
+                  <div class="preview-bid-info">
+                    <div class="preview-bid-user">{{ bid.user?.email || 'Anonim' }}</div>
+                    <div class="preview-bid-time">{{ new Date(bid.createdAt).toLocaleString('tr-TR') }}</div>
+                  </div>
+                </div>
+                <div class="preview-bid-amount">€{{ bid.amount }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="preview-footer">
+          <button v-if="isAdmin" class="preview-toggle-btn" :class="previewLead.isActive ? 'active' : 'inactive'" @click="toggleLeadActive">
+            <Icon :icon="previewLead.isActive ? 'mdi:pause-circle' : 'mdi:play-circle'" width="16" height="16" />
+            {{ previewLead.isActive ? 'Pasif Yap' : 'Aktif Yap' }}
+          </button>
+          <button class="preview-close-action-btn" @click="closePreview">Kapat</button>
         </div>
       </div>
     </div>
@@ -2412,15 +2686,16 @@ onUnmounted(() => {
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  flex-direction: row;
   margin-bottom: 24px;
   flex-wrap: wrap;
   gap: 16px;
+  align-items: flex-start!important;
 }
 
 .page-header-content {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
 }
 
@@ -2936,6 +3211,360 @@ onUnmounted(() => {
   background: #059669;
 }
 
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+/* Preview Modal Styles (LeadCard Design) */
+.preview-modal-content {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #0f172a;
+  padding: 0;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #0f172a;
+  
+}
+.preview-header  h2{
+  margin-right: auto;
+  font-weight: 600;
+}
+
+.preview-close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #0f172a;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.preview-close-btn:hover {
+  color: #64748b;
+}
+
+.preview-body {
+  padding: 24px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.preview-title-section {
+  margin-bottom: 16px;
+}
+
+.preview-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+  word-wrap: break-word;
+}
+
+.preview-description {
+  margin: 8px 0 0 0;
+  font-size: 0.9375rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.preview-insurance-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  background: #0f172a;
+  color: white;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.badge-text {
+  letter-spacing: 0.05em;
+}
+
+.preview-price-section {
+  margin-bottom: 20px;
+}
+
+.preview-price-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #0f172a;
+  border-radius: 12px;
+}
+
+.preview-price-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.preview-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #10b981;
+  line-height: 1;
+}
+
+.preview-amount.preview-sofort {
+  color: #fbbf24;
+}
+
+.preview-private-section {
+  padding: 12px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.preview-private-section strong {
+  color: #9a3412;
+  font-weight: 600;
+}
+
+.preview-private-content {
+  white-space: pre-wrap;
+  font-family: monospace;
+  font-size: 0.8125rem;
+  color: #7c2d12;
+  margin: 8px 0 0 0;
+  line-height: 1.5;
+}
+
+.preview-bids-section {
+  margin-top: 24px;
+}
+
+.preview-bids-title {
+  margin: 0 0 16px 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.preview-empty-state {
+  text-align: center;
+  padding: 32px 16px;
+  color: #94a3b8;
+  font-size: 0.9375rem;
+}
+
+.preview-bids-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border: 1px solid #0f172a;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.preview-bid-item {
+  padding: 16px;
+  background: #f8fafc;
+  border-bottom: 1px solid #0f172a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.preview-bid-item:last-child {
+  border-bottom: none;
+}
+
+.preview-bid-item:hover {
+  background: #f1f5f9;
+}
+
+.preview-bid-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.preview-bid-rank {
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 1rem;
+  min-width: 20px;
+}
+
+.preview-bid-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.preview-bid-user {
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 0.9375rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview-bid-time {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.preview-bid-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #10b981;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.preview-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #0f172a;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.preview-close-action-btn {
+  padding: 10px 20px;
+  background: #0f172a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9375rem;
+}
+
+.preview-close-action-btn:hover {
+  background: #1e293b;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .preview-modal-content {
+    max-width: calc(100vw - 32px);
+    border-radius: 12px;
+  }
+
+  .preview-title {
+    font-size: 1.25rem;
+  }
+
+  .preview-description {
+    font-size: 0.875rem;
+  }
+
+  .preview-price-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .preview-bid-item {
+    padding: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .preview-bid-amount {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+
+  .preview-amount {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .preview-modal-content {
+    max-width: calc(100vw - 16px);
+    max-height: 95vh;
+  }
+
+  .preview-body {
+    padding: 16px;
+  }
+
+  .preview-footer {
+    padding: 12px 16px;
+  }
+
+  .preview-title {
+    font-size: 1.125rem;
+  }
+
+  .preview-description {
+    font-size: 0.8125rem;
+  }
+
+  .preview-label {
+    font-size: 0.6875rem;
+  }
+
+  .preview-amount {
+    font-size: 1.125rem;
+  }
+
+  .preview-bids-title {
+    font-size: 1rem;
+  }
+
+  .preview-bid-rank {
+    font-size: 0.875rem;
+  }
+
+  .preview-bid-user {
+    font-size: 0.8125rem;
+  }
+
+  .preview-bid-time {
+    font-size: 0.6875rem;
+  }
+
+  .preview-bid-amount {
+    font-size: 1rem;
+  }
+}
+
 /* Tablo Görünümü */
 .table-view {
   overflow-x: auto;
@@ -3144,6 +3773,16 @@ onUnmounted(() => {
 
 .table-btn.info:hover {
   background: #2563eb;
+}
+
+.table-btn.secondary {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 6px 8px;
+}
+
+.table-btn.secondary:hover {
+  background: #e5e7eb;
 }
 
 /* Lead ID Badge */
@@ -3971,6 +4610,34 @@ onUnmounted(() => {
   gap: 12px;
   margin: 20px 0;
 }
+
+/* Switches (Toggle) */
+.form-switches {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.switch-row > span {
+  font-size: 0.875rem;
+  color: #334155;
+  font-weight: 600;
+}
+
+.toggle-switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .2s; border-radius: 24px; }
+.toggle-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; }
+input:checked + .toggle-slider { background-color: #10b981; }
+input:checked + .toggle-slider:before { transform: translateX(26px); }
 
 .checkbox-label {
   display: flex;

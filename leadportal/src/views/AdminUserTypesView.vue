@@ -665,7 +665,7 @@ onMounted(() => {
 
 .page-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
 }
@@ -989,8 +989,8 @@ onMounted(() => {
 }
 
 .permission-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.75rem;
   max-height: 0;
   overflow: hidden;
@@ -1301,6 +1301,10 @@ input:checked + .toggle-slider:before {
   
   .permission-info {
     text-align: center;
+  }
+  
+  .permission-list {
+    grid-template-columns: 1fr;
   }
 }
 </style>
