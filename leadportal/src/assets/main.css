@@ -9,6 +9,21 @@
   z-index: 0 !important;
 }
 
+/* Lead Map Popup Styles */
+.lead-popup {
+  border-radius: 8px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2) !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-content > div {
+  border-radius: 8px;
+}
+
 
 :root {
   --bg: #f8fafc;

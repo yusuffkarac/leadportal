@@ -1234,6 +1234,7 @@ function initMap() {
 
 function updateMapMarkers() {
   if (!leafletMap || !markersLayer) return
+
   markersLayer.clearLayers()
   const bounds = []
   const germanyBounds = [
@@ -1266,7 +1267,15 @@ function updateMapMarkers() {
         <a href=\"/lead/${lead.id}\" style=\"display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid #e2e8f0;border-radius:8px;color:#1d4ed8;text-decoration:none;background:#ffffff\">Detaya git <span aria-hidden>→</span></a>
       </div>
     `
-    marker.bindPopup(popupHtml)
+    marker.bindPopup(popupHtml, {
+      maxWidth: 280,
+      minWidth: 220,
+      className: 'lead-popup',
+      autoPan: true,
+      autoPanPadding: [50, 50],
+      autoPanSpeed: 10,
+      direction: 'bottom'  // Popup'ı her zaman aşağı doğru aç
+    })
     marker.addTo(markersLayer)
     bounds.push([info.lat, info.lon])
   }
@@ -1280,8 +1289,8 @@ function updateMapMarkers() {
   }
 }
 
-// Lead'ler değiştiğinde haritayı güncelle
-watch(leads, () => updateMapMarkers())
+// Lead'ler değiştiğinde haritayı güncelle (derin değişim izleme olmadan)
+watch(leads, () => updateMapMarkers(), { deep: false })
 
 // Route değiştiğinde leadleri yeniden yükle
 watch(() => route.path, async () => {
@@ -1313,9 +1322,16 @@ onMounted(async () => {
 
   // Her saniye zamanı güncelle (geri sayım için)
   const timeInterval = setInterval(() => {
-    // Vue reactivity için leads array'ini güncelle
-    leads.value = [...leads.value]
-    allLeads.value = [...allLeads.value]
+    // Popup'un açılı olup olmadığını kontrol et
+    const popupOpen = leafletMap && leafletMap._popup
+
+    // Eğer popup açıksa array'i güncelleyelim (watch tetiklenecek)
+    // Popup kapalıysa sadece zamanı güncelleştirelim
+    if (!popupOpen) {
+      // Vue reactivity için leads array'ini güncelle
+      leads.value = [...leads.value]
+      allLeads.value = [...allLeads.value]
+    }
     // Premium slider sağ ok görünürlüğünü canlı tut
     updatePremiumScrollHint()
   }, 1000) // 1 saniyede bir güncelle
