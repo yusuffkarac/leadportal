@@ -118,28 +118,7 @@ export function useMap(mapKey = 'default') {
           <a href="/lead/${leadData.id}" style="display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid #e2e8f0;border-radius:8px;color:#1d4ed8;text-decoration:none;background:#ffffff">Detaya git <span aria-hidden>→</span></a>
         </div>
       `
-      marker.bindPopup(popupHtml, {
-        autoClose: false,
-        closeOnClick: false,
-        autoPan: true
-      })
-      
-      // Marker click event'inde popup'ı açık tut
-      marker.on('click', function(e) {
-        // Tüm diğer popup'ları kapat
-        markersLayer.eachLayer(function(layer) {
-          if (layer instanceof window.L.Marker && layer !== marker) {
-            layer.closePopup()
-          }
-        })
-        // Bu marker'ın popup'ını aç
-        marker.openPopup()
-        // Event propagation'ı durdur
-        if (e.originalEvent) {
-          e.originalEvent.stopPropagation()
-        }
-      })
-      
+      marker.bindPopup(popupHtml)
       marker.addTo(markersLayer)
       bounds.push([info.lat, info.lon])
     }
