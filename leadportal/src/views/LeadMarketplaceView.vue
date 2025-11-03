@@ -1107,6 +1107,27 @@ async function toggleLeadActive() {
   }
 }
 
+// Tablo içinden aktif/pasif değiştir
+async function toggleLeadActiveInline(lead) {
+  if (!lead || !lead.id) return
+  try {
+    const newStatus = !lead.isActive
+    await api.put(`/leads/${lead.id}`, { isActive: newStatus }, { headers: authHeaders() })
+    // listedeki öğeyi güncelle
+    const idxAll = allLeads.value.findIndex(l => l.id === lead.id)
+    if (idxAll !== -1) {
+      allLeads.value[idxAll] = { ...allLeads.value[idxAll], isActive: newStatus }
+    }
+    const idxShown = leads.value.findIndex(l => l.id === lead.id)
+    if (idxShown !== -1) {
+      leads.value[idxShown] = { ...leads.value[idxShown], isActive: newStatus }
+    }
+    success('Durum güncellendi')
+  } catch (error) {
+    errorMessage.value = error.response?.data?.error || 'Durum güncellenemedi'
+  }
+}
+
 function closeInstantBuyModal() {
   showInstantBuyModal.value = false
   selectedLead.value = null
@@ -1465,13 +1486,16 @@ onUnmounted(() => {
 
     <!-- Aktif Açık Artırmalar / Sofort Kauf -->
     <div class="auctions-section">
-      <div class="page-header" style="align-items: flex-start!important">
+      <div class="page-header" style="align-items: flex-end!important">
         <div class="page-header-content">
          <!--   <Icon :icon="pageIcon" width="32" class="page-icon" /> -->
          
-          <div>
+          <div v-if="!isAdmin">
             <h1>{{ pageTitle }}</h1>
             <p class="page-subtitle">{{ pageDescription }}</p>
+          </div>
+          <div v-else>
+            <h1>Leadleri Yönet</h1>
           </div>
         </div>
         <div class="header-actions">
@@ -1588,7 +1612,7 @@ onUnmounted(() => {
                   <Icon v-if="lead.insuranceType" :icon="getInsuranceTypeIcon(lead.insuranceType)" class="table-icon" width="16" height="16" />
                   <div>
                     <div class="lead-id-badge">{{ lead.id }}</div>
-                    <div class="lead-title-text">
+                    <div class="lead-title-text clickable-title" @click="navigateToLead(lead)">
                       <span v-if="lead.insuranceType" class="insurance-type-inline" :style="{ backgroundColor: getInsuranceTypeColor(lead.insuranceType) }">{{ lead.insuranceType }}</span>
                       {{ lead.title }}
                     </div>
@@ -1663,6 +1687,10 @@ onUnmounted(() => {
                   <!-- View (Gözat) -->
                   <button class="table-btn secondary" @click="openPreview(lead)" title="Detayları görüntüle">
                     <Icon icon="mdi:eye" width="14" height="14" />
+                  </button>
+                  <!-- Aktif/Pasif -->
+                  <button v-if="isAdmin" class="table-btn toggle" :class="lead.isActive ? 'active' : 'inactive'" @click="toggleLeadActiveInline(lead)" :title="lead.isActive ? 'Pasif yap' : 'Aktif yap'">
+                    <Icon :icon="lead.isActive ? 'mdi:pause-circle' : 'mdi:play-circle'" width="14" height="14" />
                   </button>
                    <button v-if="lead.leadType !== 'SOFORT_KAUF' && lead.instantBuyPrice && !lead.isExpired && !isAdmin" class="table-btn success" @click="openInstantBuyModal(lead, $event)">
                     <Icon icon="mdi:lightning-bolt" width="14" height="14" />
@@ -1799,7 +1827,7 @@ onUnmounted(() => {
     </div>
 
     <!-- Lead Edit Modal (Admin için) -->
-    <div v-if="showLeadModal" class="lead-modal-overlay" @click.self="showLeadModal = false">
+    <div v-if="showLeadModal" class="lead-modal-overlay">
       <div class="lead-modal-content">
         <div class="lead-modal-header">
           <h2>{{ modalMode === 'edit' ? 'Lead Düzenle' : 'Yeni Lead Oluştur' }}</h2>
@@ -1926,7 +1954,7 @@ onUnmounted(() => {
 
           <div class="form-switches">
             <div class="switch-row">
-              <span>Vitrin (Premium)</span>
+              <span>Vitrin</span>
               <label class="toggle-switch">
                 <input v-model="leadForm.isShowcase" type="checkbox" />
                 <span class="toggle-slider"></span>
@@ -2166,7 +2194,7 @@ onUnmounted(() => {
 
   margin: 0 auto 24px auto;
   padding: 0!important;
-  max-width: 80%;
+  max-width: 90%;
   width: 100%;
   box-sizing: border-box;
 }
@@ -2174,19 +2202,19 @@ onUnmounted(() => {
 .map-section {
  
   margin: 0 auto 24px auto;
-  max-width: 80%;
+  max-width: 90%;
   width: 100%;
   box-sizing: border-box;
   padding: 0!important;
 }
 
 .auctions-section {
-  background: #f5f7fb;
-  border-radius: 24px;
-  padding: 32px 28px;
+
+
+
   margin: 0 auto;
-  border: 1px solid rgba(15, 23, 42, 0.06);
-  max-width: 80%;
+
+  max-width: 90%;
   width: 100%;
   box-sizing: border-box;
 }
@@ -2445,6 +2473,11 @@ onUnmounted(() => {
   font-weight: 700;
   color: #111827;
   line-height: 1.3;
+  /* En fazla 4 satır göster; fazlasını kısalt */
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .premium-card-star {
@@ -2483,6 +2516,7 @@ onUnmounted(() => {
   background: #fef3c7;
   border-radius: 8px;
   border: 1px solid #fbbf24;
+  min-height: 72px; /* tüm kartlarda aynı yükseklik */
 }
 
 .premium-price-info {
@@ -2538,6 +2572,7 @@ onUnmounted(() => {
   align-items: center;
   padding-top: 12px;
   border-top: 1px solid #fde68a;
+  margin-top: auto; /* alt hizalamayı sabitle */
 }
 
 .premium-time,
@@ -2690,7 +2725,7 @@ onUnmounted(() => {
   margin-bottom: 24px;
   flex-wrap: wrap;
   gap: 16px;
-  align-items: flex-start!important;
+  align-items: flex-end!important;
 }
 
 .page-header-content {
@@ -2924,6 +2959,8 @@ onUnmounted(() => {
   .page-header {
     flex-direction: column;
     align-items: flex-start;
+    align-content: flex-start;
+
   }
 
   .page-header h1 {
@@ -3462,6 +3499,24 @@ onUnmounted(() => {
   gap: 12px;
 }
 
+.preview-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.preview-toggle-btn.active { background: #dcfce7; color: #047857; }
+.preview-toggle-btn.inactive { background: #fee2e2; color: #b91c1c; }
+.preview-toggle-btn:hover { filter: brightness(0.98); }
+
 .preview-close-action-btn {
   padding: 10px 20px;
   background: #0f172a;
@@ -3617,8 +3672,8 @@ onUnmounted(() => {
 }
 
 .lead-cell {
-  min-width: 250px;
-  max-width: 350px;
+  min-width: 400px;
+  max-width: 600px;
 }
 
 .lead-info {
@@ -3638,6 +3693,16 @@ onUnmounted(() => {
   color: #111827;
   margin-bottom: 4px;
   line-height: 1.3;
+  transition: color 0.2s ease;
+}
+
+.lead-title-text.clickable-title {
+  cursor: pointer;
+}
+
+.lead-title-text.clickable-title:hover {
+  color: #10b981;
+  text-decoration: underline;
 }
 
 .lead-description-text {
@@ -3785,6 +3850,15 @@ onUnmounted(() => {
   background: #e5e7eb;
 }
 
+/* Toggle (Aktif/Pasif) */
+.table-btn.toggle {
+  padding: 6px 8px;
+  background: #f3f4f6;
+  color: #374151;
+}
+.table-btn.toggle.active { background: #dcfce7; color: #047857; }
+.table-btn.toggle.inactive { background: #fee2e2; color: #b91c1c; }
+
 /* Lead ID Badge */
 .lead-id-badge {
   font-size: 0.65rem;
@@ -3918,7 +3992,7 @@ onUnmounted(() => {
 /* Countdown Timer */
 .time-cell {
   position: relative;
-  min-width: 160px;
+  min-width: 130px;
   width: auto;
 }
 
@@ -3986,15 +4060,19 @@ onUnmounted(() => {
   }
 
   .lead-cell {
-    min-width: 200px;
-    max-width: 280px;
+    min-width: 300px;
+    max-width: 450px;
+  }
+
+  .time-cell {
+    min-width: 120px;
   }
 }
 
 @media (max-width: 1024px) {
   .lead-cell {
-    min-width: 150px;
-    max-width: 220px;
+    min-width: 250px;
+    max-width: 350px;
   }
 
   .quick-bid-cell {
@@ -4008,7 +4086,7 @@ onUnmounted(() => {
   }
 
   .time-cell {
-    min-width: 150px;
+    min-width: 110px;
   }
 
   .insurance-type-inline {
@@ -4071,7 +4149,7 @@ onUnmounted(() => {
   }
 
   .time-cell {
-    min-width: 140px;
+    min-width: 115px;
   }
 
   .countdown-timer {
@@ -4108,8 +4186,8 @@ onUnmounted(() => {
   }
 
   .lead-cell {
-    min-width: 120px;
-    max-width: 180px;
+    min-width: 200px;
+    max-width: 280px;
   }
 
   .price-and-bid-cell {
@@ -4150,8 +4228,12 @@ onUnmounted(() => {
   }
 
   .lead-cell {
+    min-width: 150px;
+    max-width: 200px;
+  }
+
+  .time-cell {
     min-width: 100px;
-    max-width: 140px;
   }
 
   .quick-bid-cell {
@@ -4614,8 +4696,8 @@ onUnmounted(() => {
 /* Switches (Toggle) */
 .form-switches {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  flex-direction: row;
+  gap: 1rem;
   margin: 20px 0;
 }
 

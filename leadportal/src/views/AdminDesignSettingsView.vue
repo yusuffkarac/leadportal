@@ -433,7 +433,7 @@ onMounted(() => {
 }
 
 .page-content {
-  max-width: 80%;
+  max-width: 90%;
   margin: 0 auto;
 }
 

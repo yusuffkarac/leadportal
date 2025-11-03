@@ -655,7 +655,7 @@ onMounted(() => {
 }
 
 .page-content {
-  max-width: 80%;
+  max-width: 90%;
   margin: 0 auto;
 }
 
@@ -665,9 +665,10 @@ onMounted(() => {
 
 .page-header {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: space-between;
   gap: 1rem;
+  flex-direction: row;
 }
 
 .page-header-actions {
@@ -754,7 +755,7 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 2rem;
+
   flex-direction: column;
 }
 

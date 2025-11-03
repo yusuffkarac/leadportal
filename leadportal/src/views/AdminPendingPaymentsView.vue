@@ -611,7 +611,7 @@ onMounted(async () => {
 <style scoped>
 .pending-payments {
   padding: 1.25rem;
-  max-width: 80%;
+  max-width: 90%;
   margin: 0 auto;
   overflow-x: hidden;
 }
@@ -623,6 +623,7 @@ onMounted(async () => {
   margin-bottom: 1.25rem;
   gap: 1rem;
   flex-wrap: wrap;
+  flex-direction: row;
 }
 
 .page-header h1 {

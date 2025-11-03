@@ -389,8 +389,9 @@ onMounted(() => {
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   margin-bottom: 32px;
+  flex-direction: row;
 }
 
 .page-header h1 {
@@ -404,6 +405,7 @@ onMounted(() => {
   display: flex;
   gap: 12px;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .filters {

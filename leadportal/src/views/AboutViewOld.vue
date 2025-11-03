@@ -202,7 +202,7 @@
 }
 
 .page-content {
-  max-width: 80%;
+  max-width: 90%;
   margin: 0 auto;
   padding: 32px 24px;
 }

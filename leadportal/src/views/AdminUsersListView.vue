@@ -292,7 +292,7 @@ onUnmounted(() => {
 
 <style scoped>
 .admin-users-list {
-  max-width: 80%;
+  max-width: 90%;
   margin: 0 auto;
   padding: 2rem;
 }

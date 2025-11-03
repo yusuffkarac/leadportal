@@ -457,7 +457,7 @@ a,
 
 /* Page Content */
 .page-content {
-  max-width: 80%;
+  max-width: 90%;
   margin: 0 auto;
   padding: 32px 24px;
 }
@@ -1039,7 +1039,7 @@ a,
 
 /* Hızlı Teklif Butonları */
 .quick-bid-section {
-  margin-bottom: 20px;
+  margin-bottom: 0.5rem;
 }
 
 .quick-bid-label {
@@ -1640,7 +1640,7 @@ label { font-size: 12px; color: var(--muted); }
 }
 
 .footer-content {
-  max-width: 80%;
+  max-width: 90%;
   margin: 0 auto;
   padding: 0 24px;
   display: grid;
@@ -1732,7 +1732,7 @@ label { font-size: 12px; color: var(--muted); }
 }
 
 .footer-bottom-content {
-  max-width: 80%;
+  max-width: 90%;
   margin: 0 auto;
   padding: 0 24px;
   display: flex;
@@ -1747,7 +1747,7 @@ label { font-size: 12px; color: var(--muted); }
 }
 
 .footer-social {
-  max-width: 80%;
+  max-width: 90%;
   margin: 16px auto 0;
   padding: 0 24px;
   display: flex;

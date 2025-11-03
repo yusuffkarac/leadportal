@@ -199,7 +199,22 @@ onMounted(() => {
           Bildirim Yönetimi
         </h1>
         <p>Kullanıcı rollerine göre bildirim izinlerini yönetin</p>
+
+        
       </div>
+      <!-- Category Filter -->
+      <div class="category-filter">
+        <button
+          v-for="cat in categories"
+          :key="cat.value"
+          @click="selectedCategory = cat.value"
+          :class="['filter-btn', { active: selectedCategory === cat.value }]"
+        >
+          <Icon :icon="cat.icon" width="18" height="18" />
+          <span>{{ cat.label }}</span>
+        </button>
+      </div>
+
     </div>
 
     <!-- Alert Message -->
@@ -222,19 +237,7 @@ onMounted(() => {
 
     <!-- Content -->
     <div v-else class="content">
-      <!-- Category Filter -->
-      <div class="category-filter">
-        <button
-          v-for="cat in categories"
-          :key="cat.value"
-          @click="selectedCategory = cat.value"
-          :class="['filter-btn', { active: selectedCategory === cat.value }]"
-        >
-          <Icon :icon="cat.icon" width="18" height="18" />
-          <span>{{ cat.label }}</span>
-        </button>
-      </div>
-
+      
       <!-- Info Box -->
       <div class="info-box">
         <Icon icon="mdi:information-outline" width="20" height="20" />
@@ -334,12 +337,36 @@ onMounted(() => {
 <style scoped>
 .admin-notification-settings {
   padding: 24px;
-  max-width: 80%;
+  max-width: 90%;
   margin: 0 auto;
 }
 
 .header {
   margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+}
+
+.section-header {
+  flex: 1;
+}
+
+.section-header h1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 8px 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.section-header p {
+  margin: 0;
+  font-size: 16px;
+  color: #6b7280;
 }
 
 .header-content h1 {
@@ -406,7 +433,7 @@ onMounted(() => {
 .category-filter {
   display: flex;
   gap: 12px;
-  margin-bottom: 24px;
+
   flex-wrap: wrap;
 }
 

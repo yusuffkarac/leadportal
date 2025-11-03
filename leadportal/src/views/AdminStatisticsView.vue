@@ -638,7 +638,7 @@ onMounted(() => {
 
 <style scoped>
 .admin-statistics {
-  max-width: 80%;
+  max-width: 90%;
   margin: 0 auto;
   padding: 2rem;
 }
@@ -646,9 +646,10 @@ onMounted(() => {
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: flex-end;
   margin-bottom: 2rem;
   gap: 1rem;
+  flex-direction: row;
 }
 
 .header-left h1 {

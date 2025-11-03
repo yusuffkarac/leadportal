@@ -884,7 +884,7 @@ onUnmounted(() => {
 }
 
 .page-content {
-  max-width: 80%;
+  max-width: 90%;
   margin: 0 auto;
   padding: 32px 24px;
 }
@@ -892,18 +892,36 @@ onUnmounted(() => {
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  flex-direction: row;
+  align-items: end;
   margin-bottom: 32px;
   gap: 24px;
 }
 
-.header-content {
+.section-header {
   flex: 1;
 }
-.header-actions{
+
+.section-header h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.header-actions {
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.header-actions .btn {
+  white-space: nowrap;
+  height: auto;
+  padding: 12px 24px;
+  line-height: 1.5;
 }
 
 .header-content h1 {

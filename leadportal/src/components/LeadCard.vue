@@ -142,15 +142,15 @@ const minBidAmount = computed(() => {
           <Icon :icon="getInsuranceTypeIcon(lead.insuranceType)" width="16" height="16" />
           {{ lead.insuranceType }}
         </span>
+      </div>
+      <div class="card-top-right">
+        <button class="info-btn" @click="handleShowDescription" title="Beschreibung anzeigen">
+          <Icon icon="mdi:information-outline" width="16" height="16" />
+        </button>
         <span class="time-badge">
           <Icon icon="mdi:clock-outline" width="16" height="16" />
           {{ formatTimeRemaining(lead.endsAt) }}
         </span>
-        <button class="info-btn" @click="handleShowDescription" title="Beschreibung anzeigen">
-          <Icon icon="mdi:information-outline" width="16" height="16" />
-        </button>
-      </div>
-      <div class="card-top-right">
         <span class="lead-id">{{ lead.id }}</span>
       </div>
     </div>
@@ -166,7 +166,8 @@ const minBidAmount = computed(() => {
       </div>
       <div v-if="lead.isShowcase" class="quality-badge">
         <Icon icon="mdi:star" width="16" height="16" />
-        <span>Qualität: Premium</span>
+        <span class="quality-label">Qualität:</span>
+        <span class="quality-value">Premium</span>
       </div>
     </div>
 
@@ -401,6 +402,9 @@ const minBidAmount = computed(() => {
   margin-left: auto;
   flex-shrink: 0;
   min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .lead-id {
@@ -429,7 +433,7 @@ const minBidAmount = computed(() => {
 .location-info {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px; /* hafif boşluk */
   color: #64748b;
   font-size: 0.8125rem;
   font-weight: 500;
@@ -457,9 +461,10 @@ const minBidAmount = computed(() => {
   color: #f59e0b;
   font-size: 0.8125rem;
   font-weight: 600;
-  flex-shrink: 0;
+  flex-shrink: 1;
   min-width: 0;
   overflow: hidden;
+  max-width: 50%;
 }
 
 .quality-badge span {
@@ -468,6 +473,9 @@ const minBidAmount = computed(() => {
   white-space: nowrap;
   max-width: 120px;
 }
+
+.quality-label { opacity: 0.9; }
+.quality-value { font-weight: 700; }
 
 .quality-badge svg {
   color: #f59e0b;
@@ -486,6 +494,9 @@ const minBidAmount = computed(() => {
   overflow-wrap: break-word;
   max-width: 100%;
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* En fazla 4 satır göster */
+  -webkit-box-orient: vertical;
 }
 
 /* Price and Bidder Section */
@@ -874,6 +885,7 @@ const minBidAmount = computed(() => {
 
   .quality-badge {
     font-size: 0.75rem;
+    max-width: 60%;
   }
 
   .quality-badge svg {
@@ -881,9 +893,8 @@ const minBidAmount = computed(() => {
     height: 12px;
   }
 
-  .quality-badge span {
-    max-width: 90px;
-  }
+  .quality-badge span { max-width: 100%; }
+  .quality-label { display: none; }
 
   .lead-title {
     font-size: 0.875rem;

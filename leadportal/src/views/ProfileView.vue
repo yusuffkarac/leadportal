@@ -1001,13 +1001,13 @@ onMounted(() => {
 }
 
 .profile-container {
-  max-width: 80%;
+  max-width: 90%;
   margin: 0 auto;
   padding: 0 1rem;
 }
 
 .profile-header {
-  text-align: center;
+  text-align: flex-start;
   margin-bottom: 3rem;
 }
 
@@ -1667,6 +1667,7 @@ onMounted(() => {
 @media (max-width: 768px) {
   .profile-container {
     padding: 0 0.5rem;
+    max-width: 95%;
   }
 
   .iban-info-grid,

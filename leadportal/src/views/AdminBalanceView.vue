@@ -415,7 +415,7 @@ onMounted(() => {
 <style scoped>
 .balance-management {
   padding: 1.5rem;
-  max-width: 80%;
+  max-width: 90%;
   margin: 0 auto;
 }
 
