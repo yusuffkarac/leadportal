@@ -73,11 +73,18 @@ async function confirmPurchase() {
       error(`Yetersiz bakiye!\n\nGerekli: ${formatPrice(errorData.required, props.currency)}\nMevcut: ${formatPrice(errorData.available, props.currency)}\n\n${errorData.error}`)
     } else if (errorData?.errorType === 'IBAN_NOT_FOUND') {
       error(errorData.error + '\n\nProfil sayfanızdan IBAN bilgilerinizi ekleyebilirsiniz.')
+    } else if (errorData?.error) {
+      error(errorData.error)
     } else {
-      error(errorData?.error || 'Anında satın alma işlemi başarısız')
+      error('Anında satın alma işlemi başarısız')
     }
 
     console.error('Anında satın alma hatası:', errorData?.error)
+
+    // Hata durumunda modal'ı kapat
+    setTimeout(() => {
+      emit('close')
+    }, 50)
   } finally {
     isProcessing.value = false
   }

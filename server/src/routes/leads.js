@@ -671,10 +671,40 @@ export default function leadsRouter(prisma, io) {
         return res.status(400).json({ error: 'Dieser Lead wurde bereits verkauft' })
       }
 
-      // Check if lead is scheduled for future start
-      const currentTime = now()
-      if (lead.startsAt && lead.startsAt > currentTime) {
+      // Check bidding hours restriction
+      const settings = await prisma.settings.findUnique({
+        where: { id: 'default' }
+      })
+
+      if (settings && settings.enableBiddingHours) {
+        const currentTime = new Date()
+        const currentHour = currentTime.getHours()
+        const currentMinute = currentTime.getMinutes()
+        const currentTimeInMinutes = currentHour * 60 + currentMinute
+
+        // Parse start and end hours (format: "HH:MM")
+        const [startHour, startMinute] = settings.biddingStartHour.split(':').map(Number)
+        const [endHour, endMinute] = settings.biddingEndHour.split(':').map(Number)
+        const startTimeInMinutes = startHour * 60 + startMinute
+        const endTimeInMinutes = endHour * 60 + endMinute
+
+        // Check if current time is within allowed bidding hours
+        if (currentTimeInMinutes < startTimeInMinutes || currentTimeInMinutes >= endTimeInMinutes) {
+          return res.status(400).json({
+            error: `Satın alma saatleri ${settings.biddingStartHour} - ${settings.biddingEndHour} arasındadır. Lütfen bu saatler arasında tekrar deneyin.`
+          })
+        }
+      }
+
+      // Check if lead is scheduled for future start or has expired
+      const serverTime = now()
+      if (lead.startsAt && lead.startsAt > serverTime) {
         return res.status(400).json({ error: 'Bu lead henüz başlamamıştır. Açık artırma başladığında satın alabilirsiniz.' })
+      }
+
+      // Check if lead has expired
+      if (lead.endsAt && lead.endsAt < serverTime) {
+        return res.status(400).json({ error: 'Bu lead\'in süresi dolmuştur' })
       }
 
       // Fiyatı belirle: SOFORT_KAUF için startPrice, AUCTION için instantBuyPrice

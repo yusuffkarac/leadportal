@@ -13,7 +13,7 @@
           <Icon v-else-if="alert.type === 'warning'" icon="mdi:alert-circle" width="20" height="20" />
           <Icon v-else icon="mdi:information" width="20" height="20" />
         </div>
-        <div class="alert-message">{{ alert.message }}</div>
+        <div class="alert-message" style="white-space: pre-wrap; word-break: break-word;">{{ alert.message }}</div>
         <button class="alert-close" @click.stop="removeAlert(alert.id)">
           <Icon icon="mdi:close" width="16" height="16" />
         </button>
