@@ -23,6 +23,10 @@ const props = defineProps({
   zipcodeIndex: {
     type: Map,
     default: () => new Map()
+  },
+  isBiddingHoursActive: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -212,7 +216,7 @@ const minBidAmount = computed(() => {
     </div>
 
     <!-- Quick Bid Section (Sadece Auction için) -->
-    <div v-if="lead.leadType !== 'SOFORT_KAUF' && showQuickBid && !lead.isExpired && lead.isActive" class="quick-bid-section" @click.stop>
+    <div v-if="lead.leadType !== 'SOFORT_KAUF' && showQuickBid && !lead.isExpired && lead.isActive && isBiddingHoursActive" class="quick-bid-section" @click.stop>
       <div class="quick-bid-input-group">
         <div class="currency-symbol">{{ getCurrencySymbol(settings.defaultCurrency) }}</div>
         <input
@@ -268,7 +272,8 @@ const minBidAmount = computed(() => {
         v-if="lead.leadType === 'SOFORT_KAUF' && !isAdmin"
         class="sofort-kauf-buy-btn"
         @click="handleInstantBuy"
-        :disabled="lead.isExpired || !lead.isActive || lead.isScheduled"
+        :disabled="lead.isExpired || !lead.isActive || lead.isScheduled || !isBiddingHoursActive"
+        :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''"
       >
         <Icon icon="mdi:flash" width="20" height="20" />
         Satın Al
@@ -287,6 +292,8 @@ const minBidAmount = computed(() => {
           v-if="lead.instantBuyPrice && !lead.isExpired && lead.isActive && !lead.isScheduled && !isAdmin"
           class="instant-buy-action-btn"
           @click="handleInstantBuy"
+          :disabled="!isBiddingHoursActive"
+          :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''"
         >
           <Icon icon="mdi:lightning-bolt" width="20" height="20" />
           Sofort Kaufen

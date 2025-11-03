@@ -38,11 +38,16 @@ const socket = io('/', { path: '/socket.io' })
 const showInstantBuyModal = ref(false)
 const selectedLead = ref(null)
 const isProcessing = ref(false)
-const settings = ref({ defaultCurrency: 'EUR', insuranceTypes: [] })
+const settings = ref({ defaultCurrency: 'EUR', insuranceTypes: [], enableBiddingHours: false })
 const quickBidAmounts = ref({})
 const isSubmittingBid = ref({})
 const showDescriptionModal = ref(false)
 const selectedDescription = ref(null)
+
+// Bidding hours state
+const isBiddingHoursActive = ref(true)
+const biddingHoursTimeRemaining = ref('')
+const nextBiddingStartTime = ref('')
 
 // Admin features - Route path'ine bakarak kontrol et
 const isAdmin = computed(() => {
@@ -441,6 +446,59 @@ async function loadSettings() {
       { name: 'Araba', icon: 'mdi:car' },
       { name: 'Sağlık', icon: 'mdi:heart' }
     ]
+  }
+}
+
+// Bidding hours kontrol et
+function checkBiddingHours() {
+  if (!settings.value.enableBiddingHours) {
+    isBiddingHoursActive.value = true
+    biddingHoursTimeRemaining.value = ''
+    nextBiddingStartTime.value = ''
+    return
+  }
+
+  const now = new Date()
+  const currentHour = now.getHours()
+  const currentMinute = now.getMinutes()
+  const currentTimeInMinutes = currentHour * 60 + currentMinute
+
+  const [startHour, startMinute] = settings.value.biddingStartHour.split(':').map(Number)
+  const [endHour, endMinute] = settings.value.biddingEndHour.split(':').map(Number)
+  const startTimeInMinutes = startHour * 60 + startMinute
+  const endTimeInMinutes = endHour * 60 + endMinute
+
+  if (currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes < endTimeInMinutes) {
+    // Mesai saatleri içinde
+    isBiddingHoursActive.value = true
+    biddingHoursTimeRemaining.value = ''
+    nextBiddingStartTime.value = ''
+  } else {
+    // Mesai saatleri dışında
+    isBiddingHoursActive.value = false
+
+    // Bugün kaç dakika kaldığını hesapla
+    let minutesUntilStart = startTimeInMinutes - currentTimeInMinutes
+    let nextStartDate = new Date(now)
+
+    if (minutesUntilStart <= 0) {
+      // Bugün başlamış ve bitmişse, yarın başlayacak
+      minutesUntilStart += 24 * 60
+      nextStartDate.setDate(nextStartDate.getDate() + 1)
+    }
+
+    // Saate ayarla
+    nextStartDate.setHours(startHour, startMinute, 0, 0)
+    nextBiddingStartTime.value = nextStartDate.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+
+    const hours = Math.floor(minutesUntilStart / 60)
+    const minutes = minutesUntilStart % 60
+
+    if (hours > 0) {
+      biddingHoursTimeRemaining.value = `${hours}s ${minutes}d`
+    } else {
+      biddingHoursTimeRemaining.value = `${minutes}d`
+    }
   }
 }
 
@@ -1301,6 +1359,7 @@ watch(() => route.path, async () => {
 onMounted(async () => {
   loadFilters() // Filtreleri yükle
   await loadSettings()
+  checkBiddingHours() // Bidding hours kontrol et
   await fetchLeads()
   if (isAdmin.value) {
     await fetchPendingPayments()
@@ -1320,7 +1379,7 @@ onMounted(async () => {
     }
   })
 
-  // Her saniye zamanı güncelle (geri sayım için)
+  // Her saniye zamanı güncelle (geri sayım ve bidding hours için)
   const timeInterval = setInterval(() => {
     // Popup'un açılı olup olmadığını kontrol et
     const popupOpen = leafletMap && leafletMap._popup
@@ -1334,6 +1393,8 @@ onMounted(async () => {
     }
     // Premium slider sağ ok görünürlüğünü canlı tut
     updatePremiumScrollHint()
+    // Bidding hours kontrolü her dakika
+    checkBiddingHours()
   }, 1000) // 1 saniyede bir güncelle
 
   // Global mouse event listener'ları (premium slider drag için)
@@ -1505,10 +1566,15 @@ onUnmounted(() => {
       <div class="page-header" style="align-items: flex-end!important">
         <div class="page-header-content">
          <!--   <Icon :icon="pageIcon" width="32" class="page-icon" /> -->
-         
+
           <div v-if="!isAdmin">
             <h1>{{ pageTitle }}</h1>
             <p class="page-subtitle">{{ pageDescription }}</p>
+            <!-- Bidding Hours Timer -->
+            <div v-if="!isBiddingHoursActive && biddingHoursTimeRemaining" class="bidding-hours-alert">
+              <Icon icon="mdi:clock-alert-outline" width="16" height="16" />
+              <span>Mesai saatleri dışında: <strong>{{ biddingHoursTimeRemaining }}</strong> sonra açılacak ({{ nextBiddingStartTime }})</span>
+            </div>
           </div>
           <div v-else>
             <h1>Leadleri Yönet</h1>
@@ -1649,7 +1715,7 @@ onUnmounted(() => {
                 </div>
               </td>
               <td v-if="lead.leadType !== 'SOFORT_KAUF' || isAdmin">
-                <div v-if="!lead.isExpired && lead.isActive && !isAdmin" class="quick-bid-cell" @click.stop>
+                <div v-if="!lead.isExpired && lead.isActive && !isAdmin && isBiddingHoursActive" class="quick-bid-cell" @click.stop>
                   <div class="quick-bid-inline">
                     <input
                       type="number"
@@ -1662,7 +1728,7 @@ onUnmounted(() => {
                     <button
                       class="quick-bid-submit-inline"
                       @click="submitQuickBid(lead, quickBidAmounts[lead.id])"
-                      :disabled="!quickBidAmounts[lead.id] || quickBidAmounts[lead.id] <= 0"
+                      :disabled="!quickBidAmounts[lead.id] || quickBidAmounts[lead.id] <= 0 || !isBiddingHoursActive"
                     >
                      
                       Teklif
@@ -1690,7 +1756,7 @@ onUnmounted(() => {
               <td>
                 <div class="table-actions">
                   <!-- Satın Al (admin değilse ve SOFORT_KAUF ise) -->
-                  <button v-if="lead.leadType === 'SOFORT_KAUF' && !isAdmin" class="table-btn success" @click="openInstantBuyModal(lead, $event)" :disabled="lead.isExpired || !lead.isActive">
+                  <button v-if="lead.leadType === 'SOFORT_KAUF' && !isAdmin" class="table-btn success" @click="openInstantBuyModal(lead, $event)" :disabled="lead.isExpired || !lead.isActive || !isBiddingHoursActive" :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''">
                     <Icon icon="mdi:shopping-cart" width="14" height="14" />
                     Satın Al
                   </button>
@@ -1699,7 +1765,7 @@ onUnmounted(() => {
                     Detay
                   </button>
                   <!-- Lightning-bolt instant buy (admin değilse) -->
-                 
+
                   <!-- View (Gözat) -->
                   <button class="table-btn secondary" @click="openPreview(lead)" title="Detayları görüntüle">
                     <Icon icon="mdi:eye" width="14" height="14" />
@@ -1708,7 +1774,7 @@ onUnmounted(() => {
                   <button v-if="isAdmin" class="table-btn toggle" :class="lead.isActive ? 'active' : 'inactive'" @click="toggleLeadActiveInline(lead)" :title="lead.isActive ? 'Pasif yap' : 'Aktif yap'">
                     <Icon :icon="lead.isActive ? 'mdi:pause-circle' : 'mdi:play-circle'" width="14" height="14" />
                   </button>
-                   <button v-if="lead.leadType !== 'SOFORT_KAUF' && lead.instantBuyPrice && !lead.isExpired && !isAdmin" class="table-btn success" @click="openInstantBuyModal(lead, $event)">
+                   <button v-if="lead.leadType !== 'SOFORT_KAUF' && lead.instantBuyPrice && !lead.isExpired && !isAdmin" class="table-btn success" @click="openInstantBuyModal(lead, $event)" :disabled="!isBiddingHoursActive" :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''">
                     <Icon icon="mdi:lightning-bolt" width="14" height="14" />
                   </button>
                   <!-- Edit (admin ise) -->
@@ -1730,9 +1796,10 @@ onUnmounted(() => {
           :key="lead.id"
           :lead="lead"
           :settings="settings"
-          :show-quick-bid="!lead.isExpired && lead.isActive && !isAdmin"
+          :show-quick-bid="!lead.isExpired && lead.isActive && !isAdmin && isBiddingHoursActive"
           :is-admin="isAdmin"
           :zipcode-index="zipcodeIndex"
+          :is-bidding-hours-active="isBiddingHoursActive"
           @click="navigateToLead"
           @show-description="showDescription"
           @instant-buy="openInstantBuyModal"
@@ -2205,6 +2272,43 @@ onUnmounted(() => {
 <style scoped>
 :deep(.leaflet-popup-content-wrapper) {
   padding: 1.5rem;
+}
+
+/* Bidding Hours Alert */
+.bidding-hours-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #fed7aa 0%, #fecaca 100%);
+  border: 1px solid #fb923c;
+  border-radius: 8px;
+  color: #92400e;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 8px;
+  animation: pulse-alert 2s infinite;
+}
+
+.bidding-hours-alert strong {
+  font-weight: 700;
+  color: #dc2626;
+}
+
+.bidding-hours-alert svg {
+  flex-shrink: 0;
+  color: #dc2626;
+  animation: pulse-icon 1s infinite;
+}
+
+@keyframes pulse-alert {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes pulse-icon {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
 }
 
 /* Section Containers */
