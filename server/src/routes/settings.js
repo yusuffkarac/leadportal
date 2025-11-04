@@ -319,7 +319,8 @@ router.post('/', requireAdmin, async (req, res) => {
       sessionTimeoutMinutes,
       sessionTimeoutMessage,
       requireRegistrationApproval,
-      registrationApprovalEmail
+      registrationApprovalEmail,
+      showExpiredLeads
     } = req.body
 
     // Validation
@@ -373,7 +374,8 @@ router.post('/', requireAdmin, async (req, res) => {
         sessionTimeoutMinutes: sessionTimeoutMinutes ?? 120,
         sessionTimeoutMessage: sessionTimeoutMessage ?? 'Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.',
         requireRegistrationApproval: requireRegistrationApproval !== undefined ? requireRegistrationApproval : true,
-        registrationApprovalEmail: registrationApprovalEmail || null
+        registrationApprovalEmail: registrationApprovalEmail || null,
+        showExpiredLeads: showExpiredLeads !== undefined ? showExpiredLeads : false
       },
       create: {
         id: 'default',
@@ -401,7 +403,8 @@ router.post('/', requireAdmin, async (req, res) => {
         sessionTimeoutMinutes: sessionTimeoutMinutes ?? 120,
         sessionTimeoutMessage: sessionTimeoutMessage ?? 'Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.',
         requireRegistrationApproval: requireRegistrationApproval !== undefined ? requireRegistrationApproval : true,
-        registrationApprovalEmail: registrationApprovalEmail || null
+        registrationApprovalEmail: registrationApprovalEmail || null,
+        showExpiredLeads: showExpiredLeads !== undefined ? showExpiredLeads : false
       }
     })
 
