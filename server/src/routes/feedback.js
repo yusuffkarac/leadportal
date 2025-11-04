@@ -22,7 +22,8 @@ const feedbackRouter = (prisma, io) => {
 
   const updateStatusSchema = z.object({
     status: z.enum(['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED']),
-    priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).optional()
+    priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).optional(),
+    internalNote: z.string().min(1, 'Internal note zorunludur').max(5000)
   })
 
   const assignSchema = z.object({
@@ -180,6 +181,12 @@ const feedbackRouter = (prisma, io) => {
           replies: {
             include: {
               user: { select: { id: true, email: true, firstName: true, lastName: true } }
+            },
+            orderBy: { createdAt: 'asc' }
+          },
+          statusHistory: {
+            include: {
+              changedByUser: { select: { id: true, email: true, firstName: true, lastName: true } }
             },
             orderBy: { createdAt: 'asc' }
           }
@@ -398,6 +405,12 @@ const feedbackRouter = (prisma, io) => {
         return res.status(404).json({ error: 'Geri bildirim bulunamadı' })
       }
 
+      // Eğer durum değişmiyorsa hata ver
+      if (feedback.status === validation.data.status) {
+        return res.status(400).json({ error: 'Durum değişmedi' })
+      }
+
+      const oldStatus = feedback.status
       const updateData = { status: validation.data.status }
       if (validation.data.priority) {
         updateData.priority = validation.data.priority
@@ -405,6 +418,17 @@ const feedbackRouter = (prisma, io) => {
       if (validation.data.status === 'CLOSED') {
         updateData.closedAt = new Date()
       }
+
+      // Durum geçmişi kaydı oluştur
+      await prisma.feedbackStatusHistory.create({
+        data: {
+          feedbackId: req.params.id,
+          oldStatus: oldStatus,
+          newStatus: validation.data.status,
+          internalNote: validation.data.internalNote,
+          changedBy: req.user.id
+        }
+      })
 
       const updated = await prisma.feedback.update({
         where: { id: req.params.id },

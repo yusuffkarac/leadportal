@@ -138,6 +138,11 @@ export type Feedback = $Result.DefaultSelection<Prisma.$FeedbackPayload>
  * 
  */
 export type FeedbackReply = $Result.DefaultSelection<Prisma.$FeedbackReplyPayload>
+/**
+ * Model FeedbackStatusHistory
+ * 
+ */
+export type FeedbackStatusHistory = $Result.DefaultSelection<Prisma.$FeedbackStatusHistoryPayload>
 
 /**
  * Enums
@@ -577,6 +582,16 @@ export class PrismaClient<
     * ```
     */
   get feedbackReply(): Prisma.FeedbackReplyDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.feedbackStatusHistory`: Exposes CRUD operations for the **FeedbackStatusHistory** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more FeedbackStatusHistories
+    * const feedbackStatusHistories = await prisma.feedbackStatusHistory.findMany()
+    * ```
+    */
+  get feedbackStatusHistory(): Prisma.FeedbackStatusHistoryDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1041,7 +1056,8 @@ export namespace Prisma {
     Notification: 'Notification',
     NotificationRolePermission: 'NotificationRolePermission',
     Feedback: 'Feedback',
-    FeedbackReply: 'FeedbackReply'
+    FeedbackReply: 'FeedbackReply',
+    FeedbackStatusHistory: 'FeedbackStatusHistory'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1060,7 +1076,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "lead" | "bid" | "leadWatch" | "leadSale" | "settings" | "userType" | "page" | "userTypePermission" | "leadTypePermission" | "userLeadTypePermission" | "fAQ" | "about" | "designSettings" | "emailTemplate" | "sMSTemplate" | "activityLog" | "passwordResetToken" | "balanceTransaction" | "notificationType" | "notificationPreference" | "notification" | "notificationRolePermission" | "feedback" | "feedbackReply"
+      modelProps: "user" | "lead" | "bid" | "leadWatch" | "leadSale" | "settings" | "userType" | "page" | "userTypePermission" | "leadTypePermission" | "userLeadTypePermission" | "fAQ" | "about" | "designSettings" | "emailTemplate" | "sMSTemplate" | "activityLog" | "passwordResetToken" | "balanceTransaction" | "notificationType" | "notificationPreference" | "notification" | "notificationRolePermission" | "feedback" | "feedbackReply" | "feedbackStatusHistory"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2914,6 +2930,80 @@ export namespace Prisma {
           }
         }
       }
+      FeedbackStatusHistory: {
+        payload: Prisma.$FeedbackStatusHistoryPayload<ExtArgs>
+        fields: Prisma.FeedbackStatusHistoryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.FeedbackStatusHistoryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedbackStatusHistoryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.FeedbackStatusHistoryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedbackStatusHistoryPayload>
+          }
+          findFirst: {
+            args: Prisma.FeedbackStatusHistoryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedbackStatusHistoryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.FeedbackStatusHistoryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedbackStatusHistoryPayload>
+          }
+          findMany: {
+            args: Prisma.FeedbackStatusHistoryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedbackStatusHistoryPayload>[]
+          }
+          create: {
+            args: Prisma.FeedbackStatusHistoryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedbackStatusHistoryPayload>
+          }
+          createMany: {
+            args: Prisma.FeedbackStatusHistoryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.FeedbackStatusHistoryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedbackStatusHistoryPayload>[]
+          }
+          delete: {
+            args: Prisma.FeedbackStatusHistoryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedbackStatusHistoryPayload>
+          }
+          update: {
+            args: Prisma.FeedbackStatusHistoryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedbackStatusHistoryPayload>
+          }
+          deleteMany: {
+            args: Prisma.FeedbackStatusHistoryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.FeedbackStatusHistoryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FeedbackStatusHistoryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedbackStatusHistoryPayload>[]
+          }
+          upsert: {
+            args: Prisma.FeedbackStatusHistoryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedbackStatusHistoryPayload>
+          }
+          aggregate: {
+            args: Prisma.FeedbackStatusHistoryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFeedbackStatusHistory>
+          }
+          groupBy: {
+            args: Prisma.FeedbackStatusHistoryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FeedbackStatusHistoryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.FeedbackStatusHistoryCountArgs<ExtArgs>
+            result: $Utils.Optional<FeedbackStatusHistoryCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -3035,6 +3125,7 @@ export namespace Prisma {
     notificationRolePermission?: NotificationRolePermissionOmit
     feedback?: FeedbackOmit
     feedbackReply?: FeedbackReplyOmit
+    feedbackStatusHistory?: FeedbackStatusHistoryOmit
   }
 
   /* Types for Logging */
@@ -3129,6 +3220,7 @@ export namespace Prisma {
     feedbacksCreated: number
     feedbacksAssigned: number
     feedbackReplies: number
+    feedbackStatusHistory: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3146,6 +3238,7 @@ export namespace Prisma {
     feedbacksCreated?: boolean | UserCountOutputTypeCountFeedbacksCreatedArgs
     feedbacksAssigned?: boolean | UserCountOutputTypeCountFeedbacksAssignedArgs
     feedbackReplies?: boolean | UserCountOutputTypeCountFeedbackRepliesArgs
+    feedbackStatusHistory?: boolean | UserCountOutputTypeCountFeedbackStatusHistoryArgs
   }
 
   // Custom InputTypes
@@ -3255,6 +3348,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountFeedbackRepliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FeedbackReplyWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountFeedbackStatusHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FeedbackStatusHistoryWhereInput
   }
 
 
@@ -3473,10 +3573,12 @@ export namespace Prisma {
 
   export type FeedbackCountOutputType = {
     replies: number
+    statusHistory: number
   }
 
   export type FeedbackCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     replies?: boolean | FeedbackCountOutputTypeCountRepliesArgs
+    statusHistory?: boolean | FeedbackCountOutputTypeCountStatusHistoryArgs
   }
 
   // Custom InputTypes
@@ -3495,6 +3597,13 @@ export namespace Prisma {
    */
   export type FeedbackCountOutputTypeCountRepliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FeedbackReplyWhereInput
+  }
+
+  /**
+   * FeedbackCountOutputType without action
+   */
+  export type FeedbackCountOutputTypeCountStatusHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FeedbackStatusHistoryWhereInput
   }
 
 
@@ -3908,6 +4017,7 @@ export namespace Prisma {
     feedbacksCreated?: boolean | User$feedbacksCreatedArgs<ExtArgs>
     feedbacksAssigned?: boolean | User$feedbacksAssignedArgs<ExtArgs>
     feedbackReplies?: boolean | User$feedbackRepliesArgs<ExtArgs>
+    feedbackStatusHistory?: boolean | User$feedbackStatusHistoryArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4029,6 +4139,7 @@ export namespace Prisma {
     feedbacksCreated?: boolean | User$feedbacksCreatedArgs<ExtArgs>
     feedbacksAssigned?: boolean | User$feedbacksAssignedArgs<ExtArgs>
     feedbackReplies?: boolean | User$feedbackRepliesArgs<ExtArgs>
+    feedbackStatusHistory?: boolean | User$feedbackStatusHistoryArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4059,6 +4170,7 @@ export namespace Prisma {
       feedbacksCreated: Prisma.$FeedbackPayload<ExtArgs>[]
       feedbacksAssigned: Prisma.$FeedbackPayload<ExtArgs>[]
       feedbackReplies: Prisma.$FeedbackReplyPayload<ExtArgs>[]
+      feedbackStatusHistory: Prisma.$FeedbackStatusHistoryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4500,6 +4612,7 @@ export namespace Prisma {
     feedbacksCreated<T extends User$feedbacksCreatedArgs<ExtArgs> = {}>(args?: Subset<T, User$feedbacksCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     feedbacksAssigned<T extends User$feedbacksAssignedArgs<ExtArgs> = {}>(args?: Subset<T, User$feedbacksAssignedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     feedbackReplies<T extends User$feedbackRepliesArgs<ExtArgs> = {}>(args?: Subset<T, User$feedbackRepliesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedbackReplyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    feedbackStatusHistory<T extends User$feedbackStatusHistoryArgs<ExtArgs> = {}>(args?: Subset<T, User$feedbackStatusHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedbackStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5306,6 +5419,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: FeedbackReplyScalarFieldEnum | FeedbackReplyScalarFieldEnum[]
+  }
+
+  /**
+   * User.feedbackStatusHistory
+   */
+  export type User$feedbackStatusHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedbackStatusHistory
+     */
+    select?: FeedbackStatusHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedbackStatusHistory
+     */
+    omit?: FeedbackStatusHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedbackStatusHistoryInclude<ExtArgs> | null
+    where?: FeedbackStatusHistoryWhereInput
+    orderBy?: FeedbackStatusHistoryOrderByWithRelationInput | FeedbackStatusHistoryOrderByWithRelationInput[]
+    cursor?: FeedbackStatusHistoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FeedbackStatusHistoryScalarFieldEnum | FeedbackStatusHistoryScalarFieldEnum[]
   }
 
   /**
@@ -30925,6 +31062,7 @@ export namespace Prisma {
     leadSale?: boolean | LeadSaleDefaultArgs<ExtArgs>
     assignedToUser?: boolean | Feedback$assignedToUserArgs<ExtArgs>
     replies?: boolean | Feedback$repliesArgs<ExtArgs>
+    statusHistory?: boolean | Feedback$statusHistoryArgs<ExtArgs>
     _count?: boolean | FeedbackCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["feedback"]>
 
@@ -30985,6 +31123,7 @@ export namespace Prisma {
     leadSale?: boolean | LeadSaleDefaultArgs<ExtArgs>
     assignedToUser?: boolean | Feedback$assignedToUserArgs<ExtArgs>
     replies?: boolean | Feedback$repliesArgs<ExtArgs>
+    statusHistory?: boolean | Feedback$statusHistoryArgs<ExtArgs>
     _count?: boolean | FeedbackCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type FeedbackIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -31005,6 +31144,7 @@ export namespace Prisma {
       leadSale: Prisma.$LeadSalePayload<ExtArgs>
       assignedToUser: Prisma.$UserPayload<ExtArgs> | null
       replies: Prisma.$FeedbackReplyPayload<ExtArgs>[]
+      statusHistory: Prisma.$FeedbackStatusHistoryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -31417,6 +31557,7 @@ export namespace Prisma {
     leadSale<T extends LeadSaleDefaultArgs<ExtArgs> = {}>(args?: Subset<T, LeadSaleDefaultArgs<ExtArgs>>): Prisma__LeadSaleClient<$Result.GetResult<Prisma.$LeadSalePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     assignedToUser<T extends Feedback$assignedToUserArgs<ExtArgs> = {}>(args?: Subset<T, Feedback$assignedToUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     replies<T extends Feedback$repliesArgs<ExtArgs> = {}>(args?: Subset<T, Feedback$repliesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedbackReplyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    statusHistory<T extends Feedback$statusHistoryArgs<ExtArgs> = {}>(args?: Subset<T, Feedback$statusHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedbackStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -31894,6 +32035,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: FeedbackReplyScalarFieldEnum | FeedbackReplyScalarFieldEnum[]
+  }
+
+  /**
+   * Feedback.statusHistory
+   */
+  export type Feedback$statusHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedbackStatusHistory
+     */
+    select?: FeedbackStatusHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedbackStatusHistory
+     */
+    omit?: FeedbackStatusHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedbackStatusHistoryInclude<ExtArgs> | null
+    where?: FeedbackStatusHistoryWhereInput
+    orderBy?: FeedbackStatusHistoryOrderByWithRelationInput | FeedbackStatusHistoryOrderByWithRelationInput[]
+    cursor?: FeedbackStatusHistoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FeedbackStatusHistoryScalarFieldEnum | FeedbackStatusHistoryScalarFieldEnum[]
   }
 
   /**
@@ -32995,6 +33160,1098 @@ export namespace Prisma {
 
 
   /**
+   * Model FeedbackStatusHistory
+   */
+
+  export type AggregateFeedbackStatusHistory = {
+    _count: FeedbackStatusHistoryCountAggregateOutputType | null
+    _min: FeedbackStatusHistoryMinAggregateOutputType | null
+    _max: FeedbackStatusHistoryMaxAggregateOutputType | null
+  }
+
+  export type FeedbackStatusHistoryMinAggregateOutputType = {
+    id: string | null
+    feedbackId: string | null
+    oldStatus: $Enums.FeedbackStatus | null
+    newStatus: $Enums.FeedbackStatus | null
+    internalNote: string | null
+    changedBy: string | null
+    createdAt: Date | null
+  }
+
+  export type FeedbackStatusHistoryMaxAggregateOutputType = {
+    id: string | null
+    feedbackId: string | null
+    oldStatus: $Enums.FeedbackStatus | null
+    newStatus: $Enums.FeedbackStatus | null
+    internalNote: string | null
+    changedBy: string | null
+    createdAt: Date | null
+  }
+
+  export type FeedbackStatusHistoryCountAggregateOutputType = {
+    id: number
+    feedbackId: number
+    oldStatus: number
+    newStatus: number
+    internalNote: number
+    changedBy: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type FeedbackStatusHistoryMinAggregateInputType = {
+    id?: true
+    feedbackId?: true
+    oldStatus?: true
+    newStatus?: true
+    internalNote?: true
+    changedBy?: true
+    createdAt?: true
+  }
+
+  export type FeedbackStatusHistoryMaxAggregateInputType = {
+    id?: true
+    feedbackId?: true
+    oldStatus?: true
+    newStatus?: true
+    internalNote?: true
+    changedBy?: true
+    createdAt?: true
+  }
+
+  export type FeedbackStatusHistoryCountAggregateInputType = {
+    id?: true
+    feedbackId?: true
+    oldStatus?: true
+    newStatus?: true
+    internalNote?: true
+    changedBy?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type FeedbackStatusHistoryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FeedbackStatusHistory to aggregate.
+     */
+    where?: FeedbackStatusHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FeedbackStatusHistories to fetch.
+     */
+    orderBy?: FeedbackStatusHistoryOrderByWithRelationInput | FeedbackStatusHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: FeedbackStatusHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FeedbackStatusHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FeedbackStatusHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned FeedbackStatusHistories
+    **/
+    _count?: true | FeedbackStatusHistoryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FeedbackStatusHistoryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FeedbackStatusHistoryMaxAggregateInputType
+  }
+
+  export type GetFeedbackStatusHistoryAggregateType<T extends FeedbackStatusHistoryAggregateArgs> = {
+        [P in keyof T & keyof AggregateFeedbackStatusHistory]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFeedbackStatusHistory[P]>
+      : GetScalarType<T[P], AggregateFeedbackStatusHistory[P]>
+  }
+
+
+
+
+  export type FeedbackStatusHistoryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FeedbackStatusHistoryWhereInput
+    orderBy?: FeedbackStatusHistoryOrderByWithAggregationInput | FeedbackStatusHistoryOrderByWithAggregationInput[]
+    by: FeedbackStatusHistoryScalarFieldEnum[] | FeedbackStatusHistoryScalarFieldEnum
+    having?: FeedbackStatusHistoryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FeedbackStatusHistoryCountAggregateInputType | true
+    _min?: FeedbackStatusHistoryMinAggregateInputType
+    _max?: FeedbackStatusHistoryMaxAggregateInputType
+  }
+
+  export type FeedbackStatusHistoryGroupByOutputType = {
+    id: string
+    feedbackId: string
+    oldStatus: $Enums.FeedbackStatus | null
+    newStatus: $Enums.FeedbackStatus
+    internalNote: string
+    changedBy: string
+    createdAt: Date
+    _count: FeedbackStatusHistoryCountAggregateOutputType | null
+    _min: FeedbackStatusHistoryMinAggregateOutputType | null
+    _max: FeedbackStatusHistoryMaxAggregateOutputType | null
+  }
+
+  type GetFeedbackStatusHistoryGroupByPayload<T extends FeedbackStatusHistoryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FeedbackStatusHistoryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FeedbackStatusHistoryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FeedbackStatusHistoryGroupByOutputType[P]>
+            : GetScalarType<T[P], FeedbackStatusHistoryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FeedbackStatusHistorySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    feedbackId?: boolean
+    oldStatus?: boolean
+    newStatus?: boolean
+    internalNote?: boolean
+    changedBy?: boolean
+    createdAt?: boolean
+    feedback?: boolean | FeedbackDefaultArgs<ExtArgs>
+    changedByUser?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["feedbackStatusHistory"]>
+
+  export type FeedbackStatusHistorySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    feedbackId?: boolean
+    oldStatus?: boolean
+    newStatus?: boolean
+    internalNote?: boolean
+    changedBy?: boolean
+    createdAt?: boolean
+    feedback?: boolean | FeedbackDefaultArgs<ExtArgs>
+    changedByUser?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["feedbackStatusHistory"]>
+
+  export type FeedbackStatusHistorySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    feedbackId?: boolean
+    oldStatus?: boolean
+    newStatus?: boolean
+    internalNote?: boolean
+    changedBy?: boolean
+    createdAt?: boolean
+    feedback?: boolean | FeedbackDefaultArgs<ExtArgs>
+    changedByUser?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["feedbackStatusHistory"]>
+
+  export type FeedbackStatusHistorySelectScalar = {
+    id?: boolean
+    feedbackId?: boolean
+    oldStatus?: boolean
+    newStatus?: boolean
+    internalNote?: boolean
+    changedBy?: boolean
+    createdAt?: boolean
+  }
+
+  export type FeedbackStatusHistoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "feedbackId" | "oldStatus" | "newStatus" | "internalNote" | "changedBy" | "createdAt", ExtArgs["result"]["feedbackStatusHistory"]>
+  export type FeedbackStatusHistoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    feedback?: boolean | FeedbackDefaultArgs<ExtArgs>
+    changedByUser?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type FeedbackStatusHistoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    feedback?: boolean | FeedbackDefaultArgs<ExtArgs>
+    changedByUser?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type FeedbackStatusHistoryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    feedback?: boolean | FeedbackDefaultArgs<ExtArgs>
+    changedByUser?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $FeedbackStatusHistoryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "FeedbackStatusHistory"
+    objects: {
+      feedback: Prisma.$FeedbackPayload<ExtArgs>
+      changedByUser: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      feedbackId: string
+      oldStatus: $Enums.FeedbackStatus | null
+      newStatus: $Enums.FeedbackStatus
+      internalNote: string
+      changedBy: string
+      createdAt: Date
+    }, ExtArgs["result"]["feedbackStatusHistory"]>
+    composites: {}
+  }
+
+  type FeedbackStatusHistoryGetPayload<S extends boolean | null | undefined | FeedbackStatusHistoryDefaultArgs> = $Result.GetResult<Prisma.$FeedbackStatusHistoryPayload, S>
+
+  type FeedbackStatusHistoryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<FeedbackStatusHistoryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FeedbackStatusHistoryCountAggregateInputType | true
+    }
+
+  export interface FeedbackStatusHistoryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['FeedbackStatusHistory'], meta: { name: 'FeedbackStatusHistory' } }
+    /**
+     * Find zero or one FeedbackStatusHistory that matches the filter.
+     * @param {FeedbackStatusHistoryFindUniqueArgs} args - Arguments to find a FeedbackStatusHistory
+     * @example
+     * // Get one FeedbackStatusHistory
+     * const feedbackStatusHistory = await prisma.feedbackStatusHistory.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends FeedbackStatusHistoryFindUniqueArgs>(args: SelectSubset<T, FeedbackStatusHistoryFindUniqueArgs<ExtArgs>>): Prisma__FeedbackStatusHistoryClient<$Result.GetResult<Prisma.$FeedbackStatusHistoryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one FeedbackStatusHistory that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {FeedbackStatusHistoryFindUniqueOrThrowArgs} args - Arguments to find a FeedbackStatusHistory
+     * @example
+     * // Get one FeedbackStatusHistory
+     * const feedbackStatusHistory = await prisma.feedbackStatusHistory.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends FeedbackStatusHistoryFindUniqueOrThrowArgs>(args: SelectSubset<T, FeedbackStatusHistoryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FeedbackStatusHistoryClient<$Result.GetResult<Prisma.$FeedbackStatusHistoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FeedbackStatusHistory that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedbackStatusHistoryFindFirstArgs} args - Arguments to find a FeedbackStatusHistory
+     * @example
+     * // Get one FeedbackStatusHistory
+     * const feedbackStatusHistory = await prisma.feedbackStatusHistory.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends FeedbackStatusHistoryFindFirstArgs>(args?: SelectSubset<T, FeedbackStatusHistoryFindFirstArgs<ExtArgs>>): Prisma__FeedbackStatusHistoryClient<$Result.GetResult<Prisma.$FeedbackStatusHistoryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FeedbackStatusHistory that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedbackStatusHistoryFindFirstOrThrowArgs} args - Arguments to find a FeedbackStatusHistory
+     * @example
+     * // Get one FeedbackStatusHistory
+     * const feedbackStatusHistory = await prisma.feedbackStatusHistory.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends FeedbackStatusHistoryFindFirstOrThrowArgs>(args?: SelectSubset<T, FeedbackStatusHistoryFindFirstOrThrowArgs<ExtArgs>>): Prisma__FeedbackStatusHistoryClient<$Result.GetResult<Prisma.$FeedbackStatusHistoryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more FeedbackStatusHistories that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedbackStatusHistoryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all FeedbackStatusHistories
+     * const feedbackStatusHistories = await prisma.feedbackStatusHistory.findMany()
+     * 
+     * // Get first 10 FeedbackStatusHistories
+     * const feedbackStatusHistories = await prisma.feedbackStatusHistory.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const feedbackStatusHistoryWithIdOnly = await prisma.feedbackStatusHistory.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends FeedbackStatusHistoryFindManyArgs>(args?: SelectSubset<T, FeedbackStatusHistoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedbackStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a FeedbackStatusHistory.
+     * @param {FeedbackStatusHistoryCreateArgs} args - Arguments to create a FeedbackStatusHistory.
+     * @example
+     * // Create one FeedbackStatusHistory
+     * const FeedbackStatusHistory = await prisma.feedbackStatusHistory.create({
+     *   data: {
+     *     // ... data to create a FeedbackStatusHistory
+     *   }
+     * })
+     * 
+     */
+    create<T extends FeedbackStatusHistoryCreateArgs>(args: SelectSubset<T, FeedbackStatusHistoryCreateArgs<ExtArgs>>): Prisma__FeedbackStatusHistoryClient<$Result.GetResult<Prisma.$FeedbackStatusHistoryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many FeedbackStatusHistories.
+     * @param {FeedbackStatusHistoryCreateManyArgs} args - Arguments to create many FeedbackStatusHistories.
+     * @example
+     * // Create many FeedbackStatusHistories
+     * const feedbackStatusHistory = await prisma.feedbackStatusHistory.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends FeedbackStatusHistoryCreateManyArgs>(args?: SelectSubset<T, FeedbackStatusHistoryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many FeedbackStatusHistories and returns the data saved in the database.
+     * @param {FeedbackStatusHistoryCreateManyAndReturnArgs} args - Arguments to create many FeedbackStatusHistories.
+     * @example
+     * // Create many FeedbackStatusHistories
+     * const feedbackStatusHistory = await prisma.feedbackStatusHistory.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many FeedbackStatusHistories and only return the `id`
+     * const feedbackStatusHistoryWithIdOnly = await prisma.feedbackStatusHistory.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FeedbackStatusHistoryCreateManyAndReturnArgs>(args?: SelectSubset<T, FeedbackStatusHistoryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedbackStatusHistoryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a FeedbackStatusHistory.
+     * @param {FeedbackStatusHistoryDeleteArgs} args - Arguments to delete one FeedbackStatusHistory.
+     * @example
+     * // Delete one FeedbackStatusHistory
+     * const FeedbackStatusHistory = await prisma.feedbackStatusHistory.delete({
+     *   where: {
+     *     // ... filter to delete one FeedbackStatusHistory
+     *   }
+     * })
+     * 
+     */
+    delete<T extends FeedbackStatusHistoryDeleteArgs>(args: SelectSubset<T, FeedbackStatusHistoryDeleteArgs<ExtArgs>>): Prisma__FeedbackStatusHistoryClient<$Result.GetResult<Prisma.$FeedbackStatusHistoryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one FeedbackStatusHistory.
+     * @param {FeedbackStatusHistoryUpdateArgs} args - Arguments to update one FeedbackStatusHistory.
+     * @example
+     * // Update one FeedbackStatusHistory
+     * const feedbackStatusHistory = await prisma.feedbackStatusHistory.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends FeedbackStatusHistoryUpdateArgs>(args: SelectSubset<T, FeedbackStatusHistoryUpdateArgs<ExtArgs>>): Prisma__FeedbackStatusHistoryClient<$Result.GetResult<Prisma.$FeedbackStatusHistoryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more FeedbackStatusHistories.
+     * @param {FeedbackStatusHistoryDeleteManyArgs} args - Arguments to filter FeedbackStatusHistories to delete.
+     * @example
+     * // Delete a few FeedbackStatusHistories
+     * const { count } = await prisma.feedbackStatusHistory.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends FeedbackStatusHistoryDeleteManyArgs>(args?: SelectSubset<T, FeedbackStatusHistoryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FeedbackStatusHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedbackStatusHistoryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many FeedbackStatusHistories
+     * const feedbackStatusHistory = await prisma.feedbackStatusHistory.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends FeedbackStatusHistoryUpdateManyArgs>(args: SelectSubset<T, FeedbackStatusHistoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FeedbackStatusHistories and returns the data updated in the database.
+     * @param {FeedbackStatusHistoryUpdateManyAndReturnArgs} args - Arguments to update many FeedbackStatusHistories.
+     * @example
+     * // Update many FeedbackStatusHistories
+     * const feedbackStatusHistory = await prisma.feedbackStatusHistory.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more FeedbackStatusHistories and only return the `id`
+     * const feedbackStatusHistoryWithIdOnly = await prisma.feedbackStatusHistory.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FeedbackStatusHistoryUpdateManyAndReturnArgs>(args: SelectSubset<T, FeedbackStatusHistoryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedbackStatusHistoryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one FeedbackStatusHistory.
+     * @param {FeedbackStatusHistoryUpsertArgs} args - Arguments to update or create a FeedbackStatusHistory.
+     * @example
+     * // Update or create a FeedbackStatusHistory
+     * const feedbackStatusHistory = await prisma.feedbackStatusHistory.upsert({
+     *   create: {
+     *     // ... data to create a FeedbackStatusHistory
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the FeedbackStatusHistory we want to update
+     *   }
+     * })
+     */
+    upsert<T extends FeedbackStatusHistoryUpsertArgs>(args: SelectSubset<T, FeedbackStatusHistoryUpsertArgs<ExtArgs>>): Prisma__FeedbackStatusHistoryClient<$Result.GetResult<Prisma.$FeedbackStatusHistoryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of FeedbackStatusHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedbackStatusHistoryCountArgs} args - Arguments to filter FeedbackStatusHistories to count.
+     * @example
+     * // Count the number of FeedbackStatusHistories
+     * const count = await prisma.feedbackStatusHistory.count({
+     *   where: {
+     *     // ... the filter for the FeedbackStatusHistories we want to count
+     *   }
+     * })
+    **/
+    count<T extends FeedbackStatusHistoryCountArgs>(
+      args?: Subset<T, FeedbackStatusHistoryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FeedbackStatusHistoryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a FeedbackStatusHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedbackStatusHistoryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FeedbackStatusHistoryAggregateArgs>(args: Subset<T, FeedbackStatusHistoryAggregateArgs>): Prisma.PrismaPromise<GetFeedbackStatusHistoryAggregateType<T>>
+
+    /**
+     * Group by FeedbackStatusHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedbackStatusHistoryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FeedbackStatusHistoryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FeedbackStatusHistoryGroupByArgs['orderBy'] }
+        : { orderBy?: FeedbackStatusHistoryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FeedbackStatusHistoryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFeedbackStatusHistoryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the FeedbackStatusHistory model
+   */
+  readonly fields: FeedbackStatusHistoryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for FeedbackStatusHistory.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__FeedbackStatusHistoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    feedback<T extends FeedbackDefaultArgs<ExtArgs> = {}>(args?: Subset<T, FeedbackDefaultArgs<ExtArgs>>): Prisma__FeedbackClient<$Result.GetResult<Prisma.$FeedbackPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    changedByUser<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the FeedbackStatusHistory model
+   */
+  interface FeedbackStatusHistoryFieldRefs {
+    readonly id: FieldRef<"FeedbackStatusHistory", 'String'>
+    readonly feedbackId: FieldRef<"FeedbackStatusHistory", 'String'>
+    readonly oldStatus: FieldRef<"FeedbackStatusHistory", 'FeedbackStatus'>
+    readonly newStatus: FieldRef<"FeedbackStatusHistory", 'FeedbackStatus'>
+    readonly internalNote: FieldRef<"FeedbackStatusHistory", 'String'>
+    readonly changedBy: FieldRef<"FeedbackStatusHistory", 'String'>
+    readonly createdAt: FieldRef<"FeedbackStatusHistory", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * FeedbackStatusHistory findUnique
+   */
+  export type FeedbackStatusHistoryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedbackStatusHistory
+     */
+    select?: FeedbackStatusHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedbackStatusHistory
+     */
+    omit?: FeedbackStatusHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedbackStatusHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which FeedbackStatusHistory to fetch.
+     */
+    where: FeedbackStatusHistoryWhereUniqueInput
+  }
+
+  /**
+   * FeedbackStatusHistory findUniqueOrThrow
+   */
+  export type FeedbackStatusHistoryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedbackStatusHistory
+     */
+    select?: FeedbackStatusHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedbackStatusHistory
+     */
+    omit?: FeedbackStatusHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedbackStatusHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which FeedbackStatusHistory to fetch.
+     */
+    where: FeedbackStatusHistoryWhereUniqueInput
+  }
+
+  /**
+   * FeedbackStatusHistory findFirst
+   */
+  export type FeedbackStatusHistoryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedbackStatusHistory
+     */
+    select?: FeedbackStatusHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedbackStatusHistory
+     */
+    omit?: FeedbackStatusHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedbackStatusHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which FeedbackStatusHistory to fetch.
+     */
+    where?: FeedbackStatusHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FeedbackStatusHistories to fetch.
+     */
+    orderBy?: FeedbackStatusHistoryOrderByWithRelationInput | FeedbackStatusHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FeedbackStatusHistories.
+     */
+    cursor?: FeedbackStatusHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FeedbackStatusHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FeedbackStatusHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FeedbackStatusHistories.
+     */
+    distinct?: FeedbackStatusHistoryScalarFieldEnum | FeedbackStatusHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * FeedbackStatusHistory findFirstOrThrow
+   */
+  export type FeedbackStatusHistoryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedbackStatusHistory
+     */
+    select?: FeedbackStatusHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedbackStatusHistory
+     */
+    omit?: FeedbackStatusHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedbackStatusHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which FeedbackStatusHistory to fetch.
+     */
+    where?: FeedbackStatusHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FeedbackStatusHistories to fetch.
+     */
+    orderBy?: FeedbackStatusHistoryOrderByWithRelationInput | FeedbackStatusHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FeedbackStatusHistories.
+     */
+    cursor?: FeedbackStatusHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FeedbackStatusHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FeedbackStatusHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FeedbackStatusHistories.
+     */
+    distinct?: FeedbackStatusHistoryScalarFieldEnum | FeedbackStatusHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * FeedbackStatusHistory findMany
+   */
+  export type FeedbackStatusHistoryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedbackStatusHistory
+     */
+    select?: FeedbackStatusHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedbackStatusHistory
+     */
+    omit?: FeedbackStatusHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedbackStatusHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which FeedbackStatusHistories to fetch.
+     */
+    where?: FeedbackStatusHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FeedbackStatusHistories to fetch.
+     */
+    orderBy?: FeedbackStatusHistoryOrderByWithRelationInput | FeedbackStatusHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing FeedbackStatusHistories.
+     */
+    cursor?: FeedbackStatusHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FeedbackStatusHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FeedbackStatusHistories.
+     */
+    skip?: number
+    distinct?: FeedbackStatusHistoryScalarFieldEnum | FeedbackStatusHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * FeedbackStatusHistory create
+   */
+  export type FeedbackStatusHistoryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedbackStatusHistory
+     */
+    select?: FeedbackStatusHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedbackStatusHistory
+     */
+    omit?: FeedbackStatusHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedbackStatusHistoryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a FeedbackStatusHistory.
+     */
+    data: XOR<FeedbackStatusHistoryCreateInput, FeedbackStatusHistoryUncheckedCreateInput>
+  }
+
+  /**
+   * FeedbackStatusHistory createMany
+   */
+  export type FeedbackStatusHistoryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many FeedbackStatusHistories.
+     */
+    data: FeedbackStatusHistoryCreateManyInput | FeedbackStatusHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * FeedbackStatusHistory createManyAndReturn
+   */
+  export type FeedbackStatusHistoryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedbackStatusHistory
+     */
+    select?: FeedbackStatusHistorySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedbackStatusHistory
+     */
+    omit?: FeedbackStatusHistoryOmit<ExtArgs> | null
+    /**
+     * The data used to create many FeedbackStatusHistories.
+     */
+    data: FeedbackStatusHistoryCreateManyInput | FeedbackStatusHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedbackStatusHistoryIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * FeedbackStatusHistory update
+   */
+  export type FeedbackStatusHistoryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedbackStatusHistory
+     */
+    select?: FeedbackStatusHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedbackStatusHistory
+     */
+    omit?: FeedbackStatusHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedbackStatusHistoryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a FeedbackStatusHistory.
+     */
+    data: XOR<FeedbackStatusHistoryUpdateInput, FeedbackStatusHistoryUncheckedUpdateInput>
+    /**
+     * Choose, which FeedbackStatusHistory to update.
+     */
+    where: FeedbackStatusHistoryWhereUniqueInput
+  }
+
+  /**
+   * FeedbackStatusHistory updateMany
+   */
+  export type FeedbackStatusHistoryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update FeedbackStatusHistories.
+     */
+    data: XOR<FeedbackStatusHistoryUpdateManyMutationInput, FeedbackStatusHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which FeedbackStatusHistories to update
+     */
+    where?: FeedbackStatusHistoryWhereInput
+    /**
+     * Limit how many FeedbackStatusHistories to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * FeedbackStatusHistory updateManyAndReturn
+   */
+  export type FeedbackStatusHistoryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedbackStatusHistory
+     */
+    select?: FeedbackStatusHistorySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedbackStatusHistory
+     */
+    omit?: FeedbackStatusHistoryOmit<ExtArgs> | null
+    /**
+     * The data used to update FeedbackStatusHistories.
+     */
+    data: XOR<FeedbackStatusHistoryUpdateManyMutationInput, FeedbackStatusHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which FeedbackStatusHistories to update
+     */
+    where?: FeedbackStatusHistoryWhereInput
+    /**
+     * Limit how many FeedbackStatusHistories to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedbackStatusHistoryIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * FeedbackStatusHistory upsert
+   */
+  export type FeedbackStatusHistoryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedbackStatusHistory
+     */
+    select?: FeedbackStatusHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedbackStatusHistory
+     */
+    omit?: FeedbackStatusHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedbackStatusHistoryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the FeedbackStatusHistory to update in case it exists.
+     */
+    where: FeedbackStatusHistoryWhereUniqueInput
+    /**
+     * In case the FeedbackStatusHistory found by the `where` argument doesn't exist, create a new FeedbackStatusHistory with this data.
+     */
+    create: XOR<FeedbackStatusHistoryCreateInput, FeedbackStatusHistoryUncheckedCreateInput>
+    /**
+     * In case the FeedbackStatusHistory was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FeedbackStatusHistoryUpdateInput, FeedbackStatusHistoryUncheckedUpdateInput>
+  }
+
+  /**
+   * FeedbackStatusHistory delete
+   */
+  export type FeedbackStatusHistoryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedbackStatusHistory
+     */
+    select?: FeedbackStatusHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedbackStatusHistory
+     */
+    omit?: FeedbackStatusHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedbackStatusHistoryInclude<ExtArgs> | null
+    /**
+     * Filter which FeedbackStatusHistory to delete.
+     */
+    where: FeedbackStatusHistoryWhereUniqueInput
+  }
+
+  /**
+   * FeedbackStatusHistory deleteMany
+   */
+  export type FeedbackStatusHistoryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FeedbackStatusHistories to delete
+     */
+    where?: FeedbackStatusHistoryWhereInput
+    /**
+     * Limit how many FeedbackStatusHistories to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * FeedbackStatusHistory without action
+   */
+  export type FeedbackStatusHistoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedbackStatusHistory
+     */
+    select?: FeedbackStatusHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedbackStatusHistory
+     */
+    omit?: FeedbackStatusHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedbackStatusHistoryInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -33448,6 +34705,19 @@ export namespace Prisma {
   export type FeedbackReplyScalarFieldEnum = (typeof FeedbackReplyScalarFieldEnum)[keyof typeof FeedbackReplyScalarFieldEnum]
 
 
+  export const FeedbackStatusHistoryScalarFieldEnum: {
+    id: 'id',
+    feedbackId: 'feedbackId',
+    oldStatus: 'oldStatus',
+    newStatus: 'newStatus',
+    internalNote: 'internalNote',
+    changedBy: 'changedBy',
+    createdAt: 'createdAt'
+  };
+
+  export type FeedbackStatusHistoryScalarFieldEnum = (typeof FeedbackStatusHistoryScalarFieldEnum)[keyof typeof FeedbackStatusHistoryScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -33700,6 +34970,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackListRelationFilter
     feedbacksAssigned?: FeedbackListRelationFilter
     feedbackReplies?: FeedbackReplyListRelationFilter
+    feedbackStatusHistory?: FeedbackStatusHistoryListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -33748,6 +35019,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackOrderByRelationAggregateInput
     feedbacksAssigned?: FeedbackOrderByRelationAggregateInput
     feedbackReplies?: FeedbackReplyOrderByRelationAggregateInput
+    feedbackStatusHistory?: FeedbackStatusHistoryOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -33799,6 +35071,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackListRelationFilter
     feedbacksAssigned?: FeedbackListRelationFilter
     feedbackReplies?: FeedbackReplyListRelationFilter
+    feedbackStatusHistory?: FeedbackStatusHistoryListRelationFilter
   }, "id" | "email" | "username">
 
   export type UserOrderByWithAggregationInput = {
@@ -35826,6 +37099,7 @@ export namespace Prisma {
     leadSale?: XOR<LeadSaleScalarRelationFilter, LeadSaleWhereInput>
     assignedToUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     replies?: FeedbackReplyListRelationFilter
+    statusHistory?: FeedbackStatusHistoryListRelationFilter
   }
 
   export type FeedbackOrderByWithRelationInput = {
@@ -35845,6 +37119,7 @@ export namespace Prisma {
     leadSale?: LeadSaleOrderByWithRelationInput
     assignedToUser?: UserOrderByWithRelationInput
     replies?: FeedbackReplyOrderByRelationAggregateInput
+    statusHistory?: FeedbackStatusHistoryOrderByRelationAggregateInput
   }
 
   export type FeedbackWhereUniqueInput = Prisma.AtLeast<{
@@ -35867,6 +37142,7 @@ export namespace Prisma {
     leadSale?: XOR<LeadSaleScalarRelationFilter, LeadSaleWhereInput>
     assignedToUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     replies?: FeedbackReplyListRelationFilter
+    statusHistory?: FeedbackStatusHistoryListRelationFilter
   }, "id" | "leadSaleId">
 
   export type FeedbackOrderByWithAggregationInput = {
@@ -35970,6 +37246,74 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"FeedbackReply"> | Date | string
   }
 
+  export type FeedbackStatusHistoryWhereInput = {
+    AND?: FeedbackStatusHistoryWhereInput | FeedbackStatusHistoryWhereInput[]
+    OR?: FeedbackStatusHistoryWhereInput[]
+    NOT?: FeedbackStatusHistoryWhereInput | FeedbackStatusHistoryWhereInput[]
+    id?: StringFilter<"FeedbackStatusHistory"> | string
+    feedbackId?: StringFilter<"FeedbackStatusHistory"> | string
+    oldStatus?: EnumFeedbackStatusNullableFilter<"FeedbackStatusHistory"> | $Enums.FeedbackStatus | null
+    newStatus?: EnumFeedbackStatusFilter<"FeedbackStatusHistory"> | $Enums.FeedbackStatus
+    internalNote?: StringFilter<"FeedbackStatusHistory"> | string
+    changedBy?: StringFilter<"FeedbackStatusHistory"> | string
+    createdAt?: DateTimeFilter<"FeedbackStatusHistory"> | Date | string
+    feedback?: XOR<FeedbackScalarRelationFilter, FeedbackWhereInput>
+    changedByUser?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type FeedbackStatusHistoryOrderByWithRelationInput = {
+    id?: SortOrder
+    feedbackId?: SortOrder
+    oldStatus?: SortOrderInput | SortOrder
+    newStatus?: SortOrder
+    internalNote?: SortOrder
+    changedBy?: SortOrder
+    createdAt?: SortOrder
+    feedback?: FeedbackOrderByWithRelationInput
+    changedByUser?: UserOrderByWithRelationInput
+  }
+
+  export type FeedbackStatusHistoryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: FeedbackStatusHistoryWhereInput | FeedbackStatusHistoryWhereInput[]
+    OR?: FeedbackStatusHistoryWhereInput[]
+    NOT?: FeedbackStatusHistoryWhereInput | FeedbackStatusHistoryWhereInput[]
+    feedbackId?: StringFilter<"FeedbackStatusHistory"> | string
+    oldStatus?: EnumFeedbackStatusNullableFilter<"FeedbackStatusHistory"> | $Enums.FeedbackStatus | null
+    newStatus?: EnumFeedbackStatusFilter<"FeedbackStatusHistory"> | $Enums.FeedbackStatus
+    internalNote?: StringFilter<"FeedbackStatusHistory"> | string
+    changedBy?: StringFilter<"FeedbackStatusHistory"> | string
+    createdAt?: DateTimeFilter<"FeedbackStatusHistory"> | Date | string
+    feedback?: XOR<FeedbackScalarRelationFilter, FeedbackWhereInput>
+    changedByUser?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type FeedbackStatusHistoryOrderByWithAggregationInput = {
+    id?: SortOrder
+    feedbackId?: SortOrder
+    oldStatus?: SortOrderInput | SortOrder
+    newStatus?: SortOrder
+    internalNote?: SortOrder
+    changedBy?: SortOrder
+    createdAt?: SortOrder
+    _count?: FeedbackStatusHistoryCountOrderByAggregateInput
+    _max?: FeedbackStatusHistoryMaxOrderByAggregateInput
+    _min?: FeedbackStatusHistoryMinOrderByAggregateInput
+  }
+
+  export type FeedbackStatusHistoryScalarWhereWithAggregatesInput = {
+    AND?: FeedbackStatusHistoryScalarWhereWithAggregatesInput | FeedbackStatusHistoryScalarWhereWithAggregatesInput[]
+    OR?: FeedbackStatusHistoryScalarWhereWithAggregatesInput[]
+    NOT?: FeedbackStatusHistoryScalarWhereWithAggregatesInput | FeedbackStatusHistoryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"FeedbackStatusHistory"> | string
+    feedbackId?: StringWithAggregatesFilter<"FeedbackStatusHistory"> | string
+    oldStatus?: EnumFeedbackStatusNullableWithAggregatesFilter<"FeedbackStatusHistory"> | $Enums.FeedbackStatus | null
+    newStatus?: EnumFeedbackStatusWithAggregatesFilter<"FeedbackStatusHistory"> | $Enums.FeedbackStatus
+    internalNote?: StringWithAggregatesFilter<"FeedbackStatusHistory"> | string
+    changedBy?: StringWithAggregatesFilter<"FeedbackStatusHistory"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"FeedbackStatusHistory"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     email: string
@@ -36014,6 +37358,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -36060,6 +37405,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackUncheckedCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyUncheckedCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUpdateInput = {
@@ -36106,6 +37452,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -36152,6 +37499,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUncheckedUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUncheckedUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -38441,6 +39789,7 @@ export namespace Prisma {
     leadSale: LeadSaleCreateNestedOneWithoutFeedbacksInput
     assignedToUser?: UserCreateNestedOneWithoutFeedbacksAssignedInput
     replies?: FeedbackReplyCreateNestedManyWithoutFeedbackInput
+    statusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutFeedbackInput
   }
 
   export type FeedbackUncheckedCreateInput = {
@@ -38457,6 +39806,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     closedAt?: Date | string | null
     replies?: FeedbackReplyUncheckedCreateNestedManyWithoutFeedbackInput
+    statusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutFeedbackInput
   }
 
   export type FeedbackUpdateInput = {
@@ -38473,6 +39823,7 @@ export namespace Prisma {
     leadSale?: LeadSaleUpdateOneRequiredWithoutFeedbacksNestedInput
     assignedToUser?: UserUpdateOneWithoutFeedbacksAssignedNestedInput
     replies?: FeedbackReplyUpdateManyWithoutFeedbackNestedInput
+    statusHistory?: FeedbackStatusHistoryUpdateManyWithoutFeedbackNestedInput
   }
 
   export type FeedbackUncheckedUpdateInput = {
@@ -38489,6 +39840,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     replies?: FeedbackReplyUncheckedUpdateManyWithoutFeedbackNestedInput
+    statusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutFeedbackNestedInput
   }
 
   export type FeedbackCreateManyInput = {
@@ -38591,6 +39943,74 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeedbackStatusHistoryCreateInput = {
+    id?: string
+    oldStatus?: $Enums.FeedbackStatus | null
+    newStatus: $Enums.FeedbackStatus
+    internalNote: string
+    createdAt?: Date | string
+    feedback: FeedbackCreateNestedOneWithoutStatusHistoryInput
+    changedByUser: UserCreateNestedOneWithoutFeedbackStatusHistoryInput
+  }
+
+  export type FeedbackStatusHistoryUncheckedCreateInput = {
+    id?: string
+    feedbackId: string
+    oldStatus?: $Enums.FeedbackStatus | null
+    newStatus: $Enums.FeedbackStatus
+    internalNote: string
+    changedBy: string
+    createdAt?: Date | string
+  }
+
+  export type FeedbackStatusHistoryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    oldStatus?: NullableEnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus | null
+    newStatus?: EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
+    internalNote?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    feedback?: FeedbackUpdateOneRequiredWithoutStatusHistoryNestedInput
+    changedByUser?: UserUpdateOneRequiredWithoutFeedbackStatusHistoryNestedInput
+  }
+
+  export type FeedbackStatusHistoryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    feedbackId?: StringFieldUpdateOperationsInput | string
+    oldStatus?: NullableEnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus | null
+    newStatus?: EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
+    internalNote?: StringFieldUpdateOperationsInput | string
+    changedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeedbackStatusHistoryCreateManyInput = {
+    id?: string
+    feedbackId: string
+    oldStatus?: $Enums.FeedbackStatus | null
+    newStatus: $Enums.FeedbackStatus
+    internalNote: string
+    changedBy: string
+    createdAt?: Date | string
+  }
+
+  export type FeedbackStatusHistoryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    oldStatus?: NullableEnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus | null
+    newStatus?: EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
+    internalNote?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeedbackStatusHistoryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    feedbackId?: StringFieldUpdateOperationsInput | string
+    oldStatus?: NullableEnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus | null
+    newStatus?: EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
+    internalNote?: StringFieldUpdateOperationsInput | string
+    changedBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -38757,6 +40177,12 @@ export namespace Prisma {
     none?: FeedbackReplyWhereInput
   }
 
+  export type FeedbackStatusHistoryListRelationFilter = {
+    every?: FeedbackStatusHistoryWhereInput
+    some?: FeedbackStatusHistoryWhereInput
+    none?: FeedbackStatusHistoryWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -38811,6 +40237,10 @@ export namespace Prisma {
   }
 
   export type FeedbackReplyOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type FeedbackStatusHistoryOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -40424,6 +41854,53 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type EnumFeedbackStatusNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.FeedbackStatus | EnumFeedbackStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.FeedbackStatus[] | ListEnumFeedbackStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.FeedbackStatus[] | ListEnumFeedbackStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumFeedbackStatusNullableFilter<$PrismaModel> | $Enums.FeedbackStatus | null
+  }
+
+  export type FeedbackStatusHistoryCountOrderByAggregateInput = {
+    id?: SortOrder
+    feedbackId?: SortOrder
+    oldStatus?: SortOrder
+    newStatus?: SortOrder
+    internalNote?: SortOrder
+    changedBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type FeedbackStatusHistoryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    feedbackId?: SortOrder
+    oldStatus?: SortOrder
+    newStatus?: SortOrder
+    internalNote?: SortOrder
+    changedBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type FeedbackStatusHistoryMinOrderByAggregateInput = {
+    id?: SortOrder
+    feedbackId?: SortOrder
+    oldStatus?: SortOrder
+    newStatus?: SortOrder
+    internalNote?: SortOrder
+    changedBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EnumFeedbackStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.FeedbackStatus | EnumFeedbackStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.FeedbackStatus[] | ListEnumFeedbackStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.FeedbackStatus[] | ListEnumFeedbackStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumFeedbackStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.FeedbackStatus | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumFeedbackStatusNullableFilter<$PrismaModel>
+    _max?: NestedEnumFeedbackStatusNullableFilter<$PrismaModel>
+  }
+
   export type BidCreateNestedManyWithoutUserInput = {
     create?: XOR<BidCreateWithoutUserInput, BidUncheckedCreateWithoutUserInput> | BidCreateWithoutUserInput[] | BidUncheckedCreateWithoutUserInput[]
     connectOrCreate?: BidCreateOrConnectWithoutUserInput | BidCreateOrConnectWithoutUserInput[]
@@ -40534,6 +42011,13 @@ export namespace Prisma {
     connect?: FeedbackReplyWhereUniqueInput | FeedbackReplyWhereUniqueInput[]
   }
 
+  export type FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput = {
+    create?: XOR<FeedbackStatusHistoryCreateWithoutChangedByUserInput, FeedbackStatusHistoryUncheckedCreateWithoutChangedByUserInput> | FeedbackStatusHistoryCreateWithoutChangedByUserInput[] | FeedbackStatusHistoryUncheckedCreateWithoutChangedByUserInput[]
+    connectOrCreate?: FeedbackStatusHistoryCreateOrConnectWithoutChangedByUserInput | FeedbackStatusHistoryCreateOrConnectWithoutChangedByUserInput[]
+    createMany?: FeedbackStatusHistoryCreateManyChangedByUserInputEnvelope
+    connect?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+  }
+
   export type BidUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<BidCreateWithoutUserInput, BidUncheckedCreateWithoutUserInput> | BidCreateWithoutUserInput[] | BidUncheckedCreateWithoutUserInput[]
     connectOrCreate?: BidCreateOrConnectWithoutUserInput | BidCreateOrConnectWithoutUserInput[]
@@ -40630,6 +42114,13 @@ export namespace Prisma {
     connectOrCreate?: FeedbackReplyCreateOrConnectWithoutUserInput | FeedbackReplyCreateOrConnectWithoutUserInput[]
     createMany?: FeedbackReplyCreateManyUserInputEnvelope
     connect?: FeedbackReplyWhereUniqueInput | FeedbackReplyWhereUniqueInput[]
+  }
+
+  export type FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput = {
+    create?: XOR<FeedbackStatusHistoryCreateWithoutChangedByUserInput, FeedbackStatusHistoryUncheckedCreateWithoutChangedByUserInput> | FeedbackStatusHistoryCreateWithoutChangedByUserInput[] | FeedbackStatusHistoryUncheckedCreateWithoutChangedByUserInput[]
+    connectOrCreate?: FeedbackStatusHistoryCreateOrConnectWithoutChangedByUserInput | FeedbackStatusHistoryCreateOrConnectWithoutChangedByUserInput[]
+    createMany?: FeedbackStatusHistoryCreateManyChangedByUserInputEnvelope
+    connect?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -40878,6 +42369,20 @@ export namespace Prisma {
     deleteMany?: FeedbackReplyScalarWhereInput | FeedbackReplyScalarWhereInput[]
   }
 
+  export type FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput = {
+    create?: XOR<FeedbackStatusHistoryCreateWithoutChangedByUserInput, FeedbackStatusHistoryUncheckedCreateWithoutChangedByUserInput> | FeedbackStatusHistoryCreateWithoutChangedByUserInput[] | FeedbackStatusHistoryUncheckedCreateWithoutChangedByUserInput[]
+    connectOrCreate?: FeedbackStatusHistoryCreateOrConnectWithoutChangedByUserInput | FeedbackStatusHistoryCreateOrConnectWithoutChangedByUserInput[]
+    upsert?: FeedbackStatusHistoryUpsertWithWhereUniqueWithoutChangedByUserInput | FeedbackStatusHistoryUpsertWithWhereUniqueWithoutChangedByUserInput[]
+    createMany?: FeedbackStatusHistoryCreateManyChangedByUserInputEnvelope
+    set?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+    disconnect?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+    delete?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+    connect?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+    update?: FeedbackStatusHistoryUpdateWithWhereUniqueWithoutChangedByUserInput | FeedbackStatusHistoryUpdateWithWhereUniqueWithoutChangedByUserInput[]
+    updateMany?: FeedbackStatusHistoryUpdateManyWithWhereWithoutChangedByUserInput | FeedbackStatusHistoryUpdateManyWithWhereWithoutChangedByUserInput[]
+    deleteMany?: FeedbackStatusHistoryScalarWhereInput | FeedbackStatusHistoryScalarWhereInput[]
+  }
+
   export type BidUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<BidCreateWithoutUserInput, BidUncheckedCreateWithoutUserInput> | BidCreateWithoutUserInput[] | BidUncheckedCreateWithoutUserInput[]
     connectOrCreate?: BidCreateOrConnectWithoutUserInput | BidCreateOrConnectWithoutUserInput[]
@@ -41072,6 +42577,20 @@ export namespace Prisma {
     update?: FeedbackReplyUpdateWithWhereUniqueWithoutUserInput | FeedbackReplyUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: FeedbackReplyUpdateManyWithWhereWithoutUserInput | FeedbackReplyUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: FeedbackReplyScalarWhereInput | FeedbackReplyScalarWhereInput[]
+  }
+
+  export type FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput = {
+    create?: XOR<FeedbackStatusHistoryCreateWithoutChangedByUserInput, FeedbackStatusHistoryUncheckedCreateWithoutChangedByUserInput> | FeedbackStatusHistoryCreateWithoutChangedByUserInput[] | FeedbackStatusHistoryUncheckedCreateWithoutChangedByUserInput[]
+    connectOrCreate?: FeedbackStatusHistoryCreateOrConnectWithoutChangedByUserInput | FeedbackStatusHistoryCreateOrConnectWithoutChangedByUserInput[]
+    upsert?: FeedbackStatusHistoryUpsertWithWhereUniqueWithoutChangedByUserInput | FeedbackStatusHistoryUpsertWithWhereUniqueWithoutChangedByUserInput[]
+    createMany?: FeedbackStatusHistoryCreateManyChangedByUserInputEnvelope
+    set?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+    disconnect?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+    delete?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+    connect?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+    update?: FeedbackStatusHistoryUpdateWithWhereUniqueWithoutChangedByUserInput | FeedbackStatusHistoryUpdateWithWhereUniqueWithoutChangedByUserInput[]
+    updateMany?: FeedbackStatusHistoryUpdateManyWithWhereWithoutChangedByUserInput | FeedbackStatusHistoryUpdateManyWithWhereWithoutChangedByUserInput[]
+    deleteMany?: FeedbackStatusHistoryScalarWhereInput | FeedbackStatusHistoryScalarWhereInput[]
   }
 
   export type BidCreateNestedManyWithoutLeadInput = {
@@ -41897,11 +43416,25 @@ export namespace Prisma {
     connect?: FeedbackReplyWhereUniqueInput | FeedbackReplyWhereUniqueInput[]
   }
 
+  export type FeedbackStatusHistoryCreateNestedManyWithoutFeedbackInput = {
+    create?: XOR<FeedbackStatusHistoryCreateWithoutFeedbackInput, FeedbackStatusHistoryUncheckedCreateWithoutFeedbackInput> | FeedbackStatusHistoryCreateWithoutFeedbackInput[] | FeedbackStatusHistoryUncheckedCreateWithoutFeedbackInput[]
+    connectOrCreate?: FeedbackStatusHistoryCreateOrConnectWithoutFeedbackInput | FeedbackStatusHistoryCreateOrConnectWithoutFeedbackInput[]
+    createMany?: FeedbackStatusHistoryCreateManyFeedbackInputEnvelope
+    connect?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+  }
+
   export type FeedbackReplyUncheckedCreateNestedManyWithoutFeedbackInput = {
     create?: XOR<FeedbackReplyCreateWithoutFeedbackInput, FeedbackReplyUncheckedCreateWithoutFeedbackInput> | FeedbackReplyCreateWithoutFeedbackInput[] | FeedbackReplyUncheckedCreateWithoutFeedbackInput[]
     connectOrCreate?: FeedbackReplyCreateOrConnectWithoutFeedbackInput | FeedbackReplyCreateOrConnectWithoutFeedbackInput[]
     createMany?: FeedbackReplyCreateManyFeedbackInputEnvelope
     connect?: FeedbackReplyWhereUniqueInput | FeedbackReplyWhereUniqueInput[]
+  }
+
+  export type FeedbackStatusHistoryUncheckedCreateNestedManyWithoutFeedbackInput = {
+    create?: XOR<FeedbackStatusHistoryCreateWithoutFeedbackInput, FeedbackStatusHistoryUncheckedCreateWithoutFeedbackInput> | FeedbackStatusHistoryCreateWithoutFeedbackInput[] | FeedbackStatusHistoryUncheckedCreateWithoutFeedbackInput[]
+    connectOrCreate?: FeedbackStatusHistoryCreateOrConnectWithoutFeedbackInput | FeedbackStatusHistoryCreateOrConnectWithoutFeedbackInput[]
+    createMany?: FeedbackStatusHistoryCreateManyFeedbackInputEnvelope
+    connect?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
   }
 
   export type EnumFeedbackStatusFieldUpdateOperationsInput = {
@@ -41952,6 +43485,20 @@ export namespace Prisma {
     deleteMany?: FeedbackReplyScalarWhereInput | FeedbackReplyScalarWhereInput[]
   }
 
+  export type FeedbackStatusHistoryUpdateManyWithoutFeedbackNestedInput = {
+    create?: XOR<FeedbackStatusHistoryCreateWithoutFeedbackInput, FeedbackStatusHistoryUncheckedCreateWithoutFeedbackInput> | FeedbackStatusHistoryCreateWithoutFeedbackInput[] | FeedbackStatusHistoryUncheckedCreateWithoutFeedbackInput[]
+    connectOrCreate?: FeedbackStatusHistoryCreateOrConnectWithoutFeedbackInput | FeedbackStatusHistoryCreateOrConnectWithoutFeedbackInput[]
+    upsert?: FeedbackStatusHistoryUpsertWithWhereUniqueWithoutFeedbackInput | FeedbackStatusHistoryUpsertWithWhereUniqueWithoutFeedbackInput[]
+    createMany?: FeedbackStatusHistoryCreateManyFeedbackInputEnvelope
+    set?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+    disconnect?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+    delete?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+    connect?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+    update?: FeedbackStatusHistoryUpdateWithWhereUniqueWithoutFeedbackInput | FeedbackStatusHistoryUpdateWithWhereUniqueWithoutFeedbackInput[]
+    updateMany?: FeedbackStatusHistoryUpdateManyWithWhereWithoutFeedbackInput | FeedbackStatusHistoryUpdateManyWithWhereWithoutFeedbackInput[]
+    deleteMany?: FeedbackStatusHistoryScalarWhereInput | FeedbackStatusHistoryScalarWhereInput[]
+  }
+
   export type FeedbackReplyUncheckedUpdateManyWithoutFeedbackNestedInput = {
     create?: XOR<FeedbackReplyCreateWithoutFeedbackInput, FeedbackReplyUncheckedCreateWithoutFeedbackInput> | FeedbackReplyCreateWithoutFeedbackInput[] | FeedbackReplyUncheckedCreateWithoutFeedbackInput[]
     connectOrCreate?: FeedbackReplyCreateOrConnectWithoutFeedbackInput | FeedbackReplyCreateOrConnectWithoutFeedbackInput[]
@@ -41964,6 +43511,20 @@ export namespace Prisma {
     update?: FeedbackReplyUpdateWithWhereUniqueWithoutFeedbackInput | FeedbackReplyUpdateWithWhereUniqueWithoutFeedbackInput[]
     updateMany?: FeedbackReplyUpdateManyWithWhereWithoutFeedbackInput | FeedbackReplyUpdateManyWithWhereWithoutFeedbackInput[]
     deleteMany?: FeedbackReplyScalarWhereInput | FeedbackReplyScalarWhereInput[]
+  }
+
+  export type FeedbackStatusHistoryUncheckedUpdateManyWithoutFeedbackNestedInput = {
+    create?: XOR<FeedbackStatusHistoryCreateWithoutFeedbackInput, FeedbackStatusHistoryUncheckedCreateWithoutFeedbackInput> | FeedbackStatusHistoryCreateWithoutFeedbackInput[] | FeedbackStatusHistoryUncheckedCreateWithoutFeedbackInput[]
+    connectOrCreate?: FeedbackStatusHistoryCreateOrConnectWithoutFeedbackInput | FeedbackStatusHistoryCreateOrConnectWithoutFeedbackInput[]
+    upsert?: FeedbackStatusHistoryUpsertWithWhereUniqueWithoutFeedbackInput | FeedbackStatusHistoryUpsertWithWhereUniqueWithoutFeedbackInput[]
+    createMany?: FeedbackStatusHistoryCreateManyFeedbackInputEnvelope
+    set?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+    disconnect?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+    delete?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+    connect?: FeedbackStatusHistoryWhereUniqueInput | FeedbackStatusHistoryWhereUniqueInput[]
+    update?: FeedbackStatusHistoryUpdateWithWhereUniqueWithoutFeedbackInput | FeedbackStatusHistoryUpdateWithWhereUniqueWithoutFeedbackInput[]
+    updateMany?: FeedbackStatusHistoryUpdateManyWithWhereWithoutFeedbackInput | FeedbackStatusHistoryUpdateManyWithWhereWithoutFeedbackInput[]
+    deleteMany?: FeedbackStatusHistoryScalarWhereInput | FeedbackStatusHistoryScalarWhereInput[]
   }
 
   export type FeedbackCreateNestedOneWithoutRepliesInput = {
@@ -41992,6 +43553,38 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutFeedbackRepliesInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFeedbackRepliesInput, UserUpdateWithoutFeedbackRepliesInput>, UserUncheckedUpdateWithoutFeedbackRepliesInput>
+  }
+
+  export type FeedbackCreateNestedOneWithoutStatusHistoryInput = {
+    create?: XOR<FeedbackCreateWithoutStatusHistoryInput, FeedbackUncheckedCreateWithoutStatusHistoryInput>
+    connectOrCreate?: FeedbackCreateOrConnectWithoutStatusHistoryInput
+    connect?: FeedbackWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutFeedbackStatusHistoryInput = {
+    create?: XOR<UserCreateWithoutFeedbackStatusHistoryInput, UserUncheckedCreateWithoutFeedbackStatusHistoryInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFeedbackStatusHistoryInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type NullableEnumFeedbackStatusFieldUpdateOperationsInput = {
+    set?: $Enums.FeedbackStatus | null
+  }
+
+  export type FeedbackUpdateOneRequiredWithoutStatusHistoryNestedInput = {
+    create?: XOR<FeedbackCreateWithoutStatusHistoryInput, FeedbackUncheckedCreateWithoutStatusHistoryInput>
+    connectOrCreate?: FeedbackCreateOrConnectWithoutStatusHistoryInput
+    upsert?: FeedbackUpsertWithoutStatusHistoryInput
+    connect?: FeedbackWhereUniqueInput
+    update?: XOR<XOR<FeedbackUpdateToOneWithWhereWithoutStatusHistoryInput, FeedbackUpdateWithoutStatusHistoryInput>, FeedbackUncheckedUpdateWithoutStatusHistoryInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutFeedbackStatusHistoryNestedInput = {
+    create?: XOR<UserCreateWithoutFeedbackStatusHistoryInput, UserUncheckedCreateWithoutFeedbackStatusHistoryInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFeedbackStatusHistoryInput
+    upsert?: UserUpsertWithoutFeedbackStatusHistoryInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFeedbackStatusHistoryInput, UserUpdateWithoutFeedbackStatusHistoryInput>, UserUncheckedUpdateWithoutFeedbackStatusHistoryInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -42342,6 +43935,23 @@ export namespace Prisma {
     _max?: NestedEnumFeedbackPriorityFilter<$PrismaModel>
   }
 
+  export type NestedEnumFeedbackStatusNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.FeedbackStatus | EnumFeedbackStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.FeedbackStatus[] | ListEnumFeedbackStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.FeedbackStatus[] | ListEnumFeedbackStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumFeedbackStatusNullableFilter<$PrismaModel> | $Enums.FeedbackStatus | null
+  }
+
+  export type NestedEnumFeedbackStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.FeedbackStatus | EnumFeedbackStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.FeedbackStatus[] | ListEnumFeedbackStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.FeedbackStatus[] | ListEnumFeedbackStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumFeedbackStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.FeedbackStatus | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumFeedbackStatusNullableFilter<$PrismaModel>
+    _max?: NestedEnumFeedbackStatusNullableFilter<$PrismaModel>
+  }
+
   export type BidCreateWithoutUserInput = {
     id?: string
     amount: number
@@ -42595,6 +44205,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUncheckedCreateWithoutApprovalsGivenInput = {
@@ -42640,6 +44251,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackUncheckedCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyUncheckedCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserCreateOrConnectWithoutApprovalsGivenInput = {
@@ -42690,6 +44302,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUncheckedCreateWithoutApprovedByInput = {
@@ -42735,6 +44348,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackUncheckedCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyUncheckedCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserCreateOrConnectWithoutApprovedByInput = {
@@ -42912,6 +44526,7 @@ export namespace Prisma {
     leadSale: LeadSaleCreateNestedOneWithoutFeedbacksInput
     assignedToUser?: UserCreateNestedOneWithoutFeedbacksAssignedInput
     replies?: FeedbackReplyCreateNestedManyWithoutFeedbackInput
+    statusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutFeedbackInput
   }
 
   export type FeedbackUncheckedCreateWithoutUserInput = {
@@ -42927,6 +44542,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     closedAt?: Date | string | null
     replies?: FeedbackReplyUncheckedCreateNestedManyWithoutFeedbackInput
+    statusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutFeedbackInput
   }
 
   export type FeedbackCreateOrConnectWithoutUserInput = {
@@ -42952,6 +44568,7 @@ export namespace Prisma {
     user: UserCreateNestedOneWithoutFeedbacksCreatedInput
     leadSale: LeadSaleCreateNestedOneWithoutFeedbacksInput
     replies?: FeedbackReplyCreateNestedManyWithoutFeedbackInput
+    statusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutFeedbackInput
   }
 
   export type FeedbackUncheckedCreateWithoutAssignedToUserInput = {
@@ -42967,6 +44584,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     closedAt?: Date | string | null
     replies?: FeedbackReplyUncheckedCreateNestedManyWithoutFeedbackInput
+    statusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutFeedbackInput
   }
 
   export type FeedbackCreateOrConnectWithoutAssignedToUserInput = {
@@ -43002,6 +44620,34 @@ export namespace Prisma {
 
   export type FeedbackReplyCreateManyUserInputEnvelope = {
     data: FeedbackReplyCreateManyUserInput | FeedbackReplyCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type FeedbackStatusHistoryCreateWithoutChangedByUserInput = {
+    id?: string
+    oldStatus?: $Enums.FeedbackStatus | null
+    newStatus: $Enums.FeedbackStatus
+    internalNote: string
+    createdAt?: Date | string
+    feedback: FeedbackCreateNestedOneWithoutStatusHistoryInput
+  }
+
+  export type FeedbackStatusHistoryUncheckedCreateWithoutChangedByUserInput = {
+    id?: string
+    feedbackId: string
+    oldStatus?: $Enums.FeedbackStatus | null
+    newStatus: $Enums.FeedbackStatus
+    internalNote: string
+    createdAt?: Date | string
+  }
+
+  export type FeedbackStatusHistoryCreateOrConnectWithoutChangedByUserInput = {
+    where: FeedbackStatusHistoryWhereUniqueInput
+    create: XOR<FeedbackStatusHistoryCreateWithoutChangedByUserInput, FeedbackStatusHistoryUncheckedCreateWithoutChangedByUserInput>
+  }
+
+  export type FeedbackStatusHistoryCreateManyChangedByUserInputEnvelope = {
+    data: FeedbackStatusHistoryCreateManyChangedByUserInput | FeedbackStatusHistoryCreateManyChangedByUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -43256,6 +44902,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApprovalsGivenInput = {
@@ -43301,6 +44948,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUncheckedUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUncheckedUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUpsertWithWhereUniqueWithoutApprovedByInput = {
@@ -43583,6 +45231,35 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"FeedbackReply"> | Date | string
   }
 
+  export type FeedbackStatusHistoryUpsertWithWhereUniqueWithoutChangedByUserInput = {
+    where: FeedbackStatusHistoryWhereUniqueInput
+    update: XOR<FeedbackStatusHistoryUpdateWithoutChangedByUserInput, FeedbackStatusHistoryUncheckedUpdateWithoutChangedByUserInput>
+    create: XOR<FeedbackStatusHistoryCreateWithoutChangedByUserInput, FeedbackStatusHistoryUncheckedCreateWithoutChangedByUserInput>
+  }
+
+  export type FeedbackStatusHistoryUpdateWithWhereUniqueWithoutChangedByUserInput = {
+    where: FeedbackStatusHistoryWhereUniqueInput
+    data: XOR<FeedbackStatusHistoryUpdateWithoutChangedByUserInput, FeedbackStatusHistoryUncheckedUpdateWithoutChangedByUserInput>
+  }
+
+  export type FeedbackStatusHistoryUpdateManyWithWhereWithoutChangedByUserInput = {
+    where: FeedbackStatusHistoryScalarWhereInput
+    data: XOR<FeedbackStatusHistoryUpdateManyMutationInput, FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserInput>
+  }
+
+  export type FeedbackStatusHistoryScalarWhereInput = {
+    AND?: FeedbackStatusHistoryScalarWhereInput | FeedbackStatusHistoryScalarWhereInput[]
+    OR?: FeedbackStatusHistoryScalarWhereInput[]
+    NOT?: FeedbackStatusHistoryScalarWhereInput | FeedbackStatusHistoryScalarWhereInput[]
+    id?: StringFilter<"FeedbackStatusHistory"> | string
+    feedbackId?: StringFilter<"FeedbackStatusHistory"> | string
+    oldStatus?: EnumFeedbackStatusNullableFilter<"FeedbackStatusHistory"> | $Enums.FeedbackStatus | null
+    newStatus?: EnumFeedbackStatusFilter<"FeedbackStatusHistory"> | $Enums.FeedbackStatus
+    internalNote?: StringFilter<"FeedbackStatusHistory"> | string
+    changedBy?: StringFilter<"FeedbackStatusHistory"> | string
+    createdAt?: DateTimeFilter<"FeedbackStatusHistory"> | Date | string
+  }
+
   export type BidCreateWithoutLeadInput = {
     id?: string
     amount: number
@@ -43654,6 +45331,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUncheckedCreateWithoutLeadsInput = {
@@ -43699,6 +45377,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackUncheckedCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyUncheckedCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserCreateOrConnectWithoutLeadsInput = {
@@ -43835,6 +45514,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLeadsInput = {
@@ -43880,6 +45560,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUncheckedUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUncheckedUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type LeadSaleUpsertWithoutLeadInput = {
@@ -44043,6 +45724,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUncheckedCreateWithoutBidsInput = {
@@ -44088,6 +45770,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackUncheckedCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyUncheckedCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserCreateOrConnectWithoutBidsInput = {
@@ -44214,6 +45897,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBidsInput = {
@@ -44259,6 +45943,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUncheckedUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUncheckedUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type LeadCreateWithoutWatchersInput = {
@@ -44363,6 +46048,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUncheckedCreateWithoutWatchingInput = {
@@ -44408,6 +46094,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackUncheckedCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyUncheckedCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserCreateOrConnectWithoutWatchingInput = {
@@ -44534,6 +46221,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWatchingInput = {
@@ -44579,6 +46267,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUncheckedUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUncheckedUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserCreateWithoutPurchasedLeadsInput = {
@@ -44624,6 +46313,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUncheckedCreateWithoutPurchasedLeadsInput = {
@@ -44669,6 +46359,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackUncheckedCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyUncheckedCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserCreateOrConnectWithoutPurchasedLeadsInput = {
@@ -44748,6 +46439,7 @@ export namespace Prisma {
     user: UserCreateNestedOneWithoutFeedbacksCreatedInput
     assignedToUser?: UserCreateNestedOneWithoutFeedbacksAssignedInput
     replies?: FeedbackReplyCreateNestedManyWithoutFeedbackInput
+    statusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutFeedbackInput
   }
 
   export type FeedbackUncheckedCreateWithoutLeadSaleInput = {
@@ -44763,6 +46455,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     closedAt?: Date | string | null
     replies?: FeedbackReplyUncheckedCreateNestedManyWithoutFeedbackInput
+    statusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutFeedbackInput
   }
 
   export type FeedbackCreateOrConnectWithoutLeadSaleInput = {
@@ -44829,6 +46522,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPurchasedLeadsInput = {
@@ -44874,6 +46568,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUncheckedUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUncheckedUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type LeadUpsertWithoutSaleInput = {
@@ -45025,6 +46720,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUncheckedCreateWithoutUserTypeInput = {
@@ -45070,6 +46766,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackUncheckedCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyUncheckedCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserCreateOrConnectWithoutUserTypeInput = {
@@ -45496,6 +47193,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUncheckedCreateWithoutLeadTypePermissionsInput = {
@@ -45541,6 +47239,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackUncheckedCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyUncheckedCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserCreateOrConnectWithoutLeadTypePermissionsInput = {
@@ -45602,6 +47301,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLeadTypePermissionsInput = {
@@ -45647,6 +47347,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUncheckedUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUncheckedUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserCreateWithoutActivityLogsInput = {
@@ -45692,6 +47393,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUncheckedCreateWithoutActivityLogsInput = {
@@ -45737,6 +47439,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackUncheckedCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyUncheckedCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserCreateOrConnectWithoutActivityLogsInput = {
@@ -45798,6 +47501,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActivityLogsInput = {
@@ -45843,6 +47547,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUncheckedUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUncheckedUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserCreateWithoutPasswordResetTokensInput = {
@@ -45888,6 +47593,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
@@ -45933,6 +47639,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackUncheckedCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyUncheckedCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserCreateOrConnectWithoutPasswordResetTokensInput = {
@@ -45994,6 +47701,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
@@ -46039,6 +47747,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUncheckedUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUncheckedUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserCreateWithoutBalanceTransactionsInput = {
@@ -46084,6 +47793,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUncheckedCreateWithoutBalanceTransactionsInput = {
@@ -46129,6 +47839,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackUncheckedCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyUncheckedCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserCreateOrConnectWithoutBalanceTransactionsInput = {
@@ -46190,6 +47901,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBalanceTransactionsInput = {
@@ -46235,6 +47947,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUncheckedUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUncheckedUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type NotificationCreateWithoutNotificationTypeInput = {
@@ -46417,6 +48130,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationPreferencesInput = {
@@ -46462,6 +48176,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackUncheckedCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyUncheckedCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationPreferencesInput = {
@@ -46562,6 +48277,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationPreferencesInput = {
@@ -46607,6 +48323,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUncheckedUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUncheckedUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type NotificationTypeUpsertWithoutUserPreferencesInput = {
@@ -46697,6 +48414,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -46742,6 +48460,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackUncheckedCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyUncheckedCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -46842,6 +48561,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -46887,6 +48607,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUncheckedUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUncheckedUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type NotificationTypeUpsertWithoutNotificationsInput = {
@@ -47125,6 +48846,7 @@ export namespace Prisma {
     notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUncheckedCreateWithoutFeedbacksCreatedInput = {
@@ -47170,6 +48892,7 @@ export namespace Prisma {
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackUncheckedCreateNestedManyWithoutAssignedToUserInput
     feedbackReplies?: FeedbackReplyUncheckedCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserCreateOrConnectWithoutFeedbacksCreatedInput = {
@@ -47257,6 +48980,7 @@ export namespace Prisma {
     notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
     feedbacksCreated?: FeedbackCreateNestedManyWithoutUserInput
     feedbackReplies?: FeedbackReplyCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUncheckedCreateWithoutFeedbacksAssignedInput = {
@@ -47302,6 +49026,7 @@ export namespace Prisma {
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     feedbacksCreated?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     feedbackReplies?: FeedbackReplyUncheckedCreateNestedManyWithoutUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserCreateOrConnectWithoutFeedbacksAssignedInput = {
@@ -47332,6 +49057,34 @@ export namespace Prisma {
 
   export type FeedbackReplyCreateManyFeedbackInputEnvelope = {
     data: FeedbackReplyCreateManyFeedbackInput | FeedbackReplyCreateManyFeedbackInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type FeedbackStatusHistoryCreateWithoutFeedbackInput = {
+    id?: string
+    oldStatus?: $Enums.FeedbackStatus | null
+    newStatus: $Enums.FeedbackStatus
+    internalNote: string
+    createdAt?: Date | string
+    changedByUser: UserCreateNestedOneWithoutFeedbackStatusHistoryInput
+  }
+
+  export type FeedbackStatusHistoryUncheckedCreateWithoutFeedbackInput = {
+    id?: string
+    oldStatus?: $Enums.FeedbackStatus | null
+    newStatus: $Enums.FeedbackStatus
+    internalNote: string
+    changedBy: string
+    createdAt?: Date | string
+  }
+
+  export type FeedbackStatusHistoryCreateOrConnectWithoutFeedbackInput = {
+    where: FeedbackStatusHistoryWhereUniqueInput
+    create: XOR<FeedbackStatusHistoryCreateWithoutFeedbackInput, FeedbackStatusHistoryUncheckedCreateWithoutFeedbackInput>
+  }
+
+  export type FeedbackStatusHistoryCreateManyFeedbackInputEnvelope = {
+    data: FeedbackStatusHistoryCreateManyFeedbackInput | FeedbackStatusHistoryCreateManyFeedbackInput[]
     skipDuplicates?: boolean
   }
 
@@ -47389,6 +49142,7 @@ export namespace Prisma {
     notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFeedbacksCreatedInput = {
@@ -47434,6 +49188,7 @@ export namespace Prisma {
     notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUncheckedUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUncheckedUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type LeadSaleUpsertWithoutFeedbacksInput = {
@@ -47533,6 +49288,7 @@ export namespace Prisma {
     notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
     feedbacksCreated?: FeedbackUpdateManyWithoutUserNestedInput
     feedbackReplies?: FeedbackReplyUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFeedbacksAssignedInput = {
@@ -47578,6 +49334,7 @@ export namespace Prisma {
     notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     feedbacksCreated?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     feedbackReplies?: FeedbackReplyUncheckedUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type FeedbackReplyUpsertWithWhereUniqueWithoutFeedbackInput = {
@@ -47596,6 +49353,22 @@ export namespace Prisma {
     data: XOR<FeedbackReplyUpdateManyMutationInput, FeedbackReplyUncheckedUpdateManyWithoutFeedbackInput>
   }
 
+  export type FeedbackStatusHistoryUpsertWithWhereUniqueWithoutFeedbackInput = {
+    where: FeedbackStatusHistoryWhereUniqueInput
+    update: XOR<FeedbackStatusHistoryUpdateWithoutFeedbackInput, FeedbackStatusHistoryUncheckedUpdateWithoutFeedbackInput>
+    create: XOR<FeedbackStatusHistoryCreateWithoutFeedbackInput, FeedbackStatusHistoryUncheckedCreateWithoutFeedbackInput>
+  }
+
+  export type FeedbackStatusHistoryUpdateWithWhereUniqueWithoutFeedbackInput = {
+    where: FeedbackStatusHistoryWhereUniqueInput
+    data: XOR<FeedbackStatusHistoryUpdateWithoutFeedbackInput, FeedbackStatusHistoryUncheckedUpdateWithoutFeedbackInput>
+  }
+
+  export type FeedbackStatusHistoryUpdateManyWithWhereWithoutFeedbackInput = {
+    where: FeedbackStatusHistoryScalarWhereInput
+    data: XOR<FeedbackStatusHistoryUpdateManyMutationInput, FeedbackStatusHistoryUncheckedUpdateManyWithoutFeedbackInput>
+  }
+
   export type FeedbackCreateWithoutRepliesInput = {
     id?: string
     subject: string
@@ -47609,6 +49382,7 @@ export namespace Prisma {
     user: UserCreateNestedOneWithoutFeedbacksCreatedInput
     leadSale: LeadSaleCreateNestedOneWithoutFeedbacksInput
     assignedToUser?: UserCreateNestedOneWithoutFeedbacksAssignedInput
+    statusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutFeedbackInput
   }
 
   export type FeedbackUncheckedCreateWithoutRepliesInput = {
@@ -47624,6 +49398,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     closedAt?: Date | string | null
+    statusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutFeedbackInput
   }
 
   export type FeedbackCreateOrConnectWithoutRepliesInput = {
@@ -47674,6 +49449,7 @@ export namespace Prisma {
     notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
     feedbacksCreated?: FeedbackCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackCreateNestedManyWithoutAssignedToUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserUncheckedCreateWithoutFeedbackRepliesInput = {
@@ -47719,6 +49495,7 @@ export namespace Prisma {
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     feedbacksCreated?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     feedbacksAssigned?: FeedbackUncheckedCreateNestedManyWithoutAssignedToUserInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   }
 
   export type UserCreateOrConnectWithoutFeedbackRepliesInput = {
@@ -47750,6 +49527,7 @@ export namespace Prisma {
     user?: UserUpdateOneRequiredWithoutFeedbacksCreatedNestedInput
     leadSale?: LeadSaleUpdateOneRequiredWithoutFeedbacksNestedInput
     assignedToUser?: UserUpdateOneWithoutFeedbacksAssignedNestedInput
+    statusHistory?: FeedbackStatusHistoryUpdateManyWithoutFeedbackNestedInput
   }
 
   export type FeedbackUncheckedUpdateWithoutRepliesInput = {
@@ -47765,6 +49543,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    statusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutFeedbackNestedInput
   }
 
   export type UserUpsertWithoutFeedbackRepliesInput = {
@@ -47821,6 +49600,7 @@ export namespace Prisma {
     notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
     feedbacksCreated?: FeedbackUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUpdateManyWithoutAssignedToUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFeedbackRepliesInput = {
@@ -47866,6 +49646,287 @@ export namespace Prisma {
     notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     feedbacksCreated?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUncheckedUpdateManyWithoutAssignedToUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
+  }
+
+  export type FeedbackCreateWithoutStatusHistoryInput = {
+    id?: string
+    subject: string
+    rating?: number | null
+    comment?: string | null
+    status?: $Enums.FeedbackStatus
+    priority?: $Enums.FeedbackPriority
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    closedAt?: Date | string | null
+    user: UserCreateNestedOneWithoutFeedbacksCreatedInput
+    leadSale: LeadSaleCreateNestedOneWithoutFeedbacksInput
+    assignedToUser?: UserCreateNestedOneWithoutFeedbacksAssignedInput
+    replies?: FeedbackReplyCreateNestedManyWithoutFeedbackInput
+  }
+
+  export type FeedbackUncheckedCreateWithoutStatusHistoryInput = {
+    id?: string
+    leadSaleId: string
+    userId: string
+    subject: string
+    rating?: number | null
+    comment?: string | null
+    status?: $Enums.FeedbackStatus
+    priority?: $Enums.FeedbackPriority
+    assignedTo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    closedAt?: Date | string | null
+    replies?: FeedbackReplyUncheckedCreateNestedManyWithoutFeedbackInput
+  }
+
+  export type FeedbackCreateOrConnectWithoutStatusHistoryInput = {
+    where: FeedbackWhereUniqueInput
+    create: XOR<FeedbackCreateWithoutStatusHistoryInput, FeedbackUncheckedCreateWithoutStatusHistoryInput>
+  }
+
+  export type UserCreateWithoutFeedbackStatusHistoryInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    firstName?: string | null
+    lastName?: string | null
+    username?: string | null
+    profileImage?: string | null
+    lastActivity?: Date | string | null
+    lastIP?: string | null
+    lastUserAgent?: string | null
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedAt?: Date | string | null
+    bids?: BidCreateNestedManyWithoutUserInput
+    leads?: LeadCreateNestedManyWithoutOwnerInput
+    purchasedLeads?: LeadSaleCreateNestedManyWithoutBuyerInput
+    watching?: LeadWatchCreateNestedManyWithoutUserInput
+    userType: UserTypeCreateNestedOneWithoutUsersInput
+    leadTypePermissions?: UserLeadTypePermissionCreateNestedManyWithoutUserInput
+    approvedBy?: UserCreateNestedOneWithoutApprovalsGivenInput
+    approvalsGiven?: UserCreateNestedManyWithoutApprovedByInput
+    activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+    feedbacksCreated?: FeedbackCreateNestedManyWithoutUserInput
+    feedbacksAssigned?: FeedbackCreateNestedManyWithoutAssignedToUserInput
+    feedbackReplies?: FeedbackReplyCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutFeedbackStatusHistoryInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    userTypeId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    firstName?: string | null
+    lastName?: string | null
+    username?: string | null
+    profileImage?: string | null
+    lastActivity?: Date | string | null
+    lastIP?: string | null
+    lastUserAgent?: string | null
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    isActive?: boolean
+    balance?: number
+    balanceEnabled?: boolean
+    paymentMethod?: string
+    ibanAccountHolder?: string | null
+    ibanNumber?: string | null
+    ibanBic?: string | null
+    ibanAddress?: string | null
+    ibanPostalCode?: string | null
+    ibanCity?: string | null
+    approvalStatus?: $Enums.UserApprovalStatus
+    registrationRejectionReason?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    bids?: BidUncheckedCreateNestedManyWithoutUserInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
+    purchasedLeads?: LeadSaleUncheckedCreateNestedManyWithoutBuyerInput
+    watching?: LeadWatchUncheckedCreateNestedManyWithoutUserInput
+    leadTypePermissions?: UserLeadTypePermissionUncheckedCreateNestedManyWithoutUserInput
+    approvalsGiven?: UserUncheckedCreateNestedManyWithoutApprovedByInput
+    activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    balanceTransactions?: BalanceTransactionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    feedbacksCreated?: FeedbackUncheckedCreateNestedManyWithoutUserInput
+    feedbacksAssigned?: FeedbackUncheckedCreateNestedManyWithoutAssignedToUserInput
+    feedbackReplies?: FeedbackReplyUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutFeedbackStatusHistoryInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutFeedbackStatusHistoryInput, UserUncheckedCreateWithoutFeedbackStatusHistoryInput>
+  }
+
+  export type FeedbackUpsertWithoutStatusHistoryInput = {
+    update: XOR<FeedbackUpdateWithoutStatusHistoryInput, FeedbackUncheckedUpdateWithoutStatusHistoryInput>
+    create: XOR<FeedbackCreateWithoutStatusHistoryInput, FeedbackUncheckedCreateWithoutStatusHistoryInput>
+    where?: FeedbackWhereInput
+  }
+
+  export type FeedbackUpdateToOneWithWhereWithoutStatusHistoryInput = {
+    where?: FeedbackWhereInput
+    data: XOR<FeedbackUpdateWithoutStatusHistoryInput, FeedbackUncheckedUpdateWithoutStatusHistoryInput>
+  }
+
+  export type FeedbackUpdateWithoutStatusHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    rating?: NullableIntFieldUpdateOperationsInput | number | null
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
+    priority?: EnumFeedbackPriorityFieldUpdateOperationsInput | $Enums.FeedbackPriority
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    user?: UserUpdateOneRequiredWithoutFeedbacksCreatedNestedInput
+    leadSale?: LeadSaleUpdateOneRequiredWithoutFeedbacksNestedInput
+    assignedToUser?: UserUpdateOneWithoutFeedbacksAssignedNestedInput
+    replies?: FeedbackReplyUpdateManyWithoutFeedbackNestedInput
+  }
+
+  export type FeedbackUncheckedUpdateWithoutStatusHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    leadSaleId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    rating?: NullableIntFieldUpdateOperationsInput | number | null
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
+    priority?: EnumFeedbackPriorityFieldUpdateOperationsInput | $Enums.FeedbackPriority
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    replies?: FeedbackReplyUncheckedUpdateManyWithoutFeedbackNestedInput
+  }
+
+  export type UserUpsertWithoutFeedbackStatusHistoryInput = {
+    update: XOR<UserUpdateWithoutFeedbackStatusHistoryInput, UserUncheckedUpdateWithoutFeedbackStatusHistoryInput>
+    create: XOR<UserCreateWithoutFeedbackStatusHistoryInput, UserUncheckedCreateWithoutFeedbackStatusHistoryInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutFeedbackStatusHistoryInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutFeedbackStatusHistoryInput, UserUncheckedUpdateWithoutFeedbackStatusHistoryInput>
+  }
+
+  export type UserUpdateWithoutFeedbackStatusHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImage?: NullableStringFieldUpdateOperationsInput | string | null
+    lastActivity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastIP?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUserAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bids?: BidUpdateManyWithoutUserNestedInput
+    leads?: LeadUpdateManyWithoutOwnerNestedInput
+    purchasedLeads?: LeadSaleUpdateManyWithoutBuyerNestedInput
+    watching?: LeadWatchUpdateManyWithoutUserNestedInput
+    userType?: UserTypeUpdateOneRequiredWithoutUsersNestedInput
+    leadTypePermissions?: UserLeadTypePermissionUpdateManyWithoutUserNestedInput
+    approvedBy?: UserUpdateOneWithoutApprovalsGivenNestedInput
+    approvalsGiven?: UserUpdateManyWithoutApprovedByNestedInput
+    activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+    feedbacksCreated?: FeedbackUpdateManyWithoutUserNestedInput
+    feedbacksAssigned?: FeedbackUpdateManyWithoutAssignedToUserNestedInput
+    feedbackReplies?: FeedbackReplyUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutFeedbackStatusHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    userTypeId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImage?: NullableStringFieldUpdateOperationsInput | string | null
+    lastActivity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastIP?: NullableStringFieldUpdateOperationsInput | string | null
+    lastUserAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    balance?: FloatFieldUpdateOperationsInput | number
+    balanceEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    ibanAccountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanBic?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    ibanCity?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: EnumUserApprovalStatusFieldUpdateOperationsInput | $Enums.UserApprovalStatus
+    registrationRejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bids?: BidUncheckedUpdateManyWithoutUserNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
+    purchasedLeads?: LeadSaleUncheckedUpdateManyWithoutBuyerNestedInput
+    watching?: LeadWatchUncheckedUpdateManyWithoutUserNestedInput
+    leadTypePermissions?: UserLeadTypePermissionUncheckedUpdateManyWithoutUserNestedInput
+    approvalsGiven?: UserUncheckedUpdateManyWithoutApprovedByNestedInput
+    activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    balanceTransactions?: BalanceTransactionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    feedbacksCreated?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
+    feedbacksAssigned?: FeedbackUncheckedUpdateManyWithoutAssignedToUserNestedInput
+    feedbackReplies?: FeedbackReplyUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BidCreateManyUserInput = {
@@ -48045,6 +50106,15 @@ export namespace Prisma {
     feedbackId: string
     message: string
     isAdmin?: boolean
+    createdAt?: Date | string
+  }
+
+  export type FeedbackStatusHistoryCreateManyChangedByUserInput = {
+    id?: string
+    feedbackId: string
+    oldStatus?: $Enums.FeedbackStatus | null
+    newStatus: $Enums.FeedbackStatus
+    internalNote: string
     createdAt?: Date | string
   }
 
@@ -48284,6 +50354,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApprovedByInput = {
@@ -48329,6 +50400,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUncheckedUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUncheckedUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutApprovedByInput = {
@@ -48528,6 +50600,7 @@ export namespace Prisma {
     leadSale?: LeadSaleUpdateOneRequiredWithoutFeedbacksNestedInput
     assignedToUser?: UserUpdateOneWithoutFeedbacksAssignedNestedInput
     replies?: FeedbackReplyUpdateManyWithoutFeedbackNestedInput
+    statusHistory?: FeedbackStatusHistoryUpdateManyWithoutFeedbackNestedInput
   }
 
   export type FeedbackUncheckedUpdateWithoutUserInput = {
@@ -48543,6 +50616,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     replies?: FeedbackReplyUncheckedUpdateManyWithoutFeedbackNestedInput
+    statusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutFeedbackNestedInput
   }
 
   export type FeedbackUncheckedUpdateManyWithoutUserInput = {
@@ -48572,6 +50646,7 @@ export namespace Prisma {
     user?: UserUpdateOneRequiredWithoutFeedbacksCreatedNestedInput
     leadSale?: LeadSaleUpdateOneRequiredWithoutFeedbacksNestedInput
     replies?: FeedbackReplyUpdateManyWithoutFeedbackNestedInput
+    statusHistory?: FeedbackStatusHistoryUpdateManyWithoutFeedbackNestedInput
   }
 
   export type FeedbackUncheckedUpdateWithoutAssignedToUserInput = {
@@ -48587,6 +50662,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     replies?: FeedbackReplyUncheckedUpdateManyWithoutFeedbackNestedInput
+    statusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutFeedbackNestedInput
   }
 
   export type FeedbackUncheckedUpdateManyWithoutAssignedToUserInput = {
@@ -48624,6 +50700,33 @@ export namespace Prisma {
     feedbackId?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeedbackStatusHistoryUpdateWithoutChangedByUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    oldStatus?: NullableEnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus | null
+    newStatus?: EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
+    internalNote?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    feedback?: FeedbackUpdateOneRequiredWithoutStatusHistoryNestedInput
+  }
+
+  export type FeedbackStatusHistoryUncheckedUpdateWithoutChangedByUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    feedbackId?: StringFieldUpdateOperationsInput | string
+    oldStatus?: NullableEnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus | null
+    newStatus?: EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
+    internalNote?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    feedbackId?: StringFieldUpdateOperationsInput | string
+    oldStatus?: NullableEnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus | null
+    newStatus?: EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
+    internalNote?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -48714,6 +50817,7 @@ export namespace Prisma {
     user?: UserUpdateOneRequiredWithoutFeedbacksCreatedNestedInput
     assignedToUser?: UserUpdateOneWithoutFeedbacksAssignedNestedInput
     replies?: FeedbackReplyUpdateManyWithoutFeedbackNestedInput
+    statusHistory?: FeedbackStatusHistoryUpdateManyWithoutFeedbackNestedInput
   }
 
   export type FeedbackUncheckedUpdateWithoutLeadSaleInput = {
@@ -48729,6 +50833,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     replies?: FeedbackReplyUncheckedUpdateManyWithoutFeedbackNestedInput
+    statusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutFeedbackNestedInput
   }
 
   export type FeedbackUncheckedUpdateManyWithoutLeadSaleInput = {
@@ -48866,6 +50971,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUserTypeInput = {
@@ -48911,6 +51017,7 @@ export namespace Prisma {
     feedbacksCreated?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     feedbacksAssigned?: FeedbackUncheckedUpdateManyWithoutAssignedToUserNestedInput
     feedbackReplies?: FeedbackReplyUncheckedUpdateManyWithoutUserNestedInput
+    feedbackStatusHistory?: FeedbackStatusHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutUserTypeInput = {
@@ -49148,6 +51255,15 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type FeedbackStatusHistoryCreateManyFeedbackInput = {
+    id?: string
+    oldStatus?: $Enums.FeedbackStatus | null
+    newStatus: $Enums.FeedbackStatus
+    internalNote: string
+    changedBy: string
+    createdAt?: Date | string
+  }
+
   export type FeedbackReplyUpdateWithoutFeedbackInput = {
     id?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
@@ -49169,6 +51285,33 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeedbackStatusHistoryUpdateWithoutFeedbackInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    oldStatus?: NullableEnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus | null
+    newStatus?: EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
+    internalNote?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    changedByUser?: UserUpdateOneRequiredWithoutFeedbackStatusHistoryNestedInput
+  }
+
+  export type FeedbackStatusHistoryUncheckedUpdateWithoutFeedbackInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    oldStatus?: NullableEnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus | null
+    newStatus?: EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
+    internalNote?: StringFieldUpdateOperationsInput | string
+    changedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeedbackStatusHistoryUncheckedUpdateManyWithoutFeedbackInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    oldStatus?: NullableEnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus | null
+    newStatus?: EnumFeedbackStatusFieldUpdateOperationsInput | $Enums.FeedbackStatus
+    internalNote?: StringFieldUpdateOperationsInput | string
+    changedBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

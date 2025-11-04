@@ -2,6 +2,7 @@
 import { ref, computed, watch, onMounted, watchEffect, nextTick } from 'vue'
 import { Icon } from '@iconify/vue'
 import axios from 'axios'
+import { formatPrice } from '@/utils/currency.js'
 
 const props = defineProps({
   show: {
@@ -346,6 +347,16 @@ defineExpose({
         <div>
           <h2 class="modal-title">Geri Bildirim</h2>
           <p class="modal-subtitle">{{ selectedLead.lead?.title }}</p>
+          <div class="header-info">
+            <span v-if="selectedLead.lead?.id" class="info-item">
+              <Icon icon="mdi:identifier" width="14" height="14" />
+              Lead ID: {{ selectedLead.lead.id }}
+            </span>
+            <span v-if="selectedLead.amount" class="info-item">
+              <Icon icon="mdi:currency-eur" width="14" height="14" />
+              {{ formatPrice(selectedLead.amount, 'EUR') }}
+            </span>
+          </div>
           <div v-if="feedback" class="header-meta">
             <div class="header-stars" v-if="feedback.rating">
               <Icon v-for="i in 5" :key="i" icon="mdi:star" :class="{ filled: i <= feedback.rating }" width="14" height="14" />
@@ -660,6 +671,27 @@ export default {
   margin: 4px 0 0 0;
   font-size: 0.875rem;
   color: #6b7280;
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.info-item svg {
+  color: #9ca3af;
 }
 
 .close-btn {

@@ -485,6 +485,16 @@ exports.Prisma.FeedbackReplyScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.FeedbackStatusHistoryScalarFieldEnum = {
+  id: 'id',
+  feedbackId: 'feedbackId',
+  oldStatus: 'oldStatus',
+  newStatus: 'newStatus',
+  internalNote: 'internalNote',
+  changedBy: 'changedBy',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -570,7 +580,8 @@ exports.Prisma.ModelName = {
   Notification: 'Notification',
   NotificationRolePermission: 'NotificationRolePermission',
   Feedback: 'Feedback',
-  FeedbackReply: 'FeedbackReply'
+  FeedbackReply: 'FeedbackReply',
+  FeedbackStatusHistory: 'FeedbackStatusHistory'
 };
 
 /**

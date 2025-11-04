@@ -78,93 +78,110 @@
 
       <!-- Feedbacks List -->
       <div v-else class="feedbacks-list">
+        <div class="list-header">
+          <div class="list-col col-subject">Konu</div>
+          <div class="list-col col-user">Kullanıcı</div>
+          <div class="list-col col-status">Durum</div>
+          <div class="list-col col-priority">Öncelik</div>
+          <div class="list-col col-rating">Puan</div>
+          <div class="list-col col-replies">Cevap</div>
+          <div class="list-col col-actions">İşlemler</div>
+        </div>
         <div
           v-for="feedback in filteredFeedbacks"
           :key="feedback.id"
-          class="feedback-card"
-          :class="`priority-${feedback.priority?.toLowerCase()}`"
+          class="feedback-list-item"
+          :class="`status-${feedback.status.toLowerCase()}`"
         >
-          <div class="feedback-header">
-            <div class="feedback-info">
-              <h3 class="feedback-title">{{ feedback.subject }}</h3>
-              <div class="feedback-meta">
-                <span class="user-email">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                    <polyline points="22,6 12,13 2,6"/>
-                  </svg>
-                  {{ feedback.user.email }}
-                </span>
-                <span class="lead-title">{{ feedback.leadSale.lead.title }}</span>
+          <div class="list-row">
+            <div class="list-col col-subject">
+              <div class="subject-content">
+                <div class="subject-title">{{ feedback.subject }}</div>
+                <div v-if="feedback.comment" class="subject-comment">{{ feedback.comment.substring(0, 60) }}{{ feedback.comment.length > 60 ? '...' : '' }}</div>
+                <div class="subject-lead">{{ feedback.leadSale.lead.title }}</div>
               </div>
             </div>
-            <div class="feedback-badges">
+            <div class="list-col col-user">
+              <div class="user-content">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                <span>{{ feedback.user.email }}</span>
+              </div>
+              <div v-if="feedback.assignedToUser" class="assigned-user">
+                Atanan: {{ feedback.assignedToUser.email }}
+              </div>
+            </div>
+            <div class="list-col col-status">
               <span class="status-badge" :class="feedback.status.toLowerCase()">
                 {{ getStatusLabel(feedback.status) }}
               </span>
+              <div v-if="feedback.closedAt" class="closed-time">
+                {{ formatDate(feedback.closedAt) }}
+              </div>
+            </div>
+            <div class="list-col col-priority">
               <span class="priority-badge" :class="feedback.priority.toLowerCase()">
                 {{ getPriorityLabel(feedback.priority) }}
               </span>
+            </div>
+            <div class="list-col col-rating">
               <span v-if="feedback.rating" class="rating-badge">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                 </svg>
                 {{ feedback.rating }}/5
               </span>
+              <span v-else class="no-rating">-</span>
             </div>
-          </div>
-
-          <div v-if="feedback.comment" class="feedback-comment">
-            <p>{{ feedback.comment }}</p>
-          </div>
-
-          <div class="feedback-actions-bar">
-            <div class="action-group">
-              <label class="assign-label">Ata:</label>
-              <select
-                :value="feedback.assignedTo || ''"
-                @change="assignFeedback(feedback.id, $event.target.value)"
-                class="assign-select"
-              >
-                <option value="">Atanmamış</option>
-                <option v-for="admin in adminUsers" :key="admin.id" :value="admin.id">
-                  {{ admin.email }}
-                </option>
-              </select>
-              <div v-if="feedback.assignedToUser" class="assigned-to">
-                Atanan: <strong>{{ feedback.assignedToUser.email }}</strong>
+            <div class="list-col col-replies">
+              <span v-if="feedback.replies && feedback.replies.length > 0" class="replies-count">
+                {{ feedback.replies.length }}
+              </span>
+              <span v-else class="no-replies">-</span>
+            </div>
+            <div class="list-col col-actions">
+              <div class="action-buttons">
+                <select
+                  :value="feedback.assignedTo || ''"
+                  @change="assignFeedback(feedback.id, $event.target.value)"
+                  class="assign-select-small"
+                  title="Ata"
+                >
+                  <option value="">Atanmamış</option>
+                  <option v-for="admin in adminUsers" :key="admin.id" :value="admin.id">
+                    {{ admin.email }}
+                  </option>
+                </select>
+                <select
+                  :value="feedback.status"
+                  @change="openStatusChangeModal(feedback.id, $event.target.value)"
+                  class="status-select-small"
+                  title="Durum"
+                >
+                  <option value="OPEN">Açık</option>
+                  <option value="IN_PROGRESS">İşlemde</option>
+                  <option value="RESOLVED">Çözüldü</option>
+                  <option value="CLOSED">Kapalı</option>
+                </select>
+                <button class="btn-action-small btn-details" @click="selectFeedbackForReply(feedback)" title="Detaylar">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
+                  </svg>
+                </button>
+                <button class="btn-action-small btn-history" @click="openStatusHistoryModal(feedback)" title="Durum Geçmişi">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v20M2 12h20"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
               </div>
             </div>
-            <div class="action-group">
-              <label class="status-label">Durum:</label>
-              <select
-                :value="feedback.status"
-                @change="updateStatus(feedback.id, $event.target.value)"
-                class="status-select"
-              >
-                <option value="OPEN">Açık</option>
-                <option value="IN_PROGRESS">İşlemde</option>
-                <option value="RESOLVED">Çözüldü</option>
-                <option value="CLOSED">Kapalı</option>
-              </select>
-            </div>
-            <button class="btn-view-details" @click="selectFeedbackForReply(feedback)" title="Detaylar">
-              Detaylar & Cevap
-            </button>
-          </div>
-
-          <!-- Replies Preview -->
-          <div v-if="feedback.replies && feedback.replies.length > 0" class="replies-preview">
-            <div class="replies-count">
-              {{ feedback.replies.length }} cevap
-            </div>
-          </div>
-
-          <div v-if="feedback.closedAt" class="closed-info">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-            Kapalı: {{ formatDate(feedback.closedAt) }}
           </div>
         </div>
       </div>
@@ -178,6 +195,107 @@
       :currentUserId="currentUserId"
       @close="selectedFeedback = null"
     />
+
+    <!-- Status Change Modal -->
+    <div v-if="showStatusChangeModal" class="modal-overlay" @click.self="closeStatusChangeModal">
+      <div class="status-modal">
+        <div class="modal-header">
+          <h3>Durum Değiştir</h3>
+          <button class="close-btn" @click="closeStatusChangeModal">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Yeni Durum</label>
+            <select v-model="statusChangeForm.newStatus" class="form-select">
+              <option value="OPEN">Açık</option>
+              <option value="IN_PROGRESS">İşlemde</option>
+              <option value="RESOLVED">Çözüldü</option>
+              <option value="CLOSED">Kapalı</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Internal Note <span class="required">*</span></label>
+            <textarea
+              v-model="statusChangeForm.internalNote"
+              class="form-textarea"
+              placeholder="Durum değişikliği için not yazın..."
+              rows="4"
+              required
+            ></textarea>
+            <p class="help-text">Bu not zorunludur ve durum geçmişinde görünecektir.</p>
+          </div>
+          <div v-if="statusChangeError" class="error-message">
+            {{ statusChangeError }}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" @click="closeStatusChangeModal">İptal</button>
+          <button
+            class="btn-primary"
+            @click="confirmStatusChange"
+            :disabled="!statusChangeForm.internalNote.trim() || statusChangeLoading"
+          >
+            {{ statusChangeLoading ? 'Kaydediliyor...' : 'Kaydet' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status History Modal -->
+    <div v-if="showStatusHistoryModal" class="modal-overlay" @click.self="closeStatusHistoryModal">
+      <div class="status-history-modal">
+        <div class="modal-header">
+          <h3>Durum Geçmişi</h3>
+          <button class="close-btn" @click="closeStatusHistoryModal">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div v-if="statusHistoryLoading" class="loading-state">
+            <p>Yükleniyor...</p>
+          </div>
+          <div v-else-if="statusHistory.length === 0" class="empty-state">
+            <p>Henüz durum değişikliği yok.</p>
+          </div>
+          <div v-else class="history-list">
+            <div
+              v-for="(history, index) in statusHistory"
+              :key="history.id"
+              class="history-item"
+            >
+              <div class="history-header">
+                <div class="history-status">
+                  <span class="status-badge" :class="history.oldStatus?.toLowerCase() || 'initial'">
+                    {{ history.oldStatus ? getStatusLabel(history.oldStatus) : 'İlk Durum' }}
+                  </span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                  <span class="status-badge" :class="history.newStatus.toLowerCase()">
+                    {{ getStatusLabel(history.newStatus) }}
+                  </span>
+                </div>
+                <div class="history-meta">
+                  <span class="history-date">{{ formatDate(history.createdAt) }}</span>
+                  <span class="history-user">{{ history.changedByUser?.email || history.changedByUser?.firstName || 'Bilinmeyen' }}</span>
+                </div>
+              </div>
+              <div class="history-note">
+                <strong>Not:</strong> {{ history.internalNote }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -200,6 +318,22 @@ const selectedFeedback = ref(null)
 const replyMessage = ref('')
 const replyLoading = ref(false)
 const currentUserId = ref(localStorage.getItem('userId') || '')
+
+// Status change modal
+const showStatusChangeModal = ref(false)
+const statusChangeForm = ref({
+  feedbackId: null,
+  newStatus: 'OPEN',
+  internalNote: ''
+})
+const statusChangeLoading = ref(false)
+const statusChangeError = ref('')
+
+// Status history modal
+const showStatusHistoryModal = ref(false)
+const statusHistory = ref([])
+const statusHistoryLoading = ref(false)
+const selectedFeedbackForHistory = ref(null)
 
 const token = localStorage.getItem('token') || sessionStorage.getItem('token')
 
@@ -252,21 +386,95 @@ async function assignFeedback(feedbackId, adminId) {
   }
 }
 
-// Update feedback status
-async function updateStatus(feedbackId, newStatus) {
+// Open status change modal
+function openStatusChangeModal(feedbackId, newStatus) {
+  const feedback = feedbacks.value.find(f => f.id === feedbackId)
+  if (!feedback) return
+  
+  // Eğer durum değişmiyorsa modal açma
+  if (feedback.status === newStatus) return
+  
+  statusChangeForm.value = {
+    feedbackId: feedbackId,
+    newStatus: newStatus,
+    internalNote: ''
+  }
+  statusChangeError.value = ''
+  showStatusChangeModal.value = true
+}
+
+// Close status change modal
+function closeStatusChangeModal() {
+  showStatusChangeModal.value = false
+  statusChangeForm.value = {
+    feedbackId: null,
+    newStatus: 'OPEN',
+    internalNote: ''
+  }
+  statusChangeError.value = ''
+}
+
+// Confirm status change
+async function confirmStatusChange() {
+  if (!statusChangeForm.value.internalNote.trim()) {
+    statusChangeError.value = 'Internal note zorunludur'
+    return
+  }
+
   try {
-    await axios.patch(`/api/feedback/${feedbackId}/status`,
-      { status: newStatus },
+    statusChangeLoading.value = true
+    statusChangeError.value = ''
+    
+    await axios.patch(`/api/feedback/${statusChangeForm.value.feedbackId}/status`,
+      {
+        status: statusChangeForm.value.newStatus,
+        internalNote: statusChangeForm.value.internalNote
+      },
       { headers: { 'Authorization': `Bearer ${token}` } }
     )
+    
     await fetchFeedbacks()
-    if (selectedFeedback.value?.id === feedbackId) {
-      selectedFeedback.value.status = newStatus
+    if (selectedFeedback.value?.id === statusChangeForm.value.feedbackId) {
+      // Reload selected feedback to get updated status
+      const response = await axios.get(`/api/feedback/${statusChangeForm.value.feedbackId}`,
+        { headers: { 'Authorization': `Bearer ${token}` } }
+      )
+      selectedFeedback.value = response.data
     }
+    
+    closeStatusChangeModal()
   } catch (error) {
     console.error('Durum güncelleme hatası:', error)
-    alert('Durum güncellenemedi')
+    statusChangeError.value = error.response?.data?.error || 'Durum güncellenemedi'
+  } finally {
+    statusChangeLoading.value = false
   }
+}
+
+// Open status history modal
+async function openStatusHistoryModal(feedback) {
+  selectedFeedbackForHistory.value = feedback
+  showStatusHistoryModal.value = true
+  statusHistoryLoading.value = true
+  
+  try {
+    const response = await axios.get(`/api/feedback/${feedback.id}`,
+      { headers: { 'Authorization': `Bearer ${token}` } }
+    )
+    statusHistory.value = response.data.statusHistory || []
+  } catch (error) {
+    console.error('Durum geçmişi yükleme hatası:', error)
+    statusHistory.value = []
+  } finally {
+    statusHistoryLoading.value = false
+  }
+}
+
+// Close status history modal
+function closeStatusHistoryModal() {
+  showStatusHistoryModal.value = false
+  selectedFeedbackForHistory.value = null
+  statusHistory.value = []
 }
 
 // Send reply
@@ -411,7 +619,7 @@ watch(() => route.query.id, (newId) => {
 }
 
 .page-content {
-  max-width: 1200px;
+  max-width: 95%;
   margin: 0 auto;
 }
 
@@ -580,98 +788,166 @@ watch(() => route.query.id, (newId) => {
 
 /* Feedbacks List */
 .feedbacks-list {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.list-header {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 0.9fr 0.9fr 0.7fr 0.7fr 2fr;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border-bottom: 2px solid #e5e7eb;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.feedback-list-item {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.2s ease;
+}
+
+.feedback-list-item:last-child {
+  border-bottom: none;
+}
+
+.feedback-list-item:hover {
+  background: #f8fafc;
+}
+
+.feedback-list-item.status-open {
+  border-left: 3px solid #3b82f6;
+}
+
+.feedback-list-item.status-in_progress {
+  border-left: 3px solid #f59e0b;
+}
+
+.feedback-list-item.status-resolved {
+  border-left: 3px solid #10b981;
+}
+
+.feedback-list-item.status-closed {
+  border-left: 3px solid #9ca3af;
+}
+
+.list-row {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 0.9fr 0.9fr 0.7fr 0.7fr 2fr;
+  gap: 12px;
+  padding: 12px 16px;
+  align-items: center;
+}
+
+.list-col {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 4px;
+  font-size: 13px;
 }
 
-.feedback-card {
-  background: white;
-  border-radius: 12px;
-  border: 1px solid #f1f5f9;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  transition: all 0.2s ease;
+.col-subject {
+  min-width: 0;
 }
 
-.feedback-card:hover {
-  border-color: #cbd5e1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.feedback-card.priority-urgent {
-  border-left: 4px solid #dc2626;
-  background: linear-gradient(to right, rgba(220, 38, 38, 0.02), white);
-}
-
-.feedback-card.priority-high {
-  border-left: 4px solid #f59e0b;
-  background: linear-gradient(to right, rgba(245, 158, 11, 0.02), white);
-}
-
-.feedback-card.priority-medium {
-  border-left: 4px solid #3b82f6;
-  background: linear-gradient(to right, rgba(59, 130, 246, 0.02), white);
-}
-
-.feedback-card.priority-low {
-  border-left: 4px solid #10b981;
-  background: linear-gradient(to right, rgba(16, 185, 129, 0.02), white);
-}
-
-.feedback-header {
+.subject-content {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 16px;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.feedback-info {
-  flex: 1;
-}
-
-.feedback-title {
-  font-size: 18px;
+.subject-title {
   font-weight: 600;
   color: #0f172a;
-  margin: 0 0 8px;
+  font-size: 14px;
 }
 
-.feedback-meta {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  font-size: 13px;
+.subject-comment {
   color: #64748b;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
-.user-email,
-.lead-title {
+.subject-lead {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.col-user {
+  min-width: 0;
+}
+
+.user-content {
   display: flex;
   align-items: center;
   gap: 6px;
+  color: #475569;
+  font-size: 13px;
 }
 
-.feedback-badges {
+.user-content svg {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.assigned-user {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.col-status {
+  align-items: flex-start;
+}
+
+.col-priority,
+.col-rating,
+.col-replies {
+  align-items: flex-start;
+}
+
+.no-rating,
+.no-replies {
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.col-actions {
+  align-items: flex-start;
+}
+
+.action-buttons {
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  align-items: center;
   flex-wrap: wrap;
-  justify-content: flex-end;
 }
 
 .status-badge,
 .priority-badge,
 .rating-badge {
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
+}
+
+.closed-time {
+  font-size: 10px;
+  color: #94a3b8;
+  margin-top: 4px;
 }
 
 .status-badge {
@@ -768,77 +1044,81 @@ watch(() => route.query.id, (newId) => {
   white-space: nowrap;
 }
 
-.assign-select,
-.status-select {
-  padding: 6px 10px;
+.assign-select-small,
+.status-select-small {
+  padding: 4px 8px;
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  font-size: 13px;
+  border-radius: 4px;
+  font-size: 11px;
   background: white;
   color: #1e293b;
   cursor: pointer;
   transition: all 0.2s ease;
+  min-width: 100px;
 }
 
-.assign-select:hover,
-.status-select:hover {
+.assign-select-small:hover,
+.status-select-small:hover {
   border-color: #94a3b8;
 }
 
-.assign-select:focus,
-.status-select:focus {
+.assign-select-small:focus,
+.status-select-small:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
-.assigned-to {
-  font-size: 13px;
-  color: #64748b;
-}
-
-.btn-view-details {
-  padding: 8px 16px;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
+.btn-action-small {
+  padding: 6px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: white;
+  color: #475569;
   cursor: pointer;
   transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.btn-view-details:hover {
-  background: #2563eb;
-}
-
-.replies-preview {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding-top: 12px;
-  color: #64748b;
-  font-size: 13px;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+}
+
+.btn-action-small:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #1e293b;
+}
+
+.btn-action-small.btn-details {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.btn-action-small.btn-details:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.btn-action-small.btn-history {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+.btn-action-small.btn-history:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
 }
 
 .replies-count {
   background: #f1f5f9;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 2px 6px;
+  border-radius: 3px;
   font-weight: 500;
-}
-
-.closed-info {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #64748b;
   font-size: 12px;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #f1f5f9;
+  display: inline-block;
 }
 
 /* Modal Styles */
@@ -879,11 +1159,34 @@ watch(() => route.query.id, (newId) => {
   border-bottom: 1px solid #f1f5f9;
 }
 
-.modal-header h2 {
+.modal-header h2,
+.modal-header h3 {
   font-size: 20px;
   font-weight: 700;
   color: #0f172a;
   margin: 0;
+}
+
+.modal-header h3 {
+  font-size: 18px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #64748b;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  border-radius: 4px;
+}
+
+.close-btn:hover {
+  color: #1e293b;
+  background: #f1f5f9;
 }
 
 .btn-close {
@@ -1120,24 +1423,25 @@ watch(() => route.query.id, (newId) => {
     grid-template-columns: 1fr;
   }
 
-  .feedback-header {
-    flex-direction: column;
+  .list-header,
+  .list-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
 
-  .feedback-badges {
+  .list-col {
+    padding: 4px 0;
+  }
+
+  .action-buttons {
+    flex-wrap: wrap;
     width: 100%;
   }
 
-  .feedback-actions-bar {
-    flex-direction: column;
-  }
-
-  .action-group {
-    width: 100%;
-  }
-
-  .btn-view-details {
-    width: 100%;
+  .assign-select-small,
+  .status-select-small {
+    flex: 1;
+    min-width: 120px;
   }
 
   .modal-overlay {
@@ -1156,5 +1460,192 @@ watch(() => route.query.id, (newId) => {
     width: 100%;
     align-self: stretch;
   }
+}
+
+/* Status Change Modal */
+.status-modal,
+.status-history-modal {
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+}
+
+.status-modal .modal-body,
+.status-history-modal .modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.form-group .required {
+  color: #ef4444;
+}
+
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.help-text {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+.error-message {
+  padding: 12px;
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-top: 16px;
+}
+
+.status-modal .modal-footer,
+.status-history-modal .modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.btn-primary:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-secondary {
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Status History Modal */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.history-item {
+  padding: 16px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.history-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.history-status svg {
+  color: #9ca3af;
+}
+
+.history-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.history-date {
+  font-weight: 500;
+}
+
+.history-user {
+  color: #9ca3af;
+}
+
+.history-note {
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.history-note strong {
+  color: #1f2937;
+}
+
+.status-badge.initial {
+  background: #f3f4f6;
+  color: #6b7280;
 }
 </style>

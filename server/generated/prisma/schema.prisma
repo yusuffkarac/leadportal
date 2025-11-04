@@ -55,6 +55,7 @@ model User {
   feedbacksCreated            Feedback[]               @relation("FeedbackCreator")
   feedbacksAssigned           Feedback[]               @relation("FeedbackAssigned")
   feedbackReplies             FeedbackReply[]          @relation("FeedbackReplies")
+  feedbackStatusHistory       FeedbackStatusHistory[]  @relation("FeedbackStatusHistory")
 }
 
 model Lead {
@@ -469,10 +470,11 @@ model Feedback {
   closedAt   DateTime? // Kapanış zamanı
 
   // Relations
-  user           User            @relation("FeedbackCreator", fields: [userId], references: [id], onDelete: Cascade)
-  leadSale       LeadSale        @relation(fields: [leadSaleId], references: [id], onDelete: Cascade)
-  assignedToUser User?           @relation("FeedbackAssigned", fields: [assignedTo], references: [id], onDelete: SetNull)
+  user           User                    @relation("FeedbackCreator", fields: [userId], references: [id], onDelete: Cascade)
+  leadSale       LeadSale                @relation(fields: [leadSaleId], references: [id], onDelete: Cascade)
+  assignedToUser User?                   @relation("FeedbackAssigned", fields: [assignedTo], references: [id], onDelete: SetNull)
   replies        FeedbackReply[]
+  statusHistory  FeedbackStatusHistory[]
 
   @@index([userId])
   @@index([status])
@@ -510,4 +512,23 @@ enum FeedbackPriority {
   MEDIUM
   HIGH
   URGENT
+}
+
+// Feedback durum geçmişi (her durum değişikliğinde internal note ile birlikte kaydedilir)
+model FeedbackStatusHistory {
+  id           String          @id @default(cuid())
+  feedbackId   String
+  oldStatus    FeedbackStatus? // Önceki durum (null ise ilk durum)
+  newStatus    FeedbackStatus // Yeni durum
+  internalNote String          @db.Text // Zorunlu internal not
+  changedBy    String // Durumu değiştiren admin kullanıcı ID
+  createdAt    DateTime        @default(now())
+
+  // Relations
+  feedback      Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+  changedByUser User     @relation("FeedbackStatusHistory", fields: [changedBy], references: [id], onDelete: Cascade)
+
+  @@index([feedbackId])
+  @@index([createdAt])
+  @@index([changedBy])
 }

@@ -135,6 +135,7 @@
           <thead>
             <tr>
               <th>Lead</th>
+              <th>Lead ID</th>
               <th>Satın Alma Fiyatı</th>
               <th>Ödeme Yöntemi</th>
               <th>Bakiye Bilgisi</th>
@@ -152,6 +153,9 @@
                     <div class="lead-description-text">{{ sale.lead.description?.substring(0, 80) }}...</div>
                   </div>
                 </div>
+              </td>
+              <td>
+                <span class="lead-id-text">{{ sale.lead.id }}</span>
               </td>
               <td>
                 <div class="price-cell">
@@ -1410,6 +1414,13 @@ watch(showMap, (newValue) => {
   font-weight: 700;
   color: #059669;
   font-size: 1rem;
+}
+
+.lead-id-text {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 .seller-text {
