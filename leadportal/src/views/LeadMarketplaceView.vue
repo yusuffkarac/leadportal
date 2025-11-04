@@ -1942,7 +1942,7 @@ onUnmounted(() => {
                         {{ lead.title }}
                       </div>
                       <div class="lead-title-right">
-                        <div class="lead-id-badge-inline">{{ String(lead.id).slice(-6) }}</div>
+                        <div class="lead-id-badge-inline">{{ String(lead.id).slice(-8) }}</div>
                         <button v-if="lead.description" class="info-btn" @click.stop="showDescription(lead, $event)" title="Beschreibung anzeigen">
                           <Icon icon="mdi:information-outline" width="16" height="16" />
                         </button>
@@ -2503,22 +2503,36 @@ onUnmounted(() => {
           <!-- Price Info Section -->
           <div class="preview-price-section">
             <div class="preview-price-grid">
-              <div class="preview-price-item">
-                <div class="preview-label">Başlangıç Fiyatı</div>
-                <div class="preview-amount">€{{ previewLead.startPrice }}</div>
-              </div>
-              <div class="preview-price-item">
-                <div class="preview-label">Min Artış</div>
-                <div class="preview-amount">€{{ previewLead.minIncrement }}</div>
-              </div>
-              <div v-if="previewLead.instantBuyPrice" class="preview-price-item">
-                <div class="preview-label">Anında Satın Alma</div>
-                <div class="preview-amount preview-sofort">€{{ previewLead.instantBuyPrice }}</div>
-              </div>
-              <div class="preview-price-item">
-                <div class="preview-label">Bitiş Tarihi</div>
-                <div class="preview-amount">{{ new Date(previewLead.endsAt).toLocaleDateString('tr-TR') }}</div>
-              </div>
+              <!-- SOFORT_KAUF tipinde sadece fiyat ve bitiş tarihi -->
+              <template v-if="previewLead.leadType === 'SOFORT_KAUF'">
+                <div class="preview-price-item">
+                  <div class="preview-label">Fiyat</div>
+                  <div class="preview-amount">€{{ previewLead.startPrice }}</div>
+                </div>
+                <div class="preview-price-item">
+                  <div class="preview-label">Bitiş Tarihi</div>
+                  <div class="preview-amount">{{ new Date(previewLead.endsAt).toLocaleDateString('tr-TR') }}</div>
+                </div>
+              </template>
+              <!-- AUCTION tipinde tüm fiyat bilgileri -->
+              <template v-else>
+                <div class="preview-price-item">
+                  <div class="preview-label">Başlangıç Fiyatı</div>
+                  <div class="preview-amount">€{{ previewLead.startPrice }}</div>
+                </div>
+                <div class="preview-price-item">
+                  <div class="preview-label">Min Artış</div>
+                  <div class="preview-amount">€{{ previewLead.minIncrement }}</div>
+                </div>
+                <div v-if="previewLead.instantBuyPrice" class="preview-price-item">
+                  <div class="preview-label">Anında Satın Alma</div>
+                  <div class="preview-amount preview-sofort">€{{ previewLead.instantBuyPrice }}</div>
+                </div>
+                <div class="preview-price-item">
+                  <div class="preview-label">Bitiş Tarihi</div>
+                  <div class="preview-amount">{{ new Date(previewLead.endsAt).toLocaleDateString('tr-TR') }}</div>
+                </div>
+              </template>
             </div>
           </div>
 
@@ -2528,8 +2542,8 @@ onUnmounted(() => {
             <pre class="preview-private-content">{{ previewLead.privateDetails }}</pre>
           </div>
 
-          <!-- Bids Section -->
-          <div class="preview-bids-section">
+          <!-- Bids Section - Sadece AUCTION tipinde göster -->
+          <div v-if="previewLead.leadType !== 'SOFORT_KAUF'" class="preview-bids-section">
             <h3 class="preview-bids-title">Teklif Geçmişi ({{ previewLead.bids?.length || 0 }})</h3>
 
             <div v-if="previewLoadingBids" class="preview-empty-state">
@@ -2634,6 +2648,9 @@ onUnmounted(() => {
 <style scoped>
 :deep(.leaflet-popup-content-wrapper) {
   padding: 1.5rem;
+}
+.price-top span{
+  font-weight: bold;
 }
 
 /* Bidding Hours Alert */
@@ -4397,14 +4414,14 @@ onUnmounted(() => {
 .lead-id-badge-inline {
   font-size: 0.65rem;
   font-weight: 700;
-  color: #6b7280;
+  color: black;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   padding: 2px 6px;
   background: #f1f5f9;
   border-radius: 4px;
   white-space: nowrap;
-  max-width: 60px;
+  max-width: 12rem;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -4849,6 +4866,10 @@ onUnmounted(() => {
   .table-view {
     border-radius: 8px;
   }
+  
+  .lead-info .table-icon {
+    display: none;
+  }
 
   .leads-table {
     font-size: 0.75rem;
@@ -4906,7 +4927,7 @@ onUnmounted(() => {
   }
 
   .lead-title-text {
-    font-size: 0.875rem;
+    font-size: 0.675rem;
     line-height: 1.4;
     margin-bottom: 6px;
     -webkit-line-clamp: 4;
@@ -4942,13 +4963,17 @@ onUnmounted(() => {
   }
 
   .lead-id-badge-inline {
-    font-size: 0.6rem;
-    padding: 2px 5px;
+    font-size: 0.4rem;
+    padding: 2px 2px;
+    font-weight: normal;
+  }
+  .info-btn{
+    display:none;
   }
 
   .insurance-type-inline {
-    padding: 2px 6px;
-    font-size: 0.5rem;
+    padding: 2px 3px;
+    font-size: 0.4rem;
     margin-right: 4px;
   }
 
@@ -5001,7 +5026,7 @@ onUnmounted(() => {
   .mobile-quick-bid-row {
     display: flex;
     width: 100%;
-    margin-top: 4px;
+    margin-top: 10px;
   }
 
   .mobile-price-section {
@@ -5165,7 +5190,7 @@ onUnmounted(() => {
 
 @media (max-width: 480px) {
   .leads-table {
-    font-size: 0.6rem;
+    font-size: 0.5rem;
   }
 
   .leads-table th,
@@ -5200,7 +5225,7 @@ onUnmounted(() => {
   }
 
   .lead-title-text {
-    font-size: 0.6rem;
+    font-size: 0.5rem;
   }
 
   .price-and-bid-cell {

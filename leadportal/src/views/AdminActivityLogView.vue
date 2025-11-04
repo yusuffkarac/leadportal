@@ -405,9 +405,10 @@ onMounted(() => {
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: flex-end;
   margin-bottom: 2rem;
   gap: 1rem;
+  flex-direction: row;
 }
 
 .header-left h1 {

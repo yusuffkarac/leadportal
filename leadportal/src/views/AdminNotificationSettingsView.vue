@@ -196,7 +196,6 @@ onMounted(() => {
     <div class="header">
       <div class="section-header">
         <h1>
-          <Icon icon="mdi:bell-cog" width="32" height="32" />
           Bildirim Yönetimi
         </h1>
         <p>Kullanıcı rollerine göre bildirim izinlerini yönetin</p>
@@ -706,8 +705,18 @@ onMounted(() => {
 /* Mobil responsive */
 @media (max-width: 768px) {
   .admin-notification-settings {
-    padding: 16px;
+    padding: 0px;
+    max-width: 95%;
   }
+  .header {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  flex-direction: column;
+}
+
 
   .header-content h1 {
     font-size: 24px;

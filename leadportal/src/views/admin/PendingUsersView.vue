@@ -990,6 +990,15 @@ function formatDate(dateString) {
     flex-direction: column;
     align-items: flex-start;
   }
+  .pending-users-container {
+  padding: 0;
+  max-width: 95%;;
+
+  }
+  .tab-button{
+    font-size: 0px!important;
+  }
+
 
   .actions {
     width: 100%;

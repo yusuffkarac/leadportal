@@ -955,7 +955,7 @@ onMounted(() => {
   }
 
   .user-email {
-    font-size: 0.7rem;
+    font-size: 0.875rem;
     margin-bottom: 0.125rem;
   }
 
@@ -1001,7 +1001,7 @@ onMounted(() => {
   }
 
   .details-header h2 {
-    font-size: 1.1rem;
+    font-size: 1.5rem;
     font-weight: 700;
     margin: 0 0 0.125rem 0;
   }
@@ -1037,7 +1037,7 @@ onMounted(() => {
   }
 
   .summary-label {
-    font-size: 0.7rem;
+    font-size: 0.875rem;
   }
 
   .summary-value {
@@ -1114,7 +1114,7 @@ onMounted(() => {
   }
 
   .transaction-date {
-    font-size: 0.7rem;
+    font-size: 0.875rem;
   }
 
   .transaction-amount {
@@ -1150,13 +1150,13 @@ onMounted(() => {
   }
 
   .page-header h1 {
-    font-size: 1.1rem;
+    font-size: 1.5rem;
     font-weight: 700;
     margin: 0 0 0.125rem 0;
   }
 
   .page-header p {
-    font-size: 0.7rem;
+    font-size: 0.875rem;
   }
 
   .content-wrapper {
@@ -1296,7 +1296,7 @@ onMounted(() => {
   }
 
   .form-group label {
-    font-size: 0.7rem;
+    font-size: 0.875rem;
     font-weight: 600;
     margin-bottom: 0.125rem;
   }

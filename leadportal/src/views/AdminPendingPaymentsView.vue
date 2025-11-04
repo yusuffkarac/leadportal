@@ -10,27 +10,39 @@
       </div>
       <!-- Statistics Cards -->
       <div class="stats-cards">
-        <div class="stat-card pending">
+        <button 
+          class="stat-card pending"
+          :class="{ active: activeTab === 'pending' }"
+          @click="switchTab('pending')"
+        >
           <Icon icon="mdi:clock-outline" width="24" />
           <div>
             <div class="stat-value">{{ pendingPayments.length }}</div>
             <div class="stat-label">Bekleyen</div>
           </div>
-        </div>
-        <div class="stat-card completed">
+        </button>
+        <button 
+          class="stat-card completed"
+          :class="{ active: activeTab === 'completed' }"
+          @click="switchTab('completed')"
+        >
           <Icon icon="mdi:check-circle-outline" width="24" />
           <div>
             <div class="stat-value">{{ completedPayments.length }}</div>
             <div class="stat-label">Onaylanmış</div>
           </div>
-        </div>
-        <div class="stat-card rejected">
+        </button>
+        <button 
+          class="stat-card rejected"
+          :class="{ active: activeTab === 'rejected' }"
+          @click="switchTab('rejected')"
+        >
           <Icon icon="mdi:close-circle-outline" width="24" />
           <div>
             <div class="stat-value">{{ rejectedPayments.length }}</div>
             <div class="stat-label">Reddedilmiş</div>
           </div>
-        </div>
+        </button>
       </div>
     </div>
 
@@ -43,7 +55,7 @@
           @click="switchTab('pending')"
         >
           <Icon icon="mdi:clock-alert-outline" width="18" />
-          Bekleyen ({{ pendingPayments.length }})
+          <span class="tab-text">Bekleyen ({{ pendingPayments.length }})</span>
         </button>
         <button
           class="tab-button"
@@ -51,7 +63,7 @@
           @click="switchTab('completed')"
         >
           <Icon icon="mdi:check-circle" width="18" />
-          Onaylanmış ({{ completedPayments.length }})
+          <span class="tab-text">Onaylanmış ({{ completedPayments.length }})</span>
         </button>
         <button
           class="tab-button"
@@ -59,7 +71,7 @@
           @click="switchTab('rejected')"
         >
           <Icon icon="mdi:close-circle" width="18" />
-          Reddedilmiş ({{ rejectedPayments.length }})
+          <span class="tab-text">Reddedilmiş ({{ rejectedPayments.length }})</span>
         </button>
       </div>
     </div>
@@ -157,8 +169,38 @@
         v-for="payment in displayedPayments"
         :key="payment.id"
         class="payment-card"
-        :class="{ completed: activeTab === 'completed', rejected: activeTab === 'rejected' }"
+        :class="{ 
+          completed: activeTab === 'completed', 
+          rejected: activeTab === 'rejected',
+          expanded: isCardExpanded(payment.id)
+        }"
       >
+        <!-- Mobile Compact Header -->
+        <div class="payment-header-mobile" @click="toggleCard(payment.id)">
+          <div class="payment-title-mobile">
+            <Icon icon="mdi:file-document-outline" width="18" />
+            <div class="lead-info-mobile">
+              <h3>{{ payment.lead.title }}</h3>
+              <div class="lead-meta-mobile">
+                <span class="lead-id-mobile">Lead ID: {{ payment.leadId.substring(0, 10) }}{{ payment.leadId.length > 10 ? '...' : '' }}</span>
+                <span class="lead-date-mobile">{{ formatDateShort(payment.createdAt) }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="payment-amount-mobile">
+            <span class="amount-mobile">{{ formatCurrency(payment.amount) }}</span>
+            <span v-if="activeTab === 'pending'" class="badge-mobile pending-badge">Beklemede</span>
+            <span v-else-if="activeTab === 'completed'" class="badge-mobile completed-badge">Onaylanmış</span>
+            <span v-else class="badge-mobile rejected-badge">Reddedilmiş</span>
+            <Icon 
+              :icon="isCardExpanded(payment.id) ? 'mdi:chevron-up' : 'mdi:chevron-down'" 
+              width="20" 
+              class="expand-icon"
+            />
+          </div>
+        </div>
+
+        <!-- Desktop Header -->
         <div class="payment-header">
           <div class="payment-title">
             <Icon icon="mdi:file-document-outline" width="20" />
@@ -175,6 +217,7 @@
           </div>
         </div>
 
+        <!-- Payment Details (Hidden on mobile when collapsed) -->
         <div class="payment-details">
           <div class="detail-row">
             <div class="detail-item compact">
@@ -217,7 +260,7 @@
 
           <!-- Lead Navigation Button -->
           <div class="lead-navigation">
-            <button class="btn-view-lead" @click="goToLead(payment.leadId)">
+            <button class="btn-view-lead" @click.stop="goToLead(payment.leadId)">
               <Icon icon="mdi:arrow-right-circle" width="14" />
               Leade Git
             </button>
@@ -346,6 +389,9 @@ const minAmount = ref(null)
 const maxAmount = ref(null)
 const startDate = ref('')
 const endDate = ref('')
+
+// Expanded cards for mobile
+const expandedCards = ref(new Set())
 
 const totalPendingRevenue = computed(() => {
   return pendingPayments.value.reduce((sum, payment) => sum + payment.amount, 0)
@@ -600,6 +646,18 @@ const goToLead = (leadId) => {
   router.push({ name: 'lead-detail', params: { id: leadId } })
 }
 
+const toggleCard = (paymentId) => {
+  if (expandedCards.value.has(paymentId)) {
+    expandedCards.value.delete(paymentId)
+  } else {
+    expandedCards.value.add(paymentId)
+  }
+}
+
+const isCardExpanded = (paymentId) => {
+  return expandedCards.value.has(paymentId)
+}
+
 onMounted(async () => {
   await Promise.all([
     fetchPendingPayments(),
@@ -655,6 +713,22 @@ onMounted(async () => {
   align-items: center;
   gap: 0.75rem;
   border: 1px solid #f0f1f3;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-color: #e2e8f0;
+  transform: translateY(-1px);
+}
+
+.stat-card.active {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
 }
 
 .stat-card.pending {
@@ -954,10 +1028,15 @@ onMounted(async () => {
     grid-template-columns: repeat(2, 1fr);
   }
 }
-
+.tabs-container{
+  display: none;
+}
 @media (max-width: 768px) {
   .payments-list {
     grid-template-columns: 1fr;
+  }
+  .stat-label{
+    display: none;
   }
 }
 
@@ -1486,6 +1565,11 @@ onMounted(async () => {
   cursor: not-allowed;
 }
 
+/* Mobile Compact List Styles */
+.payment-header-mobile {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .pending-payments {
     padding: 1rem;
@@ -1499,6 +1583,29 @@ onMounted(async () => {
 
   .stats-cards {
     width: 100%;
+    gap: 0.5rem;
+  }
+
+  .stat-card {
+    padding: 0.625rem 0.5rem;
+    border-radius: 8px;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .stat-card svg {
+    width: 18px !important;
+    height: 18px !important;
+    flex-shrink: 0;
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.625rem;
   }
 
   .tabs-nav {
@@ -1507,8 +1614,13 @@ onMounted(async () => {
   }
 
   .tab-button {
-    padding: 0.875rem 1rem;
+    padding: 0.75rem 0.875rem;
     font-size: 0.8125rem;
+    gap: 0;
+  }
+
+  .tab-text {
+    display: none;
   }
 
   .search-filter-section {
@@ -1533,22 +1645,158 @@ onMounted(async () => {
     grid-column: 1 / -1;
   }
 
-  .payment-header {
-    flex-direction: column;
-    align-items: flex-start;
+  /* Mobile Compact List View */
+  .payments-list {
+    gap: 0.5rem;
   }
 
-  .payment-amount {
-    width: 100%;
-    align-items: flex-start;
+  .payment-card {
+    border-radius: 8px;
+    padding: 0;
+  }
+
+  .payment-header {
+    display: none;
+  }
+
+  .payment-header-mobile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    cursor: pointer;
+    border-bottom: 1px solid #e2e8f0;
+    background: white;
+    transition: background 0.2s;
+  }
+
+  .payment-header-mobile:active {
+    background: #f8fafc;
+  }
+
+  .payment-title-mobile {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .payment-title-mobile svg {
+    color: #64748b;
+    flex-shrink: 0;
+  }
+
+  .lead-info-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .lead-info-mobile h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    line-height: 1.3;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .lead-meta-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    margin-top: 0.125rem;
+  }
+
+  .lead-id-mobile {
+    font-size: 0.6875rem;
+    color: #64748b;
+    font-weight: 400;
+    word-break: break-all;
+  }
+
+  .lead-date-mobile {
+    font-size: 0.6875rem;
+    color: #64748b;
+    font-weight: 400;
+  }
+
+  .payment-amount-mobile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.375rem;
+    flex-shrink: 0;
+  }
+
+  .amount-mobile {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.2;
+  }
+
+  .badge-mobile {
+    padding: 0.1875rem 0.375rem;
+    border-radius: 9999px;
+    font-size: 0.5625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .expand-icon {
+    color: #64748b;
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+  }
+
+  .payment-details {
+    display: none;
+    padding: 0.75rem;
+    background: #f8fafc;
+  }
+
+  .payment-card.expanded .payment-details {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .payment-actions {
+    display: none;
+    padding: 0.75rem;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .payment-card.expanded .payment-actions {
+    display: flex;
+  }
+
+  .payment-card.completed .payment-header-mobile {
+    background: #f7fef9;
+    border-bottom-color: #d1fae5;
+  }
+
+  .payment-card.rejected .payment-header-mobile {
+    background: #fdf7f7;
+    border-bottom-color: #fee2e2;
   }
 
   .detail-row {
     grid-template-columns: 1fr;
-  }
-
-  .payment-actions {
     flex-direction: column;
+    gap: 0.5rem;
   }
 
   .modal-content {

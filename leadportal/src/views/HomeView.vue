@@ -654,6 +654,10 @@ onMounted(async () => {
 .hero {
   position: relative;
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background-image: url('/images/mainHandshake.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   border: 1px solid #e2e8f0;
   border-radius: 24px;
   padding: 64px 32px;
@@ -668,8 +672,7 @@ onMounted(async () => {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 60%),
-    radial-gradient(circle at bottom left, rgba(37, 99, 235, 0.08), transparent 50%);
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.85) 0%, rgba(226, 232, 240, 0.75) 100%);
   pointer-events: none;
 }
 
@@ -1239,7 +1242,7 @@ onMounted(async () => {
   .hero-actions {
     width: 100%;
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
   }
 
   .hero-actions a {

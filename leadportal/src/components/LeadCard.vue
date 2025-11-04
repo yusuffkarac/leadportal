@@ -857,6 +857,17 @@ const statusBadgeText = computed(() => {
   white-space: nowrap;
 }
 
+.instant-buy-action-btn svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.instant-buy-action-btn span {
+  flex-shrink: 1;
+  min-width: 0;
+}
+
 .instant-buy-action-btn:hover {
   background: #f59e0b;
 }
@@ -1151,6 +1162,7 @@ const statusBadgeText = computed(() => {
   }
 
   .instant-buy-action-btn svg {
+    flex-shrink: 0;
     width: 16px;
     height: 16px;
   }

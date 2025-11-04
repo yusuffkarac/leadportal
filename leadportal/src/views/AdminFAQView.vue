@@ -803,5 +803,9 @@ onMounted(() => {
     width: 100%;
     justify-content: flex-start;
   }
+  .header-actions button {
+    font-size: 0.8rem;
+    padding: 3%;
+  }
 }
 </style>

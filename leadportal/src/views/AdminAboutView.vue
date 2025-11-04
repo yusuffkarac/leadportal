@@ -900,7 +900,11 @@ onMounted(() => {
   
   .header-actions {
     width: 100%;
-    justify-content: flex-start;
+    justify-content: center;
   }
+}
+.btn-secondary{
+  background: var(--text);
+  color: white;
 }
 </style>

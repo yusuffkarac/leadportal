@@ -2,8 +2,15 @@
   <div class="admin-settings-page">
     <div class="page-content">
       <div class="page-header">
-        <h1>Mail/SMS Ayarları</h1>
-        <p class="subtitle">Email ve SMS template'lerini yönetin</p>
+        <div>
+          <h1>Mail/SMS Ayarları</h1>
+          <p class="subtitle">Email ve SMS template'lerini yönetin</p>
+        </div>
+         <button class="btn btn-primary" @click="openEmailModal(null)">
+            <Icon icon="mdi:plus" width="16" height="16" />
+            Yeni Template
+          </button>
+        
       </div>
 
       <!-- Tabs -->
@@ -25,6 +32,7 @@
             <Icon icon="mdi:cellphone" width="20" height="20" />
             SMS Template
           </button>
+          
         </div>
       </div>
 
@@ -34,10 +42,7 @@
         <div v-if="activeTab === 'email'" class="tab-panel">
         <div class="section-header">
           <h2>Email Template'leri</h2>
-          <button class="btn btn-primary" @click="openEmailModal(null)">
-            <Icon icon="mdi:plus" width="16" height="16" />
-            Yeni Template
-          </button>
+         
         </div>
 
         <div class="templates-grid">
@@ -1303,6 +1308,9 @@ onMounted(() => {
 
 .page-header {
   margin-bottom: 2rem;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
 }
 
 .page-header h1 {
@@ -2016,6 +2024,13 @@ onMounted(() => {
   .templates-grid {
     grid-template-columns: 1fr;
   }
+
+  .page-header {
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 
   .admin-settings-page {
   padding: 0;

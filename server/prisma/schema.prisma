@@ -27,7 +27,7 @@ model User {
   twoFactorSecret                 String?                  // 2FA secret key (şifreli)
   isActive                        Boolean                  @default(true) // Kullanıcı aktif mi?
   balance                         Float                    @default(0) // Kullanıcı bakiyesi
-  balanceEnabled                  Boolean                  @default(true) // Bakiye özelliği aktif mi?
+  balanceEnabled                  Boolean                  @default(false) // Bakiye özelliği aktif mi?
   paymentMethod                   String                   @default("balance") // "balance" veya "iban"
   ibanAccountHolder               String?                  // IBAN hesap sahibi
   ibanNumber                      String?                  // IBAN numarası (şifreli)

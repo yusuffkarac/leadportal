@@ -635,6 +635,9 @@ onUnmounted(() => {
   .page-content {
     padding: 12px;
     gap: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 }
 

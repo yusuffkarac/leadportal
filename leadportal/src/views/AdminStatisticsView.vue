@@ -1982,9 +1982,20 @@ onMounted(() => {
 
 @media (max-width: 768px) {
   .admin-statistics {
-    padding: 1rem;
+    padding: 0rem;
     max-width: 95%;
   }
+  .card-header {
+    flex-direction: column;
+  
+  }
+  .detail-card {
+    padding: 0.5rem;
+  }
+
+  .accordion-content {
+  padding: 0.5rem;
+}
   .refresh-btn{
     display: none;
 
@@ -2187,7 +2198,7 @@ onMounted(() => {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 1rem;
-  padding: 1.5rem;
+  padding: 0.5rem;
   margin-bottom: 1.5rem;
 }
 
