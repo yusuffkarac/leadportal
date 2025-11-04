@@ -29,6 +29,7 @@ import NotificationPreferencesView from '../views/NotificationPreferencesView.vu
 import AdminNotificationSettingsView from '../views/AdminNotificationSettingsView.vue'
 import AdminPendingPaymentsView from '../views/AdminPendingPaymentsView.vue'
 import AdminPendingUsersView from '../views/admin/PendingUsersView.vue'
+import AdminFeedbackView from '../views/AdminFeedbackView.vue'
 
 export const appRoutes = [
     {
@@ -221,6 +222,12 @@ export const appRoutes = [
       path: '/admin/pending-users',
       name: 'admin-pending-users',
       component: AdminPendingUsersView,
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin/feedback',
+      name: 'admin-feedback',
+      component: AdminFeedbackView,
       meta: { requiresAdmin: true },
     },
 ]

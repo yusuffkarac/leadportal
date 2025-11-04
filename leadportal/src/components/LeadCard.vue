@@ -152,6 +152,24 @@ function getInsuranceTypeIcon(typeName) {
   return 'mdi:file'
 }
 
+// Lead tipi için rengi döndür (setting'den)
+function getInsuranceTypeColor(typeName) {
+  if (!typeName) return '#6b7280' // default gray
+  const typeObj = props.settings.insuranceTypes.find(t => (typeof t === 'object' ? t.name : t) === typeName)
+  if (typeObj && typeof typeObj === 'object' && typeObj.color) {
+    return typeObj.color
+  }
+  // Fallback renkler
+  const typeColorMap = {
+    'KV-Voll': '#dc2626',
+    'KV': '#f97316',
+    'Hayvan': '#8b5cf6',
+    'Araba': '#0ea5e9',
+    'Sağlık': '#10b981'
+  }
+  return typeColorMap[typeName] || '#6b7280'
+}
+
 // Posta kodundan şehir adını getir
 function getCityFromPostalCode(postalCode) {
   if (!postalCode) return ''
@@ -239,7 +257,7 @@ const statusBadgeText = computed(() => {
     <!-- Card Top Header -->
     <div class="card-top-header">
       <div class="card-top-left">
-        <span class="insurance-type-badge" v-if="lead.insuranceType">
+        <span class="insurance-type-badge" v-if="lead.insuranceType" :style="{ backgroundColor: getInsuranceTypeColor(lead.insuranceType) }">
           <Icon :icon="getInsuranceTypeIcon(lead.insuranceType)" width="16" height="16" />
           {{ lead.insuranceType }}
         </span>
@@ -463,7 +481,6 @@ const statusBadgeText = computed(() => {
   align-items: center;
   gap: 5px;
   padding: 5px 10px;
-  background: #0f172a;
   color: white;
   border-radius: 6px;
   font-size: 0.6875rem;
@@ -473,6 +490,7 @@ const statusBadgeText = computed(() => {
   overflow: hidden;
   white-space: nowrap;
   flex-shrink: 0;
+  transition: background-color 0.2s ease;
 }
 
 .time-badge {

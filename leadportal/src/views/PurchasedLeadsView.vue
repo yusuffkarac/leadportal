@@ -189,6 +189,11 @@
                   <button class="table-btn secondary" @click="() => downloadLeadAsPDF(sale)" title="PDF İndir">
                     PDF
                   </button>
+                  <button class="table-btn secondary feedback-btn" @click="openFeedbackModal(sale)" title="Geri Bildirim Ver">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  </button>
                 </div>
               </td>
             </tr>
@@ -326,11 +331,27 @@
                 </svg>
                 PDF
               </button>
+              <button class="btn btn-secondary" @click="openFeedbackModal(sale)" title="Geri Bildirim Ver">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                Geri Bildirim
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Feedback Modal -->
+    <FeedbackModal
+      v-if="showFeedbackModal"
+      :show="showFeedbackModal"
+      :selectedLead="selectedLeadForFeedback"
+      @close="showFeedbackModal = false"
+      @feedback-submitted="fetchPurchasedLeads"
+      ref="feedbackModalRef"
+    />
   </div>
 </template>
 
@@ -340,6 +361,7 @@ import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { formatPrice } from '@/utils/currency.js'
 import { useMap } from '@/composables/useMap.js'
+import FeedbackModal from '@/components/FeedbackModal.vue'
 import jsPDF from 'jspdf'
 
 const router = useRouter()
@@ -352,6 +374,11 @@ const sortOrder = ref('desc')
 
 // Görünüm tipi (grid veya table)
 const viewMode = ref(localStorage.getItem('purchasedLeadViewMode') || 'grid')
+
+// Feedback modal state
+const showFeedbackModal = ref(false)
+const selectedLeadForFeedback = ref(null)
+const feedbackModalRef = ref(null)
 
 // Harita composable'ını kullan
 const { showMap, mapRoot, toggleMapVisibility, ensureZipcodesLoaded, initMap, updateMapMarkers, cleanup } = useMap('purchasedLeads')
@@ -726,6 +753,11 @@ async function downloadLeadAsPDF(sale) {
     console.error('PDF oluşturma hatası:', error)
     alert('PDF oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.')
   }
+}
+
+function openFeedbackModal(sale) {
+  selectedLeadForFeedback.value = sale
+  showFeedbackModal.value = true
 }
 
 onMounted(async () => {

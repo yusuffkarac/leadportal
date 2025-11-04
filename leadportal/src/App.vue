@@ -539,6 +539,10 @@ function closeAdminCategory() {
                   <Icon icon="mdi:clock-alert-outline" width="16" height="16" />
                   Bekleyen Ödemeler
                 </RouterLink>
+                <RouterLink to="/admin/feedback" class="submenu-item">
+                  <Icon icon="mdi:comment-multiple-outline" width="16" height="16" />
+                  Geri Bildirimler
+                </RouterLink>
               </div>
             </div>
 

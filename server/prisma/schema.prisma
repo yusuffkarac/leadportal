@@ -52,6 +52,9 @@ model User {
   balanceTransactions             BalanceTransaction[]
   notifications                   Notification[]
   notificationPreferences         NotificationPreference[]
+  feedbacksCreated                Feedback[]              @relation("FeedbackCreator")
+  feedbacksAssigned               Feedback[]              @relation("FeedbackAssigned")
+  feedbackReplies                 FeedbackReply[]         @relation("FeedbackReplies")
 }
 
 model Lead {
@@ -139,6 +142,7 @@ model LeadSale {
   createdAt     DateTime       @default(now())
   buyer         User           @relation("LeadBuyer", fields: [buyerId], references: [id])
   lead          Lead           @relation(fields: [leadId], references: [id])
+  feedbacks     Feedback[]
 }
 
 model Settings {
@@ -447,4 +451,63 @@ model NotificationRolePermission {
 
   @@unique([userTypeId, notificationTypeId])
   @@index([userTypeId])
+}
+
+// Feedback & Service Desk System
+model Feedback {
+  id          String            @id @default(cuid())
+  leadSaleId  String            @unique // Hangi satın almaya ait geri bildirim (unique - her leadSale'a bir feedback)
+  userId      String            // Geri bildirimi gönderen kullanıcı
+  subject     String            // Konu (otomatik oluşturulur)
+  rating      Int?              // Yıldız puanı (1-5), opsiyonel
+  comment     String?           @db.Text // Yorum, opsiyonel
+  status      FeedbackStatus    @default(OPEN) // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+  priority    FeedbackPriority  @default(MEDIUM) // LOW, MEDIUM, HIGH, URGENT
+  assignedTo  String?           // Hangi admin'e atandı
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  closedAt    DateTime?         // Kapanış zamanı
+
+  // Relations
+  user        User              @relation("FeedbackCreator", fields: [userId], references: [id], onDelete: Cascade)
+  leadSale    LeadSale          @relation(fields: [leadSaleId], references: [id], onDelete: Cascade)
+  assignedToUser User?           @relation("FeedbackAssigned", fields: [assignedTo], references: [id], onDelete: SetNull)
+  replies     FeedbackReply[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([assignedTo])
+  @@index([createdAt])
+}
+
+// Geri bildirim cevapları (konuşma için)
+model FeedbackReply {
+  id         String    @id @default(cuid())
+  feedbackId String
+  userId     String    // Cevap veren kişi (user veya admin)
+  message    String    @db.Text
+  isAdmin    Boolean   @default(false) // Admin cevabı mı?
+  createdAt  DateTime  @default(now())
+
+  // Relations
+  feedback   Feedback  @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+  user       User      @relation("FeedbackReplies", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([feedbackId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+enum FeedbackStatus {
+  OPEN         // Yeni geri bildirim
+  IN_PROGRESS  // Admin işleniyor
+  RESOLVED     // Çözüldü
+  CLOSED       // Kapatıldı
+}
+
+enum FeedbackPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
 }

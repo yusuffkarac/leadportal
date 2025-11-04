@@ -260,9 +260,25 @@ function handlePremiumCardClick(lead) {
 const filters = ref({
   insuranceType: '',
   minPrice: null,
-  maxPrice: null
+  maxPrice: null,
+  hasInstantBuy: false,
+  minBids: null,
+  maxBids: null,
+  timeRemaining: '', // 'all', 'lessThan1h', 'lessThan6h', 'lessThan24h'
+  hideExpiredSold: true // Varsayılan olarak süresi geçmiş/satılmış leadleri gizle
 })
 const showFilters = ref(false)
+
+// Sıralama state'i
+const sortBy = ref(localStorage.getItem('leadSortBy') || 'timeRemaining')
+const sortOptions = [
+  { value: 'timeRemaining', label: 'Bitmeye yakın' },
+  { value: 'highestPrice', label: 'En yüksek fiyat' },
+  { value: 'lowestPrice', label: 'En düşük fiyat' },
+  { value: 'newest', label: 'En yeni' },
+  { value: 'oldest', label: 'En eski' },
+  { value: 'mostBids', label: 'En çok teklif' }
+]
 
 // Görünüm tipi (grid veya table)
 const viewMode = ref(localStorage.getItem('leadViewMode') || 'grid')
@@ -564,12 +580,13 @@ function loadFilters() {
 // Filtreleri uygula
 function applyFilters() {
   let filtered = [...allLeads.value]
-  
+  const now = new Date()
+
   // Insurance type filtresi
   if (filters.value.insuranceType) {
     filtered = filtered.filter(lead => lead.insuranceType === filters.value.insuranceType)
   }
-  
+
   // Fiyat aralığı filtresi
   if (filters.value.minPrice !== null && filters.value.minPrice !== '') {
     filtered = filtered.filter(lead => {
@@ -577,17 +594,123 @@ function applyFilters() {
       return currentPrice >= Number(filters.value.minPrice)
     })
   }
-  
+
   if (filters.value.maxPrice !== null && filters.value.maxPrice !== '') {
     filtered = filtered.filter(lead => {
       const currentPrice = lead.bids && lead.bids.length ? lead.bids[0].amount : lead.startPrice
       return currentPrice <= Number(filters.value.maxPrice)
     })
   }
-  
+
+  // Instant Buy filtresi
+  if (filters.value.hasInstantBuy) {
+    filtered = filtered.filter(lead => lead.instantBuyPrice && lead.instantBuyPrice > 0)
+  }
+
+  // Minimum Teklif Sayısı filtresi
+  if (filters.value.minBids !== null && filters.value.minBids !== '') {
+    filtered = filtered.filter(lead => {
+      const bidCount = lead.bids ? lead.bids.length : 0
+      return bidCount >= Number(filters.value.minBids)
+    })
+  }
+
+  // Maksimum Teklif Sayısı filtresi
+  if (filters.value.maxBids !== null && filters.value.maxBids !== '') {
+    filtered = filtered.filter(lead => {
+      const bidCount = lead.bids ? lead.bids.length : 0
+      return bidCount <= Number(filters.value.maxBids)
+    })
+  }
+
+  // Kalan Süre filtresi
+  if (filters.value.timeRemaining && filters.value.timeRemaining !== 'all') {
+    filtered = filtered.filter(lead => {
+      const endTime = new Date(lead.endsAt)
+      const timeLeft = endTime - now
+      const hours = timeLeft / (1000 * 60 * 60)
+
+      switch(filters.value.timeRemaining) {
+        case 'lessThan1h':
+          return timeLeft > 0 && hours < 1
+        case 'lessThan6h':
+          return timeLeft > 0 && hours < 6
+        case 'lessThan24h':
+          return timeLeft > 0 && hours < 24
+        default:
+          return true
+      }
+    })
+  }
+
+  // Süresi geçmiş/satılmış filtesi
+  if (filters.value.hideExpiredSold) {
+    filtered = filtered.filter(lead => !lead.isExpired && !lead.isSold)
+  }
+
   leads.value = filtered
+  applySorting() // Sıralamayı uygula
   saveFilters()
   currentPage.value = 1 // Filtreleme sonrası ilk sayfaya dön
+}
+
+// Sıralamayı uygula
+function applySorting() {
+  const now = new Date()
+
+  leads.value.sort((a, b) => {
+    switch (sortBy.value) {
+      case 'timeRemaining':
+        // Az vakti kalan en üstte, süresi dolmuşlar en sonda
+        const timeA = new Date(a.endsAt) - now
+        const timeB = new Date(b.endsAt) - now
+        // Eğer her ikisi de süresi dolmamışsa, en az vakti kalan en üstte
+        if (timeA >= 0 && timeB >= 0) {
+          return timeA - timeB
+        }
+        // Eğer biri süresi dolmuşsa, o en sonda
+        if (timeA < 0 && timeB >= 0) return 1
+        if (timeA >= 0 && timeB < 0) return -1
+        // Her ikisi de süresi dolmuşsa, daha az zaman geçen en üstte
+        return timeA - timeB
+
+      case 'highestPrice':
+        // En yüksek fiyat en üstte
+        const priceA = (a.bids && a.bids.length) ? a.bids[0].amount : a.startPrice
+        const priceB = (b.bids && b.bids.length) ? b.bids[0].amount : b.startPrice
+        return priceB - priceA
+
+      case 'lowestPrice':
+        // En düşük fiyat en üstte
+        const priceLowA = (a.bids && a.bids.length) ? a.bids[0].amount : a.startPrice
+        const priceLowB = (b.bids && b.bids.length) ? b.bids[0].amount : b.startPrice
+        return priceLowA - priceLowB
+
+      case 'newest':
+        // En yeni en üstte
+        return new Date(b.createdAt) - new Date(a.createdAt)
+
+      case 'oldest':
+        // En eski en üstte
+        return new Date(a.createdAt) - new Date(b.createdAt)
+
+      case 'mostBids':
+        // En çok teklif en üstte
+        const bidsA = (a.bids && a.bids.length) ? a.bids.length : 0
+        const bidsB = (b.bids && b.bids.length) ? b.bids.length : 0
+        return bidsB - bidsA
+
+      default:
+        return 0
+    }
+  })
+}
+
+// Sıralamayı değiştir
+function changeSorting() {
+  localStorage.setItem('leadSortBy', sortBy.value)
+  applySorting()
+  currentPage.value = 1 // İlk sayfaya dön
 }
 
 // Insurance type listesi (name'leri döndür)
@@ -607,7 +730,12 @@ function clearFilters() {
   filters.value = {
     insuranceType: '',
     minPrice: null,
-    maxPrice: null
+    maxPrice: null,
+    hasInstantBuy: false,
+    minBids: null,
+    maxBids: null,
+    timeRemaining: '',
+    hideExpiredSold: true // Varsayılan olarak süresi geçmiş/satılmış leadleri gizle
   }
   leads.value = [...allLeads.value]
   saveFilters()
@@ -1399,6 +1527,7 @@ onMounted(async () => {
   await loadSettings()
   checkBiddingHours() // Bidding hours kontrol et
   await fetchLeads()
+  applySorting() // Kaydedilen sıralamayı uygula
   if (isAdmin.value) {
     await fetchPendingPayments()
   }
@@ -1632,10 +1761,18 @@ onUnmounted(() => {
             <Icon v-if="viewMode === 'grid'" icon="mdi:view-list" width="20" height="20" />
             <Icon v-else icon="mdi:view-grid" width="20" height="20" />
           </button>
+          <select v-model="sortBy" @change="changeSorting" class="sort-select" :title="'Sıralama: ' + sortOptions.find(o => o.value === sortBy)?.label">
+            <option v-for="option in sortOptions" :key="option.value" :value="option.value">
+              {{ option.label }}
+            </option>
+          </select>
           <button class="filter-toggle-btn" @click="showFilters = !showFilters">
             <Icon icon="mdi:filter" width="18" height="18" />
             Filtrele
-            <span v-if="filters.insuranceType || filters.minPrice || filters.maxPrice" class="filter-badge">●</span>
+            <span
+              v-if="filters.insuranceType || filters.minPrice || filters.maxPrice || filters.hasInstantBuy || filters.minBids || filters.maxBids || filters.timeRemaining || !filters.hideExpiredSold"
+              class="filter-badge"
+            ></span>
           </button>
         </div>
       </div>
@@ -1655,9 +1792,10 @@ onUnmounted(() => {
         </router-link>
       </div>
 
-      <!-- Filtre Paneli -->
+      <!-- Filtre Paneli - Kompakt Tasarım -->
       <div v-if="showFilters" class="filters-panel">
         <div class="filters-grid">
+          <!-- Satır 1: Lead Tipi ve Fiyat Aralığı -->
           <div class="filter-group">
             <label class="filter-label">Lead Tipi</label>
             <select v-model="filters.insuranceType" @change="applyFilters" class="filter-select">
@@ -1667,39 +1805,98 @@ onUnmounted(() => {
               </option>
             </select>
           </div>
-          
-          <div class="filter-group">
-            <label class="filter-label">Min Fiyat ({{ getCurrencySymbol(settings.defaultCurrency) }})</label>
-            <input 
-              type="number" 
-              v-model.number="filters.minPrice" 
-              @input="applyFilters"
-              placeholder="Minimum"
-              class="filter-input"
-            />
+
+          <div class="filter-group filter-group-inline">
+            <label class="filter-label">Fiyat ({{ getCurrencySymbol(settings.defaultCurrency) }})</label>
+            <div class="filter-input-group">
+              <input
+                type="number"
+                v-model.number="filters.minPrice"
+                @input="applyFilters"
+                placeholder="Min"
+                class="filter-input filter-input-small"
+              />
+              <span class="filter-separator">-</span>
+              <input
+                type="number"
+                v-model.number="filters.maxPrice"
+                @input="applyFilters"
+                placeholder="Max"
+                class="filter-input filter-input-small"
+              />
+            </div>
           </div>
-          
-          <div class="filter-group">
-            <label class="filter-label">Max Fiyat ({{ getCurrencySymbol(settings.defaultCurrency) }})</label>
-            <input 
-              type="number" 
-              v-model.number="filters.maxPrice" 
-              @input="applyFilters"
-              placeholder="Maximum"
-              class="filter-input"
-            />
+
+          <!-- Satır 2: Teklif Sayısı ve Kalan Süre -->
+          <div class="filter-group filter-group-inline">
+            <label class="filter-label">Teklif Sayısı</label>
+            <div class="filter-input-group">
+              <input
+                type="number"
+                v-model.number="filters.minBids"
+                @input="applyFilters"
+                placeholder="Min"
+                class="filter-input filter-input-small"
+              />
+              <span class="filter-separator">-</span>
+              <input
+                type="number"
+                v-model.number="filters.maxBids"
+                @input="applyFilters"
+                placeholder="Max"
+                class="filter-input filter-input-small"
+              />
+            </div>
           </div>
-          
+
+          <div class="filter-group">
+            <label class="filter-label">Kalan Süre</label>
+            <select v-model="filters.timeRemaining" @change="applyFilters" class="filter-select">
+              <option value="">Tümü</option>
+              <option value="lessThan1h">1 saatten az</option>
+              <option value="lessThan6h">6 saatten az</option>
+              <option value="lessThan24h">24 saatten az</option>
+            </select>
+          </div>
+
+          <!-- Satır 3: Anında Al ve Süresi Geçmiş Gizle -->
+          <div class="filter-group filter-switch-group">
+            <label class="filter-label">Anında Al</label>
+            <label class="filter-switch">
+              <input
+                type="checkbox"
+                v-model="filters.hasInstantBuy"
+                @change="applyFilters"
+                class="filter-switch-input"
+              />
+              <span class="filter-switch-slider"></span>
+            </label>
+          </div>
+
+          <div class="filter-group filter-switch-group">
+            <label class="filter-label">Aktif Leadler</label>
+            <label class="filter-switch">
+              <input
+                type="checkbox"
+                v-model="filters.hideExpiredSold"
+                @change="applyFilters"
+                class="filter-switch-input"
+              />
+              <span class="filter-switch-slider"></span>
+            </label>
+          </div>
+
           <div class="filter-group">
             <button class="clear-filters-btn" @click="clearFilters">
-              <Icon icon="mdi:close" width="16" height="16" />
-              Filtreleri Temizle
+              <Icon icon="mdi:close" width="14" height="14" />
+              Temizle
             </button>
           </div>
         </div>
-        
+
         <div class="filter-info">
-          {{ leads.length }} lead gösteriliyor {{ allLeads.length !== leads.length ? `(${allLeads.length} toplam)` : '' }}
+          <span class="filter-result-text">{{ leads.length }} lead</span>
+          <span v-if="allLeads.length !== leads.length" class="filter-result-total">({{ allLeads.length }} toplam)</span>
         </div>
       </div>
       
@@ -1793,7 +1990,14 @@ onUnmounted(() => {
               <td>
                 <div class="table-actions">
                   <!-- Satın Al (admin değilse ve SOFORT_KAUF ise) -->
-                  <button v-if="lead.leadType === 'SOFORT_KAUF' && !isAdmin" class="table-btn success" @click="openInstantBuyModal(lead, $event)" :disabled="lead.isExpired || !lead.isActive || !isBiddingHoursActive" :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''">
+                  <button
+                    v-if="lead.leadType === 'SOFORT_KAUF' && !isAdmin"
+                    class="table-btn success"
+                    @click="openInstantBuyModal(lead, $event)"
+                    :disabled="lead.isExpired || !lead.isActive || !isBiddingHoursActive"
+                    :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''"
+                    :style="!isBiddingHoursActive ? 'cursor: not-allowed;' : ''"
+                  >
                     <Icon icon="mdi:shopping-cart" width="14" height="14" />
                     
                   </button>
@@ -1815,7 +2019,14 @@ onUnmounted(() => {
                   <button v-if="isAdmin" class="table-btn toggle" :class="lead.isActive ? 'active' : 'inactive'" @click="toggleLeadActiveInline(lead)" :title="lead.isActive ? 'Pasif yap' : 'Aktif yap'">
                     <Icon :icon="lead.isActive ? 'mdi:pause-circle' : 'mdi:play-circle'" width="14" height="14" />
                   </button>
-                   <button v-if="lead.leadType !== 'SOFORT_KAUF' && lead.instantBuyPrice && !lead.isExpired && !isAdmin" class="table-btn success" @click="openInstantBuyModal(lead, $event)" :disabled="!isBiddingHoursActive" :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''">
+                   <button
+                     v-if="lead.leadType !== 'SOFORT_KAUF' && lead.instantBuyPrice && !lead.isExpired && !isAdmin"
+                     class="table-btn success"
+                     @click="openInstantBuyModal(lead, $event)"
+                     :disabled="!isBiddingHoursActive"
+                     :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''"
+                     :style="!isBiddingHoursActive ? 'cursor: not-allowed;' : ''"
+                   >
                     <Icon icon="mdi:lightning-bolt" width="14" height="14" />
                   </button>
                   <!-- Edit (admin ise) -->
@@ -2948,10 +3159,55 @@ onUnmounted(() => {
 }
 
 .filter-badge {
-  color: #ef4444;
-  font-size: 1.2rem;
-  line-height: 1;
-  margin-left: -4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 10px;
+  background: #ef4444;
+  border-radius: 50%;
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  box-shadow: 0 0 0 2px white;
+  animation: pulse-badge 2s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% {
+    box-shadow: 0 0 0 2px white, 0 0 0 5px rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 2px white, 0 0 0 8px rgba(239, 68, 68, 0.1);
+  }
+}
+
+/* Sıralama Seç */
+.sort-select {
+  padding: 10px 12px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23374151' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+}
+
+.sort-select:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.sort-select:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
 /* Yeni Lead Oluştur Butonu */
@@ -2986,78 +3242,193 @@ onUnmounted(() => {
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 20px;
+  padding: 16px;
   margin-bottom: 24px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .filters-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: end;
 }
 
 .filter-group {
   display: flex;
   flex-direction: column;
+  gap: 4px;
+}
+
+.filter-group-inline {
+  grid-column: span 1;
+}
+
+.filter-switch-group {
   gap: 6px;
 }
 
 .filter-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* Filter Switch Component */
+.filter-switch {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.filter-switch-input {
+  display: none;
+}
+
+.filter-switch-slider {
+  display: inline-block;
+  position: relative;
+  width: 40px;
+  height: 22px;
+  background-color: #cbd5e1;
+  border-radius: 999px;
+  transition: background-color 0.3s ease;
+  border: 1px solid #94a3b8;
+}
+
+.filter-switch-slider::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: white;
+  top: 2px;
+  left: 2px;
+  transition: left 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filter-switch-input:checked + .filter-switch-slider {
+  background-color: #10b981;
+  border-color: #059669;
+}
+
+.filter-switch-input:checked + .filter-switch-slider::before {
+  left: 20px;
 }
 
 .filter-select,
 .filter-input {
-  padding: 8px 12px;
+  padding: 6px 10px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: #1f2937;
   background: white;
   transition: all 0.2s ease;
+}
+
+.filter-input-small {
+  padding: 6px 8px;
+  font-size: 0.75rem;
+  flex: 1;
+}
+
+.filter-input-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.filter-separator {
+  color: #9ca3af;
+  font-weight: 500;
 }
 
 .filter-select:focus,
 .filter-input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
 .clear-filters-btn {
-  padding: 8px 16px;
+  padding: 6px 12px;
   background: #f3f4f6;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.8125rem;
+  font-weight: 600;
   color: #374151;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   justify-content: center;
   margin-top: auto;
+  white-space: nowrap;
 }
 
 .clear-filters-btn:hover {
   background: #e5e7eb;
   color: #1f2937;
+  border-color: #bfdbfe;
 }
 
 .filter-info {
-  font-size: 0.875rem;
-  color: var(--primary);
-  padding: 12px;
-  background: #f9fafb;
+  font-size: 0.8125rem;
+  color: #475569;
+  padding: 8px 12px;
+  background: #f1f5f9;
   border-radius: 6px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   font-weight: 500;
+}
+
+.filter-result-text {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.filter-result-total {
+  color: #6b7280;
+}
+
+@media (max-width: 768px) {
+  .filters-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+  }
+
+  .filters-panel {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .filter-label {
+    font-size: 0.75rem;
+  }
+
+  .filter-select,
+  .filter-input,
+  .filter-input-small {
+    padding: 5px 8px;
+    font-size: 0.75rem;
+  }
+
+  .clear-filters-btn {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
 }
 
 

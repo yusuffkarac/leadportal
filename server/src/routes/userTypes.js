@@ -27,6 +27,31 @@ export default (prisma) => {
     }
   })
 
+  // Get admin users for feedback assignment
+  router.get('/admins', requireAdmin, async (req, res) => {
+    try {
+      const admins = await prisma.user.findMany({
+        where: {
+          userTypeId: {
+            in: ['ADMIN', 'SUPERADMIN']
+          }
+        },
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true
+        },
+        orderBy: { email: 'asc' }
+      })
+
+      res.json(admins)
+    } catch (error) {
+      console.error('Error fetching admin users:', error)
+      res.status(500).json({ message: 'Admin kullanıcıları alınamadı' })
+    }
+  })
+
   // Create new user type
   router.post('/', requireAdmin, async (req, res) => {
     try {

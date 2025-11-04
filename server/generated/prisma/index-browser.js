@@ -461,6 +461,30 @@ exports.Prisma.NotificationRolePermissionScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.FeedbackScalarFieldEnum = {
+  id: 'id',
+  leadSaleId: 'leadSaleId',
+  userId: 'userId',
+  subject: 'subject',
+  rating: 'rating',
+  comment: 'comment',
+  status: 'status',
+  priority: 'priority',
+  assignedTo: 'assignedTo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  closedAt: 'closedAt'
+};
+
+exports.Prisma.FeedbackReplyScalarFieldEnum = {
+  id: 'id',
+  feedbackId: 'feedbackId',
+  userId: 'userId',
+  message: 'message',
+  isAdmin: 'isAdmin',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -507,6 +531,20 @@ exports.PaymentStatus = exports.$Enums.PaymentStatus = {
   FAILED: 'FAILED'
 };
 
+exports.FeedbackStatus = exports.$Enums.FeedbackStatus = {
+  OPEN: 'OPEN',
+  IN_PROGRESS: 'IN_PROGRESS',
+  RESOLVED: 'RESOLVED',
+  CLOSED: 'CLOSED'
+};
+
+exports.FeedbackPriority = exports.$Enums.FeedbackPriority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Lead: 'Lead',
@@ -530,7 +568,9 @@ exports.Prisma.ModelName = {
   NotificationType: 'NotificationType',
   NotificationPreference: 'NotificationPreference',
   Notification: 'Notification',
-  NotificationRolePermission: 'NotificationRolePermission'
+  NotificationRolePermission: 'NotificationRolePermission',
+  Feedback: 'Feedback',
+  FeedbackReply: 'FeedbackReply'
 };
 
 /**

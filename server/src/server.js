@@ -156,6 +156,7 @@ import twoFactorRouter from './routes/twoFactor.js'
 import balanceRouter from './routes/balance.js'
 import notificationsRouter from './routes/notifications.js'
 import serverTimeRouter from './routes/serverTime.js'
+import feedbackRouter from './routes/feedback.js'
 
 app.use('/api/server-time', serverTimeRouter)
 app.use('/api/auth', authRouter(prisma))
@@ -176,6 +177,7 @@ app.use('/api/activity-log', activityLogRouter)
 app.use('/api/2fa', (req, res, next) => requireAuth(req, res, next), twoFactorRouter(prisma))
 app.use('/api/balance', (req, res, next) => requireAuth(req, res, next), balanceRouter(prisma))
 app.use('/api/notifications', (req, res, next) => requireAuth(req, res, next), notificationsRouter)
+app.use('/api/feedback', (req, res, next) => requireAuth(req, res, next), feedbackRouter(prisma, io))
 
 const port = process.env.PORT || 4000
 server.listen(port, '0.0.0.0', () => {
