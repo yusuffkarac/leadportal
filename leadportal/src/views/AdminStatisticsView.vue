@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import api from '@/utils/axios.js'
 import { formatPrice } from '@/utils/currency.js'
 import LineChart from '@/components/charts/LineChart.vue'
@@ -9,6 +9,68 @@ const statistics = ref(null)
 const settings = ref({ defaultCurrency: 'EUR' })
 const isLoading = ref(true)
 const error = ref('')
+
+// Accordion durumları için localStorage key
+const STORAGE_KEY = 'admin-statistics-sections'
+
+// Kategoriler ve açık/kapalı durumları
+const categories = ref([
+  { id: 'general', title: 'Genel Metrikler', isOpen: true },
+  { id: 'sales', title: 'Satış Analizi', isOpen: true },
+  { id: 'bids', title: 'Teklif ve İhale Analizi', isOpen: true },
+  { id: 'financial', title: 'Finansal Analiz', isOpen: true },
+  { id: 'activity', title: 'Kullanıcı Aktivitesi', isOpen: true },
+  { id: 'feedback', title: 'Geri Bildirimler', isOpen: true }
+])
+
+// localStorage'dan durumu yükle
+function loadSectionStates() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved) {
+      const states = JSON.parse(saved)
+      categories.value.forEach(category => {
+        if (states[category.id] !== undefined) {
+          category.isOpen = states[category.id]
+        }
+      })
+    }
+  } catch (err) {
+    console.error('Bölüm durumları yüklenemedi:', err)
+  }
+}
+
+// localStorage'a durumu kaydet
+function saveSectionStates() {
+  try {
+    const states = {}
+    categories.value.forEach(category => {
+      states[category.id] = category.isOpen
+    })
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(states))
+  } catch (err) {
+    console.error('Bölüm durumları kaydedilemedi:', err)
+  }
+}
+
+// Bölüm aç/kapa
+function toggleSection(categoryId) {
+  const category = categories.value.find(c => c.id === categoryId)
+  if (category) {
+    category.isOpen = !category.isOpen
+    saveSectionStates()
+  }
+}
+
+// Bölüm durumlarını izle ve kaydet
+watch(() => categories.value.map(c => ({ id: c.id, isOpen: c.isOpen })), () => {
+  saveSectionStates()
+}, { deep: true })
+
+onMounted(() => {
+  loadSectionStates()
+  loadStatistics()
+})
 
 // Chart data computed properties
 const salesTrendChartData = computed(() => {
@@ -136,8 +198,31 @@ onMounted(() => {
     </div>
 
     <div v-else class="statistics-content">
-      <!-- Üst Metrikler -->
-      <div class="metrics-grid">
+      <!-- Accordion Kategoriler -->
+      
+      <!-- Genel Metrikler -->
+      <div class="accordion-section">
+        <div class="accordion-header" @click="toggleSection('general')">
+          <div class="accordion-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            <span>{{ categories.find(c => c.id === 'general')?.title }}</span>
+          </div>
+          <svg 
+            class="accordion-icon" 
+            :class="{ 'open': categories.find(c => c.id === 'general')?.isOpen }"
+            width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          >
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+        <div v-show="categories.find(c => c.id === 'general')?.isOpen" class="accordion-content">
+          <!-- Üst Metrikler -->
+          <div class="metrics-grid">
         <div class="metric-card">
           <div class="metric-header">
             <span class="metric-label">Toplam Kullanıcılar</span>
@@ -194,9 +279,30 @@ onMounted(() => {
           </div>
         </div>
       </div>
+        </div>
+      </div>
 
-      <!-- Detaylı İstatistikler -->
-      <div class="details-grid">
+      <!-- Satış Analizi -->
+      <div class="accordion-section">
+        <div class="accordion-header" @click="toggleSection('sales')">
+          <div class="accordion-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            <span>{{ categories.find(c => c.id === 'sales')?.title }}</span>
+          </div>
+          <svg 
+            class="accordion-icon" 
+            :class="{ 'open': categories.find(c => c.id === 'sales')?.isOpen }"
+            width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          >
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+        <div v-show="categories.find(c => c.id === 'sales')?.isOpen" class="accordion-content">
+          <!-- Detaylı İstatistikler -->
+          <div class="details-grid">
         <!-- En Çok Satın Alanlar -->
         <div class="detail-card">
           <div class="card-header">
@@ -261,181 +367,199 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Son Aktiviteler -->
-      <div class="activity-section">
-        <div class="card-header">
-          <h2>Son Aktiviteler</h2>
-          <span class="subtitle">Son 24 saatteki önemli olaylar</span>
-        </div>
-        <div class="activity-list">
-          <div
-            v-for="activity in statistics.recentActivity || []"
-            :key="activity.id"
-            class="activity-item"
-          >
-            <div class="activity-icon" :class="`icon-${activity.type}`">
-              <svg v-if="activity.type === 'sale'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="9" cy="21" r="1"/>
-                <circle cx="20" cy="21" r="1"/>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-              </svg>
-              <svg v-else-if="activity.type === 'user'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="8.5" cy="7" r="4"/>
-                <line x1="20" y1="8" x2="20" y2="14"/>
-                <line x1="23" y1="11" x2="17" y2="11"/>
-              </svg>
-              <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="12 6 12 12 16 14"/>
-              </svg>
+          <!-- Satış Trendi Grafiği -->
+          <div v-if="salesTrendChartData" class="chart-section">
+            <div class="card-header">
+              <h2>Son 30 Gün Satış Trendi</h2>
+              <span class="subtitle">Günlük satış ve gelir performansı</span>
             </div>
-            <div class="activity-content">
-              <p class="activity-title">{{ activity.title }}</p>
-              <p class="activity-description">{{ activity.description }}</p>
-            </div>
-            <div class="activity-meta">
-              <span class="activity-time">{{ activity.time }}</span>
-              <span v-if="activity.badge" class="activity-badge" :class="`badge-${activity.badgeType}`">
-                {{ activity.badge }}
-              </span>
+            <div class="chart-container">
+              <LineChart :data="salesTrendChartData" />
             </div>
           </div>
-          <div v-if="!statistics.recentActivity || statistics.recentActivity.length === 0" class="empty-state">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+
+          <!-- Lead Performans -->
+          <div v-if="statistics.leadPerformance" class="detail-card">
+            <div class="card-header">
+              <h2>Lead Performans Metrikleri</h2>
+              <span class="subtitle">Lead yaşam döngüsü ve dönüşüm analizi</span>
+            </div>
+            <div class="performance-grid">
+              <div class="perf-metric">
+                <span class="perf-label">Aktif Leadler</span>
+                <span class="perf-value">{{ statistics.leadPerformance.activeLeads }}</span>
+              </div>
+              <div class="perf-metric">
+                <span class="perf-label">Toplam Lead</span>
+                <span class="perf-value">{{ statistics.leadPerformance.totalLeads }}</span>
+              </div>
+              <div class="perf-metric">
+                <span class="perf-label">Satılan Lead</span>
+                <span class="perf-value">{{ statistics.leadPerformance.soldLeads }}</span>
+              </div>
+              <div class="perf-metric">
+                <span class="perf-label">Dönüşüm Oranı</span>
+                <span class="perf-value">%{{ statistics.leadPerformance.conversionRate }}</span>
+              </div>
+              <div class="perf-metric">
+                <span class="perf-label">Ort. Satış Süresi</span>
+                <span class="perf-value">{{ statistics.leadPerformance.avgSaleTime }} saat</span>
+              </div>
+            </div>
+
+            <div class="subsection">
+              <h3>En Hızlı Satışlar</h3>
+              <div class="fastest-sales-list">
+                <div v-for="sale in statistics.leadPerformance.fastestSales" :key="sale.title" class="fast-sale-item">
+                  <span class="sale-title">{{ sale.title }}</span>
+                  <span class="sale-time">{{ sale.hours }} saat</span>
+                  <span class="sale-amount">{{ formatPrice(sale.amount, settings.defaultCurrency) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="subsection">
+              <h3>En Yüksek Fiyatlı Satışlar</h3>
+              <div class="highest-sales-list">
+                <div v-for="sale in statistics.leadPerformance.highestSales" :key="sale.title" class="high-sale-item">
+                  <span class="sale-title">{{ sale.title }}</span>
+                  <span class="sale-buyer">{{ sale.buyer }}</span>
+                  <span class="sale-amount highlight">{{ formatPrice(sale.amount, settings.defaultCurrency) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Satıcı İstatistikleri -->
+          <div v-if="statistics.sellerStatistics" class="detail-card">
+            <div class="card-header">
+              <h2>En Başarılı Satıcılar</h2>
+              <span class="subtitle">Lead satış performansı</span>
+            </div>
+            <div class="sellers-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Sıra</th>
+                    <th>Satıcı</th>
+                    <th>Satılan Lead</th>
+                    <th>Toplam Gelir</th>
+                    <th>Ortalama Fiyat</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(seller, index) in statistics.sellerStatistics.topSellers" :key="seller.id">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ seller.name }}</td>
+                    <td>{{ seller.leadsSold }}</td>
+                    <td>{{ formatPrice(seller.totalRevenue, settings.defaultCurrency) }}</td>
+                    <td>{{ formatPrice(seller.avgPrice, settings.defaultCurrency) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Teklif ve İhale Analizi -->
+      <div class="accordion-section">
+        <div class="accordion-header" @click="toggleSection('bids')">
+          <div class="accordion-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="8" x2="12" y2="12"/>
-              <line x1="12" y1="16" x2="12.01" y2="16"/>
+              <polyline points="12 6 12 12 16 14"/>
             </svg>
-            <p>Henüz aktivite bulunmuyor.</p>
+            <span>{{ categories.find(c => c.id === 'bids')?.title }}</span>
           </div>
+          <svg 
+            class="accordion-icon" 
+            :class="{ 'open': categories.find(c => c.id === 'bids')?.isOpen }"
+            width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          >
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
         </div>
-      </div>
+        <div v-show="categories.find(c => c.id === 'bids')?.isOpen" class="accordion-content">
+          <!-- Teklif İstatistikleri -->
+          <div v-if="statistics.bidStatistics" class="stats-grid-2">
+            <div class="detail-card">
+              <div class="card-header">
+                <h2>Teklif İstatistikleri</h2>
+                <span class="subtitle">Tekliflere genel bakış</span>
+              </div>
+              <div class="bid-stats">
+                <div class="bid-stat-item">
+                  <span class="stat-label">Toplam Teklif</span>
+                  <span class="stat-value large">{{ statistics.bidStatistics.totalBids?.toLocaleString() }}</span>
+                </div>
+                <div class="bid-stat-item">
+                  <span class="stat-label">Son 24 Saat</span>
+                  <span class="stat-value">{{ statistics.bidStatistics.bidsLast24h }}</span>
+                </div>
+                <div class="bid-stat-item">
+                  <span class="stat-label">Lead Başına Ort.</span>
+                  <span class="stat-value">{{ statistics.bidStatistics.avgBidsPerLead }}</span>
+                </div>
+                <div class="bid-stat-item">
+                  <span class="stat-label">Dönüşüm Oranı</span>
+                  <span class="stat-value">%{{ statistics.bidStatistics.bidConversionRate }}</span>
+                </div>
+              </div>
 
-      <!-- YENİ BÖLÜMLER -->
-
-      <!-- Satış Trendi Grafiği -->
-      <div v-if="salesTrendChartData" class="chart-section">
-        <div class="card-header">
-          <h2>Son 30 Gün Satış Trendi</h2>
-          <span class="subtitle">Günlük satış ve gelir performansı</span>
-        </div>
-        <div class="chart-container">
-          <LineChart :data="salesTrendChartData" />
-        </div>
-      </div>
-
-      <!-- Lead Performans -->
-      <div v-if="statistics.leadPerformance" class="detail-card">
-        <div class="card-header">
-          <h2>Lead Performans Metrikleri</h2>
-          <span class="subtitle">Lead yaşam döngüsü ve dönüşüm analizi</span>
-        </div>
-        <div class="performance-grid">
-          <div class="perf-metric">
-            <span class="perf-label">Aktif Leadler</span>
-            <span class="perf-value">{{ statistics.leadPerformance.activeLeads }}</span>
-          </div>
-          <div class="perf-metric">
-            <span class="perf-label">Toplam Lead</span>
-            <span class="perf-value">{{ statistics.leadPerformance.totalLeads }}</span>
-          </div>
-          <div class="perf-metric">
-            <span class="perf-label">Satılan Lead</span>
-            <span class="perf-value">{{ statistics.leadPerformance.soldLeads }}</span>
-          </div>
-          <div class="perf-metric">
-            <span class="perf-label">Dönüşüm Oranı</span>
-            <span class="perf-value">%{{ statistics.leadPerformance.conversionRate }}</span>
-          </div>
-          <div class="perf-metric">
-            <span class="perf-label">Ort. Satış Süresi</span>
-            <span class="perf-value">{{ statistics.leadPerformance.avgSaleTime }} saat</span>
-          </div>
-        </div>
-
-        <div class="subsection">
-          <h3>En Hızlı Satışlar</h3>
-          <div class="fastest-sales-list">
-            <div v-for="sale in statistics.leadPerformance.fastestSales" :key="sale.title" class="fast-sale-item">
-              <span class="sale-title">{{ sale.title }}</span>
-              <span class="sale-time">{{ sale.hours }} saat</span>
-              <span class="sale-amount">{{ formatPrice(sale.amount, settings.defaultCurrency) }}</span>
+              <div class="subsection">
+                <h3>En Çok Teklif Alan Leadler</h3>
+                <div class="bidded-leads-list">
+                  <div v-for="lead in statistics.bidStatistics.mostBiddedLeads" :key="lead.title" class="bidded-lead-item">
+                    <span class="lead-title">{{ lead.title }}</span>
+                    <span class="bid-count badge badge-primary">{{ lead.bidCount }} teklif</span>
+                    <span :class="['status-badge', lead.isActive ? 'active' : 'inactive']">
+                      {{ lead.isActive ? 'Aktif' : 'Pasif' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        <div class="subsection">
-          <h3>En Yüksek Fiyatlı Satışlar</h3>
-          <div class="highest-sales-list">
-            <div v-for="sale in statistics.leadPerformance.highestSales" :key="sale.title" class="high-sale-item">
-              <span class="sale-title">{{ sale.title }}</span>
-              <span class="sale-buyer">{{ sale.buyer }}</span>
-              <span class="sale-amount highlight">{{ formatPrice(sale.amount, settings.defaultCurrency) }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Teklif İstatistikleri -->
-      <div v-if="statistics.bidStatistics" class="stats-grid-2">
-        <div class="detail-card">
-          <div class="card-header">
-            <h2>Teklif İstatistikleri</h2>
-            <span class="subtitle">Tekliflere genel bakış</span>
-          </div>
-          <div class="bid-stats">
-            <div class="bid-stat-item">
-              <span class="stat-label">Toplam Teklif</span>
-              <span class="stat-value large">{{ statistics.bidStatistics.totalBids?.toLocaleString() }}</span>
-            </div>
-            <div class="bid-stat-item">
-              <span class="stat-label">Son 24 Saat</span>
-              <span class="stat-value">{{ statistics.bidStatistics.bidsLast24h }}</span>
-            </div>
-            <div class="bid-stat-item">
-              <span class="stat-label">Lead Başına Ort.</span>
-              <span class="stat-value">{{ statistics.bidStatistics.avgBidsPerLead }}</span>
-            </div>
-            <div class="bid-stat-item">
-              <span class="stat-label">Dönüşüm Oranı</span>
-              <span class="stat-value">%{{ statistics.bidStatistics.bidConversionRate }}</span>
-            </div>
-          </div>
-
-          <div class="subsection">
-            <h3>En Çok Teklif Alan Leadler</h3>
-            <div class="bidded-leads-list">
-              <div v-for="lead in statistics.bidStatistics.mostBiddedLeads" :key="lead.title" class="bidded-lead-item">
-                <span class="lead-title">{{ lead.title }}</span>
-                <span class="bid-count badge badge-primary">{{ lead.bidCount }} teklif</span>
-                <span :class="['status-badge', lead.isActive ? 'active' : 'inactive']">
-                  {{ lead.isActive ? 'Aktif' : 'Pasif' }}
-                </span>
+            <!-- Coğrafi Analiz -->
+            <div v-if="statistics.geographicData" class="detail-card">
+              <div class="card-header">
+                <h2>Posta Kodu Analizi</h2>
+                <span class="subtitle">En çok satış yapılan bölgeler</span>
+              </div>
+              <div class="postal-codes-list">
+                <div v-for="(pc, index) in statistics.geographicData.topPostalCodes" :key="pc.postalCode" class="postal-code-item">
+                  <span class="rank">#{{ index + 1 }}</span>
+                  <span class="postal-code">{{ pc.postalCode }}</span>
+                  <span class="count">{{ pc.count }} satış</span>
+                  <span class="revenue">{{ formatPrice(pc.revenue, settings.defaultCurrency) }}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- Coğrafi Analiz -->
-        <div v-if="statistics.geographicData" class="detail-card">
-          <div class="card-header">
-            <h2>Posta Kodu Analizi</h2>
-            <span class="subtitle">En çok satış yapılan bölgeler</span>
-          </div>
-          <div class="postal-codes-list">
-            <div v-for="(pc, index) in statistics.geographicData.topPostalCodes" :key="pc.postalCode" class="postal-code-item">
-              <span class="rank">#{{ index + 1 }}</span>
-              <span class="postal-code">{{ pc.postalCode }}</span>
-              <span class="count">{{ pc.count }} satış</span>
-              <span class="revenue">{{ formatPrice(pc.revenue, settings.defaultCurrency) }}</span>
-            </div>
-          </div>
-        </div>
       </div>
 
-      <!-- Finansal Karşılaştırmalar -->
-      <div v-if="statistics.financialComparison" class="comparison-section">
+      <!-- Finansal Analiz -->
+      <div class="accordion-section">
+        <div class="accordion-header" @click="toggleSection('financial')">
+          <div class="accordion-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            <span>{{ categories.find(c => c.id === 'financial')?.title }}</span>
+          </div>
+          <svg 
+            class="accordion-icon" 
+            :class="{ 'open': categories.find(c => c.id === 'financial')?.isOpen }"
+            width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          >
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+        <div v-show="categories.find(c => c.id === 'financial')?.isOpen" class="accordion-content">
+          <!-- Finansal Karşılaştırmalar -->
+          <div v-if="statistics.financialComparison" class="comparison-section">
         <div class="card-header">
           <h2>Finansal Karşılaştırmalar</h2>
           <span class="subtitle">Dönemsel büyüme analizi</span>
@@ -500,39 +624,83 @@ onMounted(() => {
         <div v-if="revenueComparisonChartData" class="chart-container" style="margin-top: 2rem;">
           <BarChart :data="revenueComparisonChartData" />
         </div>
-      </div>
-
-      <!-- Satıcı İstatistikleri -->
-      <div v-if="statistics.sellerStatistics" class="detail-card">
-        <div class="card-header">
-          <h2>En Başarılı Satıcılar</h2>
-          <span class="subtitle">Lead satış performansı</span>
-        </div>
-        <div class="sellers-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Sıra</th>
-                <th>Satıcı</th>
-                <th>Satılan Lead</th>
-                <th>Toplam Gelir</th>
-                <th>Ortalama Fiyat</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(seller, index) in statistics.sellerStatistics.topSellers" :key="seller.id">
-                <td>{{ index + 1 }}</td>
-                <td>{{ seller.name }}</td>
-                <td>{{ seller.leadsSold }}</td>
-                <td>{{ formatPrice(seller.totalRevenue, settings.defaultCurrency) }}</td>
-                <td>{{ formatPrice(seller.avgPrice, settings.defaultCurrency) }}</td>
-              </tr>
-            </tbody>
-          </table>
+          </div>
         </div>
       </div>
 
-      <!-- Kullanıcı Aktivite İstatistikleri -->
+      <!-- Kullanıcı Aktivitesi -->
+      <div class="accordion-section">
+        <div class="accordion-header" @click="toggleSection('activity')">
+          <div class="accordion-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <span>{{ categories.find(c => c.id === 'activity')?.title }}</span>
+          </div>
+          <svg 
+            class="accordion-icon" 
+            :class="{ 'open': categories.find(c => c.id === 'activity')?.isOpen }"
+            width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          >
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+        <div v-show="categories.find(c => c.id === 'activity')?.isOpen" class="accordion-content">
+          <!-- Son Aktiviteler -->
+          <div class="activity-section">
+            <div class="card-header">
+              <h2>Son Aktiviteler</h2>
+              <span class="subtitle">Son 24 saatteki önemli olaylar</span>
+            </div>
+            <div class="activity-list">
+              <div
+                v-for="activity in statistics.recentActivity || []"
+                :key="activity.id"
+                class="activity-item"
+              >
+                <div class="activity-icon" :class="`icon-${activity.type}`">
+                  <svg v-if="activity.type === 'sale'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"/>
+                    <circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                  </svg>
+                  <svg v-else-if="activity.type === 'user'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="8.5" cy="7" r="4"/>
+                    <line x1="20" y1="8" x2="20" y2="14"/>
+                    <line x1="23" y1="11" x2="17" y2="11"/>
+                  </svg>
+                  <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                </div>
+                <div class="activity-content">
+                  <p class="activity-title">{{ activity.title }}</p>
+                  <p class="activity-description">{{ activity.description }}</p>
+                </div>
+                <div class="activity-meta">
+                  <span class="activity-time">{{ activity.time }}</span>
+                  <span v-if="activity.badge" class="activity-badge" :class="`badge-${activity.badgeType}`">
+                    {{ activity.badge }}
+                  </span>
+                </div>
+              </div>
+              <div v-if="!statistics.recentActivity || statistics.recentActivity.length === 0" class="empty-state">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <p>Henüz aktivite bulunmuyor.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kullanıcı Aktivite İstatistikleri -->
       <div v-if="statistics.userActivity" class="activity-stats-section">
         <div class="card-header">
           <h2>Son Kullanıcı Aktiviteleri</h2>
@@ -629,6 +797,173 @@ onMounted(() => {
         <div v-if="hourlyActivityChartData" class="chart-container" style="margin-top: 2rem;">
           <h3 style="margin-bottom: 1rem;">Saatlik Aktivite Dağılımı</h3>
           <BarChart :data="hourlyActivityChartData" />
+        </div>
+      </div>
+        </div>
+      </div>
+
+      <!-- Geri Bildirimler -->
+      <div class="accordion-section">
+        <div class="accordion-header" @click="toggleSection('feedback')">
+          <div class="accordion-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            <span>{{ categories.find(c => c.id === 'feedback')?.title }}</span>
+          </div>
+          <svg 
+            class="accordion-icon" 
+            :class="{ 'open': categories.find(c => c.id === 'feedback')?.isOpen }"
+            width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          >
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+        <div v-show="categories.find(c => c.id === 'feedback')?.isOpen" class="accordion-content">
+          <!-- Feedback İstatistikleri -->
+      <div v-if="statistics.feedbackStatistics" class="feedback-stats-section">
+        <div class="card-header">
+          <h2>Geri Bildirim İstatistikleri</h2>
+          <span class="subtitle">Ticket ve müşteri memnuniyeti metrikleri</span>
+        </div>
+
+        <div class="feedback-metrics-grid">
+          <div class="feedback-metric-card">
+            <div class="metric-header">
+              <span class="metric-label">Toplam Ticket</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+            <div class="metric-value">{{ statistics.feedbackStatistics.totalFeedbacks?.toLocaleString() || '0' }}</div>
+            <div class="metric-detail">
+              <span class="detail-label">Son 24 saat:</span>
+              <span class="detail-value">{{ statistics.feedbackStatistics.feedbacksLast24h || 0 }}</span>
+            </div>
+          </div>
+
+          <div class="feedback-metric-card">
+            <div class="metric-header">
+              <span class="metric-label">Ortalama Yıldız</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </div>
+            <div class="metric-value">{{ statistics.feedbackStatistics.avgRating || '0' }}/5</div>
+            <div class="metric-detail">
+              <span class="detail-label">Toplam değerlendirme:</span>
+              <span class="detail-value">{{ statistics.feedbackStatistics.totalFeedbacks || 0 }}</span>
+            </div>
+          </div>
+
+          <div class="feedback-metric-card">
+            <div class="metric-header">
+              <span class="metric-label">Kapanan Ticket</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div class="metric-value">{{ statistics.feedbackStatistics.closedFeedbacks?.toLocaleString() || '0' }}</div>
+            <div class="metric-detail">
+              <span class="detail-label">Kapanma oranı:</span>
+              <span class="detail-value">
+                {{ statistics.feedbackStatistics.totalFeedbacks > 0 
+                  ? Math.round((statistics.feedbackStatistics.closedFeedbacks / statistics.feedbackStatistics.totalFeedbacks) * 100) 
+                  : 0 }}%
+              </span>
+            </div>
+          </div>
+
+          <div class="feedback-metric-card">
+            <div class="metric-header">
+              <span class="metric-label">Ort. Yanıt Süresi</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div class="metric-value">{{ statistics.feedbackStatistics.avgResponseTime || '0' }} saat</div>
+            <div class="metric-detail">
+              <span class="detail-label">Toplam cevap:</span>
+              <span class="detail-value">{{ statistics.feedbackStatistics.totalReplies?.toLocaleString() || '0' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="feedback-status-grid">
+          <div class="status-card">
+            <div class="status-header">
+              <span class="status-label">Açık</span>
+              <span class="status-badge status-open">{{ statistics.feedbackStatistics.openFeedbacks || 0 }}</span>
+            </div>
+            <div class="status-progress">
+              <div 
+                class="progress-bar" 
+                :style="{ 
+                  width: statistics.feedbackStatistics.totalFeedbacks > 0 
+                    ? (statistics.feedbackStatistics.openFeedbacks / statistics.feedbackStatistics.totalFeedbacks) * 100 + '%' 
+                    : '0%',
+                  backgroundColor: '#3b82f6'
+                }"
+              ></div>
+            </div>
+          </div>
+
+          <div class="status-card">
+            <div class="status-header">
+              <span class="status-label">İşlemde</span>
+              <span class="status-badge status-in-progress">{{ statistics.feedbackStatistics.inProgressFeedbacks || 0 }}</span>
+            </div>
+            <div class="status-progress">
+              <div 
+                class="progress-bar" 
+                :style="{ 
+                  width: statistics.feedbackStatistics.totalFeedbacks > 0 
+                    ? (statistics.feedbackStatistics.inProgressFeedbacks / statistics.feedbackStatistics.totalFeedbacks) * 100 + '%' 
+                    : '0%',
+                  backgroundColor: '#f59e0b'
+                }"
+              ></div>
+            </div>
+          </div>
+
+          <div class="status-card">
+            <div class="status-header">
+              <span class="status-label">Çözüldü</span>
+              <span class="status-badge status-resolved">{{ statistics.feedbackStatistics.resolvedFeedbacks || 0 }}</span>
+            </div>
+            <div class="status-progress">
+              <div 
+                class="progress-bar" 
+                :style="{ 
+                  width: statistics.feedbackStatistics.totalFeedbacks > 0 
+                    ? (statistics.feedbackStatistics.resolvedFeedbacks / statistics.feedbackStatistics.totalFeedbacks) * 100 + '%' 
+                    : '0%',
+                  backgroundColor: '#10b981'
+                }"
+              ></div>
+            </div>
+          </div>
+
+          <div class="status-card">
+            <div class="status-header">
+              <span class="status-label">Kapalı</span>
+              <span class="status-badge status-closed">{{ statistics.feedbackStatistics.closedFeedbacks || 0 }}</span>
+            </div>
+            <div class="status-progress">
+              <div 
+                class="progress-bar" 
+                :style="{ 
+                  width: statistics.feedbackStatistics.totalFeedbacks > 0 
+                    ? (statistics.feedbackStatistics.closedFeedbacks / statistics.feedbackStatistics.totalFeedbacks) * 100 + '%' 
+                    : '0%',
+                  backgroundColor: '#9ca3af'
+                }"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
         </div>
       </div>
 
@@ -731,6 +1066,71 @@ onMounted(() => {
 
 .retry-btn:hover {
   opacity: 0.9;
+}
+
+/* Accordion Stilleri */
+.accordion-section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  background: var(--bg);
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.accordion-header:hover {
+  background: var(--border);
+}
+
+.accordion-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.accordion-title svg {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.accordion-icon {
+  color: var(--muted);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.accordion-icon.open {
+  transform: rotate(180deg);
+}
+
+.accordion-content {
+  padding: 1.5rem;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 5000px;
+  }
 }
 
 /* Metrikler Grid */
@@ -1779,6 +2179,108 @@ onMounted(() => {
   .user-activity-table th,
   .user-activity-table td {
     padding: 0.5rem;
+  }
+}
+
+/* Feedback İstatistikleri */
+.feedback-stats-section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.feedback-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.feedback-metric-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  transition: all 0.2s;
+}
+
+.feedback-metric-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.feedback-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.status-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.status-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.status-badge.status-open {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-badge.status-in-progress {
+  background: #fed7aa;
+  color: #b45309;
+}
+
+.status-badge.status-resolved {
+  background: #bbf7d0;
+  color: #065f46;
+}
+
+.status-badge.status-closed {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.status-progress {
+  height: 8px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.status-progress .progress-bar {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .feedback-metrics-grid,
+  .feedback-status-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

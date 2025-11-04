@@ -713,6 +713,72 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
       userActivity: {
         recentActiveUsers: userActivityStats,
         onlineUsers
+      },
+      feedbackStatistics: {
+        totalFeedbacks: await prisma.feedback.count(),
+        openFeedbacks: await prisma.feedback.count({ where: { status: 'OPEN' } }),
+        inProgressFeedbacks: await prisma.feedback.count({ where: { status: 'IN_PROGRESS' } }),
+        resolvedFeedbacks: await prisma.feedback.count({ where: { status: 'RESOLVED' } }),
+        closedFeedbacks: await prisma.feedback.count({ where: { status: 'CLOSED' } }),
+        feedbacksLast24h: await prisma.feedback.count({
+          where: {
+            createdAt: {
+              gte: oneDayAgo
+            }
+          }
+        }),
+        feedbacksLast7Days: await prisma.feedback.count({
+          where: {
+            createdAt: {
+              gte: sevenDaysAgo
+            }
+          }
+        }),
+        avgRating: await (async () => {
+          const ratings = await prisma.feedback.findMany({
+            where: {
+              rating: { not: null }
+            },
+            select: {
+              rating: true
+            }
+          });
+          if (ratings.length === 0) return 0;
+          const sum = ratings.reduce((acc, f) => acc + f.rating, 0);
+          return Math.round((sum / ratings.length) * 10) / 10;
+        })(),
+        totalReplies: await prisma.feedbackReply.count(),
+        avgResponseTime: await (async () => {
+          // Feedback'lerin ilk reply'lerine kadar geçen süreyi hesapla
+          const feedbacksWithReplies = await prisma.feedback.findMany({
+            where: {
+              replies: {
+                some: {}
+              }
+            },
+            include: {
+              replies: {
+                orderBy: {
+                  createdAt: 'asc'
+                },
+                take: 1
+              }
+            }
+          });
+          
+          if (feedbacksWithReplies.length === 0) return 0;
+          
+          const responseTimes = feedbacksWithReplies.map(f => {
+            const firstReply = f.replies[0];
+            if (!firstReply) return 0;
+            const timeDiff = firstReply.createdAt.getTime() - f.createdAt.getTime();
+            return timeDiff / (1000 * 60 * 60); // Saat cinsinden
+          }).filter(t => t > 0);
+          
+          if (responseTimes.length === 0) return 0;
+          const avg = responseTimes.reduce((acc, t) => acc + t, 0) / responseTimes.length;
+          return Math.round(avg * 10) / 10;
+        })()
       }
     });
   } catch (error) {
