@@ -151,8 +151,13 @@ function handleNotificationClick(notification) {
     markAsRead(notification.id)
   }
 
+  // Data içinde feedbackId varsa admin feedback sayfasına git
+  if (notification.data?.feedbackId) {
+    router.push(`/admin/feedback?id=${notification.data.feedbackId}`)
+    isOpen.value = false
+  }
   // Data içinde leadId varsa lead detay sayfasına git
-  if (notification.data?.leadId) {
+  else if (notification.data?.leadId) {
     router.push(`/lead/${notification.data.leadId}`)
     isOpen.value = false
   }

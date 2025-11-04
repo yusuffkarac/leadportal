@@ -170,95 +170,24 @@
       </div>
     </div>
 
-    <!-- Feedback Detail Modal -->
-    <div v-if="selectedFeedback" class="modal-overlay" @click.self="selectedFeedback = null">
-      <div class="modal-content feedback-detail-modal">
-        <div class="modal-header">
-          <h2>{{ selectedFeedback.subject }}</h2>
-          <button class="btn-close" @click="selectedFeedback = null">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
-        </div>
-
-        <div class="modal-body">
-          <!-- Original Feedback -->
-          <div class="original-feedback">
-            <div class="user-section">
-              <div class="user-info">
-                <div class="user-email">{{ selectedFeedback.user.email }}</div>
-                <div class="user-name">{{ selectedFeedback.user.firstName }} {{ selectedFeedback.user.lastName }}</div>
-              </div>
-              <div class="feedback-date">{{ formatDate(selectedFeedback.createdAt) }}</div>
-            </div>
-
-            <div v-if="selectedFeedback.rating" class="rating-display">
-              <div class="rating-stars">
-                <svg v-for="i in 5" :key="i" width="16" height="16" viewBox="0 0 24 24" :fill="i <= selectedFeedback.rating ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="1.5">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-              </div>
-              <span class="rating-text">{{ selectedFeedback.rating }}/5</span>
-            </div>
-
-            <div v-if="selectedFeedback.comment" class="comment-section">
-              <p>{{ selectedFeedback.comment }}</p>
-            </div>
-
-            <div class="lead-info-detail">
-              <strong>Lead:</strong> {{ selectedFeedback.leadSale.lead.title }}
-            </div>
-          </div>
-
-          <!-- Conversation Thread -->
-          <div class="conversation-thread">
-            <h3>Sohbet Geçmişi</h3>
-            <div v-if="selectedFeedback.replies.length === 0" class="no-replies">
-              Henüz cevap yok
-            </div>
-            <div v-else class="replies-list">
-              <div v-for="reply in selectedFeedback.replies" :key="reply.id" class="reply-message" :class="{ 'is-admin': reply.user.id === currentUserId }">
-                <div class="reply-header">
-                  <span class="reply-user">
-                    {{ reply.user.email }}
-                    <span v-if="reply.isAdmin" class="admin-badge">Admin</span>
-                  </span>
-                  <span class="reply-time">{{ formatDate(reply.createdAt) }}</span>
-                </div>
-                <div class="reply-message-text">{{ reply.message }}</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Reply Input -->
-          <div class="reply-input-section">
-            <textarea
-              v-model="replyMessage"
-              placeholder="Cevabınızı yazın..."
-              class="reply-textarea"
-              @keydown.meta.enter="sendReply"
-              @keydown.ctrl.enter="sendReply"
-            />
-            <button
-              @click="sendReply"
-              :disabled="!replyMessage.trim() || replyLoading"
-              class="btn-send-reply"
-            >
-              <span v-if="!replyLoading">Gönder</span>
-              <span v-else>Gönderiliyor...</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Shared Feedback Modal (same as user view) -->
+    <FeedbackModal
+      :show="!!selectedFeedback"
+      :selectedLead="selectedLeadForModal"
+      :isAdmin="true"
+      :currentUserId="currentUserId"
+      @close="selectedFeedback = null"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import FeedbackModal from '../components/FeedbackModal.vue'
 import axios from 'axios'
+
+const route = useRoute()
 
 const feedbacks = ref([])
 const loading = ref(true)
@@ -379,6 +308,18 @@ async function selectFeedbackForReply(feedback) {
   }
 }
 
+// Map selected feedback to FeedbackModal's expected prop shape
+const selectedLeadForModal = computed(() => {
+  if (!selectedFeedback.value) return null
+  const leadSaleId = selectedFeedback.value.leadSale?.id || selectedFeedback.value.leadSaleId
+  const leadTitle = selectedFeedback.value.leadSale?.lead?.title || selectedFeedback.value.subject || 'Geri Bildirim'
+  return {
+    id: leadSaleId,
+    feedbackId: selectedFeedback.value.id,
+    lead: { title: leadTitle }
+  }
+})
+
 // Format date
 function formatDate(dateString) {
   const date = new Date(dateString)
@@ -432,9 +373,33 @@ const filteredFeedbacks = computed(() => {
   return filtered
 })
 
+// Open feedback by ID (from notification click or direct link)
+async function openFeedbackById(feedbackId) {
+  try {
+    const response = await axios.get(`/api/feedback/${feedbackId}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    selectedFeedback.value = response.data
+  } catch (error) {
+    console.error('Feedback yükleme hatası:', error)
+  }
+}
+
 onMounted(async () => {
   await fetchAdminUsers()
   await fetchFeedbacks()
+
+  // Check if feedback ID is in query params (from notification click)
+  if (route.query.id) {
+    await openFeedbackById(route.query.id)
+  }
+})
+
+// Watch for query param changes
+watch(() => route.query.id, (newId) => {
+  if (newId) {
+    openFeedbackById(newId)
+  }
 })
 </script>
 

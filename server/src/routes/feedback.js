@@ -191,7 +191,7 @@ const feedbackRouter = (prisma, io) => {
       }
 
       // Check access - user can see their own, admins can see all
-      if (feedback.userId !== req.user.id && req.user.userTypeId !== 'ADMIN' && req.user.userTypeId !== 'FULL_ADMIN') {
+      if (feedback.userId !== req.user.id && req.user.userTypeId !== 'ADMIN' && req.user.userTypeId !== 'FULL_ADMIN' && req.user.userTypeId !== 'SUPERADMIN') {
         return res.status(403).json({ error: 'Bu geri bildirimi göremezsiniz' })
       }
 
@@ -225,12 +225,9 @@ const feedbackRouter = (prisma, io) => {
         return res.status(404).json({ error: 'Geri bildirim bulunamadı' })
       }
 
-      // Check access
-      const isAdmin = req.user.userTypeId === 'ADMIN' || req.user.userTypeId === 'FULL_ADMIN'
-      if (feedback.userId !== req.user.id && !isAdmin) {
-        return res.status(403).json({ error: 'Bu geri bildirimine cevap veremezsiniz' })
-      }
-
+      // Check if user is admin
+      const isAdmin = ['ADMIN', 'SUPERADMIN', 'FULL_ADMIN'].includes(req.user?.userTypeId)
+      
       // Create reply
       const reply = await prisma.feedbackReply.create({
         data: {
@@ -296,7 +293,41 @@ const feedbackRouter = (prisma, io) => {
         }
       }
 
-      // Notification 2: FEEDBACK_ALL - Notify all users when feedback owner replies
+      // Notification 2: FEEDBACK_ALL - Notify all users when admin replies
+      if (isAdmin) {
+        try {
+          const adminName = req.user.firstName || req.user.email.split('@')[0]
+
+          // Get all users
+          const allUsers = await prisma.user.findMany({
+            select: { id: true }
+          })
+
+          // Send FEEDBACK_ALL notification to all users
+          // notificationService will check preferences and role permissions
+          await Promise.all(
+            allUsers.map(user =>
+              createNotification(
+                user.id,
+                'FEEDBACK_ALL',
+                'Feedback\'e Yeni Yanıt Geldi',
+                `Admin ${adminName} "${leadTitle}" hakkındaki geri bildirimine yanıt verdi.`,
+                {
+                  feedbackId: req.params.id,
+                  replyId: reply.id,
+                  leadTitle
+                }
+              ).catch(e => {
+                console.error(`[Notification Error] FEEDBACK_ALL for user ${user.id}:`, e.message)
+              })
+            )
+          )
+        } catch (notifError) {
+          console.error('[Notification Error] FEEDBACK_ALL (admin reply):', notifError.message)
+        }
+      }
+
+      // Notification 3: FEEDBACK_ALL - Notify all users when feedback owner replies
       if (!isAdmin && feedback.userId === req.user.id) {
         try {
           const userName = feedback.user.firstName || feedback.user.email.split('@')[0]
@@ -350,9 +381,8 @@ const feedbackRouter = (prisma, io) => {
   // PATCH /api/feedback/:id/status - Update feedback status (Admin only)
   router.patch('/:id/status', async (req, res) => {
     try {
-      const isAdmin = req.user.userTypeId === 'ADMIN' || req.user.userTypeId === 'FULL_ADMIN'
-      if (!isAdmin) {
-        return res.status(403).json({ error: 'Yetkiniz yok' })
+      if (!['ADMIN', 'SUPERADMIN', 'FULL_ADMIN'].includes(req.user?.userTypeId)) {
+        return res.status(403).json({ error: 'Bu işlem için yetkiniz yok' })
       }
 
       const validation = updateStatusSchema.safeParse(req.body)
@@ -414,9 +444,8 @@ const feedbackRouter = (prisma, io) => {
   // PATCH /api/feedback/:id/assign - Assign feedback to admin
   router.patch('/:id/assign', async (req, res) => {
     try {
-      const isAdmin = req.user.userTypeId === 'ADMIN' || req.user.userTypeId === 'FULL_ADMIN'
-      if (!isAdmin) {
-        return res.status(403).json({ error: 'Yetkiniz yok' })
+      if (!['ADMIN', 'SUPERADMIN', 'FULL_ADMIN'].includes(req.user?.userTypeId)) {
+        return res.status(403).json({ error: 'Bu işlem için yetkiniz yok' })
       }
 
       const validation = assignSchema.safeParse(req.body)
@@ -462,9 +491,8 @@ const feedbackRouter = (prisma, io) => {
   // GET /api/feedback/admin/all - List all feedbacks (Admin only)
   router.get('/admin/all', async (req, res) => {
     try {
-      const isAdmin = req.user.userTypeId === 'ADMIN' || req.user.userTypeId === 'FULL_ADMIN'
-      if (!isAdmin) {
-        return res.status(403).json({ error: 'Yetkiniz yok' })
+      if (!['ADMIN', 'SUPERADMIN', 'FULL_ADMIN'].includes(req.user?.userTypeId)) {
+        return res.status(403).json({ error: 'Bu işlem için yetkiniz yok' })
       }
 
       const { status, priority, assignedTo, search } = req.query
