@@ -9,17 +9,34 @@ import { readFile } from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { execSync } from 'child_process';
+import { existsSync } from 'fs';
+import dotenv from 'dotenv';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 async function runMigration() {
   try {
+    // .env dosyasını yükle
+    const envPath = join(__dirname, '../.env');
+    if (existsSync(envPath)) {
+      dotenv.config({ path: envPath });
+      console.log('✅ .env dosyası yüklendi');
+    } else {
+      console.log('⚠️  .env dosyası bulunamadı, environment variable\'lar kullanılıyor');
+    }
+
     // DATABASE_URL'i environment'tan al
     const databaseUrl = process.env.DATABASE_URL;
     
     if (!databaseUrl) {
       console.error('❌ DATABASE_URL environment variable bulunamadı!');
+      console.error('');
+      console.error('Lütfen şunları kontrol edin:');
+      console.error(`  1. .env dosyası var mı? (${envPath})`);
+      console.error('  2. .env dosyasında DATABASE_URL tanımlı mı?');
+      console.error('  3. Manuel olarak export DATABASE_URL="..." yapabilirsiniz');
+      console.error('');
       process.exit(1);
     }
 
