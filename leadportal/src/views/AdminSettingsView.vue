@@ -1173,7 +1173,8 @@ function generatePreviewId(index) {
 }
 
 async function updateSettings() {
-  // Önizleme için
+  // Doğrudan kaydet
+  await saveGeneralSettings()
 }
 
 async function saveGeneralSettings() {
