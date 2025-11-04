@@ -329,6 +329,7 @@ const statusBadgeText = computed(() => {
           class="quick-bid-submit-btn"
           @click="submitQuickBid"
           :disabled="isSubmittingBid"
+          :class="{ 'outside-bidding-hours': !isBiddingHoursActive }"
         >
           <span v-if="isSubmittingBid">...</span>
           <span class="teklif-ver-btn"  v-else>Teklif Ver         <Icon icon="mdi:gavel" width="20" height="20" /></span>
@@ -370,6 +371,7 @@ const statusBadgeText = computed(() => {
         class="sofort-kauf-buy-btn"
         @click="handleInstantBuy"
         :disabled="lead.isExpired || !lead.isActive || lead.isScheduled || !isBiddingHoursActive"
+        :class="{ 'outside-bidding-hours': !isBiddingHoursActive }"
         :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''"
       >
         <Icon icon="mdi:flash" width="20" height="20" />
@@ -390,6 +392,7 @@ const statusBadgeText = computed(() => {
           class="instant-buy-action-btn"
           @click="handleInstantBuy"
           :disabled="!isBiddingHoursActive"
+          :class="{ 'outside-bidding-hours': !isBiddingHoursActive }"
           :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''"
         >
           <Icon icon="mdi:lightning-bolt" width="20" height="20" />
@@ -744,6 +747,9 @@ const statusBadgeText = computed(() => {
 
 .quick-bid-submit-btn:disabled {
   background: #94a3b8;
+}
+
+.quick-bid-submit-btn.outside-bidding-hours {
   cursor: not-allowed;
 }
 
@@ -837,6 +843,10 @@ const statusBadgeText = computed(() => {
   background: #f59e0b;
 }
 
+.instant-buy-action-btn.outside-bidding-hours {
+  cursor: not-allowed;
+}
+
 .edit-action-btn {
   flex: 1;
   padding: 10px 12px;
@@ -897,8 +907,11 @@ const statusBadgeText = computed(() => {
 
 .sofort-kauf-buy-btn:disabled {
   background: #d1d5db;
-  cursor: not-allowed;
   opacity: 0.6;
+}
+
+.sofort-kauf-buy-btn.outside-bidding-hours {
+  cursor: not-allowed;
 }
 
 /* Scheduled Badge */

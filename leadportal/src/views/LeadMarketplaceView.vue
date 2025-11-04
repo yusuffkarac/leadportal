@@ -521,10 +521,15 @@ function checkBiddingHours() {
     const hours = Math.floor(minutesUntilStart / 60)
     const minutes = minutesUntilStart % 60
 
+    const seconds = now.getSeconds();
+    // Saniyeyi de geri doğru say (60-saniye)
+    const secondsRemaining = 60 - now.getSeconds();
     if (hours > 0) {
-      biddingHoursTimeRemaining.value = `${hours}s ${minutes}d`
+      biddingHoursTimeRemaining.value = `${hours}s ${minutes}d ${secondsRemaining}sn`
+    } else if (minutes > 0) {
+      biddingHoursTimeRemaining.value = `${minutes}d ${secondsRemaining}sn`
     } else {
-      biddingHoursTimeRemaining.value = `${minutes}d`
+      biddingHoursTimeRemaining.value = `${secondsRemaining}sn`
     }
   }
 }
@@ -1606,7 +1611,7 @@ onUnmounted(() => {
             <!-- Bidding Hours Timer -->
             <div v-if="!isBiddingHoursActive && biddingHoursTimeRemaining" class="bidding-hours-alert">
               <Icon icon="mdi:clock-alert-outline" width="16" height="16" />
-              <span>Mesai saatleri dışında: <strong>{{ biddingHoursTimeRemaining }}</strong> sonra açılacak ({{ nextBiddingStartTime }})</span>
+              <span>Mesai saatleri dışında, <strong>{{ biddingHoursTimeRemaining }}</strong> sonra açılacak ({{ nextBiddingStartTime }})</span>
             </div>
           </div>
           <div v-else>
