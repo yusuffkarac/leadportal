@@ -265,6 +265,28 @@ async function seedData() {
         emailEnabled: true,
         inAppEnabled: true,
         icon: 'mdi:account-plus'
+      },
+
+      // FEEDBACK kategorisi
+      {
+        code: 'FEEDBACK_ALL',
+        name: 'Tüm Feedback Bildirimleri',
+        description: 'Sistemdeki tüm geri bildirimlerle ilgili bildirimler',
+        category: 'FEEDBACK',
+        defaultEnabled: true,
+        emailEnabled: true,
+        inAppEnabled: true,
+        icon: 'mdi:chat-bubble'
+      },
+      {
+        code: 'FEEDBACK_OWN',
+        name: 'Kendi Konuşma Bildirimleri',
+        description: 'Yalnızca kendi geri bildirimlerinize yanıt geldiğinde bildir',
+        category: 'FEEDBACK',
+        defaultEnabled: true,
+        emailEnabled: true,
+        inAppEnabled: true,
+        icon: 'mdi:message-text'
       }
     ]
 

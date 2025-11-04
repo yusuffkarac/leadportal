@@ -13,7 +13,8 @@ const groupedPreferences = ref({
   BID: [],
   LEAD: [],
   PAYMENT: [],
-  ADMIN: []
+  ADMIN: [],
+  FEEDBACK: []
 })
 
 const categoryLabels = {
@@ -36,6 +37,11 @@ const categoryLabels = {
     name: 'Admin Bildirimleri',
     description: 'Yönetim ve sistem bildirimleri',
     icon: 'mdi:shield-account-outline'
+  },
+  FEEDBACK: {
+    name: 'Geri Bildirim Bildirimleri',
+    description: 'Geri bildirim ve konuşmalarla ilgili bildirimler',
+    icon: 'mdi:chat-bubble-outline'
   }
 }
 
@@ -53,7 +59,8 @@ async function loadPreferences() {
         BID: [],
         LEAD: [],
         PAYMENT: [],
-        ADMIN: []
+        ADMIN: [],
+        FEEDBACK: []
       }
 
       preferences.value.forEach(pref => {

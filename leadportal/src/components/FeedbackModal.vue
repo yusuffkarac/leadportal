@@ -1,9 +1,7 @@
 <script setup>
-import { ref, computed, watch, onMounted, watchEffect } from 'vue'
+import { ref, computed, watch, onMounted, watchEffect, nextTick } from 'vue'
 import { Icon } from '@iconify/vue'
 import axios from 'axios'
-
-console.log('[FeedbackModal] Component loaded')
 
 const props = defineProps({
   show: {
@@ -12,6 +10,16 @@ const props = defineProps({
   },
   selectedLead: {
     type: Object,
+    required: false,
+    default: null
+  },
+  isAdmin: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  currentUserId: {
+    type: String,
     required: false,
     default: null
   }
@@ -33,6 +41,9 @@ const isReplySubmitting = ref(false)
 const isRefreshing = ref(false)
 let refreshInterval = null
 
+// Refs
+const chatContainer = ref(null)
+
 // Local variable for template access
 const selectedLead = computed(() => props.selectedLead)
 
@@ -41,75 +52,70 @@ const authHeaders = () => {
   return { 'Authorization': `Bearer ${token}` }
 }
 
-// Watch for modal opening - only load feedback when modal opens
-watch(() => props.show, (newVal) => {
-  console.log('[FeedbackModal] Watch triggered - show:', newVal, 'selectedLead:', props.selectedLead?.id)
-  if (newVal) {
-    // Clear previous states immediately
-    error.value = ''
-    success.value = ''
+// Watch for modal opening AND selectedLead changes
+watch(
+  () => props.show,
+  async (newShow) => {
+    if (newShow && props.selectedLead?.id) {
+      // Modal is open and we have a lead
+      // Clear previous states
+      error.value = ''
+      success.value = ''
 
-    // Defer to next tick to ensure props are updated
-    setTimeout(async () => {
-      if (props.selectedLead) {
-        console.log('[FeedbackModal] Modal opened for lead:', {
-          selectedLeadId: props.selectedLead?.id,
-          leadTitle: props.selectedLead?.lead?.title
-        })
-        console.log('[FeedbackModal] About to call loadFeedback()')
-        try {
-          await loadFeedback()
-          console.log('[FeedbackModal] loadFeedback() completed', {
-            hasFeedback: !!feedback.value,
-            feedbackId: feedback.value?.id
-          })
-        } catch (err) {
-          console.error('[FeedbackModal] loadFeedback() error:', err)
-        }
-      } else {
-        console.warn('[FeedbackModal] Modal opened but no selectedLead prop')
+      // Load feedback
+      try {
+        await loadFeedback()
+      } catch (err) {
+        console.error('[FeedbackModal] loadFeedback() error:', err)
       }
-    }, 0)
 
-    // Auto-refresh every 5 seconds while modal is open to check for new admin replies
-    if (refreshInterval) clearInterval(refreshInterval)
-    refreshInterval = setInterval(async () => {
-      if (feedback.value) {
-        console.log('[FeedbackModal Auto-Refresh] Checking for new replies', { feedbackId: feedback.value.id })
-        try {
-          const response = await axios.get(`/api/feedback/${feedback.value.id}`, {
-            headers: authHeaders()
-          })
-          // Only update replies, don't reset the whole feedback
-          replies.value = response.data.replies || []
-          // Update status if changed
-          if (feedback.value && response.data.status !== feedback.value.status) {
-            feedback.value.status = response.data.status
-            console.log('[FeedbackModal Auto-Refresh] Status updated:', response.data.status)
+      // Start auto-refresh for existing feedback
+      if (refreshInterval) clearInterval(refreshInterval)
+      refreshInterval = setInterval(async () => {
+        if (feedback.value) {
+          try {
+            const response = await axios.get(`/api/feedback/${feedback.value.id}`, {
+              headers: authHeaders()
+            })
+            // Only update replies, don't reset the whole feedback
+            const newReplies = response.data.replies || []
+            const previousLength = replies.value.length
+            replies.value = newReplies
+            // Update status if changed
+            if (feedback.value && response.data.status !== feedback.value.status) {
+              feedback.value.status = response.data.status
+            }
+            // Auto scroll if new message arrived
+            if (newReplies.length > previousLength) {
+              await nextTick()
+              setTimeout(() => {
+                scrollToBottom()
+              }, 100)
+            }
+          } catch (err) {
+            console.error('[FeedbackModal Auto-Refresh] Error:', err)
           }
-          console.log('[FeedbackModal Auto-Refresh] Replies updated:', replies.value.length)
-        } catch (err) {
-          console.error('[FeedbackModal Auto-Refresh] Error:', err)
         }
+      }, 5000)
+    } else if (!newShow) {
+      // Modal is closing
+      if (refreshInterval) {
+        clearInterval(refreshInterval)
+        refreshInterval = null
       }
-    }, 5000)
-  } else if (!newVal) {
-    // Clear auto-refresh interval when modal closes
-    if (refreshInterval) {
-      clearInterval(refreshInterval)
-      refreshInterval = null
+      // Reset on close
+      rating.value = 0
+      hoverRating.value = 0
+      comment.value = ''
+      feedback.value = null
+      replies.value = []
+      replyMessage.value = ''
+      error.value = ''
+      success.value = ''
     }
-    // Reset on close
-    rating.value = 0
-    hoverRating.value = 0
-    comment.value = ''
-    feedback.value = null
-    replies.value = []
-    replyMessage.value = ''
-    error.value = ''
-    success.value = ''
-  }
-}, { immediate: false })
+  },
+  { immediate: true }
+)
 
 const hasExistingFeedback = computed(() => !!feedback.value)
 
@@ -123,60 +129,82 @@ const starClass = (index) => {
   return index < starRating ? 'filled' : 'empty'
 }
 
+function isFromOwner(reply) {
+  const replyUserId = reply?.user?.id != null ? String(reply.user.id) : ''
+  const ownerId = feedback.value?.user?.id != null ? String(feedback.value.user.id) : ''
+  return replyUserId === ownerId
+}
+
+function getSideClasses(reply) {
+  // Determine if this message is from the original feedback owner (user)
+  const fromOwner = isFromOwner(reply)
+  // If viewer is admin, owner's messages should appear on the left (opposite)
+  // If viewer is user, owner's messages should appear on the right (own)
+  const isUserSide = props.isAdmin ? !fromOwner : fromOwner
+  return { 'chat-message': true, 'is-user': isUserSide, 'is-admin': !isUserSide }
+}
+
 async function loadFeedback() {
   try {
     isLoading.value = true
     error.value = ''
 
+    console.log('[FeedbackModal] loadFeedback called', {
+      currentUserId: props.currentUserId,
+      isAdmin: props.isAdmin,
+      selectedLeadId: props.selectedLead?.id
+    })
+
     const leadSaleId = props.selectedLead?.id
-    console.log('[loadFeedback] Starting with leadSaleId:', leadSaleId)
 
     if (!leadSaleId) {
-      console.warn('[loadFeedback] No leadSaleId found, cannot load feedback')
       isLoading.value = false
       return
     }
 
-    // First, try to find the feedback by checking the list
     try {
-      console.log('[loadFeedback] Fetching user feedback list...')
-      const listResponse = await axios.get('/api/feedback', {
-        headers: authHeaders()
-      })
-
-      console.log('[loadFeedback] Got feedback list:', listResponse.data.length, 'items')
-      console.log('[loadFeedback] List response data:', listResponse.data)
-
-      const existing = listResponse.data.find(f => f.leadSaleId === leadSaleId)
-      console.log('[loadFeedback] Looking for leadSaleId:', leadSaleId, 'Found existing:', existing?.id)
-
-      if (existing) {
-        // Now fetch the specific feedback with all replies
-        console.log('[loadFeedback] Fetching detailed feedback:', existing.id)
-        const detailResponse = await axios.get(`/api/feedback/${existing.id}`, {
+      // If admin mode and we have a direct feedbackId in the lead object
+      if (props.isAdmin && props.selectedLead?.feedbackId) {
+        const detailResponse = await axios.get(`/api/feedback/${props.selectedLead.feedbackId}`, {
           headers: authHeaders()
         })
-
-        console.log('[loadFeedback] Detail response:', detailResponse.data)
 
         feedback.value = detailResponse.data
         replies.value = detailResponse.data.replies || []
         rating.value = detailResponse.data.rating || 0
         comment.value = detailResponse.data.comment || ''
-
-        // Debug logging
-        console.log('[loadFeedback] Feedback loaded successfully:', {
-          feedbackId: feedback.value.id,
-          status: feedback.value.status,
-          totalReplies: replies.value.length,
-          repliesIds: replies.value.map(r => r.id),
-          replies: replies.value
-        })
+        await nextTick()
+        // Scroll to bottom after a short delay to ensure DOM is fully rendered
+        setTimeout(() => {
+          scrollToBottom()
+        }, 50)
       } else {
-        console.log('[loadFeedback] No existing feedback found for leadSaleId:', leadSaleId, 'Available lead sale IDs:', listResponse.data.map(f => f.leadSaleId))
+        // Normal user mode - find feedback by leadSaleId
+        const listResponse = await axios.get('/api/feedback', {
+          headers: authHeaders()
+        })
+
+        const existing = listResponse.data.find(f => f.leadSaleId === leadSaleId)
+
+        if (existing) {
+          // Now fetch the specific feedback with all replies
+          const detailResponse = await axios.get(`/api/feedback/${existing.id}`, {
+            headers: authHeaders()
+          })
+
+          feedback.value = detailResponse.data
+          replies.value = detailResponse.data.replies || []
+          rating.value = detailResponse.data.rating || 0
+          comment.value = detailResponse.data.comment || ''
+          await nextTick()
+          // Scroll to bottom after a short delay to ensure DOM is fully rendered
+          setTimeout(() => {
+            scrollToBottom()
+          }, 50)
+        }
       }
     } catch (err) {
-      console.error('[loadFeedback] Error in list/detail fetch:', err.response?.data || err.message)
+      console.error('[loadFeedback] Error:', err.response?.data || err.message)
     }
   } catch (err) {
     console.error('[loadFeedback] Outer error:', err)
@@ -233,6 +261,12 @@ async function submitReply() {
     replyMessage.value = ''
     success.value = 'Cevap başarıyla gönderildi!'
 
+    // Scroll to bottom after sending reply
+    await nextTick()
+    setTimeout(() => {
+      scrollToBottom()
+    }, 100)
+
     // Refresh feedback to get updated status
     await loadFeedback()
 
@@ -245,6 +279,38 @@ async function submitReply() {
     isReplySubmitting.value = false
   }
 }
+
+function scrollToBottom() {
+  nextTick(() => {
+    // Scroll modal body to show reply section
+    const modalBody = document.querySelector('.feedback-view')
+    if (modalBody) {
+      setTimeout(() => {
+        // Scroll to the very bottom to show reply input section
+        modalBody.scrollTop = modalBody.scrollHeight
+      }, 50)
+    }
+  })
+}
+
+watch(
+  () => replies.value.length,
+  async () => {
+    await nextTick()
+    scrollToBottom()
+  }
+)
+
+// Watch for feedback changes to scroll to bottom
+watch(
+  () => feedback.value?.id,
+  async () => {
+    if (feedback.value && replies.value.length > 0) {
+      await nextTick()
+      scrollToBottom()
+    }
+  }
+)
 
 async function refreshFeedback() {
   try {
@@ -280,20 +346,28 @@ defineExpose({
         <div>
           <h2 class="modal-title">Geri Bildirim</h2>
           <p class="modal-subtitle">{{ selectedLead.lead?.title }}</p>
+          <div v-if="feedback" class="header-meta">
+            <div class="header-stars" v-if="feedback.rating">
+              <Icon v-for="i in 5" :key="i" icon="mdi:star" :class="{ filled: i <= feedback.rating }" width="14" height="14" />
+            </div>
+            <span class="status-chip" :class="feedback.status.toLowerCase()">{{ getStatusLabel(feedback.status) }}</span>
+          </div>
         </div>
-        <button class="close-btn" @click="$emit('close')">
-          <Icon icon="mdi:close" width="24" height="24" />
-        </button>
+        <div class="header-right">
+          <span v-if="feedback" class="feedback-date">{{ formatDate(feedback.createdAt) }}</span>
+          <button class="close-btn" @click="$emit('close')">
+            <Icon icon="mdi:close" width="24" height="24" />
+          </button>
+        </div>
       </div>
+        <!-- Loading State -->
+        <div v-if="isLoading" class="modal-body loading">
+          <div class="spinner"></div>
+          <p>Yükleniyor...</p>
+        </div>
 
-      <!-- Loading State -->
-      <div v-if="isLoading" class="modal-body loading">
-        <div class="spinner"></div>
-        <p>Yükleniyor...</p>
-      </div>
-
-      <!-- Feedback Form -->
-      <div v-else-if="!hasExistingFeedback" class="modal-body">
+        <!-- Feedback Form -->
+        <div v-else-if="!hasExistingFeedback && !props.isAdmin" class="modal-body">
         <!-- Star Rating -->
         <div class="form-group">
           <label class="form-label">Puan (İsteğe bağlı)</label>
@@ -368,16 +442,19 @@ defineExpose({
             {{ feedback.comment }}
           </p>
 
-          <p v-if="feedback.assignedToUser" class="feedback-assigned">
+          <!-- <p v-if="feedback.assignedToUser" class="feedback-assigned">
             <strong>Sorumlu Admin:</strong> {{ feedback.assignedToUser.firstName || feedback.assignedToUser.email }}
-          </p>
+          </p> -->
         </div>
 
-        <!-- Replies -->
+        <!-- Replies / Conversation -->
         <div class="replies-section">
           <div class="replies-header">
-            <h3 class="replies-title">Konuşma ({{ replies.length }})</h3>
-            <button
+            <h3 class="replies-title">
+              <Icon icon="mdi:chat-multiple" width="18" height="18" />
+              Konuşma ({{ replies.length }})
+            </h3>
+            <!-- <button
               class="refresh-btn"
               @click="refreshFeedback"
               :disabled="isRefreshing"
@@ -386,28 +463,36 @@ defineExpose({
               <Icon icon="mdi:refresh" width="16" height="16" />
               <span v-if="isRefreshing">Yenileniyor...</span>
               <span v-else>Yenile</span>
-            </button>
+            </button> -->
           </div>
 
           <div v-if="replies.length === 0" class="no-replies">
-            <p>Henüz cevap yok. Admin'in cevabını bekleyin veya "Yenile" butonuna tıklayın.</p>
+            <Icon icon="mdi:chat-outline" width="40" height="40" />
+            <p>Henüz cevap yok</p>
+            <p class="no-replies-hint">Admin'in cevabını bekleyin veya "Yenile" butonuna tıklayın.</p>
           </div>
 
-          <div v-else class="replies-list">
+          <div v-else class="chat-container" ref="chatContainer">
             <div
               v-for="reply in replies"
               :key="reply.id"
-              class="reply-item"
-              :class="{ admin: reply.isAdmin }"
+              :class="getSideClasses(reply)"
             >
-              <div class="reply-header">
-                <span class="reply-author">
-                  {{ reply.user.firstName || reply.user.email }}
-                  <span v-if="reply.isAdmin" class="admin-badge">Admin</span>
-                </span>
-                <span class="reply-date">{{ formatDate(reply.createdAt) }}</span>
+              <div class="message-content">
+                <div class="message-bubble">
+                  <p class="message-text">{{ reply.message }}</p>
+                </div>
+                <div class="message-meta">
+                  <span class="message-author">
+                    {{ reply.user.firstName || reply.user.email }}
+                    <!-- <span v-if="reply.isAdmin" class="admin-badge">
+                      <Icon icon="mdi:shield-account" width="12" height="12" />
+                      Admin
+                    </span>-->
+                  </span>
+                  <span class="message-time">{{ formatDate(reply.createdAt) }}</span>
+                </div>
               </div>
-              <p class="reply-message">{{ reply.message }}</p>
             </div>
           </div>
         </div>
@@ -443,7 +528,7 @@ defineExpose({
       <div class="modal-footer">
         <button class="btn-secondary" @click="$emit('close')">Kapat</button>
         <button
-          v-if="!hasExistingFeedback"
+          v-if="!hasExistingFeedback && !props.isAdmin"
           class="btn-primary"
           @click="submitFeedback"
           :disabled="!canSubmit || isSubmitting"
@@ -527,11 +612,48 @@ export default {
   gap: 16px;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.header-stars svg {
+  color: #d1d5db;
+}
+
+.header-stars svg.filled {
+  color: #fbbf24;
+}
+
+.status-chip {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-chip.open { background: #dbeafe; color: #1e40af; }
+.status-chip.in_progress { background: #fef3c7; color: #92400e; }
+.status-chip.resolved { background: #dcfce7; color: #166534; }
+.status-chip.closed { background: #f3f4f6; color: #6b7280; }
+
 .modal-title {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
   color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .modal-subtitle {
@@ -690,6 +812,9 @@ export default {
 
 .feedback-view {
   gap: 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .feedback-card {
@@ -777,7 +902,9 @@ export default {
 .replies-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+  border-top: 2px solid #f1f5f9;
+  padding-top: 16px;
 }
 
 .replies-header {
@@ -790,20 +917,24 @@ export default {
 .replies-title {
   margin: 0;
   font-size: 0.875rem;
-  font-weight: 600;
-  color: #374151;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .refresh-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 6px 10px;
   background: #f0f9ff;
   border: 1px solid #bfdbfe;
-  border-radius: 4px;
+  border-radius: 6px;
   color: #0369a1;
   font-size: 0.75rem;
   font-weight: 600;
@@ -815,56 +946,148 @@ export default {
 .refresh-btn:hover:not(:disabled) {
   background: #e0f2fe;
   border-color: #7dd3fc;
+  transform: rotate(180deg);
 }
 
 .refresh-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .no-replies {
   text-align: center;
-  padding: 20px;
-  background: #f9fafb;
-  border-radius: 6px;
+  padding: 32px 20px;
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  border-radius: 12px;
   color: #9ca3af;
-  font-size: 0.875rem;
-  border: 1px dashed #d1d5db;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.no-replies svg {
+  color: #d1d5db;
+  margin-bottom: 8px;
 }
 
 .no-replies p {
   margin: 0;
   line-height: 1.4;
+  font-size: 0.875rem;
 }
 
-.replies-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.reply-item {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.reply-item.admin {
-  background: #f0fdf4;
-  border-color: #dcfce7;
-}
-
-.reply-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.no-replies-hint {
   font-size: 0.75rem;
+  color: #9ca3af !important;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px;
+}
+
+.chat-message {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.chat-message.is-user {
+  justify-content: flex-end;
+}
+
+.chat-message.is-admin {
+  justify-content: flex-start;
+}
+
+.message-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 75%;
+}
+
+.chat-message.is-admin .message-content {
+  align-items: flex-start;
+}
+
+.chat-message.is-user .message-content {
+  align-items: flex-end;
+}
+
+.message-bubble {
+  padding: 10px 14px;
+  border-radius: 12px;
+  word-wrap: break-word;
+}
+
+.chat-message.is-user .message-bubble {
+  background: #f3f4f6; /* gray for own messages */
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-message.is-admin .message-bubble {
+  background: #3b82f6; /* blue for other party */
+  color: white;
+  border-bottom-left-radius: 4px;
+}
+
+/* Bubble tails */
+.message-bubble { position: relative; }
+.chat-message.is-user .message-bubble::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  bottom: 0;
+  width: 0; height: 0;
+  border-left: 6px solid #e5e7eb;
+  border-top: 6px solid transparent;
+}
+.chat-message.is-admin .message-bubble::after {
+  content: '';
+  position: absolute;
+  left: -6px;
+  bottom: 0;
+  width: 0; height: 0;
+  border-right: 6px solid #3b82f6;
+  border-top: 6px solid transparent;
+}
+
+.message-text {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.message-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 0.75rem;
+  align-items: center;
+}
+
+.chat-message.is-user .message-meta {
+  justify-content: flex-end;
+}
+
+.chat-message.is-admin .message-meta {
+  justify-content: flex-start;
+}
+
+.message-author {
+  font-weight: 600;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.message-time {
+  color: #9ca3af;
 }
 
 .reply-author {
@@ -873,14 +1096,17 @@ export default {
 }
 
 .admin-badge {
-  display: inline-block;
-  background: #10b981;
-  color: white;
-  padding: 1px 6px;
-  border-radius: 3px;
-  font-size: 0.625rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #dcfce7;
+  color: #166534;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
   margin-left: 6px;
   font-weight: 600;
+  border: 1px solid #bbf7d0;
 }
 
 .reply-date {
@@ -897,23 +1123,31 @@ export default {
 .reply-input-section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  border-top: 2px solid #f1f5f9;
+  padding-top: 16px;
 }
 
 .reply-input {
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
   font-size: 0.875rem;
   font-family: inherit;
-  resize: vertical;
-  transition: border-color 0.2s ease;
+  resize: none;
+  transition: all 0.2s ease;
+  background: white;
 }
 
 .reply-input:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: white;
+}
+
+.reply-input::placeholder {
+  color: #9ca3af;
 }
 
 .submit-reply-btn {
@@ -921,27 +1155,29 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 8px 16px;
-  background: #3b82f6;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  align-self: flex-end;
 }
 
 .submit-reply-btn:hover:not(:disabled) {
-  background: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .submit-reply-btn:disabled {
   background: #d1d5db;
   cursor: not-allowed;
   opacity: 0.6;
+  transform: none;
 }
 
 .modal-footer {

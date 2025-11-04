@@ -21,10 +21,12 @@ function logout() {
     if (typeof window !== 'undefined' && window.localStorage) {
       // LocalStorage ve sessionStorage'ı temizle
       window.localStorage.removeItem('token')
+      window.localStorage.removeItem('userId')
       window.localStorage.removeItem('role')
       window.localStorage.removeItem('userType')
       window.localStorage.removeItem('userTypeId')
       window.sessionStorage.removeItem('token')
+      window.sessionStorage.removeItem('userId')
       window.sessionStorage.removeItem('role')
       window.sessionStorage.removeItem('userType')
       window.sessionStorage.removeItem('userTypeId')

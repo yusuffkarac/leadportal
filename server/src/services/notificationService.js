@@ -42,7 +42,44 @@ export async function createNotification(userId, notificationTypeCode, title, me
         // Rol izinlerini de oluştur
         const allUserTypes = await prisma.userType.findMany()
         for (const userType of allUserTypes) {
-          const isAdmin = userType.id.includes('ADMIN')
+          const isAdmin = userType.id.includes('ADMIN') || userType.id.includes('SUPERADMIN')
+          await prisma.notificationRolePermission.upsert({
+            where: {
+              userTypeId_notificationTypeId: {
+                userTypeId: userType.id,
+                notificationTypeId: notificationType.id
+              }
+            },
+            update: { canReceive: isAdmin },
+            create: {
+              userTypeId: userType.id,
+              notificationTypeId: notificationType.id,
+              canReceive: isAdmin
+            }
+          })
+        }
+      } else if (notificationTypeCode === 'LEAD_NOT_SOLD') {
+        // LEAD_NOT_SOLD için özel oluştur
+        notificationType = await prisma.notificationType.upsert({
+          where: { code: notificationTypeCode },
+          update: {},
+          create: {
+            code: notificationTypeCode,
+            name: 'Lead Satılmadı',
+            description: 'Lead rezerv fiyatına ulaşamadığı için satılmadı',
+            category: 'LEAD',
+            defaultEnabled: true,
+            emailEnabled: true,
+            inAppEnabled: true,
+            icon: 'mdi:alert-circle',
+            isActive: true
+          }
+        })
+        
+        // Rol izinlerini de oluştur (ADMIN ve SUPERADMIN'ler alabilir)
+        const allUserTypes = await prisma.userType.findMany()
+        for (const userType of allUserTypes) {
+          const isAdmin = userType.id.includes('ADMIN') || userType.id.includes('SUPERADMIN')
           await prisma.notificationRolePermission.upsert({
             where: {
               userTypeId_notificationTypeId: {

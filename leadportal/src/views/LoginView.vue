@@ -76,6 +76,9 @@ async function submit() {
     // Successful login
     const storage = remember.value ? window.localStorage : window.sessionStorage
     storage.setItem('token', data.token)
+    if (data?.user?.id) {
+      storage.setItem('userId', data.user.id)
+    }
     if (data?.user?.userType) {
       storage.setItem('userType', JSON.stringify(data.user.userType))
       storage.setItem('userTypeId', data.user.userType.id)

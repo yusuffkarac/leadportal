@@ -348,6 +348,7 @@
       v-if="showFeedbackModal"
       :show="showFeedbackModal"
       :selectedLead="selectedLeadForFeedback"
+      :currentUserId="currentUserId"
       @close="showFeedbackModal = false"
       @feedback-submitted="fetchPurchasedLeads"
       ref="feedbackModalRef"
@@ -374,6 +375,9 @@ const sortOrder = ref('desc')
 
 // Görünüm tipi (grid veya table)
 const viewMode = ref(localStorage.getItem('purchasedLeadViewMode') || 'grid')
+
+// Current user ID
+const currentUserId = ref(localStorage.getItem('userId') || '')
 
 // Feedback modal state
 const showFeedbackModal = ref(false)

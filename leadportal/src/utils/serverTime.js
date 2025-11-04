@@ -15,14 +15,26 @@ export async function syncServerTime() {
   try {
     const clientRequestTime = Date.now()
 
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/server-time`)
+    // Build URL robustly: fallback to relative API if BASE_URL is not defined
+    const base = (import.meta.env.VITE_API_BASE_URL || '').trim()
+    const apiUrl = base
+      ? `${base.replace(/\/$/, '')}/api/server-time`
+      : '/api/server-time'
+    const response = await fetch(apiUrl)
 
     if (!response.ok) {
       console.error('Failed to sync server time:', response.statusText)
       return false
     }
 
+    // Ensure JSON response (avoid parsing HTML error when server returns index.html)
     const clientReceiveTime = Date.now()
+    const contentType = response.headers.get('content-type') || ''
+    if (!contentType.includes('application/json')) {
+      const text = await response.text()
+      console.error('Failed to parse server time JSON. Response was not JSON.', { apiUrl, contentType, snippet: text?.slice(0, 120) })
+      return false
+    }
     const data = await response.json()
 
     // Estimate network latency and calculate offset

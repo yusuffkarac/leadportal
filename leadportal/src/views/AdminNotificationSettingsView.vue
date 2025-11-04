@@ -15,7 +15,8 @@ const categories = [
   { value: 'ALL', label: 'Tümü', icon: 'mdi:view-grid' },
   { value: 'BID', label: 'Teklif', icon: 'mdi:gavel' },
   { value: 'LEAD', label: 'Lead', icon: 'mdi:briefcase-outline' },
-  { value: 'PAYMENT', label: 'Ödeme', icon: 'mdi:wallet-outline' }
+  { value: 'PAYMENT', label: 'Ödeme', icon: 'mdi:wallet-outline' },
+  { value: 'FEEDBACK', label: 'Geri Bildirim', icon: 'mdi:chat-bubble-outline' }
 ]
 
 // Kategoriye göre filtrele
