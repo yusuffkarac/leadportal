@@ -795,7 +795,13 @@ function navigateToLead(lead) {
 
 function navigateToLeadNewTab(lead) {
   if (!lead || !lead.id) return
-  window.open(`/lead/${lead.id}`, '_blank')
+  // Mobil cihazlarda aynı sekmede, masaüstünde yeni sekmede aç
+  const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+  if (isMobile) {
+    window.location.href = `/lead/${lead.id}`
+  } else {
+    window.location.href = `/lead/${lead.id}`
+  }
 }
 
 function shareLead(lead, event) {
@@ -1478,11 +1484,13 @@ function updateMapMarkers() {
     const insIcon = insType ? `<span class=\"iconify\" data-icon=\"${iconifyName}\" style=\"font-size:14px;color:#475569\"></span>` : ''
     const chip = insType ? `<span style=\"display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid #e2e8f0;border-radius:999px;background:#f8fafc;color:#334155;font-size:12px\">${insIcon}<span>${insType}</span></span>` : ''
     const postalChip = pc ? `<span style=\"display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid #e2e8f0;border-radius:999px;background:#fff;color:#334155;font-size:12px\"><span class=\"iconify\" data-icon=\"mdi:map-marker-outline\" style=\"font-size:14px;color:#64748b\"></span><span>${pc}</span></span>` : ''
-    const tags = (chip || postalChip) ? `<div style=\"display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 8px\">${chip}${postalChip}</div>` : ''
+    const tags = (chip || postalChip) ? `<div style=\"display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px\">${chip}${postalChip}</div>` : ''
+    const leadIdChip = `<span style=\"display:inline-flex;align-items:center;gap:4px;padding:3px 6px;border:1px solid #e2e8f0;border-radius:999px;background:#f8fafc;color:#64748b;font-size:11px;font-weight:500\">ID: ${lead.id}</span>`
     const popupHtml = `
       <div style=\"min-width:220px;max-width:280px\">
-        <div style=\"font-weight:700;margin-bottom:2px;color:#0f172a;font-size:14px\">${lead.title}</div>
         ${tags}
+        <div style=\"display:flex;align-items:center;gap:6px;margin-bottom:8px\">${leadIdChip}</div>
+        <div style=\"font-weight:700;margin-bottom:2px;color:#0f172a;font-size:14px\">${lead.title}</div>
         <div style=\"font-size:12px;margin-bottom:10px;color:#475569;line-height:1.4\">${(lead.description||'').slice(0,120)}</div>
         <div style=\"display:flex;align-items:baseline;gap:6px;margin-bottom:10px\">
           <span style=\"font-size:12px;color:#64748b\">Fiyat:</span>
@@ -1730,7 +1738,7 @@ onUnmounted(() => {
 
     <!-- Aktif Açık Artırmalar / Sofort Kauf -->
     <div class="auctions-section">
-      <div class="page-header" style="align-items: flex-end!important">
+      <div class="page-header" style="align-items: flex-start!important">
         <div class="page-header-content">
          <!--   <Icon :icon="pageIcon" width="32" class="page-icon" /> -->
 
@@ -1768,7 +1776,7 @@ onUnmounted(() => {
           </select>
           <button class="filter-toggle-btn" @click="showFilters = !showFilters">
             <Icon icon="mdi:filter" width="18" height="18" />
-            Filtrele
+            
             <span
               v-if="filters.insuranceType || filters.minPrice || filters.maxPrice || filters.hasInstantBuy || filters.minBids || filters.maxBids || filters.timeRemaining || !filters.hideExpiredSold"
               class="filter-badge"
@@ -1927,13 +1935,20 @@ onUnmounted(() => {
               <td class="lead-cell">
                 <div class="lead-info">
                   <Icon v-if="lead.insuranceType" :icon="getInsuranceTypeIcon(lead.insuranceType)" class="table-icon" width="16" height="16" />
-                  <div>
-                    <div class="lead-id-badge">{{ lead.id }}</div>
-                    <div class="lead-title-text clickable-title" @click="navigateToLead(lead)">
-                      <span v-if="lead.insuranceType" class="insurance-type-inline" :style="{ backgroundColor: getInsuranceTypeColor(lead.insuranceType) }">{{ lead.insuranceType }}</span>
-                      {{ lead.title }}
+                  <div class="lead-content-wrapper">
+                    <div class="lead-title-header">
+                      <div class="lead-title-text clickable-title" @click="navigateToLead(lead)">
+                        <span v-if="lead.insuranceType" class="insurance-type-inline" :style="{ backgroundColor: getInsuranceTypeColor(lead.insuranceType) }">{{ lead.insuranceType }}</span>
+                        {{ lead.title }}
+                      </div>
+                      <div class="lead-title-right">
+                        <div class="lead-id-badge-inline">{{ String(lead.id).slice(-6) }}</div>
+                        <button v-if="lead.description" class="info-btn" @click.stop="showDescription(lead, $event)" title="Beschreibung anzeigen">
+                          <Icon icon="mdi:information-outline" width="16" height="16" />
+                        </button>
+                      </div>
                     </div>
-                   <!-- <div class="lead-description-text">{{ lead.description?.substring(0, 60) }}...</div>-->
+                    <div class="lead-description-text" style="display: none;">{{ lead.description || '' }}</div>
                   </div>
                 </div>
               </td>
@@ -2034,6 +2049,97 @@ onUnmounted(() => {
                     <Icon icon="mdi:pencil" width="14" height="14" />
                     
                   </button>
+                </div>
+              </td>
+              <!-- Mobil için fiyat, zaman ve işlemler container -->
+              <td class="mobile-action-row">
+                <div class="mobile-actions-container">
+                  <div class="mobile-actions-wrapper">
+                    <div class="mobile-price-section">
+                      <div v-if="lead.leadType === 'SOFORT_KAUF'" class="price-only-cell">
+                        <span class="current-price">{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
+                      </div>
+                      <div v-else class="price-and-bid-cell">
+                        <div class="price-top">
+                          <span v-if="lead.bids && lead.bids.length">{{ formatPrice(lead.bids[0].amount, settings.defaultCurrency) }}</span>
+                          <span v-else>{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
+                        </div>
+                        <div class="bid-count-bottom">{{ lead.bids ? lead.bids.length : 0 }} teklif</div>
+                      </div>
+                    </div>
+                    <div class="mobile-time-section">
+                      <div class="countdown-timer" :class="{ 'blinking': isTimeRemaining(lead.endsAt, 60) }">
+                        <Icon icon="mdi:clock" width="14" height="14" />
+                        <span class="time-text">{{ formatTimeRemainingCompact(lead.endsAt) }}</span>
+                      </div>
+                    </div>
+                    <div class="mobile-actions-section">
+                      <div class="table-actions">
+                        <!-- Satın Al (admin değilse ve SOFORT_KAUF ise) -->
+                        <button
+                          v-if="lead.leadType === 'SOFORT_KAUF' && !isAdmin"
+                          class="table-btn success"
+                          @click="openInstantBuyModal(lead, $event)"
+                          :disabled="lead.isExpired || !lead.isActive || !isBiddingHoursActive"
+                          :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''"
+                          :style="!isBiddingHoursActive ? 'cursor: not-allowed;' : ''"
+                        >
+                          <Icon icon="mdi:shopping-cart" width="14" height="14" />
+                        </button>
+                        <!-- Detay (admin ise veya SOFORT_KAUF değilse) -->
+                        <button v-if="isAdmin || lead.leadType !== 'SOFORT_KAUF2'" class="table-btn primary" @click="navigateToLeadNewTab(lead)" title="Detay (Yeni sekme)">
+                          <Icon icon="mdi:open-in-new" width="14" height="14" />
+                        </button>
+                        <!-- View (Gözat) -->
+                        <button class="table-btn secondary" @click="openPreview(lead)" title="Detayları görüntüle">
+                          <Icon icon="mdi:eye" width="14" height="14" />
+                        </button>
+                        <!-- Sil (admin ise) -->
+                        <button v-if="isAdmin" class="table-btn danger" @click="confirmDelete(lead)" title="Sil">
+                          <Icon icon="mdi:delete" width="14" height="14" />
+                        </button>
+                        <!-- Aktif/Pasif -->
+                        <button v-if="isAdmin" class="table-btn toggle" :class="lead.isActive ? 'active' : 'inactive'" @click="toggleLeadActiveInline(lead)" :title="lead.isActive ? 'Pasif yap' : 'Aktif yap'">
+                          <Icon :icon="lead.isActive ? 'mdi:pause-circle' : 'mdi:play-circle'" width="14" height="14" />
+                        </button>
+                        <button
+                          v-if="lead.leadType !== 'SOFORT_KAUF' && lead.instantBuyPrice && !lead.isExpired && !isAdmin"
+                          class="table-btn success"
+                          @click="openInstantBuyModal(lead, $event)"
+                          :disabled="!isBiddingHoursActive"
+                          :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''"
+                          :style="!isBiddingHoursActive ? 'cursor: not-allowed;' : ''"
+                        >
+                          <Icon icon="mdi:lightning-bolt" width="14" height="14" />
+                        </button>
+                        <!-- Edit (admin ise) -->
+                        <button v-if="isAdmin" class="table-btn info" @click="openLeadModal('edit', lead)">
+                          <Icon icon="mdi:pencil" width="14" height="14" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Mobil Quick Bid - Alt Satır -->
+                  <div v-if="lead.leadType !== 'SOFORT_KAUF' && !lead.isExpired && lead.isActive && !isAdmin && isBiddingHoursActive" class="mobile-quick-bid-row" @click.stop>
+                    <div class="mobile-quick-bid-section">
+                      <input
+                        type="number"
+                        class="mobile-quick-bid-input"
+                        :placeholder="getMinBidAmount(lead)"
+                        v-model="quickBidAmounts[lead.id]"
+                        @click="$event.stopPropagation()"
+                        :min="getMinBidAmount(lead)"
+                      />
+                      <button
+                        class="mobile-quick-bid-btn"
+                        @click="submitQuickBid(lead, quickBidAmounts[lead.id])"
+                        :disabled="!quickBidAmounts[lead.id] || quickBidAmounts[lead.id] <= 0"
+                      >
+                        <Icon icon="mdi:gavel" width="12" height="12" />
+                        Teklif
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </td>
             </tr>
@@ -2370,24 +2476,28 @@ onUnmounted(() => {
 
         <!-- Preview Header with Close -->
         <div class="preview-header">
-        <h2> Önizleme</h2>
-          <button class="preview-close-btn" @click="closePreview">
-            
-            <Icon icon="mdi:close" width="20" height="20" />
-          </button>
+          <div class="preview-header-left">
+            <h2> Önizleme</h2>
+          </div>
+          <div class="preview-header-right">
+            <div v-if="previewLead.insuranceType" class="preview-insurance-badge">
+              <span class="badge-text">{{ previewLead.insuranceType }}</span>
+            </div>
+            <button class="preview-close-btn" @click="closePreview">
+              <Icon icon="mdi:close" width="20" height="20" />
+            </button>
+          </div>
         </div>
 
         <!-- Main Content -->
         <div class="preview-body">
+          <!-- Lead ID -->
+          <div v-if="previewLead.id" class="preview-lead-id">ID: {{ previewLead.id }}</div>
+          
           <!-- Title and Description -->
           <div class="preview-title-section">
             <h2 class="preview-title">{{ previewLead.title }}</h2>
             <p class="preview-description">{{ previewLead.description }}</p>
-          </div>
-
-          <!-- Insurance Type Badge -->
-          <div v-if="previewLead.insuranceType" class="preview-insurance-badge">
-            <span class="badge-text">{{ previewLead.insuranceType }}</span>
           </div>
 
           <!-- Price Info Section -->
@@ -3070,7 +3180,7 @@ onUnmounted(() => {
 /* Header Actions */
 .header-actions {
   display: flex;
-  gap: 12px;
+  gap: 4px;
   align-items: center;
 }
 
@@ -3584,6 +3694,9 @@ onUnmounted(() => {
     box-sizing: border-box;
     max-width: 100%;
   }
+  .auctions-section{
+    padding:0px;
+  }
 }
 
 @media (max-width: 430px) {
@@ -3809,15 +3922,28 @@ onUnmounted(() => {
 
 .preview-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   padding: 16px 24px;
   border-bottom: 1px solid #0f172a;
-  
 }
-.preview-header  h2{
-  margin-right: auto;
+
+.preview-header-left h2 {
+  margin: 0;
   font-weight: 600;
+}
+
+.preview-lead-id {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.preview-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .preview-close-btn {
@@ -3871,7 +3997,6 @@ onUnmounted(() => {
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  margin-bottom: 20px;
 }
 
 .badge-text {
@@ -4085,7 +4210,7 @@ onUnmounted(() => {
   }
 
   .preview-price-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
 
@@ -4165,6 +4290,11 @@ onUnmounted(() => {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
+/* Mobil satır desktop'ta gizli */
+.mobile-action-row {
+  display: none;
+}
+
 .leads-table {
   width: 100%;
   border-collapse: collapse;
@@ -4225,12 +4355,77 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
+.lead-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.lead-title-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
 .lead-title-text {
   font-weight: 600;
   color: #111827;
-  margin-bottom: 4px;
+  margin-bottom: 0;
   line-height: 1.3;
   transition: color 0.2s ease;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  flex: 1;
+  min-width: 0;
+}
+
+.lead-title-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.lead-id-badge-inline {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #6b7280;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  white-space: nowrap;
+  max-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.info-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
 .lead-title-text.clickable-title {
@@ -4246,6 +4441,11 @@ onUnmounted(() => {
   font-size: 0.75rem;
   color: #6b7280;
   line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .insurance-badge {
@@ -4561,7 +4761,7 @@ onUnmounted(() => {
 }
 
 .time-text {
-  font-size: 0.8rem;
+  font-size: 0.5rem;
   letter-spacing: 0.5px;
   white-space: nowrap;
 }
@@ -4651,102 +4851,315 @@ onUnmounted(() => {
   }
 
   .leads-table {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
+
   }
 
-  .leads-table th,
+  .leads-table thead {
+    display: none;
+  }
+
+  .leads-table tbody tr {
+    display: flex;
+    flex-direction: row;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 2px;
+    padding: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .leads-table tbody tr:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+
   .leads-table td {
-    padding: 6px 8px;
+    display: block;
+    padding: 0;
+    border: none;
+    text-align: left;
+  }
+
+  .lead-cell {
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+    margin-bottom: 0;
+  }
+
+  .lead-info {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .lead-content-wrapper {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .lead-title-header {
+    gap: 6px;
+  }
+
+  .lead-title-text {
+    font-size: 0.875rem;
+    line-height: 1.4;
+    margin-bottom: 6px;
+    -webkit-line-clamp: 4;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .info-btn {
+    padding: 3px;
+  }
+
+  .info-btn svg {
+    width: 14px;
+    height: 14px;
   }
 
   .lead-description-text {
-    display: none;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.7rem;
+    color: #6b7280;
+    line-height: 1.4;
+    margin-bottom: 6px;
   }
 
   .lead-id-badge {
     display: none;
   }
 
-  .insurance-type-inline {
-    padding: 1px 3px;
-    font-size: 0.55rem;
-    margin-right: 2px;
-  }
-
-  .quick-bid-inline {
-    gap: 2px;
-  }
-
-  .quick-bid-input-inline {
-    min-width: 40px;
-    padding: 4px 6px;
-    font-size: 0.65rem;
-  }
-
-  .quick-bid-submit-inline {
-    padding: 4px 6px;
+  .lead-id-badge-inline {
     font-size: 0.6rem;
+    padding: 2px 5px;
   }
 
-  .quick-bid-cell {
-    width: 150px;
-    max-width: 150px;
-    padding: 8px 10px !important;
+  .insurance-type-inline {
+    padding: 2px 6px;
+    font-size: 0.5rem;
+    margin-right: 4px;
   }
 
-  .time-cell {
-    min-width: 115px;
+  /* Fiyat, zaman ve işlemler alt satırda bir arada */
+  .leads-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
   }
 
-  .countdown-timer {
-    padding: 4px 6px;
+  /* Normal sütunları gizle, mobil sütunu göster */
+  .leads-table tbody tr td:nth-child(2),
+  .leads-table tbody tr td:nth-child(3),
+  .leads-table tbody tr td:nth-child(4),
+  .leads-table tbody tr td:nth-child(5) {
+    display: none;
+  }
+
+  .mobile-action-row {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0;
+    min-width: 0;
+    flex: 1;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+    width: 100%;
+  }
+
+  .mobile-actions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .mobile-actions-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .mobile-quick-bid-row {
+    display: flex;
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  .mobile-price-section {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .mobile-time-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .mobile-quick-bid-row .mobile-quick-bid-section {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .mobile-quick-bid-section {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .mobile-quick-bid-input {
+    flex: 1;
+    min-width: 0;
+    padding: 6px 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    background: white;
+    color: #0f172a;
+    transition: all 0.2s ease;
+  }
+
+  .mobile-quick-bid-input:focus {
+    outline: none;
+    border-color: #0f172a;
+    box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1);
+  }
+
+  .mobile-quick-bid-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background: #0f172a;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .mobile-quick-bid-btn:hover:not(:disabled) {
+    background: #1e293b;
+  }
+
+  .mobile-quick-bid-btn:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .mobile-actions-section {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    gap: 4px;
+  }
+
+  /* Fiyat gösterimi */
+  .mobile-price-section .price-and-bid-cell,
+  .mobile-price-section .price-only-cell {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .mobile-price-section .price-top {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #059669;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .mobile-price-section .current-price {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #059669;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .mobile-price-section .bid-count-bottom {
+    font-size: 0.6rem;
+    padding: 2px 5px;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    color: #15803d;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .mobile-time-section .countdown-timer {
+    padding: 3px 6px;
     gap: 3px;
+    font-size: 0.65rem;
+    background: #f1f5f9;
+    border-radius: 4px;
+    white-space: nowrap;
   }
 
-  .countdown-timer svg {
+  .mobile-time-section .countdown-timer svg {
     width: 12px !important;
     height: 12px !important;
   }
 
-  .time-text {
-    font-size: 0.7rem;
-    white-space: nowrap;
-  }
-
-  .price-and-bid-cell {
-    gap: 4px;
-  }
-
-  .price-top {
-    font-size: 0.9rem;
-  }
-
-  .bid-count-bottom {
-    padding: 3px 8px;
-    font-size: 0.65rem;
-  }
-
-  .table-btn {
-    padding: 4px 8px;
-    font-size: 0.65rem;
-  }
-
-  .lead-cell {
-    min-width: 200px;
-    max-width: 280px;
-  }
-
-  .price-and-bid-cell {
+  .mobile-actions-section .table-actions {
+    display: flex;
     gap: 3px;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
   }
 
-  .price-top {
-    font-size: 0.85rem;
-  }
-
-  .bid-count-bottom {
-    padding: 3px 8px;
+  .mobile-actions-section .table-btn {
+    padding: 4px 6px;
     font-size: 0.6rem;
+    min-width: auto;
+  }
+
+  .quick-bid-cell {
+    display: none;
+  }
+
+  .quick-bid-inline {
+    display: none;
+  }
+
+  .last-bidder-name {
+    display: none;
   }
 }
 
@@ -4775,7 +5188,7 @@ onUnmounted(() => {
 
   .lead-cell {
     min-width: 150px;
-    max-width: 200px;
+    max-width: 350px;
   }
 
   .time-cell {
@@ -4787,7 +5200,7 @@ onUnmounted(() => {
   }
 
   .lead-title-text {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
   }
 
   .price-and-bid-cell {
