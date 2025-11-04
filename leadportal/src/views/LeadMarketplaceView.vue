@@ -5164,7 +5164,7 @@ onUnmounted(() => {
 
   .mobile-actions-section .table-actions {
     display: flex;
-    gap: 3px;
+    gap: 8px;
     flex-wrap: nowrap;
     justify-content: flex-end;
   }
