@@ -261,6 +261,10 @@ export default function leadsRouter(prisma, io) {
     const showcaseOnly = req.query.showcase === 'true' || req.query.showcase === '1'
     const leadTypeFilter = req.query.leadType // 'AUCTION' or 'SOFORT_KAUF'
 
+    // Süresi dolmuş leadları göster mi diye kontrol et
+    const settings = await prisma.settings.findFirst()
+    const showExpiredLeads = settings?.showExpiredLeads || false
+
     const where = {
       isActive: true
     }
@@ -269,6 +273,19 @@ export default function leadsRouter(prisma, io) {
     }
     if (leadTypeFilter && (leadTypeFilter === 'AUCTION' || leadTypeFilter === 'SOFORT_KAUF')) {
       where.leadType = leadTypeFilter
+    }
+
+    // Süresi dolmuş/satılmış leadları filtrele (ayar kapalıysa)
+    if (!showExpiredLeads) {
+      const currentTime = now()
+      where.AND = [
+        {
+          OR: [
+            { endsAt: { gt: currentTime } },  // Süresi geçmemiş
+            { isSold: false }  // veya satılmamış
+          ]
+        }
+      ]
     }
 
     const leads = await prisma.lead.findMany({
@@ -599,6 +616,7 @@ export default function leadsRouter(prisma, io) {
         userId: req.user.id,
         action: ActivityTypes.DELETE_LEAD,
         details: {
+          leadId: lead?.id || req.params.id,
           leadTitle: lead?.title,
           deletionReason: req.body?.deletionReason || 'No reason provided'
         },

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Icon } from '@iconify/vue'
 import { formatPrice, getCurrencySymbol } from '@/utils/currency.js'
 
@@ -34,10 +34,11 @@ const emit = defineEmits(['click', 'showDescription', 'instantBuy', 'submitBid',
 
 const quickBidAmount = ref('')
 const isSubmittingBid = ref(false)
+const currentTime = ref(new Date())
 
 // Zaman hesaplama fonksiyonu
 function formatTimeRemaining(endsAt) {
-  const now = new Date()
+  const now = currentTime.value
   const endTime = new Date(endsAt)
   const diff = endTime - now
 
@@ -66,6 +67,80 @@ function formatTimeRemaining(endsAt) {
     return `${seconds}s`
   }
 }
+
+// Kalan süreyi kompakt formatta göster (LeadMarketplaceView ile aynı mantık)
+function formatTimeRemainingCompact(endsAt) {
+  const now = currentTime.value
+  const endTime = new Date(endsAt)
+  const diff = endTime - now
+
+  if (diff <= 0) return 'Süresi doldu'
+
+  const totalSeconds = Math.floor(diff / 1000)
+  const days = Math.floor(totalSeconds / (3600 * 24))
+  const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+
+  if (days > 0) {
+    const hh = String(hours).padStart(2, '0')
+    const mm = String(minutes).padStart(2, '0')
+    return `${days}g ${hh}h${mm}m`
+  }
+
+  const hh = String(hours).padStart(2, '0')
+  const mm = String(minutes).padStart(2, '0')
+  return `${hh}h${mm}m`
+}
+
+// Saniye bazında güncelleme için timer
+let timeInterval = null
+let currentInterval = 60000 // Varsayılan: dakika bazında
+
+onMounted(() => {
+  const updateTime = () => {
+    currentTime.value = new Date()
+    
+    const now = currentTime.value
+    const endTime = new Date(props.lead.endsAt)
+    const diff = endTime - now
+    
+    // 1 saatten az kaldıysa saniye bazına geç
+    if (diff > 0 && diff < 60 * 60 * 1000 && currentInterval !== 1000) {
+      clearInterval(timeInterval)
+      currentInterval = 1000
+      timeInterval = setInterval(updateTime, 1000)
+    } else if (diff <= 0 && timeInterval) {
+      // Süre doldu
+      clearInterval(timeInterval)
+      timeInterval = null
+    }
+  }
+  
+  // İlk kontrol: kalan süreyi hesapla
+  const now = new Date()
+  const endTime = new Date(props.lead.endsAt)
+  const diff = endTime - now
+  
+  currentTime.value = now
+  
+  // Başlangıç interval'ini ayarla
+  if (diff > 0 && diff < 60 * 60 * 1000) {
+    // 1 saatten az kaldı, saniye bazında başlat
+    currentInterval = 1000
+    timeInterval = setInterval(updateTime, 1000)
+  } else if (diff > 0) {
+    // 1 saatten fazla kaldı, dakika bazında başlat
+    currentInterval = 60000
+    timeInterval = setInterval(updateTime, 60000)
+  }
+})
+
+onUnmounted(() => {
+  if (timeInterval) {
+    clearInterval(timeInterval)
+    timeInterval = null
+  }
+})
 
 // Lead tipi için icon getir
 function getInsuranceTypeIcon(typeName) {
@@ -129,6 +204,22 @@ const minBidAmount = computed(() => {
     ? props.lead.bids[0].amount + props.lead.minIncrement
     : props.lead.startPrice + props.lead.minIncrement
 })
+
+// Expired/Sold status check
+const isExpired = computed(() => {
+  const endTime = new Date(props.lead.endsAt)
+  return endTime < currentTime.value
+})
+
+const isSold = computed(() => {
+  return props.lead.isSold
+})
+
+const statusBadgeText = computed(() => {
+  if (isSold.value) return 'Satıldı'
+  if (isExpired.value) return 'Süresi Doldu'
+  return null
+})
 </script>
 
 <template>
@@ -137,6 +228,12 @@ const minBidAmount = computed(() => {
     <div v-if="lead.isScheduled" class="scheduled-badge">
       <Icon icon="mdi:calendar-clock" width="18" height="18" />
       <span>Zamanlanmış - {{ new Date(lead.startsAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) }} tarihinde başlayacak</span>
+    </div>
+
+    <!-- Expired/Sold Badge -->
+    <div v-if="statusBadgeText" :class="['status-badge', isSold ? 'sold' : 'expired']">
+      <Icon :icon="isSold ? 'mdi:check-circle' : 'mdi:clock-end'" width="18" height="18" />
+      <span>{{ statusBadgeText }}</span>
     </div>
 
     <!-- Card Top Header -->
@@ -153,7 +250,7 @@ const minBidAmount = computed(() => {
         </button>
         <span class="time-badge">
           <Icon icon="mdi:clock-outline" width="16" height="16" />
-          {{ formatTimeRemaining(lead.endsAt) }}
+          {{ formatTimeRemainingCompact(lead.endsAt) }}
         </span>
         <span class="lead-id">{{ lead.id }}</span>
       </div>
@@ -300,7 +397,7 @@ const minBidAmount = computed(() => {
           <span style="font-weight: bolder">{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</span>
         </button>
         <!-- Edit button for admin -->
-        <button v-if="isAdmin" class="edit-action-btn" @click.stop="emit('editLead')" :disabled="lead.isExpired">
+        <button v-if="isAdmin" class="edit-action-btn" @click.stop="emit('editLead')">
           <Icon icon="mdi:pencil" width="20" height="20" />
           Düzenle
         </button>
@@ -829,6 +926,32 @@ const minBidAmount = computed(() => {
 .auction-card.scheduled:hover {
   opacity: 1;
   border-color: #f59e0b;
+}
+
+/* Status Badge (Expired/Sold) */
+.status-badge {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-badge.expired {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #991b1b;
+  border-color: #fca5a5;
+}
+
+.status-badge.sold {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  color: #166534;
+  border-color: #86efac;
 }
 
 @media (max-width: 768px) {

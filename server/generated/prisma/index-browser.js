@@ -274,7 +274,8 @@ exports.Prisma.SettingsScalarFieldEnum = {
   sessionTimeoutMinutes: 'sessionTimeoutMinutes',
   sessionTimeoutMessage: 'sessionTimeoutMessage',
   requireRegistrationApproval: 'requireRegistrationApproval',
-  registrationApprovalEmail: 'registrationApprovalEmail'
+  registrationApprovalEmail: 'registrationApprovalEmail',
+  showExpiredLeads: 'showExpiredLeads'
 };
 
 exports.Prisma.UserTypeScalarFieldEnum = {

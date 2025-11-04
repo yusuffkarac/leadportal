@@ -206,6 +206,7 @@ model Settings {
   sessionTimeoutMessage String  @default("Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.") // Logout sonrası gösterilecek mesaj
   requireRegistrationApproval Boolean @default(true) // Yeni kayıtlar admin onayı gerektirsin mi?
   registrationApprovalEmail String? // Yeni kayıt bildirimleri için email adresi
+  showExpiredLeads Boolean @default(false) // Müşterilere süresi dolmuş/satılmış leadları göster mi?
 }
 
 model UserType {

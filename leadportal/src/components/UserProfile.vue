@@ -29,6 +29,10 @@
         <Icon icon="mdi:account" width="16" height="16" />
         <span>Profil</span>
       </div>
+      <div class="dropdown-item" @click="goToNotifications">
+        <Icon icon="mdi:bell-outline" width="16" height="16" />
+        <span>Bildirim Tercihleri</span>
+      </div>
        <!-- 
       <div v-if="canAccessAbout" class="dropdown-item" @click="goToAbout">
         <Icon icon="mdi:information-outline" width="16" height="16" />
@@ -132,6 +136,11 @@ function closeDropdown() {
 
 function goToProfile() {
   router.push('/profile')
+  isDropdownOpen.value = false
+}
+
+function goToNotifications() {
+  router.push('/profile/notifications')
   isDropdownOpen.value = false
 }
 

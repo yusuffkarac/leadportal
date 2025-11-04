@@ -457,7 +457,27 @@
                       Yeni kayıt talepleri bu e-posta adresine bildirilecektir (opsiyonel)
                     </small>
                   </div>
-                  
+
+                  <div class="setting-group">
+                    <label class="setting-label">Süresi Dolmuş/Satılmış Leadları Göster</label>
+                    <div class="toggle-container">
+                      <label class="toggle-switch">
+                        <input
+                          type="checkbox"
+                          v-model="settings.showExpiredLeads"
+                          @change="updateSettings"
+                        >
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <span class="toggle-label">
+                        {{ settings.showExpiredLeads ? 'Açık' : 'Kapalı' }}
+                      </span>
+                    </div>
+                    <small class="form-help">
+                      Açık olursa müşteriler süresi dolmuş veya satılmış leadları (pasif olarak) görebilecektir
+                    </small>
+                  </div>
+
                   <div class="save-section" style="justify-content:flex-end;">
                     <button class="btn btn-primary" @click="saveGeneralSettings" :disabled="savingGeneral">
                       <span v-if="savingGeneral" class="spinner-sm"></span>
@@ -795,7 +815,8 @@ const settings = ref({
   sessionTimeoutMinutes: 120,
   sessionTimeoutMessage: 'Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.',
   requireRegistrationApproval: true,
-  registrationApprovalEmail: ''
+  registrationApprovalEmail: '',
+  showExpiredLeads: false
 })
 
 // Iconify tabanlı picker kontrol durumu

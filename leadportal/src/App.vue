@@ -688,6 +688,10 @@ function closeAdminCategory() {
               <Icon icon="mdi:account" width="18" height="18" />
               <span>Profil</span>
             </RouterLink>
+            <RouterLink to="/profile/notifications" @click="closeMobileMenu" class="mobile-user-menu-item">
+              <Icon icon="mdi:bell-outline" width="18" height="18" />
+              <span>Bildirim Tercihleri</span>
+            </RouterLink>
             <RouterLink v-if="canAccessPurchased" to="/purchased-leads" @click="closeMobileMenu" class="mobile-user-menu-item">
               <Icon icon="mdi:shopping-outline" width="18" height="18" />
               <span>Satın Aldıklarım</span>

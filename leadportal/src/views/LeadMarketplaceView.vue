@@ -377,6 +377,33 @@ function formatTimeRemaining(endsAt) {
   }
 }
 
+// Kalan süreyi kompakt formatta göster
+function formatTimeRemainingCompact(endsAt) {
+  const now = new Date()
+  const endTime = new Date(endsAt)
+  const diff = endTime - now
+
+  if (diff <= 0) return 'Süresi doldu'
+
+  const totalSeconds = Math.floor(diff / 1000)
+  const days = Math.floor(totalSeconds / (3600 * 24))
+  const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
+
+  // 1 günden fazlaysa: Dg HHhMMm
+  if (days > 0) {
+    const hh = String(hours).padStart(2, '0')
+    const mm = String(minutes).padStart(2, '0')
+    return `${days}g ${hh}h${mm}m`
+  }
+
+  // 1 günden az: HHhMMm (saniye yok)
+  const hh = String(hours).padStart(2, '0')
+  const mm = String(minutes).padStart(2, '0')
+  return `${hh}h${mm}m`
+}
+
 // Kalan zaman belirli bir süreden az mı kontrol et (saniye cinsinden)
 function isTimeRemaining(endsAt, seconds) {
   const now = new Date()
@@ -631,6 +658,11 @@ function authHeaders() {
 
 function navigateToLead(lead) {
   window.location.href = `/lead/${lead.id}`
+}
+
+function navigateToLeadNewTab(lead) {
+  if (!lead || !lead.id) return
+  window.open(`/lead/${lead.id}`, '_blank')
 }
 
 function shareLead(lead, event) {
@@ -1007,6 +1039,7 @@ async function saveLead() {
     const leadData = {
       ...leadForm.value,
       privateDetails: leadForm.value.privateDetails || undefined,
+      description: leadForm.value.description || undefined,
       postalCode: leadForm.value.postalCode || undefined,
       leadType: leadForm.value.leadType || 'AUCTION',
       startPrice: parseFloat(leadForm.value.startPrice),
@@ -1728,7 +1761,6 @@ onUnmounted(() => {
                     <button
                       class="quick-bid-submit-inline"
                       @click="submitQuickBid(lead, quickBidAmounts[lead.id])"
-                      :disabled="!quickBidAmounts[lead.id] || quickBidAmounts[lead.id] <= 0 || !isBiddingHoursActive"
                     >
                      
                       Teklif
@@ -1750,7 +1782,7 @@ onUnmounted(() => {
               <td class="time-cell">
                 <div class="countdown-timer" :class="{ 'blinking': isTimeRemaining(lead.endsAt, 60) }">
                   <Icon icon="mdi:clock" width="16" height="16" />
-                  <span class="time-text">{{ formatTimeRemaining(lead.endsAt) }}</span>
+                  <span class="time-text">{{ formatTimeRemainingCompact(lead.endsAt) }}</span>
                 </div>
               </td>
               <td>
@@ -1758,17 +1790,21 @@ onUnmounted(() => {
                   <!-- Satın Al (admin değilse ve SOFORT_KAUF ise) -->
                   <button v-if="lead.leadType === 'SOFORT_KAUF' && !isAdmin" class="table-btn success" @click="openInstantBuyModal(lead, $event)" :disabled="lead.isExpired || !lead.isActive || !isBiddingHoursActive" :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''">
                     <Icon icon="mdi:shopping-cart" width="14" height="14" />
-                    Satın Al
+                    
                   </button>
                   <!-- Detay (admin ise veya SOFORT_KAUF değilse) -->
-                  <button v-if="isAdmin || lead.leadType !== 'SOFORT_KAUF'" class="table-btn primary" @click="navigateToLead(lead)">
-                    Detay
+                  <button v-if="isAdmin || lead.leadType !== 'SOFORT_KAUF2'" class="table-btn primary" @click="navigateToLeadNewTab(lead)" title="Detay (Yeni sekme)">
+                    <Icon icon="mdi:open-in-new" width="14" height="14" />
                   </button>
                   <!-- Lightning-bolt instant buy (admin değilse) -->
 
                   <!-- View (Gözat) -->
                   <button class="table-btn secondary" @click="openPreview(lead)" title="Detayları görüntüle">
                     <Icon icon="mdi:eye" width="14" height="14" />
+                  </button>
+                  <!-- Sil (admin ise) -->
+                  <button v-if="isAdmin" class="table-btn danger" @click="confirmDelete(lead)" title="Sil">
+                    <Icon icon="mdi:delete" width="14" height="14" />
                   </button>
                   <!-- Aktif/Pasif -->
                   <button v-if="isAdmin" class="table-btn toggle" :class="lead.isActive ? 'active' : 'inactive'" @click="toggleLeadActiveInline(lead)" :title="lead.isActive ? 'Pasif yap' : 'Aktif yap'">
@@ -1778,9 +1814,9 @@ onUnmounted(() => {
                     <Icon icon="mdi:lightning-bolt" width="14" height="14" />
                   </button>
                   <!-- Edit (admin ise) -->
-                  <button v-if="isAdmin" class="table-btn info" @click="openLeadModal('edit', lead)" :disabled="lead.isExpired">
+                  <button v-if="isAdmin" class="table-btn info" @click="openLeadModal('edit', lead)">
                     <Icon icon="mdi:pencil" width="14" height="14" />
-                    Düzenle
+                    
                   </button>
                 </div>
               </td>
@@ -1955,7 +1991,7 @@ onUnmounted(() => {
           </div>
 
           <div class="form-group">
-            <label>Açıklama *</label>
+            <label>Açıklama</label>
             <textarea v-model="leadForm.description" class="form-input" rows="4" placeholder="Lead açıklaması"></textarea>
           </div>
 
@@ -3793,6 +3829,7 @@ onUnmounted(() => {
   padding: 14px 16px;
   color: #1f2937;
   vertical-align: middle;
+  text-align: left;
 }
 
 .lead-cell {
@@ -3974,6 +4011,16 @@ onUnmounted(() => {
   background: #e5e7eb;
 }
 
+/* Danger (Sil) */
+.table-btn.danger {
+  background: #ef4444;
+  color: white;
+  padding: 6px 8px;
+}
+.table-btn.danger:hover {
+  background: #dc2626;
+}
+
 /* Toggle (Aktif/Pasif) */
 .table-btn.toggle {
   padding: 6px 8px;
@@ -4010,7 +4057,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .price-top {
@@ -4037,7 +4084,7 @@ onUnmounted(() => {
 .price-only-cell {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   min-height: 40px;
 }
 
@@ -4116,7 +4163,7 @@ onUnmounted(() => {
 /* Countdown Timer */
 .time-cell {
   position: relative;
-  min-width: 130px;
+  min-width: 110px;
   width: auto;
 }
 
@@ -4126,12 +4173,11 @@ onUnmounted(() => {
   gap: 6px;
   font-weight: 600;
   color: #374151;
-  padding: 6px 8px;
+  padding: 4px 6px;
   border-radius: 6px;
   background: #f1f5f9;
   transition: all 0.2s ease;
-  width: fit-content;
-  min-width: 100%;
+  width: auto;
 }
 
 .countdown-timer svg {
@@ -4139,7 +4185,7 @@ onUnmounted(() => {
 }
 
 .time-text {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   letter-spacing: 0.5px;
   white-space: nowrap;
 }

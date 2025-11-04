@@ -9835,6 +9835,7 @@ export namespace Prisma {
     sessionTimeoutMessage: string | null
     requireRegistrationApproval: boolean | null
     registrationApprovalEmail: string | null
+    showExpiredLeads: boolean | null
   }
 
   export type SettingsMaxAggregateOutputType = {
@@ -9895,6 +9896,7 @@ export namespace Prisma {
     sessionTimeoutMessage: string | null
     requireRegistrationApproval: boolean | null
     registrationApprovalEmail: string | null
+    showExpiredLeads: boolean | null
   }
 
   export type SettingsCountAggregateOutputType = {
@@ -9962,6 +9964,7 @@ export namespace Prisma {
     sessionTimeoutMessage: number
     requireRegistrationApproval: number
     registrationApprovalEmail: number
+    showExpiredLeads: number
     _all: number
   }
 
@@ -10040,6 +10043,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: true
     requireRegistrationApproval?: true
     registrationApprovalEmail?: true
+    showExpiredLeads?: true
   }
 
   export type SettingsMaxAggregateInputType = {
@@ -10100,6 +10104,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: true
     requireRegistrationApproval?: true
     registrationApprovalEmail?: true
+    showExpiredLeads?: true
   }
 
   export type SettingsCountAggregateInputType = {
@@ -10167,6 +10172,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: true
     requireRegistrationApproval?: true
     registrationApprovalEmail?: true
+    showExpiredLeads?: true
     _all?: true
   }
 
@@ -10321,6 +10327,7 @@ export namespace Prisma {
     sessionTimeoutMessage: string
     requireRegistrationApproval: boolean
     registrationApprovalEmail: string | null
+    showExpiredLeads: boolean
     _count: SettingsCountAggregateOutputType | null
     _avg: SettingsAvgAggregateOutputType | null
     _sum: SettingsSumAggregateOutputType | null
@@ -10407,6 +10414,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: boolean
     requireRegistrationApproval?: boolean
     registrationApprovalEmail?: boolean
+    showExpiredLeads?: boolean
   }, ExtArgs["result"]["settings"]>
 
   export type SettingsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -10474,6 +10482,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: boolean
     requireRegistrationApproval?: boolean
     registrationApprovalEmail?: boolean
+    showExpiredLeads?: boolean
   }, ExtArgs["result"]["settings"]>
 
   export type SettingsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -10541,6 +10550,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: boolean
     requireRegistrationApproval?: boolean
     registrationApprovalEmail?: boolean
+    showExpiredLeads?: boolean
   }, ExtArgs["result"]["settings"]>
 
   export type SettingsSelectScalar = {
@@ -10608,9 +10618,10 @@ export namespace Prisma {
     sessionTimeoutMessage?: boolean
     requireRegistrationApproval?: boolean
     registrationApprovalEmail?: boolean
+    showExpiredLeads?: boolean
   }
 
-  export type SettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "leadIdFormat" | "customFormat" | "leadPrefix" | "startingNumber" | "numberType" | "defaultCurrency" | "defaultAuctionDays" | "defaultMinIncrement" | "homepageHeroEyebrow" | "homepageHeroTitle" | "homepageHeroHighlight" | "homepageHeroTitleSuffix" | "homepageHeroSubtitle" | "homepageHeroPrimaryCtaText" | "homepageHeroPrimaryCtaLink" | "homepageHeroSecondaryCtaText" | "homepageHeroSecondaryCtaLink" | "homepageFeatureHeading" | "homepageFeatures" | "homepageShowcaseEyebrow" | "homepageShowcaseTitle" | "homepageShowcaseCtaText" | "homepageShowcaseCtaLink" | "homepageStatsEyebrow" | "homepageStatsTitle" | "homepageStats" | "homepageCtaTitle" | "homepageCtaSubtitle" | "homepageCtaPrimaryText" | "homepageCtaPrimaryLink" | "homepageCtaSecondaryText" | "homepageCtaSecondaryLink" | "enableBiddingHours" | "biddingStartHour" | "biddingEndHour" | "maintenanceMode" | "maintenanceMessage" | "smtpHost" | "smtpPort" | "smtpUser" | "smtpPass" | "smtpFromName" | "smtpUseTLS" | "smtpUseSSL" | "createdAt" | "updatedAt" | "companyLogoUrl" | "companyName" | "faviconUrl" | "footerDescription" | "footerEmail" | "footerNote" | "footerPhone" | "insuranceTypes" | "legalLinks" | "servicesLinks" | "socialMedia" | "supportLinks" | "tradeRegisterNumber" | "sessionTimeoutMinutes" | "sessionTimeoutMessage" | "requireRegistrationApproval" | "registrationApprovalEmail", ExtArgs["result"]["settings"]>
+  export type SettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "leadIdFormat" | "customFormat" | "leadPrefix" | "startingNumber" | "numberType" | "defaultCurrency" | "defaultAuctionDays" | "defaultMinIncrement" | "homepageHeroEyebrow" | "homepageHeroTitle" | "homepageHeroHighlight" | "homepageHeroTitleSuffix" | "homepageHeroSubtitle" | "homepageHeroPrimaryCtaText" | "homepageHeroPrimaryCtaLink" | "homepageHeroSecondaryCtaText" | "homepageHeroSecondaryCtaLink" | "homepageFeatureHeading" | "homepageFeatures" | "homepageShowcaseEyebrow" | "homepageShowcaseTitle" | "homepageShowcaseCtaText" | "homepageShowcaseCtaLink" | "homepageStatsEyebrow" | "homepageStatsTitle" | "homepageStats" | "homepageCtaTitle" | "homepageCtaSubtitle" | "homepageCtaPrimaryText" | "homepageCtaPrimaryLink" | "homepageCtaSecondaryText" | "homepageCtaSecondaryLink" | "enableBiddingHours" | "biddingStartHour" | "biddingEndHour" | "maintenanceMode" | "maintenanceMessage" | "smtpHost" | "smtpPort" | "smtpUser" | "smtpPass" | "smtpFromName" | "smtpUseTLS" | "smtpUseSSL" | "createdAt" | "updatedAt" | "companyLogoUrl" | "companyName" | "faviconUrl" | "footerDescription" | "footerEmail" | "footerNote" | "footerPhone" | "insuranceTypes" | "legalLinks" | "servicesLinks" | "socialMedia" | "supportLinks" | "tradeRegisterNumber" | "sessionTimeoutMinutes" | "sessionTimeoutMessage" | "requireRegistrationApproval" | "registrationApprovalEmail" | "showExpiredLeads", ExtArgs["result"]["settings"]>
 
   export type $SettingsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Settings"
@@ -10680,6 +10691,7 @@ export namespace Prisma {
       sessionTimeoutMessage: string
       requireRegistrationApproval: boolean
       registrationApprovalEmail: string | null
+      showExpiredLeads: boolean
     }, ExtArgs["result"]["settings"]>
     composites: {}
   }
@@ -11167,6 +11179,7 @@ export namespace Prisma {
     readonly sessionTimeoutMessage: FieldRef<"Settings", 'String'>
     readonly requireRegistrationApproval: FieldRef<"Settings", 'Boolean'>
     readonly registrationApprovalEmail: FieldRef<"Settings", 'String'>
+    readonly showExpiredLeads: FieldRef<"Settings", 'Boolean'>
   }
     
 
@@ -30424,7 +30437,8 @@ export namespace Prisma {
     sessionTimeoutMinutes: 'sessionTimeoutMinutes',
     sessionTimeoutMessage: 'sessionTimeoutMessage',
     requireRegistrationApproval: 'requireRegistrationApproval',
-    registrationApprovalEmail: 'registrationApprovalEmail'
+    registrationApprovalEmail: 'registrationApprovalEmail',
+    showExpiredLeads: 'showExpiredLeads'
   };
 
   export type SettingsScalarFieldEnum = (typeof SettingsScalarFieldEnum)[keyof typeof SettingsScalarFieldEnum]
@@ -31495,6 +31509,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: StringFilter<"Settings"> | string
     requireRegistrationApproval?: BoolFilter<"Settings"> | boolean
     registrationApprovalEmail?: StringNullableFilter<"Settings"> | string | null
+    showExpiredLeads?: BoolFilter<"Settings"> | boolean
   }
 
   export type SettingsOrderByWithRelationInput = {
@@ -31562,6 +31577,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: SortOrder
     requireRegistrationApproval?: SortOrder
     registrationApprovalEmail?: SortOrderInput | SortOrder
+    showExpiredLeads?: SortOrder
   }
 
   export type SettingsWhereUniqueInput = Prisma.AtLeast<{
@@ -31632,6 +31648,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: StringFilter<"Settings"> | string
     requireRegistrationApproval?: BoolFilter<"Settings"> | boolean
     registrationApprovalEmail?: StringNullableFilter<"Settings"> | string | null
+    showExpiredLeads?: BoolFilter<"Settings"> | boolean
   }, "id">
 
   export type SettingsOrderByWithAggregationInput = {
@@ -31699,6 +31716,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: SortOrder
     requireRegistrationApproval?: SortOrder
     registrationApprovalEmail?: SortOrderInput | SortOrder
+    showExpiredLeads?: SortOrder
     _count?: SettingsCountOrderByAggregateInput
     _avg?: SettingsAvgOrderByAggregateInput
     _max?: SettingsMaxOrderByAggregateInput
@@ -31774,6 +31792,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: StringWithAggregatesFilter<"Settings"> | string
     requireRegistrationApproval?: BoolWithAggregatesFilter<"Settings"> | boolean
     registrationApprovalEmail?: StringNullableWithAggregatesFilter<"Settings"> | string | null
+    showExpiredLeads?: BoolWithAggregatesFilter<"Settings"> | boolean
   }
 
   export type UserTypeWhereInput = {
@@ -33719,6 +33738,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: string
     requireRegistrationApproval?: boolean
     registrationApprovalEmail?: string | null
+    showExpiredLeads?: boolean
   }
 
   export type SettingsUncheckedCreateInput = {
@@ -33786,6 +33806,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: string
     requireRegistrationApproval?: boolean
     registrationApprovalEmail?: string | null
+    showExpiredLeads?: boolean
   }
 
   export type SettingsUpdateInput = {
@@ -33853,6 +33874,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: StringFieldUpdateOperationsInput | string
     requireRegistrationApproval?: BoolFieldUpdateOperationsInput | boolean
     registrationApprovalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    showExpiredLeads?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type SettingsUncheckedUpdateInput = {
@@ -33920,6 +33942,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: StringFieldUpdateOperationsInput | string
     requireRegistrationApproval?: BoolFieldUpdateOperationsInput | boolean
     registrationApprovalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    showExpiredLeads?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type SettingsCreateManyInput = {
@@ -33987,6 +34010,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: string
     requireRegistrationApproval?: boolean
     registrationApprovalEmail?: string | null
+    showExpiredLeads?: boolean
   }
 
   export type SettingsUpdateManyMutationInput = {
@@ -34054,6 +34078,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: StringFieldUpdateOperationsInput | string
     requireRegistrationApproval?: BoolFieldUpdateOperationsInput | boolean
     registrationApprovalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    showExpiredLeads?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type SettingsUncheckedUpdateManyInput = {
@@ -34121,6 +34146,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: StringFieldUpdateOperationsInput | string
     requireRegistrationApproval?: BoolFieldUpdateOperationsInput | boolean
     registrationApprovalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    showExpiredLeads?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type UserTypeCreateInput = {
@@ -36244,6 +36270,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: SortOrder
     requireRegistrationApproval?: SortOrder
     registrationApprovalEmail?: SortOrder
+    showExpiredLeads?: SortOrder
   }
 
   export type SettingsAvgOrderByAggregateInput = {
@@ -36312,6 +36339,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: SortOrder
     requireRegistrationApproval?: SortOrder
     registrationApprovalEmail?: SortOrder
+    showExpiredLeads?: SortOrder
   }
 
   export type SettingsMinOrderByAggregateInput = {
@@ -36372,6 +36400,7 @@ export namespace Prisma {
     sessionTimeoutMessage?: SortOrder
     requireRegistrationApproval?: SortOrder
     registrationApprovalEmail?: SortOrder
+    showExpiredLeads?: SortOrder
   }
 
   export type SettingsSumOrderByAggregateInput = {
