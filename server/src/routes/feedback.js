@@ -95,23 +95,21 @@ const feedbackRouter = (prisma, io) => {
         userAgent
       })
 
-      // Create notification to admins about new feedback
+      // Create notification to all users about new feedback
       try {
         const userName = feedback.user.firstName || feedback.user.email.split('@')[0]
 
-        // Get all admins (FULL_ADMIN and ADMIN user types)
-        const admins = await prisma.user.findMany({
-          where: {
-            userTypeId: { in: ['FULL_ADMIN', 'ADMIN'] }
-          },
+        // Get all users
+        const allUsers = await prisma.user.findMany({
           select: { id: true }
         })
 
-        // Send notification to all admins
-        for (const admin of admins) {
-          try {
-            await createNotification(
-              admin.id,
+        // Send FEEDBACK_ALL notification to all users
+        // notificationService will check preferences and role permissions
+        await Promise.all(
+          allUsers.map(user =>
+            createNotification(
+              user.id,
               'FEEDBACK_ALL',
               'Yeni Feedback Geldi',
               `Kullanıcı ${userName} "${feedback.subject}" ile ilgili geri bildirim gönderdi.`,
@@ -120,13 +118,13 @@ const feedbackRouter = (prisma, io) => {
                 userId: req.user.id,
                 subject: feedback.subject
               }
-            )
-          } catch (e) {
-            console.error(`[Notification Error] FEEDBACK_ALL for admin ${admin.id}:`, e.message)
-          }
-        }
+            ).catch(e => {
+              console.error(`[Notification Error] FEEDBACK_ALL for user ${user.id}:`, e.message)
+            })
+          )
+        )
       } catch (notifError) {
-        console.error('[Notification Error] New feedback to admins:', notifError.message)
+        console.error('[Notification Error] New feedback notification:', notifError.message)
       }
 
       // Notify admins via Socket.IO
@@ -298,23 +296,22 @@ const feedbackRouter = (prisma, io) => {
         }
       }
 
-      // Notification 2: FEEDBACK_ALL - Notify user when feedback owner replies
+      // Notification 2: FEEDBACK_ALL - Notify all users when feedback owner replies
       if (!isAdmin && feedback.userId === req.user.id) {
         try {
           const userName = feedback.user.firstName || feedback.user.email.split('@')[0]
-          // Get all admins (FULL_ADMIN and ADMIN user types)
-          const admins = await prisma.user.findMany({
-            where: {
-              userTypeId: { in: ['FULL_ADMIN', 'ADMIN'] }
-            },
+
+          // Get all users
+          const allUsers = await prisma.user.findMany({
             select: { id: true }
           })
 
-          // Send notification to all admins
-          for (const admin of admins) {
-            try {
-              await createNotification(
-                admin.id,
+          // Send FEEDBACK_ALL notification to all users
+          // notificationService will check preferences and role permissions
+          await Promise.all(
+            allUsers.map(user =>
+              createNotification(
+                user.id,
                 'FEEDBACK_ALL',
                 'Feedback Konuşmasında Yeni Mesaj',
                 `Kullanıcı ${userName} "${leadTitle}" hakkındaki geri bildirimine yanıt verdi.`,
@@ -323,13 +320,13 @@ const feedbackRouter = (prisma, io) => {
                   replyId: reply.id,
                   leadTitle
                 }
-              )
-            } catch (e) {
-              console.error(`[Notification Error] FEEDBACK_ALL for admin ${admin.id}:`, e.message)
-            }
-          }
+              ).catch(e => {
+                console.error(`[Notification Error] FEEDBACK_ALL for user ${user.id}:`, e.message)
+              })
+            )
+          )
         } catch (notifError) {
-          console.error('[Notification Error] FEEDBACK_ALL:', notifError.message)
+          console.error('[Notification Error] FEEDBACK_ALL notification:', notifError.message)
         }
       }
 
