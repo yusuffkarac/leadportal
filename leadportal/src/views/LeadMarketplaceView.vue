@@ -5225,7 +5225,7 @@ onUnmounted(() => {
   }
 
   .lead-title-text {
-    font-size: 0.5rem;
+    font-size: 0.65rem;
   }
 
   .price-and-bid-cell {
