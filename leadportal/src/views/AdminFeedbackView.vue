@@ -615,7 +615,7 @@ watch(() => route.query.id, (newId) => {
 .admin-feedback-page {
   min-height: 100vh;
   background: #f8fafc;
-  padding: 40px 20px;
+
 }
 
 .page-content {
@@ -1412,7 +1412,7 @@ watch(() => route.query.id, (newId) => {
 /* Responsive */
 @media (max-width: 768px) {
   .admin-feedback-page {
-    padding: 20px 16px;
+
   }
 
   .page-header h1 {

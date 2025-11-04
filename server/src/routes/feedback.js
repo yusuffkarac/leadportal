@@ -202,11 +202,6 @@ const feedbackRouter = (prisma, io) => {
         return res.status(403).json({ error: 'Bu geri bildirimi göremezsiniz' })
       }
 
-      console.log('[Feedback GET/:id]', {
-        feedbackId: feedback.id,
-        repliesCount: feedback.replies.length,
-        replies: feedback.replies.map(r => ({ id: r.id, userId: r.userId, isAdmin: r.isAdmin, message: r.message.substring(0, 50) }))
-      })
 
       res.json(feedback)
     } catch (error) {
@@ -230,6 +225,11 @@ const feedbackRouter = (prisma, io) => {
 
       if (!feedback) {
         return res.status(404).json({ error: 'Geri bildirim bulunamadı' })
+      }
+
+      // Check if feedback is closed or resolved - cannot reply to closed/resolved feedbacks
+      if (feedback.status === 'CLOSED' || feedback.status === 'RESOLVED') {
+        return res.status(400).json({ error: 'Kapalı veya çözüldü durumundaki geri bildirimlere cevap yazılamaz' })
       }
 
       // Check if user is admin

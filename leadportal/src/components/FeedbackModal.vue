@@ -509,7 +509,7 @@ defineExpose({
         </div>
 
         <!-- Reply Input -->
-        <div class="reply-input-section">
+        <div v-if="feedback.status !== 'CLOSED' && feedback.status !== 'RESOLVED'" class="reply-input-section">
           <textarea
             v-model="replyMessage"
             class="reply-input"
@@ -524,6 +524,14 @@ defineExpose({
             <Icon v-if="!isReplySubmitting" icon="mdi:send" width="16" height="16" />
             <span>{{ isReplySubmitting ? 'Gönderiliyor...' : 'Cevapla' }}</span>
           </button>
+        </div>
+        
+        <!-- Status Message -->
+        <div v-else class="reply-input-section">
+          <div class="status-message">
+            <Icon icon="mdi:lock" width="18" height="18" />
+            <p>Bu geri bildirim {{ feedback.status === 'CLOSED' ? 'kapatıldı' : 'çözüldü' }}. Artık cevap yazılamaz.</p>
+          </div>
         </div>
 
         <!-- Messages -->
@@ -1158,6 +1166,29 @@ export default {
   gap: 10px;
   border-top: 2px solid #f1f5f9;
   padding-top: 16px;
+}
+
+.status-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  color: #92400e;
+}
+
+.status-message svg {
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.status-message p {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .reply-input {
