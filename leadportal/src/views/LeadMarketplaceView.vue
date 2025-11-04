@@ -4963,7 +4963,7 @@ onUnmounted(() => {
   }
 
   .lead-id-badge-inline {
-    font-size: 0.4rem;
+    font-size: 0.5rem;
     padding: 2px 2px;
     font-weight: normal;
   }
@@ -4973,7 +4973,7 @@ onUnmounted(() => {
 
   .insurance-type-inline {
     padding: 2px 3px;
-    font-size: 0.4rem;
+    font-size: 0.5rem;
     margin-right: 4px;
   }
 
