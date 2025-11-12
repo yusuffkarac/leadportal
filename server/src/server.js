@@ -4,6 +4,14 @@ import { dirname, join } from 'path'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 dotenv.config({ path: join(__dirname, '../.env') })
+
+// JWT_SECRET kontrolü
+if (!process.env.JWT_SECRET) {
+  console.error('HATA: JWT_SECRET environment variable tanımlı değil!')
+  console.error('Lütfen server/.env dosyasında JWT_SECRET değişkenini tanımlayın.')
+  process.exit(1)
+}
+
 import express from 'express'
 import http from 'http'
 import cors from 'cors'

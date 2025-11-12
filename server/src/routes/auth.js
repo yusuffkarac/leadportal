@@ -77,6 +77,21 @@ const upload = multer({
   }
 })
 
+// JWT token doğrulama helper fonksiyonu
+function verifyToken(token) {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET tanımlı değil')
+  }
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET)
+  } catch (error) {
+    if (error.name === 'JsonWebTokenError' && error.message === 'invalid signature') {
+      console.error('JWT imza hatası - Token farklı bir secret ile imzalanmış olabilir veya JWT_SECRET değişmiş olabilir')
+    }
+    throw error
+  }
+}
+
 export default function authRouter(prisma) {
   const router = Router()
 
@@ -280,7 +295,7 @@ export default function authRouter(prisma) {
       const token = req.headers.authorization?.replace('Bearer ', '')
       if (!token) return res.status(401).json({ error: 'Token gerekli' })
       
-      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      const decoded = verifyToken(token)
       const user = await prisma.user.findUnique({
         where: { id: decoded.id },
         include: { userType: true }
@@ -295,6 +310,23 @@ export default function authRouter(prisma) {
       res.json({ user, userType: user.userType })
     } catch (error) {
       console.error('Profil getirme hatası:', error)
+      
+      // Daha detaylı hata mesajı
+      if (error.message === 'JWT_SECRET tanımlı değil') {
+        return res.status(500).json({ error: 'Sunucu yapılandırma hatası' })
+      }
+      
+      if (error.name === 'JsonWebTokenError') {
+        if (error.message === 'invalid signature') {
+          return res.status(401).json({ error: 'Geçersiz token. Lütfen tekrar giriş yapın.' })
+        }
+        return res.status(401).json({ error: 'Geçersiz token' })
+      }
+      
+      if (error.name === 'TokenExpiredError') {
+        return res.status(401).json({ error: 'Token süresi dolmuş. Lütfen tekrar giriş yapın.' })
+      }
+      
       res.status(401).json({ error: 'Geçersiz token' })
     }
   })
@@ -305,7 +337,7 @@ export default function authRouter(prisma) {
       const token = req.headers.authorization?.replace('Bearer ', '')
       if (!token) return res.status(401).json({ error: 'Token gerekli' })
       
-      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      const decoded = verifyToken(token)
       const parse = updateProfileSchema.safeParse(req.body)
       if (!parse.success) return res.status(400).json({ error: 'Geçersiz veri' })
       
@@ -380,7 +412,7 @@ export default function authRouter(prisma) {
       const token = req.headers.authorization?.replace('Bearer ', '')
       if (!token) return res.status(401).json({ error: 'Token gerekli' })
       
-      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      const decoded = verifyToken(token)
       const parse = changePasswordSchema.safeParse(req.body)
       if (!parse.success) return res.status(400).json({ error: 'Geçersiz veri' })
       
@@ -416,7 +448,7 @@ export default function authRouter(prisma) {
       const token = req.headers.authorization?.replace('Bearer ', '')
       if (!token) return res.status(401).json({ error: 'Token gerekli' })
       
-      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      const decoded = verifyToken(token)
       
       if (!req.file) return res.status(400).json({ error: 'Dosya yüklenmedi' })
       
@@ -454,7 +486,7 @@ export default function authRouter(prisma) {
       const token = req.headers.authorization?.replace('Bearer ', '')
       if (!token) return res.status(401).json({ error: 'Token gerekli' })
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      const decoded = verifyToken(token)
 
       const user = await prisma.user.findUnique({
         where: { id: decoded.id },
@@ -486,7 +518,7 @@ export default function authRouter(prisma) {
       const token = req.headers.authorization?.replace('Bearer ', '')
       if (!token) return res.status(401).json({ error: 'Token gerekli' })
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      const decoded = verifyToken(token)
       const parse = updateIbanSchema.safeParse(req.body)
       if (!parse.success) {
         const errors = parse.error?.errors?.map(e => e.message).join(', ') || 'Geçersiz veri'
@@ -554,7 +586,7 @@ export default function authRouter(prisma) {
       const token = req.headers.authorization?.replace('Bearer ', '')
       if (!token) return res.status(401).json({ error: 'Token gerekli' })
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      const decoded = verifyToken(token)
 
       const user = await prisma.user.findUnique({
         where: { id: decoded.id },
@@ -604,7 +636,7 @@ export default function authRouter(prisma) {
       const token = req.headers.authorization?.replace('Bearer ', '')
       if (!token) return res.status(401).json({ error: 'Token gerekli' })
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      const decoded = verifyToken(token)
 
       await prisma.user.update({
         where: { id: decoded.id },
