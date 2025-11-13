@@ -476,9 +476,9 @@ onMounted(() => {
 
 <style scoped>
 .user-dashboard {
-  max-width: 90%;
+  max-width: var(--page-max-width);
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--page-padding);
 }
 
 .page-header {
@@ -1207,14 +1207,9 @@ onMounted(() => {
 /* Responsive */
 @media (max-width: 768px) {
   .user-dashboard {
-    padding: 0rem;
-    max-width: 95%;
+    padding: var(--page-padding-mobile);
+    max-width: var(--page-max-width);
   }
-
-  .user-dashboard {
-  max-width: 95%;
-
-}
 
   .page-header {
     flex-direction: column;

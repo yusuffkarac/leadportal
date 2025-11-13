@@ -973,9 +973,9 @@ onMounted(() => {
 
 <style scoped>
 .admin-statistics {
-  max-width: 90%;
+  max-width: var(--page-max-width);
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--page-padding);
 }
 
 .page-header {
@@ -1982,32 +1982,37 @@ onMounted(() => {
 
 @media (max-width: 768px) {
   .admin-statistics {
-    padding: 0rem;
-    max-width: 95%;
+    padding: var(--page-padding-mobile);
+    padding-bottom: calc(var(--page-padding-mobile) + 2rem);
+    max-width: 100%;
   }
   .card-header {
     flex-direction: column;
   
   }
   .detail-card {
-    padding: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
   }
 
   .accordion-content {
-  padding: 0.5rem;
-}
+    padding: 1rem;
+  }
   .refresh-btn{
     display: none;
 
-}
+  }
   .page-header {
     flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
   }
 
   .metrics-grid,
   .details-grid,
   .stats-grid-2 {
     grid-template-columns: 1fr;
+    margin-bottom: 1.5rem;
   }
 
   .metric-value {
@@ -2038,6 +2043,13 @@ onMounted(() => {
 
   .chart-container {
     height: 300px;
+  }
+
+  .chart-section,
+  .comparison-section,
+  .activity-stats-section,
+  .feedback-stats-section {
+    margin-bottom: 1.5rem;
   }
 }
 

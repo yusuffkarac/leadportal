@@ -414,8 +414,8 @@ onMounted(() => {
 
 <style scoped>
 .balance-management {
-  padding: 1.5rem;
-  max-width: 90%;
+  padding: var(--page-padding);
+  max-width: var(--page-max-width);
   margin: 0 auto;
 }
 
@@ -886,7 +886,7 @@ onMounted(() => {
 
 @media (max-width: 1024px) {
   .balance-management {
-    max-width: 95%;
+    max-width: 100%;
     padding: 1rem;
   }
 

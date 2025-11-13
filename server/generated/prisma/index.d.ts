@@ -5750,7 +5750,7 @@ export namespace Prisma {
   export type LeadGroupByOutputType = {
     id: string
     title: string
-    description: string
+    description: string | null
     privateDetails: string | null
     postalCode: string | null
     leadType: $Enums.LeadType
@@ -5924,7 +5924,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       title: string
-      description: string
+      description: string | null
       privateDetails: string | null
       postalCode: string | null
       leadType: $Enums.LeadType
@@ -35152,7 +35152,7 @@ export namespace Prisma {
     NOT?: LeadWhereInput | LeadWhereInput[]
     id?: StringFilter<"Lead"> | string
     title?: StringFilter<"Lead"> | string
-    description?: StringFilter<"Lead"> | string
+    description?: StringNullableFilter<"Lead"> | string | null
     privateDetails?: StringNullableFilter<"Lead"> | string | null
     postalCode?: StringNullableFilter<"Lead"> | string | null
     leadType?: EnumLeadTypeFilter<"Lead"> | $Enums.LeadType
@@ -35181,7 +35181,7 @@ export namespace Prisma {
   export type LeadOrderByWithRelationInput = {
     id?: SortOrder
     title?: SortOrder
-    description?: SortOrder
+    description?: SortOrderInput | SortOrder
     privateDetails?: SortOrderInput | SortOrder
     postalCode?: SortOrderInput | SortOrder
     leadType?: SortOrder
@@ -35213,7 +35213,7 @@ export namespace Prisma {
     OR?: LeadWhereInput[]
     NOT?: LeadWhereInput | LeadWhereInput[]
     title?: StringFilter<"Lead"> | string
-    description?: StringFilter<"Lead"> | string
+    description?: StringNullableFilter<"Lead"> | string | null
     privateDetails?: StringNullableFilter<"Lead"> | string | null
     postalCode?: StringNullableFilter<"Lead"> | string | null
     leadType?: EnumLeadTypeFilter<"Lead"> | $Enums.LeadType
@@ -35242,7 +35242,7 @@ export namespace Prisma {
   export type LeadOrderByWithAggregationInput = {
     id?: SortOrder
     title?: SortOrder
-    description?: SortOrder
+    description?: SortOrderInput | SortOrder
     privateDetails?: SortOrderInput | SortOrder
     postalCode?: SortOrderInput | SortOrder
     leadType?: SortOrder
@@ -35275,7 +35275,7 @@ export namespace Prisma {
     NOT?: LeadScalarWhereWithAggregatesInput | LeadScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Lead"> | string
     title?: StringWithAggregatesFilter<"Lead"> | string
-    description?: StringWithAggregatesFilter<"Lead"> | string
+    description?: StringNullableWithAggregatesFilter<"Lead"> | string | null
     privateDetails?: StringNullableWithAggregatesFilter<"Lead"> | string | null
     postalCode?: StringNullableWithAggregatesFilter<"Lead"> | string | null
     leadType?: EnumLeadTypeWithAggregatesFilter<"Lead"> | $Enums.LeadType
@@ -37599,7 +37599,7 @@ export namespace Prisma {
   export type LeadCreateInput = {
     id?: string
     title: string
-    description: string
+    description?: string | null
     privateDetails?: string | null
     postalCode?: string | null
     leadType?: $Enums.LeadType
@@ -37627,7 +37627,7 @@ export namespace Prisma {
   export type LeadUncheckedCreateInput = {
     id?: string
     title: string
-    description: string
+    description?: string | null
     privateDetails?: string | null
     postalCode?: string | null
     leadType?: $Enums.LeadType
@@ -37655,7 +37655,7 @@ export namespace Prisma {
   export type LeadUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
@@ -37683,7 +37683,7 @@ export namespace Prisma {
   export type LeadUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
@@ -37711,7 +37711,7 @@ export namespace Prisma {
   export type LeadCreateManyInput = {
     id?: string
     title: string
-    description: string
+    description?: string | null
     privateDetails?: string | null
     postalCode?: string | null
     leadType?: $Enums.LeadType
@@ -37736,7 +37736,7 @@ export namespace Prisma {
   export type LeadUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
@@ -37760,7 +37760,7 @@ export namespace Prisma {
   export type LeadUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
@@ -43983,7 +43983,7 @@ export namespace Prisma {
   export type LeadCreateWithoutOwnerInput = {
     id?: string
     title: string
-    description: string
+    description?: string | null
     privateDetails?: string | null
     postalCode?: string | null
     leadType?: $Enums.LeadType
@@ -44010,7 +44010,7 @@ export namespace Prisma {
   export type LeadUncheckedCreateWithoutOwnerInput = {
     id?: string
     title: string
-    description: string
+    description?: string | null
     privateDetails?: string | null
     postalCode?: string | null
     leadType?: $Enums.LeadType
@@ -44702,7 +44702,7 @@ export namespace Prisma {
     NOT?: LeadScalarWhereInput | LeadScalarWhereInput[]
     id?: StringFilter<"Lead"> | string
     title?: StringFilter<"Lead"> | string
-    description?: StringFilter<"Lead"> | string
+    description?: StringNullableFilter<"Lead"> | string | null
     privateDetails?: StringNullableFilter<"Lead"> | string | null
     postalCode?: StringNullableFilter<"Lead"> | string | null
     leadType?: EnumLeadTypeFilter<"Lead"> | $Enums.LeadType
@@ -45625,7 +45625,7 @@ export namespace Prisma {
   export type LeadCreateWithoutBidsInput = {
     id?: string
     title: string
-    description: string
+    description?: string | null
     privateDetails?: string | null
     postalCode?: string | null
     leadType?: $Enums.LeadType
@@ -45652,7 +45652,7 @@ export namespace Prisma {
   export type LeadUncheckedCreateWithoutBidsInput = {
     id?: string
     title: string
-    description: string
+    description?: string | null
     privateDetails?: string | null
     postalCode?: string | null
     leadType?: $Enums.LeadType
@@ -45792,7 +45792,7 @@ export namespace Prisma {
   export type LeadUpdateWithoutBidsInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
@@ -45819,7 +45819,7 @@ export namespace Prisma {
   export type LeadUncheckedUpdateWithoutBidsInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
@@ -45949,7 +45949,7 @@ export namespace Prisma {
   export type LeadCreateWithoutWatchersInput = {
     id?: string
     title: string
-    description: string
+    description?: string | null
     privateDetails?: string | null
     postalCode?: string | null
     leadType?: $Enums.LeadType
@@ -45976,7 +45976,7 @@ export namespace Prisma {
   export type LeadUncheckedCreateWithoutWatchersInput = {
     id?: string
     title: string
-    description: string
+    description?: string | null
     privateDetails?: string | null
     postalCode?: string | null
     leadType?: $Enums.LeadType
@@ -46116,7 +46116,7 @@ export namespace Prisma {
   export type LeadUpdateWithoutWatchersInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
@@ -46143,7 +46143,7 @@ export namespace Prisma {
   export type LeadUncheckedUpdateWithoutWatchersInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
@@ -46370,7 +46370,7 @@ export namespace Prisma {
   export type LeadCreateWithoutSaleInput = {
     id?: string
     title: string
-    description: string
+    description?: string | null
     privateDetails?: string | null
     postalCode?: string | null
     leadType?: $Enums.LeadType
@@ -46397,7 +46397,7 @@ export namespace Prisma {
   export type LeadUncheckedCreateWithoutSaleInput = {
     id?: string
     title: string
-    description: string
+    description?: string | null
     privateDetails?: string | null
     postalCode?: string | null
     leadType?: $Enums.LeadType
@@ -46585,7 +46585,7 @@ export namespace Prisma {
   export type LeadUpdateWithoutSaleInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
@@ -46612,7 +46612,7 @@ export namespace Prisma {
   export type LeadUncheckedUpdateWithoutSaleInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
@@ -49941,7 +49941,7 @@ export namespace Prisma {
   export type LeadCreateManyOwnerInput = {
     id?: string
     title: string
-    description: string
+    description?: string | null
     privateDetails?: string | null
     postalCode?: string | null
     leadType?: $Enums.LeadType
@@ -50148,7 +50148,7 @@ export namespace Prisma {
   export type LeadUpdateWithoutOwnerInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
@@ -50175,7 +50175,7 @@ export namespace Prisma {
   export type LeadUncheckedUpdateWithoutOwnerInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
@@ -50202,7 +50202,7 @@ export namespace Prisma {
   export type LeadUncheckedUpdateManyWithoutOwnerInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     privateDetails?: NullableStringFieldUpdateOperationsInput | string | null
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType

@@ -160,8 +160,8 @@ function handlePremiumMouseDown(e) {
 
   hasMovedPremium.value = false // Her mousedown'da reset et
 
-  // Eğer kartın içinde tıklanıyorsa
-  if (e.target?.closest('.premium-card')) {
+  // Eğer kartın içinde tıklanıyorsa (LeadCard component'i .auction-card class'ı kullanıyor)
+  if (e.target?.closest('.auction-card')) {
     onCardMouseDown.value = true
     const rect = premiumSliderContainer.value.getBoundingClientRect()
     premiumStartX.value = e.pageX - rect.left
@@ -210,8 +210,8 @@ function handlePremiumTouchStart(e) {
 
   hasMovedPremium.value = false // Her touch start'ta reset et
 
-  // Eğer kartın içinde tıklanıyorsa
-  if (e.target?.closest('.premium-card')) {
+  // Eğer kartın içinde tıklanıyorsa (LeadCard component'i .auction-card class'ı kullanıyor)
+  if (e.target?.closest('.auction-card')) {
     onCardMouseDown.value = true
     const rect = premiumSliderContainer.value.getBoundingClientRect()
     premiumStartX.value = e.touches[0].pageX - rect.left
@@ -1178,7 +1178,7 @@ async function saveLead() {
     const leadData = {
       ...leadForm.value,
       privateDetails: leadForm.value.privateDetails || undefined,
-      description: leadForm.value.description || undefined,
+      description: leadForm.value.description?.trim() || null,
       postalCode: leadForm.value.postalCode || undefined,
       leadType: leadForm.value.leadType || 'AUCTION',
       startPrice: parseFloat(leadForm.value.startPrice),
@@ -1645,10 +1645,7 @@ onUnmounted(() => {
               <p class="premium-subtitle">Özel seçilmiş yüksek kaliteli lead'ler</p>
             </div>
           </div>
-          <div class="premium-badge-container">
-            <span class="premium-badge">VIP</span>
-            <div class="premium-badge-glow"></div>
-          </div>
+          
         </div>
 
         <div class="premium-slider-wrapper">
@@ -1663,48 +1660,20 @@ onUnmounted(() => {
             @touchend="handlePremiumTouchEnd"
           >
             <div class="premium-slider">
-            <div class="premium-card" v-for="lead in premiumLeads" :key="lead.id" @click="handlePremiumCardClick(lead)">
-              <div class="premium-card-glow"></div>
-              <div class="premium-card-header">
-                <div class="premium-card-title">
-                  <div class="premium-card-icon">
-                    <Icon v-if="lead.insuranceType" :icon="getInsuranceTypeIcon(lead.insuranceType)" class="insurance-iconify" width="22" height="22" />
-                  </div>
-                  <h3>{{ lead.title }}</h3>
-                </div>
-                <div class="premium-card-star">
-                  <Icon icon="mdi:star" class="premium-icon" width="20" height="20" />
-                  <div class="premium-star-glow"></div>
-                </div>
-              </div>
-
-            
-
-              <div class="premium-card-price">
-                <div class="premium-price-info">
-                  <span class="premium-price-label">Güncel Teklif</span>
-                  <span class="premium-price-amount">
-                    <span v-if="lead.bids && lead.bids.length">{{ formatPrice(lead.bids[0].amount, settings.defaultCurrency) }}</span>
-                    <span v-else>{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
-                  </span>
-                </div>
-                <div v-if="lead.instantBuyPrice && !isAdmin" class="premium-instant-price" @click.stop="openInstantBuyModal(lead, $event)" style="cursor: pointer;">
-                  <span class="premium-instant-label">Anında Al</span>
-                  <span class="premium-instant-amount">{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</span>
-                </div>
-              </div>
-
-              <div class="premium-card-footer">
-                <div class="premium-time">
-                  <Icon icon="mdi:clock-outline" width="16" height="16" />
-                  {{ formatTimeRemaining(lead.endsAt) }}
-                </div>
-                <div class="premium-bids">
-                 
-                  {{ lead.bids ? lead.bids.length : 0 }} teklif
-                </div>
-              </div>
-            </div>
+            <LeadCard
+              v-for="lead in premiumLeads"
+              :key="lead.id"
+              :lead="lead"
+              :settings="settings"
+              :show-quick-bid="!lead.isExpired && lead.isActive && !isAdmin && isBiddingHoursActive"
+              :is-admin="isAdmin"
+              :zipcode-index="zipcodeIndex"
+              :is-bidding-hours-active="isBiddingHoursActive"
+              @click="handlePremiumCardClick"
+              @show-description="showDescription"
+              @instant-buy="openInstantBuyModal"
+              @submit-bid="submitQuickBid"
+            />
           </div>
           </div>
           <button
@@ -2243,9 +2212,9 @@ onUnmounted(() => {
 
     <!-- Description Modal -->
     <div v-if="showDescriptionModal" class="modal-backdrop" @click="closeDescriptionModal">
-      <div class="modal" @click.stop>
+      <div class="modal"  style = 'padding:0;' @click.stop>
         <div class="modal-header">
-          <h3>Lead Beschreibung</h3>
+          <h3>Lead Info</h3>
           <button class="modal-close" @click="closeDescriptionModal">×</button>
         </div>
 
@@ -2317,63 +2286,62 @@ onUnmounted(() => {
             <textarea v-model="leadForm.description" class="form-input" rows="4" placeholder="Lead açıklaması"></textarea>
           </div>
 
-          <div class="form-row">
-            <div class="form-group postal-code-container">
-              <label>Posta Kodu</label>
-              <input
-                v-model="postalCodeSearch"
-                type="text"
-                class="form-input"
-                placeholder="Posta kodu"
-                @focus="onPostalCodeFocus"
-                @blur="onPostalCodeBlur"
-                @input="onPostalCodeInput"
-                @keydown="onPostalCodeKeydown"
-              />
-              <div v-if="showPostalCodeDropdown && postalCodeResults.length > 0" class="postal-code-dropdown" ref="postalCodeDropdownRef">
-                <div
-                  v-for="(result, index) in postalCodeResults"
-                  :key="result.postal"
-                  class="postal-code-item"
-                  :class="{ selected: index === selectedPostalCodeIndex }"
-                  @click="selectPostalCode(result)"
-                  @mousedown.prevent
-                >
-                  {{ result.display }}
-                </div>
+          <div class="form-group full-width" style="margin-bottom: 20px;">
+            <label style="font-weight: 600; margin-bottom: 8px; display: block; font-size: 1rem;">Lead Tipi *</label>
+            <select v-model="leadForm.leadType" class="form-input" style="font-size: 1rem; padding: 12px; border: 2px solid #e2e8f0; border-radius: 6px;">
+              <option value="AUCTION">Açık Artırma</option>
+              <option value="SOFORT_KAUF">Sofort Kauf (Anında Satın Alma)</option>
+            </select>
+          
+          </div>
+
+          <div class="form-group">
+            <label>Sigorta Tipi</label>
+            <select v-model="leadForm.insuranceType" class="form-input">
+              <option value="">Seçiniz</option>
+              <option v-for="type in insuranceTypeNames" :key="type" :value="type">{{ type }}</option>
+            </select>
+          </div>
+
+          <div class="form-group postal-code-container">
+            <label>Posta Kodu</label>
+            <input
+              v-model="postalCodeSearch"
+              type="text"
+              class="form-input"
+              placeholder="Posta kodu"
+              @focus="onPostalCodeFocus"
+              @blur="onPostalCodeBlur"
+              @input="onPostalCodeInput"
+              @keydown="onPostalCodeKeydown"
+            />
+            <div v-if="showPostalCodeDropdown && postalCodeResults.length > 0" class="postal-code-dropdown" ref="postalCodeDropdownRef">
+              <div
+                v-for="(result, index) in postalCodeResults"
+                :key="result.postal"
+                class="postal-code-item"
+                :class="{ selected: index === selectedPostalCodeIndex }"
+                @click="selectPostalCode(result)"
+                @mousedown.prevent
+              >
+                {{ result.display }}
               </div>
-            </div>
-            <div class="form-group">
-              <label>Sigorta Tipi</label>
-              <select v-model="leadForm.insuranceType" class="form-input">
-                <option value="">Seçiniz</option>
-                <option v-for="type in insuranceTypeNames" :key="type" :value="type">{{ type }}</option>
-              </select>
             </div>
           </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label>Başlangıç Fiyatı (€) *</label>
-              <input v-model="leadForm.startPrice" type="number" class="form-input" placeholder="0.00" />
-            </div>
+          <div class="form-group">
+            <label>{{ leadForm.leadType === 'SOFORT_KAUF' ? 'Satış Fiyatı (€) *' : 'Başlangıç Fiyatı (€) *' }}</label>
+            <input v-model="leadForm.startPrice" type="number" class="form-input" placeholder="0.00" />
+          </div>
+
+          <div class="form-row" v-if="leadForm.leadType === 'AUCTION'">
             <div class="form-group">
               <label>Minimum Artış (€)</label>
               <input v-model="leadForm.minIncrement" type="number" class="form-input" placeholder="0.00" />
             </div>
-          </div>
-
-          <div class="form-row">
             <div class="form-group">
               <label>Anında Satın Alma Fiyatı (€)</label>
               <input v-model="leadForm.buyNowPrice" type="number" class="form-input" placeholder="0.00" />
-            </div>
-            <div class="form-group">
-              <label>Lead Tipi</label>
-              <select v-model="leadForm.leadType" class="form-input">
-                <option value="AUCTION">Açık Artırma</option>
-                <option value="SOFORT_KAUF">Sofort Kauf</option>
-              </select>
             </div>
           </div>
 
@@ -2692,32 +2660,24 @@ onUnmounted(() => {
 
 /* Section Containers */
 .premium-section {
-
-
-
   margin: 0 auto 24px auto;
   padding: 0!important;
-  max-width: 90%;
+  max-width: var(--page-max-width);
   width: 100%;
   box-sizing: border-box;
 }
 
 .map-section {
- 
   margin: 0 auto 24px auto;
-  max-width: 90%;
+  max-width: var(--page-max-width);
   width: 100%;
   box-sizing: border-box;
   padding: 0!important;
 }
 
 .auctions-section {
-
-
-
   margin: 0 auto;
-
-  max-width: 90%;
+  max-width: var(--page-max-width);
   width: 100%;
   box-sizing: border-box;
 }
@@ -2843,7 +2803,7 @@ onUnmounted(() => {
 .premium-slider {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(320px, 1fr);
+  grid-auto-columns: minmax(350px, 1fr);
   gap: 16px;
   padding-bottom: 8px;
 }
@@ -2912,181 +2872,7 @@ onUnmounted(() => {
   }
 }
 
-.premium-card {
-  background: white;
-  border: 2px solid #fbbf24;
-  border-radius: 12px;
-  padding: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  min-height: 200px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  position: relative;
-}
-
-.premium-card::before {
-  display: none;
-}
-
-.premium-card:hover {
-
-  box-shadow: 0 8px 25px rgba(251, 191, 36, 0.2);
-  border: 2px solid #f59e0b;
-}
-
-.premium-card-glow {
-  display: none;
-}
-
-.premium-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.premium-card-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-}
-
-.premium-card-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: #fef3c7;
-  border-radius: 8px;
-  border: 1px solid #fbbf24;
-}
-
-.insurance-iconify {
-  color: #92400e;
-}
-
-.premium-card-title h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #111827;
-  line-height: 1.3;
-  /* En fazla 4 satır göster; fazlasını kısalt */
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.premium-card-star {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.premium-icon {
-  color: #f59e0b;
-  flex-shrink: 0;
-}
-
-.premium-star-glow {
-  display: none;
-}
-
-.premium-card-description {
-  color: #4b5563;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  flex: 1;
-  display: none!important;
-}
-
-.premium-card-price {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 14px;
-  background: #fef3c7;
-  border-radius: 8px;
-  border: 1px solid #fbbf24;
-  min-height: 72px; /* tüm kartlarda aynı yükseklik */
-}
-
-.premium-price-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.premium-price-label {
-  font-size: 0.7rem;
-  color: #92400e;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.premium-price-amount {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: #111827;
-}
-
-.premium-instant-price {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-  padding: 8px 12px;
-  background: #10b981;
-  border-radius: 6px;
-}
-
-.premium-instant-price::before {
-  display: none;
-}
-
-.premium-instant-label {
-  font-size: 0.65rem;
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.premium-instant-amount {
-  font-size: 1rem;
-  font-weight: 700;
-  color: white;
-}
-
-.premium-card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 12px;
-  border-top: 1px solid #fde68a;
-  margin-top: auto; /* alt hizalamayı sabitle */
-}
-
-.premium-time,
-.premium-bids {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #92400e;
-}
+/* Premium kartlar artık LeadCard component'i kullanıyor */
 
 .premium-empty-state {
   display: flex;
@@ -3134,22 +2920,8 @@ onUnmounted(() => {
   }
 
   .premium-slider {
-    grid-auto-columns: minmax(280px, 1fr);
+    grid-auto-columns: minmax(300px, 1fr);
     gap: 12px;
-  }
-
-  .premium-card {
-    padding: 16px;
-    min-height: 180px;
-  }
-
-  .premium-card-icon {
-    width: 32px;
-    height: 32px;
-  }
-
-  .premium-card-title h3 {
-    font-size: 1rem;
   }
 }
 
@@ -3174,23 +2946,8 @@ onUnmounted(() => {
   }
 
   .premium-slider {
-    grid-auto-columns: minmax(260px, 1fr);
+    grid-auto-columns: minmax(280px, 1fr);
     gap: 10px;
-  }
-
-  .premium-card {
-    padding: 14px;
-    min-height: 160px;
-  }
-
-  .premium-card-price {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .premium-instant-price {
-    align-self: flex-end;
   }
 }
 
@@ -3766,8 +3523,8 @@ onUnmounted(() => {
 
 .modal {
   background: white;
-  border-radius: 12px;
-  max-width: 400px;
+  border-radius: 12pxb;
+  max-width: 600px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
@@ -4412,7 +4169,7 @@ onUnmounted(() => {
 }
 
 .lead-id-badge-inline {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: black;
   letter-spacing: 0.05em;
@@ -4778,7 +4535,7 @@ onUnmounted(() => {
 }
 
 .time-text {
-  font-size: 0.5rem;
+  font-size: 0.7rem;
   letter-spacing: 0.5px;
   white-space: nowrap;
 }

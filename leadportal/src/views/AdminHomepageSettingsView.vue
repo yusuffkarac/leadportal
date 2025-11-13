@@ -177,7 +177,7 @@ onMounted(loadHomepageSettings)
 </script>
 
 <template>
-  <section class="section" style="max-width: 90%; margin: 0 auto;">
+  <section class="section" style="max-width: var(--page-max-width); margin: 0 auto; padding: var(--page-padding);">
     <header class="section-header">
       <div>
         <h2>Ana Sayfa Ayarları</h2>
@@ -522,11 +522,14 @@ textarea.input {
   background: #0f172a;
   color: #fff;
   border: none;
-  padding: 12px 20px;
-  border-radius: 999px;
+  padding: 10px 20px;
+  border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
 }
 
 .btn:disabled {
@@ -535,22 +538,25 @@ textarea.input {
 }
 
 .btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 24px -18px rgba(15, 23, 42, 0.5);
+  background: #1f2937;
 }
 
 .btn-secondary {
-  background: #e6ecff;
-  color: #1d4ed8;
+  background: #f3f4f6;
+  color: #374151;
   border: none;
-  padding: 10px 16px;
-  border-radius: 999px;
+  padding: 10px 20px;
+  border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
 }
 
-.btn-secondary:hover {
-  background: #d8e2ff;
+.btn-secondary:hover:not(:disabled) {
+  background: #e5e7eb;
 }
 
 .link {
@@ -638,6 +644,9 @@ textarea.input {
 @media (max-width: 768px) {
   .grid.two-cols {
     grid-template-columns: 1fr;
+  }
+  .section{
+    padding: 0!important;
   }
 
   .section-header {

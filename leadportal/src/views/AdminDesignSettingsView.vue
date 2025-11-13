@@ -429,12 +429,14 @@ onMounted(() => {
 .admin-design-settings-page {
   min-height: 100vh;
   background: var(--bg);
-  padding: 20px;
+  padding: var(--page-padding);
+  max-width: var(--page-max-width);
+  margin: 0 auto;
 }
 
 .page-content {
-  max-width: 90%;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
 }
 
 .page-header {

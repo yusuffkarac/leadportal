@@ -288,9 +288,9 @@ onMounted(() => {
 
 <style scoped>
 .preferences-container {
-  max-width: 90%;
+  max-width: var(--page-max-width);
   margin: 0 auto;
-  padding: 24px;
+  padding: var(--page-padding);
 }
 
 .preferences-header {
@@ -608,7 +608,7 @@ onMounted(() => {
 @media (max-width: 768px) {
   .preferences-container {
     padding: 16px;
-    max-width:95%;
+    max-width: 100%;
   }
 
   .header-content h1 {

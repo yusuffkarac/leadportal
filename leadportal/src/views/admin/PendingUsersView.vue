@@ -990,19 +990,21 @@ function formatDate(dateString) {
     flex-direction: column;
     align-items: flex-start;
   }
+
   .pending-users-container {
-  padding: 0;
-  max-width: 95%;;
-
-  }
-  .tab-button{
-    font-size: 0px!important;
+    padding: 0;
+    max-width: 95%;
   }
 
+  .tab-button {
+    font-size: 13px !important;
+    padding: 0.75rem 1rem;
+  }
 
   .actions {
     width: 100%;
   }
+}
 
   .approval-info {
     width: 100%;
@@ -1032,7 +1034,7 @@ function formatDate(dateString) {
     flex-direction: column;
     gap: 4px;
   }
-}
+
 
 @keyframes spin {
   to { transform: rotate(360deg); }

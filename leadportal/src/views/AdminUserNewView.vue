@@ -884,7 +884,7 @@ onUnmounted(() => {
 }
 
 .page-content {
-  max-width: 90%;
+  max-width: var(--page-max-width);
   margin: 0 auto;
   padding: 32px 24px;
 }
@@ -1713,7 +1713,7 @@ onUnmounted(() => {
   }
 
   .page-content {
-    padding: 12px;
+    padding: var(--page-padding-mobile);
     margin: 0;
     max-width: 100%;
     width: 100%;

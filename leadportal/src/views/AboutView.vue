@@ -190,9 +190,9 @@
 }
 
 .page-content {
-  max-width: 90%;
+  max-width: var(--page-max-width);
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: var(--page-padding);
 }
 
 /* Hero Section */

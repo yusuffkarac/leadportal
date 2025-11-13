@@ -1065,25 +1065,19 @@ watch(showMap, (newValue) => {
             <input v-model="leadForm.title" type="text" class="form-input" placeholder="Lead başlığı" required />
           </div>
 
-          <!-- İki sütun: Lead Tipi ve Sigorta Türü -->
-          <div class="form-row">
-            <div class="form-group">
-              <label>Lead Tipi *</label>
-              <select v-model="leadForm.leadType" class="form-input">
-                <option value="AUCTION">Açık Artırma</option>
-                <option value="SOFORT_KAUF">Sofort Kauf (Anında Satın Alma)</option>
-              </select>
-              <small style="color: #6b7280; font-size: 0.875rem; display: block; margin-top: 4px;">
-                {{ leadForm.leadType === 'AUCTION' ? 'Açık artırma ile satılacak' : 'Sabit fiyattan anında satın alınabilir' }}
-              </small>
-            </div>
-            <div class="form-group">
-              <label>Sigorta Türü</label>
-              <select v-model="leadForm.insuranceType" class="form-input">
-                <option value="">Sigorta türü seçin</option>
-                <option v-for="type in insuranceTypes" :key="type.name" :value="type.name">{{ type.name }}</option>
-              </select>
-            </div>
+          <!-- Tek sütun: Açıklama -->
+          <div class="form-group full-width">
+            <label>Açıklama *</label>
+            <textarea v-model="leadForm.description" class="form-textarea" placeholder="Lead açıklaması" rows="3" required></textarea>
+          </div>
+
+          <!-- Sigorta Türü -->
+          <div class="form-group full-width">
+            <label>Sigorta Türü</label>
+            <select v-model="leadForm.insuranceType" class="form-input">
+              <option value="">Sigorta türü seçin</option>
+              <option v-for="type in insuranceTypes" :key="type.name" :value="type.name">{{ type.name }}</option>
+            </select>
           </div>
 
           <!-- Posta Kodu -->
@@ -1113,10 +1107,22 @@ watch(showMap, (newValue) => {
             </div>
           </div>
 
-          <!-- Tek sütun: Açıklama -->
-          <div class="form-group full-width">
-            <label>Açıklama *</label>
-            <textarea v-model="leadForm.description" class="form-textarea" placeholder="Lead açıklaması" rows="3" required></textarea>
+          <!-- İki sütun: Lead Tipi ve Fiyat -->
+          <div class="form-row">
+            <div class="form-group">
+              <label>{{ leadForm.leadType === 'SOFORT_KAUF' ? 'Satış Fiyatı' : 'Başlangıç Fiyatı' }} ({{ getCurrencySymbol(settings.defaultCurrency) }}) *</label>
+              <input v-model="leadForm.startPrice" type="number" class="form-input" placeholder="0" min="0" step="1" required />
+            </div>
+            <div class="form-group">
+              <label>Lead Tipi *</label>
+              <select v-model="leadForm.leadType" class="form-input">
+                <option value="AUCTION">Açık Artırma</option>
+                <option value="SOFORT_KAUF">Sofort Kauf (Anında Satın Alma)</option>
+              </select>
+              <small style="color: #6b7280; font-size: 0.875rem; display: block; margin-top: 4px;">
+                {{ leadForm.leadType === 'AUCTION' ? 'Açık artırma ile satılacak' : 'Sabit fiyattan anında satın alınabilir' }}
+              </small>
+            </div>
           </div>
 
           <!-- Tek sütun: Private Details -->
@@ -1126,30 +1132,24 @@ watch(showMap, (newValue) => {
             <small class="form-help">Bu alan sadece leadi satın alan kişi, lead sahibi ve adminler tarafından görülebilir.</small>
           </div>
 
-          <!-- İki sütun: Fiyatlar -->
-          <div class="form-row">
+          <!-- İki sütun: Minimum Artış ve Anında Satın Alma Fiyatı (Sadece Auction için) -->
+          <div class="form-row" v-if="leadForm.leadType === 'AUCTION'">
             <div class="form-group">
-              <label>{{ leadForm.leadType === 'SOFORT_KAUF' ? 'Satış Fiyatı' : 'Başlangıç Fiyatı' }} ({{ getCurrencySymbol(settings.defaultCurrency) }}) *</label>
-              <input v-model="leadForm.startPrice" type="number" class="form-input" placeholder="0" min="0" step="1" required />
-            </div>
-            <div class="form-group" v-if="leadForm.leadType === 'AUCTION'">
               <label>Minimum Artış ({{ getCurrencySymbol(settings.defaultCurrency) }}) *</label>
               <input v-model="leadForm.minIncrement" type="number" class="form-input" placeholder="0" min="0" step="1" required />
             </div>
-          </div>
-
-          <!-- İki sütun: Anında Al ve Başlangıç Tarihi (Sadece Auction için) -->
-          <div class="form-row" v-if="leadForm.leadType === 'AUCTION'">
             <div class="form-group">
               <label>Anında Satın Alma Fiyatı ({{ getCurrencySymbol(settings.defaultCurrency) }})</label>
               <input v-model="leadForm.buyNowPrice" type="number" class="form-input" placeholder="Opsiyonel" min="0" step="1" />
               <small class="form-help">Anında satın alma fiyatı</small>
             </div>
-            <div class="form-group">
-              <label>Başlangıç Tarihi (Opsiyonel)</label>
-              <input v-model="leadForm.startsAt" type="datetime-local" class="form-input" />
-              <small class="form-help">Boş bırakırsanız lead hemen aktif olur</small>
-            </div>
+          </div>
+
+          <!-- Başlangıç Tarihi -->
+          <div class="form-group full-width" v-if="leadForm.leadType === 'AUCTION'">
+            <label>Başlangıç Tarihi (Opsiyonel)</label>
+            <input v-model="leadForm.startsAt" type="datetime-local" class="form-input" />
+            <small class="form-help">Boş bırakırsanız lead hemen aktif olur</small>
           </div>
 
           <!-- Başlangıç Tarihi (Sofort Kauf için) -->

@@ -650,13 +650,15 @@ onMounted(() => {
 .user-types-page {
   min-height: 100vh;
   background: #f8fafc;
-
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  padding: var(--page-padding);
   overflow-x: hidden;
 }
 
 .page-content {
-  max-width: 95%;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
 }
 
 .page-header {
@@ -1273,18 +1275,22 @@ input:checked + .toggle-slider:before {
 }
 
 @media (max-width: 768px) {
+  .user-types-page {
+    padding: var(--page-padding-mobile);
+  }
+  
   .page-content {
     max-width: 100%;
-    padding: 0.5rem;
+    padding: 0;
   }
 
-.page-header {
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 1rem;
-}
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+  }
 
   .tab-content {
     padding: 0.75rem;

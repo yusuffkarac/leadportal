@@ -266,12 +266,19 @@ async function submit() {
         </small>
       </div>
       <div class="stack">
-        <label>{{ leadType === 'SOFORT_KAUF' ? 'Satış Fiyatı' : 'Başlangıç Fiyatı' }}</label>
+        <label>{{ leadType === 'SOFORT_KAUF' ? 'Satış Fiyatı' : 'Başlangıç Fiyatı' }} *</label>
         <input class="input" v-model="startPrice" type="number" />
       </div>
       <div class="stack" style="grid-column: 1 / 3;">
         <label>Açıklama</label>
         <textarea class="input" v-model="description" rows="4" placeholder="Kısa açıklama" />
+      </div>
+      <div class="stack">
+        <label>Sigorta Türü (Opsiyonel)</label>
+        <select class="input" v-model="insuranceType">
+          <option value="">Sigorta türü seçin</option>
+          <option v-for="type in insuranceTypes" :key="type.name" :value="type.name">{{ type.name }}</option>
+        </select>
       </div>
       <div class="stack" style="grid-column: 1 / 3;">
         <label>Lead Detayları (Sadece Satın Alan Görür)</label>
@@ -286,13 +293,6 @@ async function submit() {
         <label>Anında Satın Alma Fiyatı (Opsiyonel)</label>
         <input class="input" v-model="instantBuyPrice" type="number" placeholder="Boş bırakılabilir" />
         <small style="color: var(--primary); font-size: 0.875rem;">Bu fiyatı ödeyen kişi açık artırmayı beklemeden hemen satın alabilir</small>
-      </div>
-      <div class="stack">
-        <label>Sigorta Türü (Opsiyonel)</label>
-        <select class="input" v-model="insuranceType">
-          <option value="">Sigorta türü seçin</option>
-          <option v-for="type in insuranceTypes" :key="type.name" :value="type.name">{{ type.name }}</option>
-        </select>
       </div>
       <div class="stack">
         <label>Başlangıç Zamanı (Opsiyonel)</label>

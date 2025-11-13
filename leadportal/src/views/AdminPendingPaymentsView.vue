@@ -668,8 +668,8 @@ onMounted(async () => {
 
 <style scoped>
 .pending-payments {
-  padding: 1.25rem;
-  max-width: 90%;
+  padding: var(--page-padding);
+  max-width: var(--page-max-width);
   margin: 0 auto;
   overflow-x: hidden;
 }
@@ -1573,7 +1573,7 @@ onMounted(async () => {
 @media (max-width: 768px) {
   .pending-payments {
     padding: 1rem;
-    max-width: 95%;
+    max-width: 100%;
   }
 
   .page-header {

@@ -1310,8 +1310,8 @@ onMounted(() => {
 
 <style scoped>
 /* Page */
-.admin-settings-page { min-height: 100vh; background: #f8fafc; padding: 2rem; overflow-x: hidden; }
-.page-content { max-width: 95%; margin: 0 auto; }
+.admin-settings-page { min-height: 100vh; background: #f8fafc; padding: var(--page-padding); overflow-x: hidden; }
+.page-content { max-width: var(--page-max-width); margin: 0 auto; }
 .page-header { margin-bottom: 32px; text-align: center; }
 .page-header h1 { font-size: 2.5rem; font-weight: 700; color: #1f2937; margin: 0 0 8px; }
 .page-subtitle { font-size: 1rem; color: #6b7280; margin: 0; }
@@ -1610,7 +1610,7 @@ input:checked + .toggle-slider:before { transform: translateX(26px); }
 }
 
 @media (max-width: 768px) {
-  .admin-settings-page { padding: 0px; }
+  .admin-settings-page { padding: var(--page-padding-mobile); }
   .page-header h1 { font-size: 2rem; }
   .tabs-nav { flex-wrap: wrap; }
   .tab-button { padding: 0.875rem 1rem; font-size: 0.875rem; }

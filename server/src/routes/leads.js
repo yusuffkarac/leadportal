@@ -565,7 +565,10 @@ export default function leadsRouter(prisma, io) {
   // Admin update
   router.put('/:id', async (req, res) => {
     if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') return res.status(403).json({ error: 'Forbidden' })
-    const schema = createLeadSchema.partial().extend({ isActive: z.boolean().optional() })
+    const schema = createLeadSchema.partial().extend({ 
+      isActive: z.boolean().optional(),
+      description: z.union([z.string().min(1), z.null()]).optional()
+    })
     const parsed = schema.safeParse(req.body)
     if (!parsed.success) {
       const issues = parsed.error.issues.map((i) => ({ path: i.path.join('.'), message: i.message }))

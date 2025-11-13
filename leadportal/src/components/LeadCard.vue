@@ -248,12 +248,6 @@ const statusBadgeText = computed(() => {
       <span>Zamanlanmış - {{ new Date(lead.startsAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) }} tarihinde başlayacak</span>
     </div>
 
-    <!-- Expired/Sold Badge -->
-    <div v-if="statusBadgeText" :class="['status-badge', isSold ? 'sold' : 'expired']">
-      <Icon :icon="isSold ? 'mdi:check-circle' : 'mdi:clock-end'" width="18" height="18" />
-      <span>{{ statusBadgeText }}</span>
-    </div>
-
     <!-- Card Top Header -->
     <div class="card-top-header">
       <div class="card-top-left">
@@ -261,9 +255,14 @@ const statusBadgeText = computed(() => {
           <Icon :icon="getInsuranceTypeIcon(lead.insuranceType)" width="16" height="16" />
           {{ lead.insuranceType }}
         </span>
+        <!-- Satıldı/Süresi Doldu Badge - Kategorinin yanında küçük -->
+        <span v-if="statusBadgeText" :class="['status-badge-small', isSold ? 'sold' : 'expired']">
+          <Icon :icon="isSold ? 'mdi:alert-circle' : 'mdi:clock-end'" width="16" height="16" />
+          <span>{{ statusBadgeText }}</span>
+        </span>
       </div>
       <div class="card-top-right">
-        <button class="info-btn" @click="handleShowDescription" title="Beschreibung anzeigen">
+        <button v-if="lead.description" class="info-btn" @click="handleShowDescription" title="Beschreibung anzeigen">
           <Icon icon="mdi:information-outline" width="16" height="16" />
         </button>
         <span class="time-badge">
@@ -991,9 +990,35 @@ const statusBadgeText = computed(() => {
 }
 
 .status-badge.sold {
-  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-  color: #166534;
-  border-color: #86efac;
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #991b1b;
+  border-color: #dc2626;
+}
+
+/* Küçük Status Badge - Kategorinin yanında */
+.status-badge-small {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.status-badge-small.expired {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+.status-badge-small.sold {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  color: #b91c1c;
+  border-color: #fca5a5;
 }
 
 @media (max-width: 768px) {

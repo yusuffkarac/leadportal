@@ -250,8 +250,8 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Permissions Table -->
-      <div class="permissions-table-wrapper">
+      <!-- Desktop Permissions Table -->
+      <div class="permissions-table-wrapper desktop-view">
         <table class="permissions-table">
           <thead>
             <tr>
@@ -330,19 +330,98 @@ onMounted(() => {
           </tbody>
         </table>
       </div>
+
+      <!-- Mobile Card View -->
+      <div class="mobile-cards-view">
+        <div
+          v-for="notifType in filteredNotificationTypes"
+          :key="notifType.id"
+          class="notification-card"
+        >
+          <div class="card-header">
+            <div class="card-header-content">
+              <Icon :icon="notifType.icon || 'mdi:bell'" width="24" height="24" />
+              <div class="card-title-section">
+                <strong>{{ notifType.name }}</strong>
+                <span class="category-badge" :data-category="notifType.category">
+                  {{ notifType.category }}
+                </span>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button
+                @click="toggleAllForNotificationType(notifType.id, true)"
+                class="action-btn"
+                title="Tüm roller için aç"
+                :disabled="isSaving"
+              >
+                <Icon icon="mdi:check-all" width="18" height="18" />
+              </button>
+              <button
+                @click="toggleAllForNotificationType(notifType.id, false)"
+                class="action-btn"
+                title="Tüm roller için kapat"
+                :disabled="isSaving"
+              >
+                <Icon icon="mdi:close" width="18" height="18" />
+              </button>
+            </div>
+          </div>
+          <p class="card-description">{{ notifType.description }}</p>
+          <div class="card-permissions">
+            <div
+              v-for="userType in userTypes"
+              :key="userType.id"
+              class="permission-row"
+            >
+              <div class="permission-label">
+                <span>{{ userType.name }}</span>
+                <div class="user-type-actions">
+                  <button
+                    @click="toggleAllForUserType(userType.id, true)"
+                    class="mini-action-btn"
+                    title="Tümünü aç"
+                    :disabled="isSaving"
+                  >
+                    <Icon icon="mdi:check-all" width="14" height="14" />
+                  </button>
+                  <button
+                    @click="toggleAllForUserType(userType.id, false)"
+                    class="mini-action-btn"
+                    title="Tümünü kapat"
+                    :disabled="isSaving"
+                  >
+                    <Icon icon="mdi:close" width="14" height="14" />
+                  </button>
+                </div>
+              </div>
+              <label class="checkbox-wrapper">
+                <input
+                  type="checkbox"
+                  :checked="hasPermission(userType.id, notifType.id)"
+                  @change="togglePermission(userType.id, notifType.id)"
+                  :disabled="isSaving"
+                />
+                <span class="checkmark"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
 .admin-notification-settings {
-  padding: 24px;
+  padding: 2rem;
   max-width: 90%;
   margin: 0 auto;
 }
 
 .header {
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  margin-top: 32px;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -458,7 +537,7 @@ onMounted(() => {
 }
 
 .filter-btn.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #667eea;
   border-color: #667eea;
   color: white;
 }
@@ -678,7 +757,7 @@ onMounted(() => {
 }
 
 .checkbox-wrapper input:checked + .checkmark {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #667eea;
   border-color: #667eea;
 }
 
@@ -702,36 +781,230 @@ onMounted(() => {
   transform: translateY(-10px);
 }
 
-/* Mobil responsive */
-@media (max-width: 768px) {
-  .admin-notification-settings {
-    padding: 0px;
-    max-width: 95%;
-  }
-  .header {
-  margin-bottom: 24px;
+/* Mobile Card View Styles */
+.mobile-cards-view {
+  display: none;
+}
+
+.notification-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 24px;
-  flex-direction: column;
+  margin-bottom: 12px;
+  gap: 12px;
 }
 
+.card-header-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+}
 
-  .header-content h1 {
+.card-header-content > :deep(svg) {
+  color: #667eea;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.card-title-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-title-section strong {
+  display: block;
+  font-size: 16px;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  padding: 8px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn:hover:not(:disabled) {
+  background: #e5e7eb;
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.card-description {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+  padding-left: 36px;
+}
+
+.card-permissions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.permission-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  gap: 12px;
+}
+
+.permission-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  gap: 8px;
+}
+
+.permission-label span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.user-type-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.mini-action-btn {
+  padding: 4px 6px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-action-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.mini-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Mobil responsive */
+@media (max-width: 768px) {
+  .admin-notification-settings {
+    padding: 1rem;
+    max-width: 100%;
+  }
+
+  .header {
+    margin-bottom: 20px;
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .section-header h1 {
     font-size: 24px;
+    margin-bottom: 6px;
   }
 
-  .permissions-table-wrapper {
-    border-radius: 8px;
+  .section-header p {
+    font-size: 14px;
   }
 
-  .notification-column {
-    min-width: 250px;
+  .category-filter {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .user-type-column {
-    min-width: 100px;
+  .category-filter::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .category-filter::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 2px;
+  }
+
+  .filter-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .filter-btn span {
+    display: inline-block;
+  }
+
+  .info-box {
+    padding: 16px;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .info-box strong {
+    font-size: 14px;
+  }
+
+  .info-box p {
+    font-size: 13px;
+  }
+
+  /* Desktop table'ı gizle */
+  .desktop-view {
+    display: none;
+  }
+
+  /* Mobile card view'ı göster */
+  .mobile-cards-view {
+    display: block;
+  }
+
+  .alert {
+    padding: 12px;
+    font-size: 13px;
+    margin-bottom: 20px;
   }
 }
 </style>

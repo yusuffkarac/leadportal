@@ -257,6 +257,9 @@ onMounted(() => {
 .faq-page {
   min-height: 100vh;
   background: #f8f9fa;
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  padding: var(--page-padding);
 }
 
 .page-header {

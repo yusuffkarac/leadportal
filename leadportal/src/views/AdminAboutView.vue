@@ -440,8 +440,15 @@ onMounted(() => {
 
 <style scoped>
 .admin-about-page {
-  min-height: 100vh;
-  background: #f8f9fa;
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  padding: var(--page-padding);
+}
+
+.page-content {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .page-header {
@@ -868,6 +875,11 @@ onMounted(() => {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .admin-about-page {
+    padding: var(--page-padding-mobile);
+    max-width: var(--page-max-width);
+  }
+  
   .filters {
     flex-direction: column;
   }

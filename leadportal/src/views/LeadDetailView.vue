@@ -600,9 +600,9 @@ onUnmounted(() => {
 
 /* Page Layout */
 .page-content {
-  max-width: 90%;
+  max-width: var(--page-max-width);
   margin: 0 auto;
-  padding: 24px;
+  padding: var(--page-padding);
   display: grid;
   grid-template-columns: 1fr 400px;
   gap: 32px;
@@ -627,13 +627,14 @@ onUnmounted(() => {
   .page-content {
     grid-template-columns: 1fr;
     gap: 24px;
-    padding: 16px;
+    padding: var(--page-padding-mobile);
   }
 }
 
 @media (max-width: 768px) {
   .page-content {
-    padding: 12px;
+    padding: var(--page-padding-mobile);
+    padding-bottom: calc(var(--page-padding-mobile) + 2rem);
     gap: 16px;
     display: flex;
     flex-direction: column;

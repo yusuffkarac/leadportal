@@ -415,7 +415,7 @@ onMounted(async () => {
   gap: 8px;
 }
 .page-content {
-  max-width: 90%;
+  max-width: var(--page-max-width);
   margin: 0 auto;
   padding: 2rem;
   overflow-x: hidden;
@@ -479,10 +479,8 @@ onMounted(async () => {
 }
 
 .tab-content {
-  padding: 2rem;
-  background: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  padding: 0rem!important;
+
 }
 
 /* Info Box */
@@ -864,12 +862,14 @@ onMounted(async () => {
 /* Responsive */
 @media (max-width: 768px) {
   .page-content {
-    padding: 0rem;
-    max-width: 95%;
+    padding: var(--page-padding-mobile);
+    padding-bottom: calc(var(--page-padding-mobile) + 2rem);
+    max-width: 100%;
   }
 
   .permissions-grid {
     grid-template-columns: 1fr;
+    margin-bottom: 1.5rem;
   }
 
   .tabs-nav {
@@ -881,6 +881,7 @@ onMounted(async () => {
     border-bottom: 1px solid #e2e8f0;
     border-left: 2px solid transparent;
     justify-content: flex-start;
+    padding: 0.75rem 1rem;
   }
 
   .tab-button.active {
@@ -889,12 +890,30 @@ onMounted(async () => {
   }
 
   .tab-content {
-    padding: 1.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
   }
 
   .permission-options {
     flex-direction: column;
     gap: 0.75rem;
+  }
+
+  .actions {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .info-box {
+    margin-bottom: 1.5rem;
+  }
+
+  .user-select-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .permissions-list {
+    margin-bottom: 1.5rem;
   }
 }
 </style>

@@ -61,7 +61,7 @@ model User {
 model Lead {
   id               String      @id @default(cuid())
   title            String
-  description      String
+  description      String?
   privateDetails   String?     @db.Text
   postalCode       String? // Posta kodu (örn. 85309)
   leadType         LeadType    @default(AUCTION) // Lead satış türü

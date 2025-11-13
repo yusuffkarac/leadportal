@@ -1001,9 +1001,9 @@ onMounted(() => {
 }
 
 .profile-container {
-  max-width: 90%;
+  max-width: var(--page-max-width);
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: var(--page-padding);
 }
 
 .profile-header {
@@ -1667,7 +1667,7 @@ onMounted(() => {
 @media (max-width: 768px) {
   .profile-container {
     padding: 0 0.5rem;
-    max-width: 95%;
+    max-width: 100%;
   }
 
   .iban-info-grid,

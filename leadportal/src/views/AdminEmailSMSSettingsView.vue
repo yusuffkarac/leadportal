@@ -96,10 +96,7 @@
         <div v-if="activeTab === 'sms'" class="tab-panel">
         <div class="section-header">
           <h2>SMS Template'leri</h2>
-          <button class="btn btn-primary" @click="openSmsModal(null)">
-            <Icon icon="mdi:plus" width="16" height="16" />
-            Yeni Template
-          </button>
+          
         </div>
 
         <div class="templates-grid">
@@ -1297,12 +1294,12 @@ onMounted(() => {
 .admin-settings-page {
   min-height: 100vh;
   background: #f8fafc;
-  padding: 2rem 1rem;
+  padding: var(--page-padding);
   overflow-x: hidden;
 }
 
 .page-content {
-  max-width: 90%;
+  max-width: var(--page-max-width);
   margin: 0 auto;
 }
 
@@ -1365,12 +1362,7 @@ onMounted(() => {
   background: white;
 }
 
-.tab-content {
-  padding: 2rem;
-  background: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-}
+
 
 /* Templates Section */
 .section-header {
@@ -1528,7 +1520,7 @@ onMounted(() => {
 .modal {
   background: var(--panel);
   border-radius: 0.75rem;
-  max-width: 90%;
+  max-width: var(--page-max-width);
   width: 95%;
   max-height: 95vh;
   overflow: hidden;
@@ -2033,10 +2025,10 @@ onMounted(() => {
 }
 
   .admin-settings-page {
-  padding: 0;
+  padding: var(--page-padding-mobile);
 }
   .page-content{
-    max-width: 95%;
+    max-width: var(--page-max-width);
   }
 
   .tabs-nav {
@@ -2048,7 +2040,7 @@ onMounted(() => {
   }
 
   .tab-content {
-    padding: 1.5rem;
+    padding: 0rem;
   }
 
   .section-header {

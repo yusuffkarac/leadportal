@@ -801,6 +801,9 @@ watch(showMap, (newValue) => {
 .purchased-leads-page {
   min-height: 100vh;
   background: #f8f9fa;
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  padding: var(--page-padding);
 }
 
 .page-header {
@@ -1201,6 +1204,10 @@ watch(showMap, (newValue) => {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .purchased-leads-page {
+    padding: var(--page-padding-mobile);
+  }
+  
   .page-header h1 {
     font-size: 2rem;
   }
@@ -1269,7 +1276,7 @@ watch(showMap, (newValue) => {
 
 @media (max-width: 480px) {
   .purchased-leads-page {
-    padding: 0 16px;
+    padding: 0 @0px;
   }
   
   .page-header {

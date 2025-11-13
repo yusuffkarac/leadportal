@@ -397,9 +397,9 @@ onMounted(() => {
 
 <style scoped>
 .admin-activity-log {
-  max-width: 90%;
+  max-width: var(--page-max-width);
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--page-padding);
 }
 
 .page-header {
@@ -955,8 +955,8 @@ onMounted(() => {
 
 @media (max-width: 768px) {
   .admin-activity-log {
-    padding: 1rem;
-    max-width: 95%;
+    padding: var(--page-padding-mobile);
+    max-width: var(--page-max-width);
   }
   .refresh-btn{
     display: none;
