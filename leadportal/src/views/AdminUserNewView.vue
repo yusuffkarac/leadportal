@@ -881,12 +881,15 @@ onUnmounted(() => {
 .admin-user-new-view {
   min-height: 100vh;
   background: var(--bg);
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .page-content {
-  max-width: var(--page-max-width);
-  margin: 0 auto;
-  padding: 32px 24px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .page-header {
@@ -1713,7 +1716,7 @@ onUnmounted(() => {
   }
 
   .page-content {
-    padding: var(--page-padding-mobile);
+    padding: 0;
     margin: 0;
     max-width: 100%;
     width: 100%;

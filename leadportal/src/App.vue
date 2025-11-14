@@ -1,5 +1,6 @@
 <script setup>
-import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { RouterLink, RouterView, useRouter, useRoute } from 'vue-router'
+import AdminLayout from '@/layouts/AdminLayout.vue'
 import HelloWorld from './components/HelloWorld.vue'
 import UserProfile from './components/UserProfile.vue'
 import GlobalAlert from './components/GlobalAlert.vue'
@@ -15,6 +16,7 @@ import { useActivityMonitor } from './composables/useActivityMonitor.js'
 import { useSessionTimeout } from './composables/useSessionTimeout.js'
 
 const router = useRouter()
+const route = useRoute()
 
 function logout() {
   try {
@@ -224,6 +226,8 @@ function applyDesignSettings(colors) {
     root.style.setProperty(`--${key}`, value)
   })
 }
+
+const isAdminRoute = computed(() => route.matched.some(record => record.meta && record.meta.requiresAdmin))
 
 // Sayfa yetkilendirmelerini kontrol et
 const canAccessAbout = computed(() => {
@@ -857,7 +861,14 @@ function closeAdminCategory() {
     <div v-if="isNavigating" class="nav-overlay"><div class="spinner" aria-label="Yükleniyor"></div></div>
     <RouterView v-slot="{ Component }">
       <transition name="page">
+        <component
+          v-if="!isAdminRoute"
+          :is="Component"
+          :key="route.fullPath"
+        />
+        <AdminLayout v-else :key="route.fullPath">
         <component :is="Component" />
+        </AdminLayout>
       </transition>
     </RouterView>
 

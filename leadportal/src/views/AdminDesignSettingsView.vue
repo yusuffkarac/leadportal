@@ -429,9 +429,9 @@ onMounted(() => {
 .admin-design-settings-page {
   min-height: 100vh;
   background: var(--bg);
-  padding: var(--page-padding);
-  max-width: var(--page-max-width);
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .page-content {
@@ -734,7 +734,7 @@ onMounted(() => {
 /* Responsive */
 @media (max-width: 768px) {
   .admin-design-settings-page {
-    padding: 16px;
+    padding: 0;
   }
   
   .settings-section {

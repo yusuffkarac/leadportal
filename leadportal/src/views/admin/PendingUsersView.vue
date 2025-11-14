@@ -430,9 +430,9 @@ function formatDate(dateString) {
 
 <style scoped>
 .pending-users-container {
-  padding: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .header {
@@ -992,8 +992,9 @@ function formatDate(dateString) {
   }
 
   .pending-users-container {
+    width: 100%;
+    margin: 0;
     padding: 0;
-    max-width: 95%;
   }
 
   .tab-button {

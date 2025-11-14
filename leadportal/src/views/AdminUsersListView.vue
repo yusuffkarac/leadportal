@@ -292,9 +292,9 @@ onUnmounted(() => {
 
 <style scoped>
 .admin-users-list {
-  max-width: var(--page-max-width);
-  margin: 0 auto;
-  padding: var(--page-padding);
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .page-header {
@@ -680,8 +680,8 @@ onUnmounted(() => {
 
 @media (max-width: 768px) {
   .admin-users-list {
-    padding: var(--page-padding-mobile);
-    max-width: var(--page-max-width);
+    padding: 0;
+    max-width: 100%;
   }
 
   .page-header {

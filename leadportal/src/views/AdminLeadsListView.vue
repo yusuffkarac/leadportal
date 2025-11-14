@@ -1697,7 +1697,7 @@ watch(showMap, (newValue) => {
 /* Responsive */
 @media (max-width: 768px) {
   .page-content {
-    padding: 1rem;
+    padding: 0;
   }
   
   .page-header {
@@ -2482,5 +2482,11 @@ watch(showMap, (newValue) => {
 .balance-after {
   color: #059669;
   font-weight: 600;
+}
+
+.page-content {
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 </style>

@@ -415,9 +415,9 @@ onMounted(async () => {
   gap: 8px;
 }
 .page-content {
-  max-width: var(--page-max-width);
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
   overflow-x: hidden;
 }
 
@@ -862,9 +862,9 @@ onMounted(async () => {
 /* Responsive */
 @media (max-width: 768px) {
   .page-content {
-    padding: var(--page-padding-mobile);
-    padding-bottom: calc(var(--page-padding-mobile) + 2rem);
-    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
   }
 
   .permissions-grid {

@@ -177,7 +177,7 @@ onMounted(loadHomepageSettings)
 </script>
 
 <template>
-  <section class="section" style="max-width: var(--page-max-width); margin: 0 auto; padding: var(--page-padding);">
+  <section class="section">
     <header class="section-header">
       <div>
         <h2>Ana Sayfa Ayarları</h2>
@@ -434,6 +434,12 @@ onMounted(loadHomepageSettings)
 </template>
 
 <style scoped>
+.section {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .section-header {
   display: flex;
   justify-content: space-between;

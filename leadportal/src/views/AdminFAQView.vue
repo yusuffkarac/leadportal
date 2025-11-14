@@ -382,9 +382,9 @@ onMounted(() => {
 
 <style scoped>
 .admin-faq-page {
-  max-width: var(--page-max-width);
-  margin: 0 auto;
-  padding: var(--page-padding);
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .page-content {
@@ -777,8 +777,8 @@ onMounted(() => {
 /* Responsive */
 @media (max-width: 768px) {
   .admin-faq-page {
-    padding: var(--page-padding-mobile);
-    max-width: var(--page-max-width);
+    margin: 0;
+    padding: 0;
   }
   
   .filters {
