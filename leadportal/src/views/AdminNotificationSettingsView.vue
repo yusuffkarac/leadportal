@@ -414,9 +414,9 @@ onMounted(() => {
 
 <style scoped>
 .admin-notification-settings {
-  padding: 2rem;
-  max-width: 90%;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .header {
@@ -929,8 +929,8 @@ onMounted(() => {
 /* Mobil responsive */
 @media (max-width: 768px) {
   .admin-notification-settings {
-    padding: 1rem;
-    max-width: 100%;
+    padding: 0;
+    width: 100%;
   }
 
   .header {

@@ -440,9 +440,9 @@ onMounted(() => {
 
 <style scoped>
 .admin-about-page {
-  max-width: var(--page-max-width);
-  margin: 0 auto;
-  padding: var(--page-padding);
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .page-content {
@@ -876,8 +876,8 @@ onMounted(() => {
 /* Responsive */
 @media (max-width: 768px) {
   .admin-about-page {
-    padding: var(--page-padding-mobile);
-    max-width: var(--page-max-width);
+    padding: 0;
+    max-width: 100%;
   }
   
   .filters {

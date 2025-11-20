@@ -397,9 +397,9 @@ onMounted(() => {
 
 <style scoped>
 .admin-activity-log {
-  max-width: var(--page-max-width);
-  margin: 0 auto;
-  padding: var(--page-padding);
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .page-header {
@@ -955,8 +955,8 @@ onMounted(() => {
 
 @media (max-width: 768px) {
   .admin-activity-log {
-    padding: var(--page-padding-mobile);
-    max-width: var(--page-max-width);
+    padding: 0;
+    max-width: 100%;
   }
   .refresh-btn{
     display: none;
@@ -1026,7 +1026,7 @@ onMounted(() => {
 
 @media (max-width: 480px) {
   .admin-activity-log {
-    padding: 0.5rem;
+    padding: 0;
   }
 
   .filters-section {

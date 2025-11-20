@@ -1294,13 +1294,16 @@ onMounted(() => {
 .admin-settings-page {
   min-height: 100vh;
   background: #f8fafc;
-  padding: var(--page-padding);
+  padding: 0;
+  margin: 0;
+  width: 100%;
   overflow-x: hidden;
 }
 
 .page-content {
-  max-width: var(--page-max-width);
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .page-header {
@@ -2025,10 +2028,10 @@ onMounted(() => {
 }
 
   .admin-settings-page {
-  padding: var(--page-padding-mobile);
+  padding: 0;
 }
   .page-content{
-    max-width: var(--page-max-width);
+    width: 100%;
   }
 
   .tabs-nav {

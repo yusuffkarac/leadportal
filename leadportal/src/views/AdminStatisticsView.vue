@@ -973,9 +973,9 @@ onMounted(() => {
 
 <style scoped>
 .admin-statistics {
-  max-width: var(--page-max-width);
-  margin: 0 auto;
-  padding: var(--page-padding);
+  padding: 0;
+  padding-bottom: 0;
+  width: 100%;
 }
 
 .page-header {
@@ -1982,10 +1982,11 @@ onMounted(() => {
 
 @media (max-width: 768px) {
   .admin-statistics {
-    padding: var(--page-padding-mobile);
-    padding-bottom: calc(var(--page-padding-mobile) + 2rem);
+    padding: 0;
+    padding-bottom: 0;
     max-width: 100%;
   }
+
   .card-header {
     flex-direction: column;
   

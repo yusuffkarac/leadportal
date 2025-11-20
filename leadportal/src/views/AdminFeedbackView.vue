@@ -615,9 +615,9 @@ watch(() => route.query.id, (newId) => {
 .admin-feedback-page {
   min-height: 100vh;
   background: #f8fafc;
-  max-width: var(--page-max-width);
-  margin: 0 auto;
-  padding: var(--page-padding);
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .page-content {

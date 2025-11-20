@@ -414,9 +414,9 @@ onMounted(() => {
 
 <style scoped>
 .balance-management {
-  padding: var(--page-padding);
-  max-width: var(--page-max-width);
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .page-header {
@@ -887,7 +887,7 @@ onMounted(() => {
 @media (max-width: 1024px) {
   .balance-management {
     max-width: 100%;
-    padding: 1rem;
+    padding: 0;
   }
 
   .content-wrapper {
@@ -901,7 +901,7 @@ onMounted(() => {
 
 @media (max-width: 768px) {
   .balance-management {
-    padding: 0.75rem;
+    padding: 0;
     max-width: 100%;
   }
 
@@ -1142,7 +1142,7 @@ onMounted(() => {
 
 @media (max-width: 480px) {
   .balance-management {
-    padding: 0.5rem;
+    padding: 0;
   }
 
   .page-header {

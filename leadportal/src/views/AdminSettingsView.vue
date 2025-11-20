@@ -1310,8 +1310,8 @@ onMounted(() => {
 
 <style scoped>
 /* Page */
-.admin-settings-page { min-height: 100vh; background: #f8fafc; padding: var(--page-padding); overflow-x: hidden; }
-.page-content { max-width: var(--page-max-width); margin: 0 auto; }
+.admin-settings-page { min-height: 100vh; background: #f8fafc; padding: 0; margin: 0; width: 100%; overflow-x: hidden; }
+.page-content { width: 100%; margin: 0; padding: 0; }
 .page-header { margin-bottom: 32px; text-align: center; }
 .page-header h1 { font-size: 2.5rem; font-weight: 700; color: #1f2937; margin: 0 0 8px; }
 .page-subtitle { font-size: 1rem; color: #6b7280; margin: 0; }
@@ -1610,17 +1610,14 @@ input:checked + .toggle-slider:before { transform: translateX(26px); }
 }
 
 @media (max-width: 768px) {
-  .admin-settings-page { padding: var(--page-padding-mobile); }
   .page-header h1 { font-size: 2rem; }
   .tabs-nav { flex-wrap: wrap; }
   .tab-button { padding: 0.875rem 1rem; font-size: 0.875rem; }
 
   .settings-section { padding: 20px; }
   .settings-grid-row { grid-template-columns: 1fr; }
-  .link-item { grid-template-columns: 1fr; }
-  .insurance-type-item-with-icon { grid-template-columns: 40px 1fr 36px; }
-  .icon-picker { width: 100%; grid-column: 1 / -1; }
-  .color-picker-wrapper { grid-column: 1 / -1; }
-  .icon-picker-modal-overlay { padding: 10px; }
+  .section-group { padding: 16px; }
+  .links-container { gap: 12px; }
+  .subsection { padding: 16px; }
 }
 </style>
