@@ -237,8 +237,6 @@ function onAdminMenuStyleChange() {
   adminMenuStyle.value = localStorage.getItem('adminMenuStyle') === 'sidebar'
 }
 
-const isAdminRoute = computed(() => route.matched.some(record => record.meta && record.meta.requiresAdmin))
-
 // Sayfa yetkilendirmelerini kontrol et
 const canAccessAbout = computed(() => {
   return pagePermissions.value['/about'] !== false
@@ -1015,16 +1013,8 @@ function closeAdminCategory() {
           :is="Component"
           :key="`normal-${route.fullPath}`"
         />
-        <AdminLayout v-else-if="!adminMenuStyle" :key="`admin-dropdown-${route.fullPath}`">
+        <AdminLayout v-else :key="`admin-dropdown-${route.fullPath}`">
           <component :is="Component" />
-        </AdminLayout>
-        <component
-          v-if="!isAdminRoute"
-          :is="Component"
-          :key="route.fullPath"
-        />
-        <AdminLayout v-else :key="route.fullPath">
-        <component :is="Component" />
         </AdminLayout>
       </transition>
     </RouterView>
