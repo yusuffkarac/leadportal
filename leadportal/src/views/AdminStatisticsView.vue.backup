@@ -1,0 +1,826 @@
+<script setup>
+import { ref, onMounted, computed } from 'vue'
+import api from '@/utils/axios.js'
+import { formatPrice } from '@/utils/currency.js'
+import LineChart from '@/components/charts/LineChart.vue'
+import BarChart from '@/components/charts/BarChart.vue'
+
+const statistics = ref(null)
+const settings = ref({ defaultCurrency: 'EUR' })
+const isLoading = ref(true)
+const error = ref('')
+
+// Chart data computed properties
+const salesTrendChartData = computed(() => {
+  if (!statistics.value?.salesTrend) return null
+
+  return {
+    labels: statistics.value.salesTrend.map(d => {
+      const date = new Date(d.date)
+      return `${date.getDate()}/${date.getMonth() + 1}`
+    }),
+    datasets: [
+      {
+        label: 'Satışlar',
+        data: statistics.value.salesTrend.map(d => d.count),
+        borderColor: '#1d4ed8',
+        backgroundColor: 'rgba(29, 78, 216, 0.1)',
+        fill: true,
+        tension: 0.4
+      },
+      {
+        label: 'Gelir',
+        data: statistics.value.salesTrend.map(d => d.revenue),
+        borderColor: '#059669',
+        backgroundColor: 'rgba(5, 150, 105, 0.1)',
+        fill: true,
+        tension: 0.4,
+        yAxisID: 'y1'
+      }
+    ]
+  }
+})
+
+const hourlyActivityChartData = computed(() => {
+  if (!statistics.value?.userEngagement?.hourlyActivity) return null
+
+  return {
+    labels: Array.from({ length: 24 }, (_, i) => `${i}:00`),
+    datasets: [
+      {
+        label: 'Aktivite',
+        data: statistics.value.userEngagement.hourlyActivity,
+        backgroundColor: 'rgba(29, 78, 216, 0.6)',
+        borderColor: '#1d4ed8',
+        borderWidth: 1
+      }
+    ]
+  }
+})
+
+const revenueComparisonChartData = computed(() => {
+  if (!statistics.value?.financialComparison) return null
+
+  const fc = statistics.value.financialComparison
+  return {
+    labels: ['Bu Hafta', 'Geçen Hafta', 'Bu Ay', 'Geçen Ay'],
+    datasets: [
+      {
+        label: 'Gelir',
+        data: [
+          fc.thisWeek.revenue,
+          fc.lastWeek.revenue,
+          fc.thisMonth.revenue,
+          fc.lastMonth.revenue
+        ],
+        backgroundColor: ['#1d4ed8', '#60a5fa', '#059669', '#34d399'],
+        borderWidth: 0
+      }
+    ]
+  }
+})
+
+async function loadStatistics() {
+  isLoading.value = true
+  error.value = ''
+
+  try {
+    const [statsRes, settingsRes] = await Promise.all([
+      api.get('/statistics'),
+      api.get('/settings/branding')
+    ])
+
+    statistics.value = statsRes.data
+    settings.value.defaultCurrency = settingsRes.data?.defaultCurrency || 'EUR'
+  } catch (err) {
+    console.error('İstatistikler yüklenemedi:', err)
+    error.value = 'İstatistikler yüklenirken bir hata oluştu.'
+  } finally {
+    isLoading.value = false
+  }
+}
+
+onMounted(() => {
+  loadStatistics()
+})
+</script>
+
+<template>
+  <div class="admin-statistics">
+    <div class="page-header">
+      <div class="header-left">
+        <h1>Platform İstatistikleri</h1>
+        <p class="subtitle">Detaylı performans metrikleri ve analiz</p>
+      </div>
+      <button class="refresh-btn" @click="loadStatistics" :disabled="isLoading">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+        </svg>
+        Yenile
+      </button>
+    </div>
+
+    <div v-if="isLoading" class="loading-state">
+      <div class="spinner"></div>
+      <p>İstatistikler yükleniyor...</p>
+    </div>
+
+    <div v-else-if="error" class="error-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <p>{{ error }}</p>
+      <button @click="loadStatistics" class="retry-btn">Tekrar Dene</button>
+    </div>
+
+    <div v-else class="statistics-content">
+      <!-- Üst Metrikler -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Toplam Kullanıcılar</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="metric-value">{{ statistics.totalUsers?.toLocaleString() || '0' }}</div>
+          <div class="metric-detail">
+            <span class="detail-label">Aktif Kullanıcılar:</span>
+            <span class="detail-value">{{ statistics.activeUsers || 0 }}</span>
+          </div>
+          <div class="metric-footer">
+            <span class="badge badge-success">+{{ statistics.newUsersLast24h || 0 }}</span>
+            <span class="footer-text">Son 24 saat</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Bugün Satılan Leadler</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <div class="metric-value">{{ statistics.todayLeadsSold || 0 }}</div>
+          <div class="metric-detail">
+            <span class="detail-label">Bugünkü Gelir:</span>
+            <span class="detail-value">{{ formatPrice(statistics.todayRevenue || 0, settings.defaultCurrency) }}</span>
+          </div>
+          <div class="metric-footer">
+            <span class="badge badge-primary">{{ statistics.todayLeadsSold || 0 }} lead</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Toplam Satış</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="metric-value">{{ formatPrice(statistics.allTimeRevenue || 0, settings.defaultCurrency) }}</div>
+          <div class="metric-detail">
+            <span class="detail-label">Toplam Lead:</span>
+            <span class="detail-value">{{ statistics.allTimeLeadsSold?.toLocaleString() || '0' }}</span>
+          </div>
+          <div class="metric-footer">
+            <span class="badge badge-warning">Ortalama: {{ formatPrice(statistics.avgLeadPrice || 0, settings.defaultCurrency) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detaylı İstatistikler -->
+      <div class="details-grid">
+        <!-- En Çok Satın Alanlar -->
+        <div class="detail-card">
+          <div class="card-header">
+            <h2>En Çok Satın Alanlar</h2>
+            <span class="subtitle">Bu ay en aktif alıcılar</span>
+          </div>
+          <div class="buyers-list">
+            <div
+              v-for="(buyer, index) in statistics.topBuyers?.slice(0, 5) || []"
+              :key="buyer.id"
+              class="buyer-item"
+            >
+              <div class="buyer-rank" :class="`rank-${index + 1}`">{{ index + 1 }}</div>
+              <div class="buyer-info">
+                <span class="buyer-name">{{ buyer.name || 'Bilinmeyen' }}</span>
+                <span class="buyer-stats">{{ buyer.leadCount || 0 }} lead satın aldı</span>
+              </div>
+              <div class="buyer-amount">
+                <span class="amount">{{ formatPrice(buyer.totalSpent || 0, settings.defaultCurrency) }}</span>
+                <span v-if="buyer.growth" class="growth" :class="buyer.growth > 0 ? 'positive' : 'negative'">
+                  {{ buyer.growth > 0 ? '+' : '' }}{{ buyer.growth }}%
+                </span>
+              </div>
+            </div>
+            <div v-if="!statistics.topBuyers || statistics.topBuyers.length === 0" class="empty-state">
+              <p>Henüz satın alma verisi bulunmuyor.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sigorta Tipi Dağılımı -->
+        <div class="detail-card">
+          <div class="card-header">
+            <h2>Sigorta Tipi Dağılımı</h2>
+            <span class="subtitle">Gelir dağılımı analizi</span>
+          </div>
+          <div class="revenue-by-type">
+            <div
+              v-for="type in statistics.revenueByType || []"
+              :key="type.insuranceType"
+              class="type-item"
+            >
+              <div class="type-header">
+                <span class="type-name">{{ type.insuranceType || 'Belirtilmemiş' }}</span>
+                <span class="type-amount">{{ formatPrice(type.revenue || 0, settings.defaultCurrency) }}</span>
+              </div>
+              <div class="type-progress">
+                <div
+                  class="progress-bar"
+                  :style="{ width: type.percentage + '%' }"
+                ></div>
+              </div>
+              <div class="type-stats">
+                <span>{{ type.leadCount || 0 }} lead</span>
+                <span>{{ type.percentage || 0 }}%</span>
+              </div>
+            </div>
+            <div v-if="!statistics.revenueByType || statistics.revenueByType.length === 0" class="empty-state">
+              <p>Henüz sigorta tipi verisi bulunmuyor.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Son Aktiviteler -->
+      <div class="activity-section">
+        <div class="card-header">
+          <h2>Son Aktiviteler</h2>
+          <span class="subtitle">Son 24 saatteki önemli olaylar</span>
+        </div>
+        <div class="activity-list">
+          <div
+            v-for="activity in statistics.recentActivity || []"
+            :key="activity.id"
+            class="activity-item"
+          >
+            <div class="activity-icon" :class="`icon-${activity.type}`">
+              <svg v-if="activity.type === 'sale'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+              <svg v-else-if="activity.type === 'user'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="8.5" cy="7" r="4"/>
+                <line x1="20" y1="8" x2="20" y2="14"/>
+                <line x1="23" y1="11" x2="17" y2="11"/>
+              </svg>
+              <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div class="activity-content">
+              <p class="activity-title">{{ activity.title }}</p>
+              <p class="activity-description">{{ activity.description }}</p>
+            </div>
+            <div class="activity-meta">
+              <span class="activity-time">{{ activity.time }}</span>
+              <span v-if="activity.badge" class="activity-badge" :class="`badge-${activity.badgeType}`">
+                {{ activity.badge }}
+              </span>
+            </div>
+          </div>
+          <div v-if="!statistics.recentActivity || statistics.recentActivity.length === 0" class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <p>Henüz aktivite bulunmuyor.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.admin-statistics {
+  max-width: 90%;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.header-left h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+  color: var(--text);
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-state svg {
+  color: var(--danger);
+  margin-bottom: 1rem;
+}
+
+.retry-btn {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.retry-btn:hover {
+  opacity: 0.9;
+}
+
+/* Metrikler Grid */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.metric-card {
+  background: var(--panel);
+  border: 1.5px solid #d1d5db;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: all 0.2s;
+}
+
+.metric-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.metric-label {
+  font-size: 0.875rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.metric-header svg {
+  color: var(--primary);
+}
+
+.metric-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.75rem;
+}
+
+.metric-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border);
+  margin-bottom: 0.75rem;
+}
+
+.detail-label {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.detail-value {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.metric-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-success {
+  background: #dcfce7;
+  color: #047857;
+}
+
+.badge-primary {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-warning {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.footer-text {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* Detaylı İstatistikler */
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.detail-card {
+  background: var(--panel);
+  border: 1.5px solid #d1d5db;
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.card-header {
+  margin-bottom: 1.5rem;
+}
+
+.card-header h2 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.25rem;
+  color: var(--text);
+}
+
+/* Alıcılar Listesi */
+.buyers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.buyer-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg);
+  border-radius: 0.75rem;
+  transition: all 0.2s;
+}
+
+.buyer-item:hover {
+  background: var(--border);
+}
+
+.buyer-rank {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.rank-1 {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #854d0e;
+}
+
+.rank-2 {
+  background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
+  color: #52525b;
+}
+
+.rank-3 {
+  background: linear-gradient(135deg, #cd7f32, #e5a572);
+  color: #78350f;
+}
+
+.rank-4,
+.rank-5 {
+  background: var(--border);
+  color: var(--muted);
+}
+
+.buyer-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.buyer-name {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.buyer-stats {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.buyer-amount {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.amount {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.growth {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.growth.positive {
+  color: var(--success);
+}
+
+.growth.negative {
+  color: var(--danger);
+}
+
+/* Sigorta Tipi Dağılımı */
+.revenue-by-type {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.type-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.type-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.type-name {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.type-amount {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.type-progress {
+  height: 8px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--success));
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.type-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* Aktiviteler */
+.activity-section {
+  background: var(--panel);
+  border: 1.5px solid #d1d5db;
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg);
+  border-radius: 0.75rem;
+  transition: all 0.2s;
+}
+
+.activity-item:hover {
+  background: var(--border);
+}
+
+.activity-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon-sale {
+  background: #dcfce7;
+  color: #047857;
+}
+
+.icon-user {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-title {
+  margin: 0 0 0.25rem 0;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.activity-description {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.activity-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.activity-time {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.activity-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-success {
+  background: #dcfce7;
+  color: #047857;
+}
+
+.badge-primary {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.empty-state svg {
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .admin-statistics {
+    padding: 1rem;
+    max-width: 955;
+  }
+
+  .page-header {
+    flex-direction: column;
+  }
+
+  .metrics-grid,
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metric-value {
+    font-size: 2rem;
+  }
+
+  .buyer-item {
+    flex-wrap: wrap;
+  }
+
+  .buyer-amount {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+</style>
