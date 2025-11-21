@@ -98,7 +98,7 @@
               <div class="subject-content">
                 <div class="subject-title">{{ feedback.subject }}</div>
                 <div v-if="feedback.comment" class="subject-comment">{{ feedback.comment.substring(0, 60) }}{{ feedback.comment.length > 60 ? '...' : '' }}</div>
-                <div class="subject-lead">{{ feedback.leadSale.lead.title }}</div>
+                <div class="subject-lead">{{ feedback.leadSale.lead.title }} ({{ feedback.leadSale.lead.id }})</div>
               </div>
             </div>
             <div class="list-col col-user">

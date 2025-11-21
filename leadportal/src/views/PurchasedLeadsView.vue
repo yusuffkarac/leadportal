@@ -149,7 +149,7 @@
               <td class="lead-cell">
                 <div class="lead-info">
                   <div>
-                    <div class="lead-title-text">{{ sale.lead.title }}</div>
+                    <div class="lead-title-text">{{ sale.lead.title }} ({{ sale.lead.id }})</div>
                     <div class="lead-description-text">{{ sale.lead.description?.substring(0, 80) }}...</div>
                   </div>
                 </div>
@@ -210,7 +210,7 @@
         <div v-for="sale in filteredAndSortedLeads" :key="sale.id" class="purchased-lead-card" :data-lead-id="sale.lead.id">
           <div class="lead-header">
             <div class="lead-info">
-              <h3 class="lead-title">{{ sale.lead.title }}</h3>
+              <h3 class="lead-title">{{ sale.lead.title }} ({{ sale.lead.id }})</h3>
               <p class="lead-description">{{ sale.lead.description }}</p>
             </div>
             <div class="lead-status">

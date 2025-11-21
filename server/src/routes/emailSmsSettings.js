@@ -333,6 +333,7 @@ router.post('/email-templates/:id/preview', requireAdmin, async (req, res) => {
     const exampleVariables = {
       companyName: 'LeadPortal',
       leadTitle: 'Test Lead',
+      leadId: 'example-123',
       amount: '5000',
       newAmount: '6500',
       currency: 'TL',
@@ -406,6 +407,7 @@ router.post('/email-templates/:id/send-test', requireAdmin, async (req, res) => 
         variables = {
           ...variables,
           leadTitle: lead.title,
+          leadId: lead.id,
           amount: latestBid?.amount?.toString() || lead.startPrice.toString(),
           newAmount: (previousBid ? previousBid.amount : lead.startPrice).toString(),
           currency: 'TL',
@@ -417,6 +419,7 @@ router.post('/email-templates/:id/send-test', requireAdmin, async (req, res) => 
       variables = {
         ...variables,
         leadTitle: 'Test Lead',
+        leadId: 'example-123',
         amount: '5000',
         newAmount: '6500',
         currency: 'TL',

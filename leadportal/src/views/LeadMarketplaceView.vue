@@ -1908,7 +1908,7 @@ onUnmounted(() => {
                     <div class="lead-title-header">
                       <div class="lead-title-text clickable-title" @click="navigateToLead(lead)">
                         <span v-if="lead.insuranceType" class="insurance-type-inline" :style="{ backgroundColor: getInsuranceTypeColor(lead.insuranceType) }">{{ lead.insuranceType }}</span>
-                        {{ lead.title }}
+                        {{ lead.title }} ({{ lead.id }})
                       </div>
                       <div class="lead-title-right">
                         <div class="lead-id-badge-inline">{{ String(lead.id).slice(-10) }}</div>

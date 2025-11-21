@@ -411,7 +411,7 @@ onMounted(() => {
               <h3>Schnellste Verkäufe</h3>
               <div class="fastest-sales-list">
                 <div v-for="sale in statistics.leadPerformance.fastestSales" :key="sale.title" class="fast-sale-item">
-                  <span class="sale-title">{{ sale.title }}</span>
+                  <span class="sale-title">{{ sale.title }}{{ sale.id ? ` (${sale.id})` : '' }}</span>
                   <span class="sale-time">{{ sale.hours }} Stunden</span>
                   <span class="sale-amount">{{ formatPrice(sale.amount, settings.defaultCurrency) }}</span>
                 </div>
@@ -422,7 +422,7 @@ onMounted(() => {
               <h3>Höchstpreis-Verkäufe</h3>
               <div class="highest-sales-list">
                 <div v-for="sale in statistics.leadPerformance.highestSales" :key="sale.title" class="high-sale-item">
-                  <span class="sale-title">{{ sale.title }}</span>
+                  <span class="sale-title">{{ sale.title }}{{ sale.id ? ` (${sale.id})` : '' }}</span>
                   <span class="sale-buyer">{{ sale.buyer }}</span>
                   <span class="sale-amount highlight">{{ formatPrice(sale.amount, settings.defaultCurrency) }}</span>
                 </div>
@@ -511,7 +511,7 @@ onMounted(() => {
                 <h3>Leads mit den meisten Geboten</h3>
                 <div class="bidded-leads-list">
                   <div v-for="lead in statistics.bidStatistics.mostBiddedLeads" :key="lead.title" class="bidded-lead-item">
-                    <span class="lead-title">{{ lead.title }}</span>
+                    <span class="lead-title">{{ lead.title }}{{ lead.id ? ` (${lead.id})` : '' }}</span>
                     <span class="bid-count badge badge-primary">{{ lead.bidCount }} Gebote</span>
                     <span :class="['status-badge', lead.isActive ? 'active' : 'inactive']">
                       {{ lead.isActive ? 'Aktiv' : 'Inaktiv' }}
@@ -524,14 +524,14 @@ onMounted(() => {
             <!-- Coğrafi Analiz -->
             <div v-if="statistics.geographicData" class="detail-card">
               <div class="card-header">
-                <h2>Posta Kodu Analizi</h2>
-                <span class="subtitle">En çok satış yapılan bölgeler</span>
+                <h2>Postleitzahlen-Analyse</h2>
+                <span class="subtitle">Regionen mit den meisten Verkäufen</span>
               </div>
               <div class="postal-codes-list">
                 <div v-for="(pc, index) in statistics.geographicData.topPostalCodes" :key="pc.postalCode" class="postal-code-item">
                   <span class="rank">#{{ index + 1 }}</span>
                   <span class="postal-code">{{ pc.postalCode }}</span>
-                  <span class="count">{{ pc.count }} satış</span>
+                  <span class="count">{{ pc.count }} Verkäufe</span>
                   <span class="revenue">{{ formatPrice(pc.revenue, settings.defaultCurrency) }}</span>
                 </div>
               </div>
@@ -562,22 +562,22 @@ onMounted(() => {
           <div v-if="statistics.financialComparison" class="comparison-section">
         <div class="card-header">
           <h2>Finanzvergleiche</h2>
-          <span class="subtitle">Dönemsel büyüme analizi</span>
+          <span class="subtitle">Periodische Wachstumsanalyse</span>
         </div>
 
         <div class="comparison-grid">
           <div class="comparison-card">
-            <h3>Haftalık Karşılaştırma</h3>
+            <h3>Wöchentlicher Vergleich</h3>
             <div class="comparison-data">
               <div class="period">
-                <span class="period-label">Bu Hafta</span>
+                <span class="period-label">Diese Woche</span>
                 <span class="period-value">{{ formatPrice(statistics.financialComparison.thisWeek.revenue, settings.defaultCurrency) }}</span>
-                <span class="period-count">{{ statistics.financialComparison.thisWeek.count }} satış</span>
+                <span class="period-count">{{ statistics.financialComparison.thisWeek.count }} Verkäufe</span>
               </div>
               <div class="period">
-                <span class="period-label">Geçen Hafta</span>
+                <span class="period-label">Letzte Woche</span>
                 <span class="period-value">{{ formatPrice(statistics.financialComparison.lastWeek.revenue, settings.defaultCurrency) }}</span>
-                <span class="period-count">{{ statistics.financialComparison.lastWeek.count }} satış</span>
+                <span class="period-count">{{ statistics.financialComparison.lastWeek.count }} Verkäufe</span>
               </div>
               <div class="growth-indicator" :class="statistics.financialComparison.weeklyGrowth >= 0 ? 'positive' : 'negative'">
                 <span>{{ statistics.financialComparison.weeklyGrowth >= 0 ? '+' : '' }}{{ statistics.financialComparison.weeklyGrowth }}%</span>
@@ -586,17 +586,17 @@ onMounted(() => {
           </div>
 
           <div class="comparison-card">
-            <h3>Aylık Karşılaştırma</h3>
+            <h3>Monatlicher Vergleich</h3>
             <div class="comparison-data">
               <div class="period">
-                <span class="period-label">Bu Ay</span>
+                <span class="period-label">Dieser Monat</span>
                 <span class="period-value">{{ formatPrice(statistics.financialComparison.thisMonth.revenue, settings.defaultCurrency) }}</span>
-                <span class="period-count">{{ statistics.financialComparison.thisMonth.count }} satış</span>
+                <span class="period-count">{{ statistics.financialComparison.thisMonth.count }} Verkäufe</span>
               </div>
               <div class="period">
-                <span class="period-label">Geçen Ay</span>
+                <span class="period-label">Letzter Monat</span>
                 <span class="period-value">{{ formatPrice(statistics.financialComparison.lastMonth.revenue, settings.defaultCurrency) }}</span>
-                <span class="period-count">{{ statistics.financialComparison.lastMonth.count }} satış</span>
+                <span class="period-count">{{ statistics.financialComparison.lastMonth.count }} Verkäufe</span>
               </div>
               <div class="growth-indicator" :class="statistics.financialComparison.monthlyGrowth >= 0 ? 'positive' : 'negative'">
                 <span>{{ statistics.financialComparison.monthlyGrowth >= 0 ? '+' : '' }}{{ statistics.financialComparison.monthlyGrowth }}%</span>
@@ -652,8 +652,8 @@ onMounted(() => {
           <!-- Son Aktiviteler -->
           <div class="activity-section">
             <div class="card-header">
-              <h2>Son Aktiviteler</h2>
-              <span class="subtitle">Son 24 saatteki önemli olaylar</span>
+              <h2>Letzte Aktivitäten</h2>
+              <span class="subtitle">Wichtige Ereignisse der letzten 24 Stunden</span>
             </div>
             <div class="activity-list">
               <div
@@ -704,13 +704,13 @@ onMounted(() => {
       <div v-if="statistics.userActivity" class="activity-stats-section">
         <div class="card-header">
           <h2>Letzte Benutzeraktivitäten</h2>
-          <span class="subtitle">En son aktif olan kullanıcılar ve online durum</span>
+          <span class="subtitle">Zuletzt aktive Benutzer und Online-Status</span>
         </div>
 
         <div class="online-stats">
           <div class="online-badge">
             <span class="online-indicator"></span>
-            <span class="online-text">{{ statistics.userActivity.onlineUsers }} kullanıcı şu anda online</span>
+            <span class="online-text">{{ statistics.userActivity.onlineUsers }} Benutzer derzeit online</span>
           </div>
         </div>
 
@@ -718,11 +718,11 @@ onMounted(() => {
           <table>
             <thead>
               <tr>
-                <th>Durum</th>
+                <th>Status</th>
                 <th>Benutzer</th>
-                <th>Son Aktivite</th>
-                <th>IP Adresi</th>
-                <th>Cihaz</th>
+                <th>Letzte Aktivität</th>
+                <th>IP-Adresse</th>
+                <th>Gerät</th>
               </tr>
             </thead>
             <tbody>
@@ -777,7 +777,7 @@ onMounted(() => {
             <div class="watched-leads">
               <h4>Am meisten beobachtete Leads</h4>
               <div v-for="lead in statistics.userEngagement.mostWatchedLeads" :key="lead.title" class="watched-lead-item">
-                <span class="lead-title">{{ lead.title }}</span>
+                <span class="lead-title">{{ lead.title }}{{ lead.id ? ` (${lead.id})` : '' }}</span>
                 <span class="watch-count">{{ lead.watchCount }} Beobachter</span>
               </div>
             </div>
@@ -824,7 +824,7 @@ onMounted(() => {
       <div v-if="statistics.feedbackStatistics" class="feedback-stats-section">
         <div class="card-header">
           <h2>Feedback-Statistiken</h2>
-          <span class="subtitle">Ticket ve müşteri memnuniyeti metrikleri</span>
+          <span class="subtitle">Ticket- und Kundenzufriedenheitsmetriken</span>
         </div>
 
         <div class="feedback-metrics-grid">
@@ -876,7 +876,7 @@ onMounted(() => {
 
           <div class="feedback-metric-card">
             <div class="metric-header">
-              <span class="metric-label">Ort. Yanıt Süresi</span>
+              <span class="metric-label">Ø Antwortzeit</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"/>
                 <polyline points="12 6 12 12 16 14"/>

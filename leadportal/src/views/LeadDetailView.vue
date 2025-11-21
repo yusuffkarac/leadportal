@@ -304,7 +304,7 @@ onUnmounted(() => {
               <span class="status-indicator" :class="lead.isActive ? 'active' : 'inactive'"></span>
               <span class="status-text">{{ lead.isActive ? 'Aktive Auktion' : 'Abgeschlossen' }}</span>
             </div>
-            <h1 class="lead-title">{{ lead.title }}</h1>
+            <h1 class="lead-title">{{ lead.title }} ({{ lead.id }})</h1>
             <p class="lead-description">{{ lead.description || 'Keine Beschreibung verfügbar' }}</p>
             <div v-if="lead.insuranceType" class="insurance-type-badge">
               <span class="insurance-label">Versicherungstyp:</span>

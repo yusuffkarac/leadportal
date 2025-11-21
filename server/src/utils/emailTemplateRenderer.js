@@ -49,8 +49,19 @@ function renderVariables(template, variables) {
   
   let rendered = template
   
+  // Önce leadTitle'ı özel olarak işle - eğer leadId varsa, leadTitle'ın yanına ekle
+  if (variables.leadTitle !== undefined && variables.leadId !== undefined && variables.leadId !== null) {
+    const leadTitleWithId = `${variables.leadTitle} (${variables.leadId})`
+    const regex = new RegExp(`{{leadTitle}}`, 'g')
+    rendered = rendered.replace(regex, leadTitleWithId)
+  }
+  
   // {{variable}} formatındaki tüm değişkenleri bul ve değiştir
   Object.keys(variables).forEach(key => {
+    // leadTitle'ı zaten işledik, tekrar işleme
+    if (key === 'leadTitle' && variables.leadId !== undefined && variables.leadId !== null) {
+      return
+    }
     const regex = new RegExp(`{{${key}}}`, 'g')
     const value = variables[key] !== undefined && variables[key] !== null ? variables[key] : ''
     rendered = rendered.replace(regex, value)
@@ -63,38 +74,41 @@ function renderVariables(template, variables) {
  * Template bulunamazsa kullanılacak fallback template'ler
  */
 function getFallbackTemplate(templateType, variables) {
-  const { companyName = 'LeadPortal', leadTitle = '', amount = 0, currency = 'TL', leadUrl = '', newAmount = 0 } = variables
+  const { companyName = 'LeadPortal', leadTitle = '', leadId = null, amount = 0, currency = 'TL', leadUrl = '', newAmount = 0 } = variables
+  
+  // Lead title'a ID ekle
+  const leadTitleWithId = leadId ? `${leadTitle} (${leadId})` : leadTitle
 
   const fallbacks = {
     bidReceived: {
-      subject: `Teklifiniz alındı: ${leadTitle}`,
+      subject: `Teklifiniz alındı: ${leadTitleWithId}`,
       html: `
         <div style="background:#f6f8fb;padding:24px;font-family:system-ui,sans-serif;">
           <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;padding:32px;">
             <h1 style="color:#2563eb;margin:0 0 16px 0;">${companyName}</h1>
             <h2 style="margin:0 0 16px 0;">Teklifiniz alındı</h2>
-            <p><strong>${leadTitle}</strong> ilanına <strong>${amount} ${currency}</strong> teklif verdiniz.</p>
+            <p><strong>${leadTitleWithId}</strong> ilanına <strong>${amount} ${currency}</strong> teklif verdiniz.</p>
             ${leadUrl ? `<a href="${leadUrl}" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 24px;text-decoration:none;border-radius:8px;margin-top:16px;">İlanı Gör</a>` : ''}
             <p style="margin-top:24px;color:#6b7280;font-size:12px;">© ${currentYear()} ${companyName}</p>
           </div>
         </div>
       `,
-      text: `Teklifiniz alındı\n\n${leadTitle} ilanına ${amount} ${currency} teklif verdiniz.\n\n${leadUrl ? `İlan: ${leadUrl}\n\n` : ''}${companyName}`
+      text: `Teklifiniz alındı\n\n${leadTitleWithId} ilanına ${amount} ${currency} teklif verdiniz.\n\n${leadUrl ? `İlan: ${leadUrl}\n\n` : ''}${companyName}`
     },
     outbid: {
-      subject: `Daha yüksek teklif verildi: ${leadTitle}`,
+      subject: `Daha yüksek teklif verildi: ${leadTitleWithId}`,
       html: `
         <div style="background:#f6f8fb;padding:24px;font-family:system-ui,sans-serif;">
           <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;padding:32px;">
             <h1 style="color:#dc2626;margin:0 0 16px 0;">${companyName}</h1>
             <h2 style="margin:0 0 16px 0;">Teklifiniz geçildi</h2>
-            <p><strong>${leadTitle}</strong> ilanında yeni teklif: <strong>${newAmount} ${currency}</strong></p>
+            <p><strong>${leadTitleWithId}</strong> ilanında yeni teklif: <strong>${newAmount} ${currency}</strong></p>
             ${leadUrl ? `<a href="${leadUrl}" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 24px;text-decoration:none;border-radius:8px;margin-top:16px;">Yeni Teklif Ver</a>` : ''}
             <p style="margin-top:24px;color:#6b7280;font-size:12px;">© ${currentYear()} ${companyName}</p>
           </div>
         </div>
       `,
-      text: `Teklifiniz geçildi\n\n${leadTitle} ilanında yeni teklif: ${newAmount} ${currency}\n\n${leadUrl ? `İlan: ${leadUrl}\n\n` : ''}${companyName}`
+      text: `Teklifiniz geçildi\n\n${leadTitleWithId} ilanında yeni teklif: ${newAmount} ${currency}\n\n${leadUrl ? `İlan: ${leadUrl}\n\n` : ''}${companyName}`
     }
   }
 

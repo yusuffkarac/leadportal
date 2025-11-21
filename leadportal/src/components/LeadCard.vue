@@ -290,7 +290,7 @@ const statusBadgeText = computed(() => {
     </div>
 
     <!-- Lead Title -->
-    <h3 class="lead-title">{{ lead.title }}</h3>
+    <h3 class="lead-title">{{ lead.title }} ({{ lead.id }})</h3>
 
     <!-- Price and Bidder Info - Sofort Kauf -->
     <div v-if="lead.leadType === 'SOFORT_KAUF'" class="price-bidder-section sofort-kauf-price">

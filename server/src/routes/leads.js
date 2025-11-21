@@ -164,8 +164,8 @@ async function checkAndSellExpiredLeads(prisma, io) {
           await createNotification(
             lead.ownerId,
             'LEAD_NOT_SOLD',
-            'Lead Rezerv Fiyatına Ulaşmadı',
-            `"${lead.title}" için rezerv fiyata ulaşılamadığı için lead satılmadı. En yüksek teklif: ${finalPriceResult.finalPrice} TL`,
+            'Lead hat Mindestpreis nicht erreicht',
+            `Der Lead "${lead.title}" wurde nicht verkauft, da der Mindestpreis nicht erreicht wurde. Höchstes Gebot: ${finalPriceResult.finalPrice} TL`,
             { leadId: lead.id, highestBid: finalPriceResult.finalPrice, reservePrice: lead.reservePrice }
           )
 
@@ -655,6 +655,7 @@ export default function leadsRouter(prisma, io) {
           balance: true,
           balanceEnabled: true,
           paymentMethod: true,
+          email: true,
           ibanNumber: true,
           ibanAccountHolder: true,
           ibanBic: true,
@@ -665,7 +666,7 @@ export default function leadsRouter(prisma, io) {
       })
 
       if (!buyer) {
-        return res.status(404).json({ error: 'Kullanıcı bulunamadı' })
+        return res.status(404).json({ error: 'Benutzer nicht gefunden' })
       }
 
       // Lead'i kontrol et
@@ -712,7 +713,7 @@ export default function leadsRouter(prisma, io) {
         // Check if current time is within allowed bidding hours
         if (currentTimeInMinutes < startTimeInMinutes || currentTimeInMinutes >= endTimeInMinutes) {
           return res.status(400).json({
-            error: `Satın alma saatleri ${settings.biddingStartHour} - ${settings.biddingEndHour} arasındadır. Lütfen bu saatler arasında tekrar deneyin.`
+            error: `Kaufzeiten sind zwischen ${settings.biddingStartHour} - ${settings.biddingEndHour}. Bitte versuchen Sie es zu diesen Zeiten erneut.`
           })
         }
       }
@@ -720,12 +721,12 @@ export default function leadsRouter(prisma, io) {
       // Check if lead is scheduled for future start or has expired
       const serverTime = now()
       if (lead.startsAt && lead.startsAt > serverTime) {
-        return res.status(400).json({ error: 'Bu lead henüz başlamamıştır. Açık artırma başladığında satın alabilirsiniz.' })
+        return res.status(400).json({ error: 'Dieser Lead hat noch nicht begonnen. Sie können kaufen, sobald die Auktion startet.' })
       }
 
       // Check if lead has expired
       if (lead.endsAt && lead.endsAt < serverTime) {
-        return res.status(400).json({ error: 'Bu lead\'in süresi dolmuştur' })
+        return res.status(400).json({ error: 'Dieser Lead ist abgelaufen' })
       }
 
       // Fiyatı belirle: SOFORT_KAUF için startPrice, AUCTION için instantBuyPrice
@@ -763,7 +764,7 @@ export default function leadsRouter(prisma, io) {
         } else {
           // Bakiye yetersiz ve IBAN yok
           return res.status(400).json({
-            error: 'Lütfen IBAN bilgilerinizi ekleyin veya bakiye yükleyin.',
+            error: 'Bitte fügen Sie Ihre IBAN-Daten hinzu oder laden Sie Guthaben auf.',
             errorType: 'INSUFFICIENT_BALANCE',
             required: purchasePrice,
             available: buyer.balance
@@ -775,7 +776,7 @@ export default function leadsRouter(prisma, io) {
           paymentMethod = 'iban'
         } else {
           return res.status(400).json({
-            error: 'IBAN bilgileriniz kayıtlı değil. Lütfen önce IBAN bilgilerinizi ekleyin.',
+            error: 'Ihre IBAN-Daten sind nicht registriert. Bitte fügen Sie zuerst Ihre IBAN-Daten hinzu.',
             errorType: 'IBAN_NOT_FOUND'
           })
         }
@@ -872,8 +873,8 @@ export default function leadsRouter(prisma, io) {
           await createNotification(
             userId,
             'LEAD_PURCHASED',
-            'Lead Satın Alındı',
-            `"${lead.title}" lead'ini ${purchasePrice} TL'ye satın aldınız.`,
+            'Lead gekauft',
+            `Sie haben den Lead "${lead.title} (${leadId})" für ${purchasePrice} TL gekauft.`,
             { leadId, saleId: sale.id, amount: purchasePrice }
           )
         } catch (e) {
@@ -885,8 +886,8 @@ export default function leadsRouter(prisma, io) {
           await createNotification(
             lead.ownerId,
             'LEAD_SOLD',
-            'Lead Satıldı',
-            `"${lead.title}" lead'iniz ${purchasePrice} TL'ye satıldı.`,
+            'Lead verkauft',
+            `Ihr Lead "${lead.title} (${leadId})" wurde für ${purchasePrice} TL verkauft.`,
             { leadId, saleId: sale.id, amount: purchasePrice }
           )
         } catch (e) {
@@ -898,8 +899,8 @@ export default function leadsRouter(prisma, io) {
           await createNotification(
             lead.ownerId,
             'PAYMENT_RECEIVED',
-            'Ödeme Alındı',
-            `"${lead.title}" satışından ${purchasePrice} TL ödeme aldınız.`,
+            'Zahlung erhalten',
+            `Sie haben ${purchasePrice} TL Zahlung für den Verkauf von "${lead.title} (${leadId})" erhalten.`,
             { leadId, saleId: sale.id, amount: purchasePrice }
           )
         } catch (e) {
@@ -983,9 +984,9 @@ export default function leadsRouter(prisma, io) {
             await createNotification(
               admin.id,
               'PAYMENT_PENDING',
-              'Yeni IBAN Ödemesi Bekliyor',
-              `"${lead.title}" için ${user.email} IBAN ile ${purchasePrice} TL ödeme yaptı. Onay bekleniyor.`,
-              { leadId, saleId: sale.id, amount: purchasePrice, buyerId: userId, buyerEmail: user.email }
+              'Neue IBAN-Zahlung wartet',
+              `${buyer.email} hat ${purchasePrice} TL per IBAN für "${lead.title} (${leadId})" gezahlt. Genehmigung ausstehend.`,
+              { leadId, saleId: sale.id, amount: purchasePrice, buyerId: userId, buyerEmail: buyer.email }
             )
           }
         } catch (e) {
@@ -997,8 +998,8 @@ export default function leadsRouter(prisma, io) {
           await createNotification(
             userId,
             'LEAD_PURCHASED',
-            'Lead Satın Alındı - Ödeme Beklemede',
-            `"${lead.title}" lead'ini ${purchasePrice} TL'ye satın aldınız. IBAN ödemesi admin onayı bekliyor.`,
+            'Lead gekauft - Zahlung ausstehend',
+            `Sie haben den Lead "${lead.title} (${leadId})" für ${purchasePrice} TL gekauft. IBAN-Zahlung wartet auf Admin-Genehmigung.`,
             { leadId, saleId: sale.id, amount: purchasePrice, paymentStatus: 'PENDING' }
           )
         } catch (e) {
@@ -1010,8 +1011,8 @@ export default function leadsRouter(prisma, io) {
           await createNotification(
             lead.ownerId,
             'LEAD_SOLD',
-            'Lead Satıldı - Ödeme Beklemede',
-            `"${lead.title}" lead'iniz ${purchasePrice} TL'ye satıldı. IBAN ödemesi admin onayı bekliyor.`,
+            'Lead verkauft - Zahlung ausstehend',
+            `Ihr Lead "${lead.title} (${leadId})" wurde für ${purchasePrice} TL verkauft. IBAN-Zahlung wartet auf Admin-Genehmigung.`,
             { leadId, saleId: sale.id, amount: purchasePrice, paymentStatus: 'PENDING' }
           )
         } catch (e) {

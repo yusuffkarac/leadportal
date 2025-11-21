@@ -90,16 +90,16 @@ const homepageContent = ref(JSON.parse(JSON.stringify(defaultHomepageContent)))
 function normalizeInsuranceTypes(rawTypes) {
   if (!rawTypes || rawTypes.length === 0) {
     return [
-      { name: 'Hayvan', icon: 'mdi:paw' },
-      { name: 'Araba', icon: 'mdi:car' },
-      { name: 'Sağlık', icon: 'mdi:heart' }
+      { name: 'Tier', icon: 'mdi:paw' },
+      { name: 'Auto', icon: 'mdi:car' },
+      { name: 'Gesundheit', icon: 'mdi:heart' }
     ]
   }
 
   const defaultIcons = {
-    Hayvan: 'mdi:paw',
-    Araba: 'mdi:car',
-    Sağlık: 'mdi:heart'
+    Tier: 'mdi:paw',
+    Auto: 'mdi:car',
+    Gesundheit: 'mdi:heart'
   }
 
   if (typeof rawTypes[0] === 'string') {
@@ -192,7 +192,7 @@ async function ensureZipcodesLoaded() {
     }
     zipcodeIndex.value = m
   } catch (e) {
-    console.error('Zipcodes yüklenemedi', e)
+    console.error('Zipcodes konnten nicht geladen werden', e)
   }
 }
 
@@ -207,7 +207,7 @@ function formatTimeRemaining(endsAt) {
   const endTime = new Date(endsAt)
   const diff = endTime - now
 
-  if (diff <= 0) return 'Süresi doldu'
+  if (diff <= 0) return 'Abgelaufen'
 
   const days = Math.floor(diff / (1000 * 60 * 60 * 24))
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
@@ -216,19 +216,19 @@ function formatTimeRemaining(endsAt) {
 
   if (days > 0) {
     if (hours > 0) {
-      return `${days} gün ${hours} saat`
+      return `${days} Tage ${hours} Stunden`
     } else {
-      return `${days} gün`
+      return `${days} Tage`
     }
   } else if (hours > 0) {
     if (minutes > 0) {
-      return `${hours} saat ${minutes} dakika`
+      return `${hours} Stunden ${minutes} Minuten`
     } else {
-      return `${hours} saat`
+      return `${hours} Stunden`
     }
   } else if (minutes > 0) {
     // 1 saatten az kaldığında dakika ve saniye göster
-    return `${minutes}d ${seconds}s`
+    return `${minutes}m ${seconds}s`
   } else {
     // 1 dakikadan az kaldığında sadece saniye göster
     return `${seconds}s`
@@ -402,7 +402,7 @@ function authHeaders() {
 
 async function submitQuickBid(lead, amount) {
   if (!amount || amount <= 0) {
-    error('Lütfen geçerli bir teklif miktarı girin')
+    error('Bitte geben Sie einen gültigen Gebotsbetrag ein')
     return
   }
 
@@ -417,14 +417,14 @@ async function submitQuickBid(lead, amount) {
       await loadShowcaseLeads()
       if (data.isLeader) {
         const currency = settings.value?.defaultCurrency || 'EUR'
-        success(`Tebrikler! Şu anda lidersiniz. Görünür fiyat: ${formatPrice(data.visiblePrice, currency)}`)
+        success(`Glückwunsch! Sie sind derzeit der Führende. Sichtbarer Preis: ${formatPrice(data.visiblePrice, currency)}`)
       } else {
-        error('Teklifiniz alındı, ancak başka bir kullanıcının maksimumu daha yüksek. Lider olmak için daha yüksek bir maksimum teklif verin.')
+        error('Ihr Gebot wurde angenommen, aber ein anderer Benutzer hat ein höheres Maximum. Geben Sie ein höheres Maximum ab, um der Führende zu werden.')
       }
     }
   } catch (err) {
     const errorData = err.response?.data
-    error(errorData?.error || 'Teklif verme işlemi başarısız')
+    error(errorData?.error || 'Gebot konnte nicht abgegeben werden')
   }
 }
 

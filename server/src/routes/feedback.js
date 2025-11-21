@@ -9,21 +9,21 @@ const feedbackRouter = (prisma, io) => {
 
   // Validation schemas
   const createFeedbackSchema = z.object({
-    leadSaleId: z.string().min(1, 'Lead sale ID gerekli'),
+    leadSaleId: z.string().min(1, 'Lead-Verkauf-ID erforderlich'),
     rating: z.number().int().min(1).max(5).optional(),
     comment: z.string().max(5000).optional()
   }).refine(data => data.rating || data.comment, {
-    message: 'En az yıldız puanı veya yorum gerekli'
+    message: 'Mindestens eine Sternebewertung oder ein Kommentar erforderlich'
   })
 
   const replySchema = z.object({
-    message: z.string().min(1, 'Mesaj gerekli').max(5000)
+    message: z.string().min(1, 'Nachricht erforderlich').max(5000)
   })
 
   const updateStatusSchema = z.object({
     status: z.enum(['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED']),
     priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).optional(),
-    internalNote: z.string().min(1, 'Internal note zorunludur').max(5000)
+    internalNote: z.string().min(1, 'Interne Notiz ist erforderlich').max(5000)
   })
 
   const assignSchema = z.object({
@@ -47,11 +47,11 @@ const feedbackRouter = (prisma, io) => {
       })
 
       if (!leadSale) {
-        return res.status(404).json({ error: 'Lead satın alması bulunamadı' })
+        return res.status(404).json({ error: 'Lead-Verkauf nicht gefunden' })
       }
 
       if (leadSale.buyerId !== req.user.id) {
-        return res.status(403).json({ error: 'Bu satın almaya geri bildirim bırakamazsınız' })
+        return res.status(403).json({ error: 'Sie können für diesen Kauf kein Feedback hinterlassen' })
       }
 
       // Check if feedback already exists for this leadSale
@@ -60,7 +60,7 @@ const feedbackRouter = (prisma, io) => {
       })
 
       if (existingFeedback) {
-        return res.status(400).json({ error: 'Bu lead için zaten geri bildirim bırakmışsınız' })
+        return res.status(400).json({ error: 'Sie haben bereits Feedback für diesen Lead hinterlassen' })
       }
 
       // Create feedback
@@ -68,7 +68,7 @@ const feedbackRouter = (prisma, io) => {
         data: {
           leadSaleId,
           userId: req.user.id,
-          subject: `Geri Bildirim: ${leadSale.lead.title}`,
+          subject: `Feedback: ${leadSale.lead.title} (${leadSale.lead.id})`,
           rating: rating || null,
           comment: comment || null,
           status: 'OPEN',
@@ -112,8 +112,8 @@ const feedbackRouter = (prisma, io) => {
             createNotification(
               user.id,
               'FEEDBACK_ALL',
-              'Yeni Feedback Geldi',
-              `Kullanıcı ${userName} "${feedback.subject}" ile ilgili geri bildirim gönderdi.`,
+              'Neues Feedback eingegangen',
+              `Benutzer ${userName} hat Feedback zu "${feedback.subject}" gesendet.`,
               {
                 feedbackId: feedback.id,
                 userId: req.user.id,
@@ -136,7 +136,7 @@ const feedbackRouter = (prisma, io) => {
       res.status(201).json(feedback)
     } catch (error) {
       console.error('Geri bildirim oluşturma hatası:', error)
-      res.status(500).json({ error: 'Geri bildirim oluşturulamadı' })
+      res.status(500).json({ error: 'Feedback konnte nicht erstellt werden' })
     }
   })
 
@@ -163,7 +163,7 @@ const feedbackRouter = (prisma, io) => {
       res.json(feedbacks)
     } catch (error) {
       console.error('Geri bildirimleri yükleme hatası:', error)
-      res.status(500).json({ error: 'Geri bildirimleri yüklenemedi' })
+      res.status(500).json({ error: 'Feedbacks konnten nicht geladen werden' })
     }
   })
 
@@ -224,7 +224,7 @@ const feedbackRouter = (prisma, io) => {
       })
 
       if (!feedback) {
-        return res.status(404).json({ error: 'Geri bildirim bulunamadı' })
+        return res.status(404).json({ error: 'Feedback nicht gefunden' })
       }
 
       // Check if feedback is closed or resolved - cannot reply to closed/resolved feedbacks
@@ -279,6 +279,8 @@ const feedbackRouter = (prisma, io) => {
 
       // Create notifications based on who replied
       const leadTitle = feedback.leadSale?.lead?.title || 'Lead'
+      const leadId = feedback.leadSale?.lead?.id
+      const leadTitleWithId = leadId ? `${leadTitle} (${leadId})` : leadTitle
 
       // Notification 1: FEEDBACK_OWN - Notify feedback owner if admin replied
       if (isAdmin && feedback.userId !== req.user.id) {
@@ -287,8 +289,8 @@ const feedbackRouter = (prisma, io) => {
           await createNotification(
             feedback.userId,
             'FEEDBACK_OWN',
-            'Geri Bildiriminize Yanıt Geldi',
-            `Admin ${adminName} "${leadTitle}" hakkındaki geri bildiriminize yanıt verdi.`,
+            'Antwort auf Ihr Feedback erhalten',
+            `Admin ${adminName} hat auf Ihr Feedback zu "${leadTitleWithId}" geantwortet.`,
             {
               feedbackId: req.params.id,
               replyId: reply.id,
@@ -317,8 +319,8 @@ const feedbackRouter = (prisma, io) => {
               createNotification(
                 user.id,
                 'FEEDBACK_ALL',
-                'Feedback\'e Yeni Yanıt Geldi',
-                `Admin ${adminName} "${leadTitle}" hakkındaki geri bildirimine yanıt verdi.`,
+                'Neue Antwort auf Feedback',
+                `Admin ${adminName} hat auf das Feedback zu "${leadTitleWithId}" geantwortet.`,
                 {
                   feedbackId: req.params.id,
                   replyId: reply.id,
@@ -351,8 +353,8 @@ const feedbackRouter = (prisma, io) => {
               createNotification(
                 user.id,
                 'FEEDBACK_ALL',
-                'Feedback Konuşmasında Yeni Mesaj',
-                `Kullanıcı ${userName} "${leadTitle}" hakkındaki geri bildirimine yanıt verdi.`,
+                'Neue Nachricht im Feedback-Gespräch',
+                `Benutzer ${userName} hat auf das Feedback zu "${leadTitleWithId}" geantwortet.`,
                 {
                   feedbackId: req.params.id,
                   replyId: reply.id,
@@ -381,7 +383,7 @@ const feedbackRouter = (prisma, io) => {
       res.status(201).json(reply)
     } catch (error) {
       console.error('Cevap oluşturma hatası:', error)
-      res.status(500).json({ error: 'Cevap oluşturulamadı' })
+      res.status(500).json({ error: 'Antwort konnte nicht erstellt werden' })
     }
   })
 
@@ -402,12 +404,12 @@ const feedbackRouter = (prisma, io) => {
       })
 
       if (!feedback) {
-        return res.status(404).json({ error: 'Geri bildirim bulunamadı' })
+        return res.status(404).json({ error: 'Feedback nicht gefunden' })
       }
 
       // Eğer durum değişmiyorsa hata ver
       if (feedback.status === validation.data.status) {
-        return res.status(400).json({ error: 'Durum değişmedi' })
+        return res.status(400).json({ error: 'Status hat sich nicht geändert' })
       }
 
       const oldStatus = feedback.status
@@ -461,7 +463,7 @@ const feedbackRouter = (prisma, io) => {
       res.json(updated)
     } catch (error) {
       console.error('Durum güncelleme hatası:', error)
-      res.status(500).json({ error: 'Durum güncellenemedi' })
+      res.status(500).json({ error: 'Status konnte nicht aktualisiert werden' })
     }
   })
 
@@ -469,7 +471,7 @@ const feedbackRouter = (prisma, io) => {
   router.patch('/:id/assign', async (req, res) => {
     try {
       if (!['ADMIN', 'SUPERADMIN', 'FULL_ADMIN'].includes(req.user?.userTypeId)) {
-        return res.status(403).json({ error: 'Bu işlem için yetkiniz yok' })
+        return res.status(403).json({ error: 'Sie haben keine Berechtigung für diese Aktion' })
       }
 
       const validation = assignSchema.safeParse(req.body)
@@ -482,7 +484,7 @@ const feedbackRouter = (prisma, io) => {
       })
 
       if (!feedback) {
-        return res.status(404).json({ error: 'Geri bildirim bulunamadı' })
+        return res.status(404).json({ error: 'Feedback nicht gefunden' })
       }
 
       const updated = await prisma.feedback.update({
@@ -508,7 +510,7 @@ const feedbackRouter = (prisma, io) => {
       res.json(updated)
     } catch (error) {
       console.error('Atama hatası:', error)
-      res.status(500).json({ error: 'Atama yapılamadı' })
+      res.status(500).json({ error: 'Zuweisung konnte nicht durchgeführt werden' })
     }
   })
 
@@ -516,7 +518,7 @@ const feedbackRouter = (prisma, io) => {
   router.get('/admin/all', async (req, res) => {
     try {
       if (!['ADMIN', 'SUPERADMIN', 'FULL_ADMIN'].includes(req.user?.userTypeId)) {
-        return res.status(403).json({ error: 'Bu işlem için yetkiniz yok' })
+        return res.status(403).json({ error: 'Sie haben keine Berechtigung für diese Aktion' })
       }
 
       const { status, priority, assignedTo, search } = req.query

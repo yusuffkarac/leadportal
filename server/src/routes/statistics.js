@@ -170,7 +170,7 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
         const buyer = buyers.find(b => b.id === sale.buyerId);
         const buyerName = buyer?.firstName
           ? `${buyer.firstName} ${buyer.lastName || ''}`.trim()
-          : buyer?.email || 'Bilinmeyen Kullanıcı';
+          : buyer?.email || 'Unbekannter Benutzer';
 
         const lastMonth = lastMonthSales.find(s => s.buyerId === sale.buyerId);
         const thisMonthSpent = sale._sum.amount || 0;
@@ -203,7 +203,7 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
 
     const revenueByTypeMap = {};
     salesByType.forEach(sale => {
-      const type = sale.lead?.insuranceType || 'Belirtilmemiş';
+      const type = sale.lead?.insuranceType || 'Nicht angegeben';
       if (!revenueByTypeMap[type]) {
         revenueByTypeMap[type] = {
           insuranceType: type,
@@ -255,19 +255,19 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
       ...recentSales.map(sale => ({
         id: `sale-${sale.id}`,
         type: 'sale',
-        title: `${sale.buyer?.firstName || sale.buyer?.email || 'Kullanıcı'} bir lead satın aldı`,
+        title: `${sale.buyer?.firstName || sale.buyer?.email || 'Benutzer'} hat einen Lead gekauft`,
         description: `${sale.lead?.title || 'Lead'} - ${sale.amount || 0} TRY`,
         time: formatTimeAgo(sale.createdAt),
-        badge: 'Satış',
+        badge: 'Verkauf',
         badgeType: 'success'
       })),
       ...recentUsers.map(user => ({
         id: `user-${user.id}`,
         type: 'user',
-        title: 'Yeni kullanıcı kaydı',
+        title: 'Neue Benutzerregistrierung',
         description: user.firstName || user.email,
         time: formatTimeAgo(user.createdAt),
-        badge: 'Kayıt',
+        badge: 'Registrierung',
         badgeType: 'primary'
       }))
     ]
@@ -343,6 +343,7 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
         const hours = (sold - created) / (1000 * 60 * 60);
         return {
           title: lead.title,
+          id: lead.id,
           hours: Math.round(hours * 10) / 10,
           amount: lead.sale.amount
         };
@@ -356,6 +357,7 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
       .slice(0, 5)
       .map(sale => ({
         title: sale.lead?.title || 'Unknown',
+        id: sale.lead?.id,
         amount: sale.amount,
         buyer: sale.buyer?.firstName || sale.buyer?.email || 'Unknown'
       }));
@@ -380,6 +382,7 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
       .slice(0, 5)
       .map(lead => ({
         title: lead.title,
+        id: lead.id,
         bidCount: lead._count.bids,
         isActive: lead.isActive
       }));
@@ -402,7 +405,7 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
 
     const postalCodeMap = {};
     salesByPostalCode.forEach(sale => {
-      const code = sale.lead?.postalCode || 'Belirtilmemiş';
+      const code = sale.lead?.postalCode || 'Nicht angegeben';
       if (!postalCodeMap[code]) {
         postalCodeMap[code] = { postalCode: code, count: 0, revenue: 0 };
       }
@@ -523,7 +526,7 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
           id: seller.ownerId,
           name: sellerInfo?.firstName
             ? `${sellerInfo.firstName} ${sellerInfo.lastName || ''}`.trim()
-            : sellerInfo?.email || 'Bilinmeyen',
+            : sellerInfo?.email || 'Unbekannt',
           leadsSold: seller._count.id,
           totalRevenue: revenue,
           avgPrice: seller._count.id > 0 ? Math.round(revenue / seller._count.id) : 0
@@ -565,6 +568,7 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
 
     const watchedLeadsData = mostWatchedLeads.map(lead => ({
       title: lead.title,
+      id: lead.id,
       watchCount: lead._count.watchers,
       isActive: lead.isActive,
       isSold: lead.isSold
@@ -614,14 +618,14 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
         : user.username || user.email;
 
       // User agent'tan basit cihaz/tarayıcı bilgisi çıkar
-      let deviceInfo = 'Bilinmeyen Cihaz';
+      let deviceInfo = 'Unbekanntes Gerät';
       if (user.lastUserAgent) {
         if (user.lastUserAgent.includes('Mobile') || user.lastUserAgent.includes('Android')) {
           deviceInfo = 'Mobil';
         } else if (user.lastUserAgent.includes('iPhone') || user.lastUserAgent.includes('iPad')) {
           deviceInfo = 'iOS';
         } else {
-          deviceInfo = 'Masaüstü';
+          deviceInfo = 'Desktop';
         }
 
         // Tarayıcı bilgisi
@@ -639,8 +643,8 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
         name: userName,
         email: user.email,
         lastActivity: user.lastActivity,
-        lastActivityFormatted: user.lastActivity ? formatTimeAgo(user.lastActivity) : 'Hiç',
-        lastIP: user.lastIP || 'Bilinmiyor',
+        lastActivityFormatted: user.lastActivity ? formatTimeAgo(user.lastActivity) : 'Nie',
+        lastIP: user.lastIP || 'Unbekannt',
         deviceInfo,
         isOnline,
         registeredAt: user.createdAt
@@ -783,7 +787,7 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
     });
   } catch (error) {
     console.error('İstatistik hatası:', error);
-    res.status(500).json({ error: 'İstatistikler yüklenirken bir hata oluştu' });
+    res.status(500).json({ error: 'Beim Laden der Statistiken ist ein Fehler aufgetreten' });
   }
 });
 
@@ -909,7 +913,7 @@ router.get('/user', authenticateToken, async (req, res) => {
     // 4. COĞRAFİ ANALİZ
     const postalCodeStats = {};
     purchasedLeads.forEach(sale => {
-      const postalCode = sale.lead.postalCode || 'Belirtilmemiş';
+      const postalCode = sale.lead.postalCode || 'Nicht angegeben';
       if (!postalCodeStats[postalCode]) {
         postalCodeStats[postalCode] = { count: 0, totalSpent: 0 };
       }
@@ -951,11 +955,11 @@ router.get('/user', authenticateToken, async (req, res) => {
     // 7. BAŞARIM ROZETLERİ
     const achievements = [];
     
-    if (purchasedLeads.length >= 10) achievements.push({ name: 'Deneyimli Alıcı', description: '10+ lead satın aldı' });
-    if (bidWinRate >= 50) achievements.push({ name: 'Uzman Teklifçi', description: '%50+ kazanma oranı' });
-    if (totalSpent >= 10000) achievements.push({ name: 'Büyük Yatırımcı', description: '10.000+ TL harcama' });
-    if (thisMonthSpent > lastMonthSpent) achievements.push({ name: 'Büyüyen Alıcı', description: 'Aylık artış gösterdi' });
-    if (purchasedFromWatchlist >= 5) achievements.push({ name: 'Planlı Alıcı', description: '5+ watchlist satın alımı' });
+    if (purchasedLeads.length >= 10) achievements.push({ name: 'Erfahrener Käufer', description: '10+ Leads gekauft' });
+    if (bidWinRate >= 50) achievements.push({ name: 'Expertenbietender', description: '50%+ Gewinnrate' });
+    if (totalSpent >= 10000) achievements.push({ name: 'Großer Investor', description: '10.000+ TL ausgegeben' });
+    if (thisMonthSpent > lastMonthSpent) achievements.push({ name: 'Wachsender Käufer', description: 'Monatliches Wachstum gezeigt' });
+    if (purchasedFromWatchlist >= 5) achievements.push({ name: 'Planmäßiger Käufer', description: '5+ Watchlist-Käufe' });
 
     // 8. HEDEFLER VE İLERLEME
     const monthlyGoal = 5000; // Varsayılan aylık hedef
@@ -1055,7 +1059,7 @@ router.get('/user', authenticateToken, async (req, res) => {
 
   } catch (error) {
     console.error('Kullanıcı istatistik hatası:', error);
-    res.status(500).json({ error: 'İstatistikler yüklenirken bir hata oluştu' });
+    res.status(500).json({ error: 'Beim Laden der Statistiken ist ein Fehler aufgetreten' });
   }
 });
 
@@ -1096,7 +1100,7 @@ router.get('/user/purchases', authenticateToken, async (req, res) => {
     })));
   } catch (error) {
     console.error('Satın alma listesi hatası:', error);
-    res.status(500).json({ error: 'Satın alma listesi yüklenirken bir hata oluştu' });
+    res.status(500).json({ error: 'Beim Laden der Kaufliste ist ein Fehler aufgetreten' });
   }
 });
 
@@ -1155,7 +1159,7 @@ router.get('/user/bids', authenticateToken, async (req, res) => {
     }));
   } catch (error) {
     console.error('Teklif listesi hatası:', error);
-    res.status(500).json({ error: 'Teklif listesi yüklenirken bir hata oluştu' });
+    res.status(500).json({ error: 'Beim Laden der Gebotsliste ist ein Fehler aufgetreten' });
   }
 });
 
@@ -1191,7 +1195,7 @@ router.get('/user/watchlist', authenticateToken, async (req, res) => {
     })));
   } catch (error) {
     console.error('Watchlist hatası:', error);
-    res.status(500).json({ error: 'Watchlist yüklenirken bir hata oluştu' });
+    res.status(500).json({ error: 'Beim Laden der Watchlist ist ein Fehler aufgetreten' });
   }
 });
 
@@ -1203,10 +1207,10 @@ function formatTimeAgo(date) {
   const hours = Math.floor(diff / 3600000);
   const days = Math.floor(diff / 86400000);
 
-  if (minutes < 1) return 'Şimdi';
-  if (minutes < 60) return `${minutes} dakika önce`;
-  if (hours < 24) return `${hours} saat önce`;
-  return `${days} gün önce`;
+  if (minutes < 1) return 'Jetzt';
+  if (minutes < 60) return `vor ${minutes} Minuten`;
+  if (hours < 24) return `vor ${hours} Stunden`;
+  return `vor ${days} Tagen`;
 }
 
 export default router;

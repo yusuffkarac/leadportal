@@ -214,7 +214,7 @@ router.post('/admin/:saleId/confirm-payment', async (req, res) => {
         sale.buyerId,
         'PAYMENT_CONFIRMED',
         'Ödemeniz Onaylandı',
-        `"${sale.lead.title}" için yaptığınız ${sale.amount} TL IBAN ödemesi admin tarafından onaylandı.`,
+        `"${sale.lead.title} (${sale.leadId})" için yaptığınız ${sale.amount} TL IBAN ödemesi admin tarafından onaylandı.`,
         { leadId: sale.leadId, saleId: sale.id, amount: sale.amount }
       );
     } catch (e) {

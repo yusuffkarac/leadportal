@@ -180,7 +180,7 @@
           <div class="payment-title-mobile">
             <Icon icon="mdi:file-document-outline" width="18" />
             <div class="lead-info-mobile">
-              <h3>{{ payment.lead.title }}</h3>
+              <h3>{{ payment.lead.title }} ({{ payment.leadId }})</h3>
               <div class="lead-meta-mobile">
                 <span class="lead-id-mobile">Lead ID: {{ payment.leadId.substring(0, 10) }}{{ payment.leadId.length > 10 ? '...' : '' }}</span>
                 <span class="lead-date-mobile">{{ formatDateShort(payment.createdAt) }}</span>
@@ -205,7 +205,7 @@
           <div class="payment-title">
             <Icon icon="mdi:file-document-outline" width="20" />
             <div class="lead-info">
-              <h3>{{ payment.lead.title }}</h3>
+              <h3>{{ payment.lead.title }} ({{ payment.leadId }})</h3>
               <span class="lead-id">Lead ID: {{ payment.leadId }}</span>
             </div>
           </div>

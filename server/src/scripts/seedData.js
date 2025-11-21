@@ -9,10 +9,10 @@ async function seedData() {
 
     // 1. Create default user types
     const userTypes = [
-      { id: 'FULL_ADMIN', name: 'Full Admin', description: 'Tam yetkili admin' },
-      { id: 'ADMIN', name: 'Admin', description: 'Admin kullanıcı' },
-      { id: 'FULL_USER', name: 'Full User', description: 'Tam yetkili kullanıcı' },
-      { id: 'USER', name: 'User', description: 'Standart kullanıcı' }
+      { id: 'FULL_ADMIN', name: 'Full Admin', description: 'Vollzugriffs-Admin' },
+      { id: 'ADMIN', name: 'Admin', description: 'Admin-Benutzer' },
+      { id: 'FULL_USER', name: 'Full User', description: 'Vollzugriffs-Benutzer' },
+      { id: 'USER', name: 'User', description: 'Standard-Benutzer' }
     ]
 
     console.log('Creating user types...')
@@ -32,16 +32,16 @@ async function seedData() {
 
     // 2. Create default pages
     const pages = [
-      { id: '/', name: 'Ana Sayfa', description: 'Ana sayfa' },
-      { id: '/about', name: 'Hakkında', description: 'Hakkında sayfası' },
-      { id: '/faq', name: 'SSS', description: 'Sık sorulan sorular' },
-      { id: '/purchased-leads', name: 'Satın Aldıklarım', description: 'Satın alınan leadler' },
-      { id: '/admin', name: 'Admin Panel', description: 'Admin paneli' },
-      { id: '/admin/leads', name: 'Lead Yönetimi', description: 'Lead yönetim sayfası' },
-      { id: '/admin/users', name: 'Kullanıcı Yönetimi', description: 'Kullanıcı yönetim sayfası' },
-      { id: '/admin/pending-users', name: 'Onay Bekleyen Kullanıcılar', description: 'Kayıt onayını bekleyen kullanıcılar' },
-      { id: '/admin/settings', name: 'Ayarlar', description: 'Uygulama ayarları' },
-      { id: '/admin/user-types', name: 'Kullanıcı Tipleri', description: 'Kullanıcı tipi yönetimi' }
+      { id: '/', name: 'Startseite', description: 'Startseite' },
+      { id: '/about', name: 'Über uns', description: 'Über uns Seite' },
+      { id: '/faq', name: 'FAQ', description: 'Häufig gestellte Fragen' },
+      { id: '/purchased-leads', name: 'Gekaufte Leads', description: 'Gekaufte Leads' },
+      { id: '/admin', name: 'Admin Panel', description: 'Admin Panel' },
+      { id: '/admin/leads', name: 'Lead-Verwaltung', description: 'Lead-Verwaltungsseite' },
+      { id: '/admin/users', name: 'Benutzerverwaltung', description: 'Benutzerverwaltungsseite' },
+      { id: '/admin/pending-users', name: 'Benutzer mit ausstehender Genehmigung', description: 'Benutzer, die auf Registrierungsgenehmigung warten' },
+      { id: '/admin/settings', name: 'Einstellungen', description: 'Anwendungseinstellungen' },
+      { id: '/admin/user-types', name: 'Benutzertypen', description: 'Benutzertyp-Verwaltung' }
     ]
 
     for (const page of pages) {
@@ -142,8 +142,8 @@ async function seedData() {
       // BID kategorisi
       {
         code: 'BID_RECEIVED',
-        name: 'Lead\'inizde Yeni Teklif',
-        description: 'Lead\'inizde başka bir kullanıcı teklif verdi',
+        name: 'Neues Gebot für Ihren Lead',
+        description: 'Ein anderer Benutzer hat auf Ihren Lead ein Gebot abgegeben',
         category: 'BID',
         defaultEnabled: true,
         emailEnabled: true,
@@ -152,8 +152,8 @@ async function seedData() {
       },
       {
         code: 'BID_PLACED',
-        name: 'Teklifiniz Alındı',
-        description: 'Lead için verdiğiniz teklif başarıyla kaydedildi',
+        name: 'Ihr Gebot wurde angenommen',
+        description: 'Ihr Gebot für den Lead wurde erfolgreich gespeichert',
         category: 'BID',
         defaultEnabled: true,
         emailEnabled: false,
@@ -162,8 +162,8 @@ async function seedData() {
       },
       {
         code: 'BID_OUTBID',
-        name: 'Teklifiniz Geçildi',
-        description: 'Teklif verdiğiniz lead\'de daha yüksek bir teklif yapıldı',
+        name: 'Ihr Gebot wurde überboten',
+        description: 'Ein höheres Gebot wurde für den Lead abgegeben, auf den Sie geboten haben',
         category: 'BID',
         defaultEnabled: true,
         emailEnabled: true,
@@ -172,8 +172,8 @@ async function seedData() {
       },
       {
         code: 'BID_AUTO_INCREASED',
-        name: 'Otomatik Teklif Arttı',
-        description: 'Proxy bidding ile otomatik teklif yükseltildi',
+        name: 'Automatisches Gebot erhöht',
+        description: 'Automatisches Gebot durch Proxy-Bidding erhöht',
         category: 'BID',
         defaultEnabled: true,
         emailEnabled: true,
@@ -184,8 +184,8 @@ async function seedData() {
       // LEAD kategorisi
       {
         code: 'LEAD_SOLD',
-        name: 'Lead Satıldı',
-        description: 'Lead\'iniz başarıyla satıldı',
+        name: 'Lead verkauft',
+        description: 'Ihr Lead wurde erfolgreich verkauft',
         category: 'LEAD',
         defaultEnabled: true,
         emailEnabled: true,
@@ -194,8 +194,8 @@ async function seedData() {
       },
       {
         code: 'LEAD_PURCHASED',
-        name: 'Lead Satın Alındı',
-        description: 'Bir lead satın aldınız',
+        name: 'Lead gekauft',
+        description: 'Sie haben einen Lead gekauft',
         category: 'LEAD',
         defaultEnabled: true,
         emailEnabled: true,
@@ -206,8 +206,8 @@ async function seedData() {
       // PAYMENT kategorisi
       {
         code: 'PAYMENT_RECEIVED',
-        name: 'Ödeme Alındı',
-        description: 'Lead satışından ödeme aldınız',
+        name: 'Zahlung erhalten',
+        description: 'Sie haben eine Zahlung für den Lead-Verkauf erhalten',
         category: 'PAYMENT',
         defaultEnabled: true,
         emailEnabled: true,
@@ -216,8 +216,8 @@ async function seedData() {
       },
       {
         code: 'BALANCE_ADDED',
-        name: 'Bakiye Eklendi',
-        description: 'Admin tarafından hesabınıza bakiye eklendi',
+        name: 'Guthaben hinzugefügt',
+        description: 'Ein Admin hat Ihrem Konto Guthaben hinzugefügt',
         category: 'PAYMENT',
         defaultEnabled: true,
         emailEnabled: true,
@@ -226,8 +226,8 @@ async function seedData() {
       },
       {
         code: 'PAYMENT_PENDING',
-        name: 'IBAN Ödemesi Bekliyor',
-        description: 'Yeni bir IBAN ödemesi onay bekliyor',
+        name: 'IBAN-Zahlung wartet',
+        description: 'Eine neue IBAN-Zahlung wartet auf Genehmigung',
         category: 'PAYMENT',
         defaultEnabled: true,
         emailEnabled: true,
@@ -236,8 +236,8 @@ async function seedData() {
       },
       {
         code: 'PAYMENT_CONFIRMED',
-        name: 'Ödemeniz Onaylandı',
-        description: 'IBAN ile yaptığınız ödeme admin tarafından onaylandı',
+        name: 'Ihre Zahlung wurde bestätigt',
+        description: 'Ihre IBAN-Zahlung wurde von einem Admin bestätigt',
         category: 'PAYMENT',
         defaultEnabled: true,
         emailEnabled: true,
@@ -246,8 +246,8 @@ async function seedData() {
       },
       {
         code: 'PAYMENT_CONFIRMED_SELLER',
-        name: 'Lead Satış Ödemeniz Alındı',
-        description: 'Lead satışınızın IBAN ödemesi onaylandı',
+        name: 'Lead-Verkaufszahlung erhalten',
+        description: 'Die IBAN-Zahlung für Ihren Lead-Verkauf wurde bestätigt',
         category: 'PAYMENT',
         defaultEnabled: true,
         emailEnabled: true,
@@ -258,8 +258,8 @@ async function seedData() {
       // ADMIN kategorisi
       {
         code: 'USER_REGISTRATION_PENDING',
-        name: 'Yeni Kayıt İsteği',
-        description: 'Yeni bir kullanıcı kayıt olmak istiyor',
+        name: 'Neue Registrierungsanfrage',
+        description: 'Ein neuer Benutzer möchte sich registrieren',
         category: 'ADMIN',
         defaultEnabled: true,
         emailEnabled: true,
@@ -270,8 +270,8 @@ async function seedData() {
       // FEEDBACK kategorisi
       {
         code: 'FEEDBACK_ALL',
-        name: 'Tüm Feedback Bildirimleri',
-        description: 'Sistemdeki tüm geri bildirimlerle ilgili bildirimler',
+        name: 'Alle Feedback-Benachrichtigungen',
+        description: 'Benachrichtigungen zu allen Feedbacks im System',
         category: 'FEEDBACK',
         defaultEnabled: true,
         emailEnabled: true,
@@ -280,8 +280,8 @@ async function seedData() {
       },
       {
         code: 'FEEDBACK_OWN',
-        name: 'Kendi Konuşma Bildirimleri',
-        description: 'Yalnızca kendi geri bildirimlerinize yanıt geldiğinde bildir',
+        name: 'Eigene Gesprächsbenachrichtigungen',
+        description: 'Nur benachrichtigen, wenn auf Ihr eigenes Feedback geantwortet wurde',
         category: 'FEEDBACK',
         defaultEnabled: true,
         emailEnabled: true,

@@ -69,7 +69,7 @@ export default function bidsRouter(prisma, io) {
         // Check if current time is within allowed bidding hours
         if (currentTimeInMinutes < startTimeInMinutes || currentTimeInMinutes >= endTimeInMinutes) {
           return res.status(400).json({
-            error: `Teklif verme saatleri ${settings.biddingStartHour} - ${settings.biddingEndHour} arasındadır. Lütfen bu saatler arasında tekrar deneyin.`
+            error: `Gebotszeiten sind zwischen ${settings.biddingStartHour} - ${settings.biddingEndHour}. Bitte versuchen Sie es zu diesen Zeiten erneut.`
           })
         }
       }
@@ -94,12 +94,12 @@ export default function bidsRouter(prisma, io) {
       // Check if lead has expired using server time
       const currentTime = now()
       if (lead.endsAt < currentTime) {
-        return res.status(400).json({ error: 'Bu lead\'in süresi dolmuştur' })
+        return res.status(400).json({ error: 'Dieser Lead ist abgelaufen' })
       }
 
       // Check if lead is scheduled for future start
       if (lead.startsAt && lead.startsAt > currentTime) {
-        return res.status(400).json({ error: 'Bu lead henüz başlamamıştır. Açık artırma başladığında teklif verebilirsiniz.' })
+        return res.status(400).json({ error: 'Dieser Lead hat noch nicht begonnen. Sie können ein Gebot abgeben, sobald die Auktion startet.' })
       }
 
       // Validate minimum bid requirement
@@ -108,7 +108,7 @@ export default function bidsRouter(prisma, io) {
 
       if (maxBid < minRequired) {
         return res.status(400).json({
-          error: `Minimum teklif ${minRequired} olmalı. Bu sizin maksimum teklifinizdir - görünür fiyat daha düşük olabilir.`
+          error: `Mindestgebot muss ${minRequired} sein. Dies ist Ihr maximales Gebot - der sichtbare Preis kann niedriger sein.`
         })
       }
 
@@ -116,7 +116,7 @@ export default function bidsRouter(prisma, io) {
       const proxyResult = await processProxyBid(prisma, leadId, req.user.id, maxBid, lead)
 
       if (!proxyResult.success) {
-        return res.status(400).json({ error: proxyResult.message || 'Teklif işlenemedi' })
+        return res.status(400).json({ error: proxyResult.message || 'Gebot konnte nicht verarbeitet werden' })
       }
 
       // Check reserve price
@@ -206,22 +206,22 @@ export default function bidsRouter(prisma, io) {
 
       // Notification 1: Teklif veren kullanıcıya
       try {
-        let notificationMessage = `${lead.title} için maksimum ${maxBid} TL teklif verdiniz.`
+        let notificationMessage = `Sie haben ein maximales Gebot von ${maxBid} TL für ${lead.title} (${leadId}) abgegeben.`
 
         if (proxyResult.isLeader) {
-          notificationMessage += ` Şu anda lidersiniz! Mevcut fiyat: ${proxyResult.visiblePrice} TL.`
+          notificationMessage += ` Sie sind derzeit der Führende! Aktueller Preis: ${proxyResult.visiblePrice} TL.`
         } else {
-          notificationMessage += ` Teklifiniz başka bir kullanıcının maksimumunun altında kaldı. Lider olmak için daha yüksek bir maksimum teklif verin.`
+          notificationMessage += ` Ihr Gebot liegt unter dem Maximum eines anderen Benutzers. Geben Sie ein höheres maximales Gebot ab, um der Führende zu werden.`
         }
 
         if (!reserveMet) {
-          notificationMessage += ` Not: Rezerv fiyat henüz karşılanmadı.`
+          notificationMessage += ` Hinweis: Der Mindestpreis wurde noch nicht erreicht.`
         }
 
         await createNotification(
           req.user.id,
           'BID_PLACED',
-          'Teklifiniz Alındı',
+          'Ihr Gebot wurde angenommen',
           notificationMessage,
           {
             leadId,
@@ -241,8 +241,8 @@ export default function bidsRouter(prisma, io) {
           await createNotification(
             lead.ownerId,
             'BID_RECEIVED',
-            'Yeni Teklif Geldi',
-            `"${lead.title}" için yeni teklif geldi. Mevcut fiyat: ${proxyResult.visiblePrice} TL.`,
+            'Neues Gebot eingegangen',
+            `Ein neues Gebot für "${lead.title} (${leadId})" ist eingegangen. Aktueller Preis: ${proxyResult.visiblePrice} TL.`,
             { leadId, visiblePrice: proxyResult.visiblePrice, reserveMet }
           )
         }
@@ -261,6 +261,7 @@ export default function bidsRouter(prisma, io) {
           const { subject, html, text } = await renderEmailTemplate('bidReceived', {
             companyName,
             leadTitle: lead.title,
+            leadId: leadId,
             amount: proxyResult.visiblePrice,
             currency: 'TL',
             leadUrl,
@@ -282,8 +283,8 @@ export default function bidsRouter(prisma, io) {
           await createNotification(
             proxyResult.previousLeaderId,
             'BID_OUTBID',
-            'Teklifiniz Geçildi',
-            `"${lead.title}" için maksimum teklifiniz geçildi. Yeni fiyat: ${proxyResult.visiblePrice} TL. Daha yüksek bir maksimum teklif verin.`,
+            'Ihr Gebot wurde überboten',
+            `Ihr maximales Gebot für "${lead.title} (${leadId})" wurde überboten. Neuer Preis: ${proxyResult.visiblePrice} TL. Geben Sie ein höheres maximales Gebot ab.`,
             {
               leadId,
               visiblePrice: proxyResult.visiblePrice
@@ -300,6 +301,7 @@ export default function bidsRouter(prisma, io) {
             const { subject, html, text } = await renderEmailTemplate('outbid', {
               companyName,
               leadTitle: lead.title,
+              leadId: leadId,
               amount: currentVisibleBid,
               newAmount: proxyResult.visiblePrice,
               currency: 'TL',
@@ -323,8 +325,8 @@ export default function bidsRouter(prisma, io) {
           await createNotification(
             proxyResult.previousLeaderId,
             'BID_AUTO_INCREASED',
-            'Otomatik Teklifiniz Arttırıldı',
-            `"${lead.title}" için otomatik teklifiniz ${proxyResult.visiblePrice} TL'ye yükseltildi. Hala lidersiniz!`,
+            'Ihr automatisches Gebot wurde erhöht',
+            `Ihr automatisches Gebot für "${lead.title} (${leadId})" wurde auf ${proxyResult.visiblePrice} TL erhöht. Sie sind immer noch der Führende!`,
             {
               leadId,
               visiblePrice: proxyResult.visiblePrice
@@ -354,6 +356,7 @@ export default function bidsRouter(prisma, io) {
               const { subject, html, text } = await renderEmailTemplate('outbid', {
                 companyName,
                 leadTitle: lead.title,
+                leadId: leadId,
                 amount: currentVisibleBid,
                 newAmount: proxyResult.visiblePrice,
                 currency: 'TL',
@@ -386,7 +389,7 @@ export default function bidsRouter(prisma, io) {
     } catch (error) {
       console.error('Bid creation error:', error)
       res.status(500).json({
-        error: error.message || 'Teklif oluşturulurken bir hata oluştu'
+        error: error.message || 'Beim Erstellen des Gebots ist ein Fehler aufgetreten'
       })
     }
   })

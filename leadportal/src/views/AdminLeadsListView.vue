@@ -866,7 +866,7 @@ watch(showMap, (newValue) => {
             <td class="lead-cell">
               <div class="lead-info">
                 <div>
-                  <div class="lead-title-text">{{ lead.title }}</div>
+                  <div class="lead-title-text">{{ lead.title }} ({{ lead.id }})</div>
                   <div class="lead-description-text">{{ lead.description?.substring(0, 60) }}...</div>
                 </div>
               </div>
@@ -923,7 +923,7 @@ watch(showMap, (newValue) => {
       <div class="lead-card-compact" v-for="lead in filteredLeads" :key="lead.id" :class="{ 'sold-lead': lead.sale }">
         <div class="lead-header">
           <div class="lead-title">
-            <h3>{{ lead.title }}</h3>
+            <h3>{{ lead.title }} ({{ lead.id }})</h3>
             <span class="status-badge" :class="lead.sale ? 'sold' : (lead.isActive ? 'active' : 'inactive')">
               {{ lead.sale ? 'Satıldı' : (lead.isActive ? 'Aktif' : 'Pasif') }}
             </span>

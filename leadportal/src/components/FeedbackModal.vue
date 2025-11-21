@@ -346,11 +346,11 @@ defineExpose({
       <div class="modal-header">
         <div>
           <h2 class="modal-title">Feedback</h2>
-          <p class="modal-subtitle">{{ selectedLead.lead?.title }}</p>
+          <p class="modal-subtitle">{{ selectedLead.lead?.title }}{{ selectedLead.lead?.id ? ` (${selectedLead.lead.id})` : '' }}</p>
           <div class="header-info">
             <span v-if="selectedLead.lead?.id" class="info-item">
               <Icon icon="mdi:identifier" width="14" height="14" />
-              Lead-ID: {{ selectedLead.lead.id }}
+              {{ selectedLead.lead.id }}
             </span>
             <span v-if="selectedLead.amount" class="info-item">
               <Icon icon="mdi:currency-eur" width="14" height="14" />
