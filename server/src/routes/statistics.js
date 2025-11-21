@@ -108,7 +108,10 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
     });
 
     const todayLeadsSold = todayLeadSales.length;
-    const todayRevenue = todayLeadSales.reduce((sum, sale) => sum + (sale.amount || 0), 0);
+    const todayRevenue = todayLeadSales.reduce((sum, sale) => {
+      const amount = sale.amount ? Number(sale.amount) : 0;
+      return sum + amount;
+    }, 0);
 
     // Tüm zamanlar satış istatistikleri
     const allLeadSales = await prisma.leadSale.findMany({
@@ -119,7 +122,10 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
     });
 
     const allTimeLeadsSold = allLeadSales.length;
-    const allTimeRevenue = allLeadSales.reduce((sum, sale) => sum + (sale.amount || 0), 0);
+    const allTimeRevenue = allLeadSales.reduce((sum, sale) => {
+      const amount = sale.amount ? Number(sale.amount) : 0;
+      return sum + amount;
+    }, 0);
     const avgLeadPrice = allTimeLeadsSold > 0 ? allTimeRevenue / allTimeLeadsSold : 0;
 
     // En çok satın alanlar (bu ay)
@@ -173,8 +179,8 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
           : buyer?.email || 'Unbekannter Benutzer';
 
         const lastMonth = lastMonthSales.find(s => s.buyerId === sale.buyerId);
-        const thisMonthSpent = sale._sum.amount || 0;
-        const lastMonthSpent = lastMonth?._sum.amount || 0;
+        const thisMonthSpent = sale._sum.amount ? Number(sale._sum.amount) : 0;
+        const lastMonthSpent = lastMonth?._sum.amount ? Number(lastMonth._sum.amount) : 0;
 
         let growth = 0;
         if (lastMonthSpent > 0) {
@@ -211,7 +217,8 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
           leadCount: 0
         };
       }
-      revenueByTypeMap[type].revenue += sale.amount || 0;
+      const amount = sale.amount ? Number(sale.amount) : 0;
+      revenueByTypeMap[type].revenue += amount;
       revenueByTypeMap[type].leadCount += 1;
     });
 
@@ -256,7 +263,7 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
         id: `sale-${sale.id}`,
         type: 'sale',
         title: `${sale.buyer?.firstName || sale.buyer?.email || 'Benutzer'} hat einen Lead gekauft`,
-        description: `${sale.lead?.title || 'Lead'} - ${sale.amount || 0} TRY`,
+        description: `${sale.lead?.title || 'Lead'} - ${sale.amount ? Number(sale.amount) : 0} TRY`,
         time: formatTimeAgo(sale.createdAt),
         badge: 'Verkauf',
         badgeType: 'success'
@@ -303,7 +310,10 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
       salesTrend.push({
         date: date.toISOString().split('T')[0],
         count: daySales.length,
-        revenue: daySales.reduce((sum, s) => sum + (s.amount || 0), 0)
+        revenue: daySales.reduce((sum, s) => {
+          const amount = s.amount ? Number(s.amount) : 0;
+          return sum + amount;
+        }, 0)
       });
     }
 
@@ -345,7 +355,7 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
           title: lead.title,
           id: lead.id,
           hours: Math.round(hours * 10) / 10,
-          amount: lead.sale.amount
+          amount: lead.sale.amount ? Number(lead.sale.amount) : 0
         };
       })
       .filter(Boolean)
@@ -353,12 +363,16 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
       .slice(0, 5);
 
     const highestSales = allLeadSales
-      .sort((a, b) => b.amount - a.amount)
+      .sort((a, b) => {
+        const aAmount = a.amount ? Number(a.amount) : 0;
+        const bAmount = b.amount ? Number(b.amount) : 0;
+        return bAmount - aAmount;
+      })
       .slice(0, 5)
       .map(sale => ({
         title: sale.lead?.title || 'Unknown',
         id: sale.lead?.id,
-        amount: sale.amount,
+        amount: sale.amount ? Number(sale.amount) : 0,
         buyer: sale.buyer?.firstName || sale.buyer?.email || 'Unknown'
       }));
 
@@ -410,7 +424,8 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
         postalCodeMap[code] = { postalCode: code, count: 0, revenue: 0 };
       }
       postalCodeMap[code].count++;
-      postalCodeMap[code].revenue += sale.amount || 0;
+      const amount = sale.amount ? Number(sale.amount) : 0;
+      postalCodeMap[code].revenue += amount;
     });
 
     const topPostalCodes = Object.values(postalCodeMap)
@@ -427,8 +442,14 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
       }
     });
 
-    const thisMonthRevenue = thisMonthSalesData.reduce((sum, s) => sum + (s.amount || 0), 0);
-    const lastMonthRevenue = lastMonthSalesData.reduce((sum, s) => sum + (s.amount || 0), 0);
+    const thisMonthRevenue = thisMonthSalesData.reduce((sum, s) => {
+      const amount = s.amount ? Number(s.amount) : 0;
+      return sum + amount;
+    }, 0);
+    const lastMonthRevenue = lastMonthSalesData.reduce((sum, s) => {
+      const amount = s.amount ? Number(s.amount) : 0;
+      return sum + amount;
+    }, 0);
     const monthlyGrowth = lastMonthRevenue > 0
       ? Math.round(((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100)
       : 100;
@@ -442,8 +463,14 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
       }
     });
 
-    const thisWeekRevenue = thisWeekSalesData.reduce((sum, s) => sum + (s.amount || 0), 0);
-    const lastWeekRevenue = lastWeekSalesData.reduce((sum, s) => sum + (s.amount || 0), 0);
+    const thisWeekRevenue = thisWeekSalesData.reduce((sum, s) => {
+      const amount = s.amount ? Number(s.amount) : 0;
+      return sum + amount;
+    }, 0);
+    const lastWeekRevenue = lastWeekSalesData.reduce((sum, s) => {
+      const amount = s.amount ? Number(s.amount) : 0;
+      return sum + amount;
+    }, 0);
     const weeklyGrowth = lastWeekRevenue > 0
       ? Math.round(((thisWeekRevenue - lastWeekRevenue) / lastWeekRevenue) * 100)
       : 100;
@@ -471,29 +498,32 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
     let ibanCompletedCount = 0;
 
     instantBuySales.forEach(sale => {
+      const amount = sale.amount ? Number(sale.amount) : 0;
+      const instantBuyPrice = sale.lead?.instantBuyPrice ? Number(sale.lead.instantBuyPrice) : null;
+      
       // Instant buy vs auction
-      if (sale.lead?.instantBuyPrice && sale.amount >= sale.lead.instantBuyPrice) {
-        instantBuyRevenue += sale.amount;
+      if (instantBuyPrice && amount >= instantBuyPrice) {
+        instantBuyRevenue += amount;
         instantBuyCount++;
       } else {
-        auctionRevenue += sale.amount;
+        auctionRevenue += amount;
         auctionCount++;
       }
 
       // Payment method breakdown
       if (sale.paymentMethod === 'balance') {
-        balanceRevenue += sale.amount;
+        balanceRevenue += amount;
         balanceCount++;
       } else if (sale.paymentMethod === 'iban') {
-        ibanRevenue += sale.amount;
+        ibanRevenue += amount;
         ibanCount++;
 
         // IBAN payment status breakdown
         if (sale.paymentStatus === 'PENDING') {
-          ibanPendingRevenue += sale.amount;
+          ibanPendingRevenue += amount;
           ibanPendingCount++;
         } else if (sale.paymentStatus === 'COMPLETED') {
-          ibanCompletedRevenue += sale.amount;
+          ibanCompletedRevenue += amount;
           ibanCompletedCount++;
         }
       }
@@ -520,7 +550,10 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
             lead: { ownerId: seller.ownerId }
           }
         });
-        const revenue = sellerSales.reduce((sum, s) => sum + (s.amount || 0), 0);
+        const revenue = sellerSales.reduce((sum, s) => {
+          const amount = s.amount ? Number(s.amount) : 0;
+          return sum + amount;
+        }, 0);
 
         return {
           id: seller.ownerId,
@@ -832,7 +865,10 @@ router.get('/user', authenticateToken, async (req, res) => {
       orderBy: { soldAt: 'desc' }
     });
 
-    const totalSpent = purchasedLeads.reduce((sum, sale) => sum + sale.amount, 0);
+    const totalSpent = purchasedLeads.reduce((sum, sale) => {
+      const amount = sale.amount ? Number(sale.amount) : 0;
+      return sum + amount;
+    }, 0);
     const avgPurchasePrice = purchasedLeads.length > 0 ? Math.round(totalSpent / purchasedLeads.length) : 0;
     
     // Son 30 gün satın almalar
@@ -840,7 +876,10 @@ router.get('/user', authenticateToken, async (req, res) => {
       new Date(sale.soldAt) >= thirtyDaysAgo
     );
     
-    const last30DaysSpent = last30DaysPurchases.reduce((sum, sale) => sum + sale.amount, 0);
+    const last30DaysSpent = last30DaysPurchases.reduce((sum, sale) => {
+      const amount = sale.amount ? Number(sale.amount) : 0;
+      return sum + amount;
+    }, 0);
     
     // Bu ay vs geçen ay karşılaştırması
     const thisMonthPurchases = purchasedLeads.filter(sale => 
@@ -852,8 +891,14 @@ router.get('/user', authenticateToken, async (req, res) => {
       return saleDate >= lastMonthStart && saleDate < thisMonthStart;
     });
     
-    const thisMonthSpent = thisMonthPurchases.reduce((sum, sale) => sum + sale.amount, 0);
-    const lastMonthSpent = lastMonthPurchases.reduce((sum, sale) => sum + sale.amount, 0);
+    const thisMonthSpent = thisMonthPurchases.reduce((sum, sale) => {
+      const amount = sale.amount ? Number(sale.amount) : 0;
+      return sum + amount;
+    }, 0);
+    const lastMonthSpent = lastMonthPurchases.reduce((sum, sale) => {
+      const amount = sale.amount ? Number(sale.amount) : 0;
+      return sum + amount;
+    }, 0);
     const monthlyGrowth = lastMonthSpent > 0 ? 
       Math.round(((thisMonthSpent - lastMonthSpent) / lastMonthSpent) * 100) : 0;
 

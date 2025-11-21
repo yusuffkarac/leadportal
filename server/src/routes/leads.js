@@ -5,6 +5,7 @@ import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activit
 import { createNotification } from '../services/notificationService.js'
 import { now, createDate } from '../utils/dateTimeUtils.js'
 import { calculateFinalPrice, meetsReservePrice } from '../services/proxyBiddingService.js'
+import { serializeBigInt } from '../utils/bigIntSerializer.js'
 
 // Lead tipi yetkilendirmesini kontrol eden helper fonksiyon
 async function filterLeadsByPermission(prisma, leads, userId, userTypeId) {
@@ -330,7 +331,7 @@ export default function leadsRouter(prisma, io) {
       }
     })
 
-    res.json(anonymizedLeads)
+    res.json(serializeBigInt(anonymizedLeads))
   })
 
   // Admin: own leads list with bids (MUST be before '/:id')
@@ -356,7 +357,7 @@ export default function leadsRouter(prisma, io) {
       bids: anonymizeBids(lead.bids, req.user?.id)
     }))
     
-    res.json(anonymizedLeads)
+    res.json(serializeBigInt(anonymizedLeads))
   })
 
   // Admin: all leads with owner and bids
@@ -373,7 +374,7 @@ export default function leadsRouter(prisma, io) {
       bids: anonymizeBids(lead.bids, req.user?.id)
     }))
     
-    res.json(anonymizedLeads)
+    res.json(serializeBigInt(anonymizedLeads))
   })
 
   router.get('/:id', async (req, res) => {
@@ -411,7 +412,7 @@ export default function leadsRouter(prisma, io) {
     //   })
     // }
 
-    res.json(anonymizedLead)
+    res.json(serializeBigInt(anonymizedLead))
   })
 
   // Watch: list current watchers for the lead (current user)
@@ -593,7 +594,7 @@ export default function leadsRouter(prisma, io) {
 
     // Canlı yayın: lead güncellendi
     io.to(`lead:${req.params.id}`).emit('lead:update', { leadId: req.params.id, lead: updated })
-    res.json(updated)
+    res.json(serializeBigInt(updated))
   })
 
   // Admin delete (cascade bids)
@@ -907,13 +908,13 @@ export default function leadsRouter(prisma, io) {
           console.error('Notification error (PAYMENT_RECEIVED):', e.message)
         }
 
-        res.json({
+        res.json(serializeBigInt({
           success: true,
           message: 'Lead erfolgreich gekauft',
           sale: sale,
           paymentMethod: 'balance',
           newBalance: updatedUser.balance
-        })
+        }))
       } else if (paymentMethod === 'iban') {
         // IBAN ile ödeme
         const [sale] = await prisma.$transaction([
@@ -1019,13 +1020,13 @@ export default function leadsRouter(prisma, io) {
           console.error('Notification error (LEAD_SOLD):', e.message)
         }
 
-        res.json({
+        res.json(serializeBigInt({
           success: true,
           message: 'Lead erfolgreich gekauft - Zahlung wird per IBAN verarbeitet',
           sale: sale,
           paymentMethod: 'iban',
           paymentStatus: 'PENDING'
-        })
+        }))
       }
 
     } catch (error) {
@@ -1175,10 +1176,10 @@ export default function leadsRouter(prisma, io) {
       const data = await response.json()
       
       if (data.success) {
-        res.json({
+        res.json(serializeBigInt({
           success: true,
           data: data.data
-        })
+        }))
       } else {
         res.status(400).json({
           success: false,

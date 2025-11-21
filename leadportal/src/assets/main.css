@@ -39,6 +39,8 @@
   --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-xl: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  /* Header height */
+  --navbar-height: 100px;
   /* Admin layout varsayılanları */
   --admin-layout-max-width: 90%;
   --admin-layout-padding-inline: 0.75rem;
@@ -100,7 +102,7 @@ a,
   align-items: center;
   justify-content: space-between;
   background: white;
-  padding: 16px 24px;
+  padding: 10px 24px;
   border-radius: 0;
   border: none;
   border-bottom: 1px solid #e5e7eb;
@@ -110,11 +112,12 @@ a,
   position: sticky;
   top: 0;
   z-index: 1000;
+  height: var(--navbar-height);
 }
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   font-weight: 700;
   font-size: 1.25rem;
   color: #374151;
@@ -128,8 +131,8 @@ a,
 }
 
 .brand img {
-  width: 45px;
-  height: 45px;
+  width: 40px;
+  height: 40px;
 }
 .nav-links {
   display: flex;
@@ -139,7 +142,7 @@ a,
 
 .nav-links a { 
   position: relative; 
-  padding: 8px 16px;
+  padding: 6px 14px;
   border-radius: 6px;
   transition: all 0.2s ease;
   font-weight: 500;
@@ -1636,7 +1639,7 @@ label { font-size: 12px; color: var(--muted); }
   /* Mobile Navigation for tablet */
   .navbar {
     position: relative;
-    padding: 16px 20px;
+    padding: 10px 20px;
     margin: 0;
   }
   
@@ -1885,8 +1888,12 @@ label { font-size: 12px; color: var(--muted); }
 
 /* Mobile responsive */
 @media (max-width: 768px) {
+  :root {
+    --navbar-height: 56px;
+  }
+  
   .navbar {
-    padding: 12px 16px;
+    padding: 10px 16px;
   }
   
   .desktop-nav {
@@ -2276,6 +2283,10 @@ label { font-size: 12px; color: var(--muted); }
 
 /* Extra small screens */
 @media (max-width: 480px) {
+  :root {
+    --navbar-height: 54px;
+  }
+  
   .desktop-nav {
     display: none !important;
   }
@@ -2295,7 +2306,7 @@ label { font-size: 12px; color: var(--muted); }
   }
   
   .navbar {
-    padding: 10px 12px;
+    padding: 8px 12px;
   }
   
   .page-content {

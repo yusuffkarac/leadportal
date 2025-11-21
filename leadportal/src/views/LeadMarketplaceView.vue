@@ -361,71 +361,130 @@ function toggleMapVisibility() {
 
 // Zaman hesaplama fonksiyonu
 function formatTimeRemaining(endsAt) {
-  const now = new Date()
-  const endTime = new Date(endsAt)
-  const diff = endTime - now
-
-  if (diff <= 0) return 'Abgelaufen'
-
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-  const seconds = Math.floor((diff % (1000 * 60)) / 1000)
-
-  if (days > 0) {
-    if (hours > 0) {
-      return `${days} gün ${hours} saat`
-    } else {
-      return `${days} gün`
+  if (!endsAt) return 'Abgelaufen'
+  
+  try {
+    // Boş obje kontrolü (defensive programming)
+    if (typeof endsAt === 'object' && endsAt !== null && Object.keys(endsAt).length === 0) {
+      return 'Kein Enddatum'
     }
-  } else if (hours > 0) {
-    if (minutes > 0) {
-      return `${hours} saat ${minutes} dakika`
-    } else {
-      return `${hours} saat`
+    
+    // Backend'den ISO string geliyor, direkt kullan
+    const dateValue = String(endsAt)
+    const now = new Date()
+    const endTime = new Date(dateValue)
+    
+    // Geçersiz tarih kontrolü
+    if (isNaN(endTime.getTime())) {
+      return 'Kein Enddatum'
     }
-  } else if (minutes > 0) {
-    // 1 saatten az kaldığında dakika ve saniye göster
-    return `${minutes}d ${seconds}s`
-  } else {
-    // 1 dakikadan az kaldığında sadece saniye göster
-    return `${seconds}s`
+    
+    const diff = endTime - now
+
+    if (diff <= 0) return 'Abgelaufen'
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000)
+
+    if (days > 0) {
+      if (hours > 0) {
+        return `${days} ${days === 1 ? 'Tag' : 'Tage'} ${hours} ${hours === 1 ? 'Stunde' : 'Stunden'}`
+      } else {
+        return `${days} ${days === 1 ? 'Tag' : 'Tage'}`
+      }
+    } else if (hours > 0) {
+      if (minutes > 0) {
+        return `${hours} ${hours === 1 ? 'Stunde' : 'Stunden'} ${minutes} ${minutes === 1 ? 'Minute' : 'Minuten'}`
+      } else {
+        return `${hours} ${hours === 1 ? 'Stunde' : 'Stunden'}`
+      }
+    } else if (minutes > 0) {
+      // 1 saatten az kaldığında dakika ve saniye göster
+      return `${minutes}m ${seconds}s`
+    } else {
+      // 1 dakikadan az kaldığında sadece saniye göster
+      return `${seconds}s`
+    }
+  } catch (error) {
+    console.error('Zaman hesaplama hatası:', error, endsAt)
+    return 'Kein Enddatum'
   }
 }
 
 // Kalan süreyi kompakt formatta göster
 function formatTimeRemainingCompact(endsAt) {
-  const now = new Date()
-  const endTime = new Date(endsAt)
-  const diff = endTime - now
+  if (!endsAt) return 'Abgelaufen'
+  
+  try {
+    // Boş obje kontrolü (defensive programming - backend'den {} gelebilir)
+    if (typeof endsAt === 'object' && endsAt !== null && Object.keys(endsAt).length === 0) {
+      return 'Kein Enddatum'
+    }
+    
+    // Backend'den ISO string geliyor, direkt kullan
+    const dateValue = String(endsAt)
+    const now = new Date()
+    const endTime = new Date(dateValue)
+    
+    // Geçersiz tarih kontrolü
+    if (isNaN(endTime.getTime())) {
+      return 'Kein Enddatum'
+    }
+    
+    const diff = endTime - now
 
-  if (diff <= 0) return 'Abgelaufen'
+    if (diff <= 0) return 'Abgelaufen'
 
-  const totalSeconds = Math.floor(diff / 1000)
-  const days = Math.floor(totalSeconds / (3600 * 24))
-  const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600)
-  const minutes = Math.floor((totalSeconds % 3600) / 60)
-  const seconds = totalSeconds % 60
+    const totalSeconds = Math.floor(diff / 1000)
+    const days = Math.floor(totalSeconds / (3600 * 24))
+    const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
 
-  // 1 günden fazlaysa: Dg HHhMMm
-  if (days > 0) {
+    // 1 günden fazlaysa: DT HHhMMm (Almanca: Tag)
+    if (days > 0) {
+      const hh = String(hours).padStart(2, '0')
+      const mm = String(minutes).padStart(2, '0')
+      return `${days}T ${hh}h${mm}m`
+    }
+
+    // 1 günden az: HHhMMm (saniye yok)
     const hh = String(hours).padStart(2, '0')
     const mm = String(minutes).padStart(2, '0')
-    return `${days}g ${hh}h${mm}m`
+    return `${hh}h${mm}m`
+  } catch (error) {
+    console.error('Zaman hesaplama hatası:', error, endsAt)
+    return 'Kein Enddatum'
   }
-
-  // 1 günden az: HHhMMm (saniye yok)
-  const hh = String(hours).padStart(2, '0')
-  const mm = String(minutes).padStart(2, '0')
-  return `${hh}h${mm}m`
 }
 
 // Kalan zaman belirli bir süreden az mı kontrol et (saniye cinsinden)
 function isTimeRemaining(endsAt, seconds) {
-  const now = new Date()
-  const endTime = new Date(endsAt)
-  const diff = (endTime - now) / 1000
-  return diff > 0 && diff < seconds
+  if (!endsAt) return false
+  
+  try {
+    // Boş obje kontrolü (defensive programming)
+    if (typeof endsAt === 'object' && endsAt !== null && Object.keys(endsAt).length === 0) {
+      return false
+    }
+    
+    // Backend'den ISO string geliyor, direkt kullan
+    const dateValue = String(endsAt)
+    const now = new Date()
+    const endTime = new Date(dateValue)
+    
+    // Geçersiz tarih kontrolü
+    if (isNaN(endTime.getTime())) {
+      return false
+    }
+    
+    const diff = (endTime - now) / 1000
+    return diff > 0 && diff < seconds
+  } catch (error) {
+    console.error('Zaman kontrolü hatası:', error, endsAt)
+    return false
+  }
 }
 
 // Sigorta tipi için rengi döndür (setting'den)
@@ -757,8 +816,32 @@ async function fetchLeads() {
   // Lead'lerin aktif durumunu endsAt tarihine göre güncelle
   allLeads.value = data.map(lead => {
     const now = new Date()
-    const endDate = new Date(lead.endsAt)
-    const isExpired = endDate < now
+    let endDate = null
+    let isExpired = false
+    
+    // endsAt değerini güvenli şekilde parse et
+    if (lead.endsAt) {
+      try {
+        // Boş obje kontrolü (defensive programming)
+        if (typeof lead.endsAt === 'object' && lead.endsAt !== null && Object.keys(lead.endsAt).length === 0) {
+          isExpired = false // Boş obje varsa aktif olarak işaretle
+        } else {
+          // Backend'den ISO string geliyor, direkt kullan
+          const dateValue = String(lead.endsAt)
+          endDate = new Date(dateValue)
+          
+          // Geçersiz tarih kontrolü
+          if (!isNaN(endDate.getTime())) {
+            isExpired = endDate < now
+          } else {
+            isExpired = false // Geçersiz tarih varsa aktif olarak işaretle
+          }
+        }
+      } catch (error) {
+        console.error('endsAt parse hatası:', error, { leadId: lead.id, endsAt: lead.endsAt })
+        isExpired = false
+      }
+    }
 
     return {
       ...lead,
@@ -836,6 +919,37 @@ function openInstantBuyModal(lead, event) {
   showInstantBuyModal.value = true
 }
 
+// Güvenli tarih formatlama fonksiyonu
+function formatDateForInput(dateValue) {
+  if (!dateValue) return ''
+  try {
+    const date = new Date(dateValue)
+    // Geçersiz tarih kontrolü
+    if (isNaN(date.getTime())) {
+      return ''
+    }
+    return date.toISOString().slice(0, 16)
+  } catch (error) {
+    console.error('Tarih formatlama hatası:', error, dateValue)
+    return ''
+  }
+}
+
+// Güvenli sayı formatlama fonksiyonu (BigInt desteği ile)
+function formatNumberForInput(value) {
+  if (value === null || value === undefined) return ''
+  try {
+    // BigInt kontrolü
+    if (typeof value === 'bigint') {
+      return value.toString()
+    }
+    return String(value)
+  } catch (error) {
+    console.error('Sayı formatlama hatası:', error, value)
+    return ''
+  }
+}
+
 async function openLeadModal(mode, lead = null) {
   modalMode.value = mode
   showLeadModal.value = true
@@ -901,25 +1015,52 @@ async function openLeadModal(mode, lead = null) {
     }
   } else if (mode === 'edit' && lead) {
     // Edit için mevcut lead verilerini yükle
-    editingLead.value = lead
-    leadForm.value = {
-      title: lead.title,
-      description: lead.description || '',
-      privateDetails: lead.privateDetails || '',
-      leadType: lead.leadType || 'AUCTION',
-      startPrice: lead.startPrice.toString(),
-      minIncrement: lead.minIncrement.toString(),
-      buyNowPrice: lead.instantBuyPrice ? lead.instantBuyPrice.toString() : '',
-      startsAt: lead.startsAt ? new Date(lead.startsAt).toISOString().slice(0, 16) : '',
-      endsAt: lead.endsAt ? new Date(lead.endsAt).toISOString().slice(0, 16) : '',
-      isActive: true, // Lead her zaman aktif
-      postalCode: lead.postalCode || '',
-      insuranceType: lead.insuranceType || '',
-      isShowcase: !!lead.isShowcase,
-      isPremium: !!lead.isPremium
+    // Lead verilerini API'den tekrar çek (tam veri için)
+    try {
+      const { data } = await api.get(`/leads/${lead.id}`, { headers: authHeaders() })
+      editingLead.value = data
+      
+      leadForm.value = {
+        title: data.title || '',
+        description: data.description || '',
+        privateDetails: data.privateDetails || '',
+        leadType: data.leadType || 'AUCTION',
+        startPrice: formatNumberForInput(data.startPrice),
+        minIncrement: formatNumberForInput(data.minIncrement),
+        buyNowPrice: data.instantBuyPrice ? formatNumberForInput(data.instantBuyPrice) : '',
+        startsAt: formatDateForInput(data.startsAt),
+        endsAt: formatDateForInput(data.endsAt),
+        isActive: true, // Lead her zaman aktif
+        postalCode: data.postalCode || '',
+        insuranceType: data.insuranceType || '',
+        isShowcase: !!data.isShowcase,
+        isPremium: !!data.isPremium
+      }
+      // Posta kodu için sadece posta kodu numarasını göster
+      postalCodeSearch.value = data.postalCode || ''
+    } catch (error) {
+      console.error('Lead verileri yüklenirken hata:', error)
+      errorMessage.value = 'Lead verileri yüklenemedi. Lütfen tekrar deneyin.'
+      // Hata durumunda mevcut lead verilerini kullan
+      editingLead.value = lead
+      leadForm.value = {
+        title: lead.title || '',
+        description: lead.description || '',
+        privateDetails: lead.privateDetails || '',
+        leadType: lead.leadType || 'AUCTION',
+        startPrice: formatNumberForInput(lead.startPrice),
+        minIncrement: formatNumberForInput(lead.minIncrement),
+        buyNowPrice: lead.instantBuyPrice ? formatNumberForInput(lead.instantBuyPrice) : '',
+        startsAt: formatDateForInput(lead.startsAt),
+        endsAt: formatDateForInput(lead.endsAt),
+        isActive: true,
+        postalCode: lead.postalCode || '',
+        insuranceType: lead.insuranceType || '',
+        isShowcase: !!lead.isShowcase,
+        isPremium: !!lead.isPremium
+      }
+      postalCodeSearch.value = lead.postalCode || ''
     }
-    // Posta kodu için sadece posta kodu numarasını göster
-    postalCodeSearch.value = lead.postalCode || ''
   }
 }
 
@@ -1240,14 +1381,14 @@ async function deleteLead() {
   try {
     deletionReasonError.value = ''
 
-    // Validation
+    // Validierung
     if (!deletionReason.value.trim()) {
-      deletionReasonError.value = 'Silme sebebi gerekli'
+      deletionReasonError.value = 'Löschgrund ist erforderlich'
       return
     }
 
     if (deletionReason.value.trim().length < 10) {
-      deletionReasonError.value = 'Silme sebebi en az 10 karakter olmalıdır'
+      deletionReasonError.value = 'Der Löschgrund muss mindestens 10 Zeichen lang sein'
       return
     }
 
@@ -1261,7 +1402,7 @@ async function deleteLead() {
       }
     })
 
-    successMessage.value = 'Lead başarıyla silindi!'
+    successMessage.value = 'Lead wurde erfolgreich gelöscht!'
     showDeleteConfirm.value = false
     leadToDelete.value = null
     deletionReason.value = ''
@@ -1283,7 +1424,7 @@ async function deleteLead() {
       }
     }
 
-    errorMessage.value = backendMessage ? `Lead silinemedi: ${backendMessage}` : 'Lead silinemedi'
+    errorMessage.value = backendMessage ? `Lead konnte nicht gelöscht werden: ${backendMessage}` : 'Lead konnte nicht gelöscht werden'
   } finally {
     isDeleting.value = false
   }

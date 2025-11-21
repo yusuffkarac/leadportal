@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { logActivity } from '../utils/activityLogger.js'
 import { extractRequestInfo } from '../utils/activityLogger.js'
 import { createNotification } from '../services/notificationService.js'
+import { serializeBigInt } from '../utils/bigIntSerializer.js'
 
 const feedbackRouter = (prisma, io) => {
   const router = Router()
@@ -133,7 +134,7 @@ const feedbackRouter = (prisma, io) => {
         io.emit('feedback:new', { feedbackId: feedback.id, userId: req.user.id })
       }
 
-      res.status(201).json(feedback)
+      res.status(201).json(serializeBigInt(feedback))
     } catch (error) {
       console.error('Geri bildirim oluşturma hatası:', error)
       res.status(500).json({ error: 'Feedback konnte nicht erstellt werden' })
@@ -160,7 +161,7 @@ const feedbackRouter = (prisma, io) => {
         orderBy: { createdAt: 'desc' }
       })
 
-      res.json(feedbacks)
+      res.json(serializeBigInt(feedbacks))
     } catch (error) {
       console.error('Geri bildirimleri yükleme hatası:', error)
       res.status(500).json({ error: 'Feedbacks konnten nicht geladen werden' })
@@ -203,7 +204,7 @@ const feedbackRouter = (prisma, io) => {
       }
 
 
-      res.json(feedback)
+      res.json(serializeBigInt(feedback))
     } catch (error) {
       console.error('Fehler beim Laden des Feedbacks:', error)
       res.status(500).json({ error: 'Feedback konnte nicht geladen werden' })
@@ -380,7 +381,7 @@ const feedbackRouter = (prisma, io) => {
         })
       }
 
-      res.status(201).json(reply)
+      res.status(201).json(serializeBigInt(reply))
     } catch (error) {
       console.error('Cevap oluşturma hatası:', error)
       res.status(500).json({ error: 'Antwort konnte nicht erstellt werden' })
@@ -460,7 +461,7 @@ const feedbackRouter = (prisma, io) => {
         })
       }
 
-      res.json(updated)
+      res.json(serializeBigInt(updated))
     } catch (error) {
       console.error('Durum güncelleme hatası:', error)
       res.status(500).json({ error: 'Status konnte nicht aktualisiert werden' })
@@ -507,7 +508,7 @@ const feedbackRouter = (prisma, io) => {
         userAgent
       })
 
-      res.json(updated)
+      res.json(serializeBigInt(updated))
     } catch (error) {
       console.error('Atama hatası:', error)
       res.status(500).json({ error: 'Zuweisung konnte nicht durchgeführt werden' })
@@ -550,7 +551,7 @@ const feedbackRouter = (prisma, io) => {
         orderBy: { createdAt: 'desc' }
       })
 
-      res.json(feedbacks)
+      res.json(serializeBigInt(feedbacks))
     } catch (error) {
       console.error('Geri bildirimleri yükleme hatası:', error)
       res.status(500).json({ error: 'Geri bildirimleri yüklenemedi' })

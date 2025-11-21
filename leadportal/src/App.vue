@@ -1118,8 +1118,8 @@ header {
 
 .brand {
   border-right: 1px solid #e2e8f0;
-  padding-right: 1rem;
-  margin-right: 1rem;
+  padding-right: 0.75rem;
+  margin-right: 0.75rem;
   align-self: stretch;
   display: flex;
   align-items: center;
@@ -1855,6 +1855,8 @@ nav a.admin-panel-btn.router-link-exact-active {
   display: flex;
   min-height: 100vh;
   background: #f8fafc;
+  position: relative;
+  overflow-x: hidden;
 }
 
 .admin-sidebar {
@@ -1863,18 +1865,22 @@ nav a.admin-panel-btn.router-link-exact-active {
   border-right: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
-  position: fixed;
-  left: 0;
-  top: 0;
-  height: 100vh;
+  position: revert !important;
+  left: 0 !important;
+  top: var(--navbar-height, 60px) !important;
+  /* height: calc(3000vh - var(--navbar-height, 60px)) !important; */
   overflow-y: auto;
-  z-index: 100;
+  overflow-x: hidden;
+  z-index: 99;
+  will-change: auto;
+  transform: none !important;
 }
 
 .admin-sidebar-header {
   padding: 12px 16px;
   border-bottom: 1px solid #e2e8f0;
   background: #f8fafc;
+  display: none;
 }
 
 .admin-sidebar-brand {
@@ -1951,19 +1957,19 @@ nav a.admin-panel-btn.router-link-exact-active {
 
 .admin-sidebar-content {
   flex: 1;
-  margin-left: 260px;
+
   min-height: 100vh;
+
 }
 
 @media (max-width: 768px) {
   .admin-sidebar {
-    width: 100%;
-    position: relative;
-    height: auto;
+    display: none;
   }
   
   .admin-sidebar-content {
     margin-left: 0;
+    padding-top: 0;
   }
   
   .admin-sidebar-container {

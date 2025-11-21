@@ -33,135 +33,368 @@ const requireAdmin = async (req, res, next) => {
   }
 }
 
-// Email template tipleri ve default içerikleri
+// Email template tipleri und default Inhalte
 const defaultEmailTemplates = [
   {
     type: 'bidReceived',
     name: 'Gebot erhalten',
     description: 'E-Mail, die gesendet wird, wenn ein Benutzer ein Gebot für einen Lead abgibt',
     subject: 'Ihr Gebot wurde erhalten: {{leadTitle}}',
-    htmlContent: `<div style="background:#f6f8fb;padding:24px;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111827;">
-  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
+    htmlContent: `<div style="background:#f8fafc;padding:40px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);">
+    <!-- Header with primary color -->
     <tr>
-      <td style="background:#2563eb;color:#ffffff;padding:20px 24px;font-size:18px;font-weight:700;">
-        {{companyName}}
+      <td style="background:#1e293b;color:#ffffff;padding:28px 32px;text-align:center;">
+        <h1 style="margin:0;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">{{companyName}}</h1>
       </td>
     </tr>
+    <!-- Success Icon Section -->
     <tr>
-      <td style="padding:24px;">
-        <h1 style="margin:0 0 12px 0;font-size:20px;color:#111827;">Ihr Gebot wurde erhalten</h1>
-        <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">
-          Sie haben für die Anzeige <strong style="color:#111827;">{{leadTitle}}</strong> ein Gebot von <strong style="color:#111827;">{{amount}} {{currency}}</strong> abgegeben.
-        </p>
-        <a href="{{leadUrl}}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;">Anzeige ansehen</a>
-        <p style="margin:16px 0 0 0;color:#6b7280;font-size:12px;">Diese E-Mail wurde automatisch gesendet. Bitte antworten Sie nicht.</p>
+      <td style="padding:32px 32px 0;text-align:center;">
+        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 20px;">
+          <tr>
+            <td style="text-align:center;">
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                <tr>
+                  <td style="width:64px;height:64px;background:#f0fdf4;border-radius:50%;text-align:center;vertical-align:middle;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" height="100%">
+                      <tr>
+                        <td style="text-align:center;vertical-align:middle;padding:8px;">
+                          <div style="width:48px;height:48px;background:#059669;border-radius:50%;margin:0 auto;text-align:center;line-height:48px;align-items:center;justify-content:center;">
+                            <span style="color:#ffffff;font-size:28px;font-weight:bold;display:inline-block;line-height:48px;vertical-align:middle;">✓</span>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <h2 style="margin:0 0 8px;font-size:22px;font-weight:600;color:#1e293b;">Ihr Gebot wurde erhalten</h2>
+        <p style="margin:0;font-size:14px;color:#64748b;">Vielen Dank für Ihr Gebot</p>
       </td>
     </tr>
+    <!-- Content Section -->
     <tr>
-      <td style="background:#f9fafb;color:#6b7280;padding:16px 24px;font-size:12px;text-align:center;">
-        © {{year}} {{companyName}}
+      <td style="padding:32px;">
+        <!-- Lead Info Card -->
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:20px;margin-bottom:20px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+              <td style="padding-bottom:12px;border-bottom:1px solid #e2e8f0;">
+                <p style="margin:0;font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Anzeige</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-top:12px;">
+                <p style="margin:0 0 6px;font-size:16px;font-weight:600;color:#1e293b;line-height:1.4;">{{leadTitle}}</p>
+                <p style="margin:0;font-size:13px;color:#64748b;">Anzeigen-ID: <span style="color:#1e293b;font-weight:500;">{{leadId}}</span></p>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <!-- Bid Amount Card -->
+        <div style="background:#f0fdf4;border-left:4px solid #059669;border-radius:6px;padding:20px;margin-bottom:24px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+              <td>
+                <p style="margin:0 0 8px;font-size:11px;color:#166534;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Ihr Gebot</p>
+                <p style="margin:0;font-size:28px;font-weight:700;color:#059669;line-height:1.2;">{{amount}} {{currency}}</p>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <!-- Action Button -->
+        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:28px 0 0;width:100%;">
+          <tr>
+            <td style="text-align:center;">
+              <a href="{{leadUrl}}" style="display:inline-block;background:#1e293b;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:15px;letter-spacing:0.3px;">Anzeige ansehen</a>
+            </td>
+          </tr>
+        </table>
+        <p style="margin:28px 0 0;font-size:13px;color:#64748b;line-height:1.5;text-align:center;">Diese E-Mail wurde automatisch gesendet. Bitte antworten Sie nicht.</p>
+      </td>
+    </tr>
+    <!-- Footer -->
+    <tr>
+      <td style="padding:24px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;">
+        <p style="margin:0;font-size:12px;color:#64748b;text-align:center;">© {{year}} {{companyName}}. Alle Rechte vorbehalten.</p>
       </td>
     </tr>
   </table>
 </div>`,
-    textContent: 'Ihr Gebot wurde erhalten\n\nSie haben für die Anzeige {{leadTitle}} ein Gebot von {{amount}} {{currency}} abgegeben.\n\nAnzeige ansehen: {{leadUrl}}\n\n{{companyName}}',
-    variables: ['companyName', 'leadTitle', 'amount', 'currency', 'leadUrl', 'year']
+    textContent: 'Ihr Gebot wurde erhalten\n\nSie haben für die Anzeige {{leadTitle}} ({{leadId}}) ein Gebot von {{amount}} {{currency}} abgegeben.\n\nAnzeige ansehen: {{leadUrl}}\n\n© {{year}} {{companyName}}',
+    variables: ['companyName', 'leadTitle', 'leadId', 'amount', 'currency', 'leadUrl', 'year']
   },
   {
     type: 'outbid',
     name: 'Gebot überboten',
     description: 'E-Mail, die gesendet wird, wenn das Gebot des Benutzers von einem anderen Gebot überboten wurde',
     subject: 'Höheres Gebot abgegeben: {{leadTitle}}',
-    htmlContent: `<div style="background:#f6f8fb;padding:24px;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111827;">
-  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
+    htmlContent: `<div style="background:#f8fafc;padding:40px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);">
+    <!-- Header with primary color -->
     <tr>
-      <td style="background:#dc2626;color:#ffffff;padding:20px 24px;font-size:18px;font-weight:700;">
-        {{companyName}}
+      <td style="background:#1e293b;color:#ffffff;padding:28px 32px;text-align:center;">
+        <h1 style="margin:0;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">{{companyName}}</h1>
       </td>
     </tr>
+    <!-- Warning Icon Section -->
     <tr>
-      <td style="padding:24px;">
-        <h1 style="margin:0 0 12px 0;font-size:20px;color:#111827;">Ihr Gebot wurde überboten</h1>
-        <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">
-          Für die Anzeige <strong>{{leadTitle}}</strong> wurde ein höheres Gebot abgegeben als Ihres: <strong>{{newAmount}} {{currency}}</strong>.
-        </p>
-        <a href="{{leadUrl}}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;">Anzeige ansehen und bieten</a>
-        <p style="margin:16px 0 0 0;color:#6b7280;font-size:12px;">Diese E-Mail wurde automatisch gesendet.</p>
+      <td style="padding:32px 32px 0;text-align:center;">
+        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 20px;">
+          <tr>
+            <td style="text-align:center;">
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                <tr>
+                  <td style="width:64px;height:64px;background:#fef3c7;border-radius:50%;text-align:center;vertical-align:middle;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" height="100%">
+                      <tr>
+                        <td style="text-align:center;vertical-align:middle;padding:8px;">
+                          <div style="width:48px;height:48px;background:#d97706;border-radius:50%;margin:0 auto;text-align:center;line-height:48px;align-items:center;justify-content:center;">
+                            <span style="color:#ffffff;font-size:28px;font-weight:bold;display:inline-block;line-height:48px;vertical-align:middle;">⬆</span>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <h2 style="margin:0 0 8px;font-size:22px;font-weight:600;color:#1e293b;">Ihr Gebot wurde überboten</h2>
+        <p style="margin:0;font-size:14px;color:#64748b;">Ein höheres Gebot wurde abgegeben</p>
       </td>
     </tr>
+    <!-- Content Section -->
     <tr>
-      <td style="background:#f9fafb;color:#6b7280;padding:16px 24px;font-size:12px;text-align:center;">
-        © {{year}} {{companyName}}
+      <td style="padding:32px;">
+        <!-- Lead Info Card -->
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:20px;margin-bottom:20px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+              <td style="padding-bottom:12px;border-bottom:1px solid #e2e8f0;">
+                <p style="margin:0;font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Anzeige</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-top:12px;">
+                <p style="margin:0 0 6px;font-size:16px;font-weight:600;color:#1e293b;line-height:1.4;">{{leadTitle}}</p>
+                <p style="margin:0;font-size:13px;color:#64748b;">Anzeigen-ID: <span style="color:#1e293b;font-weight:500;">{{leadId}}</span></p>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <!-- New Bid Amount Card -->
+        <div style="background:#fef3c7;border-left:4px solid #d97706;border-radius:6px;padding:20px;margin-bottom:24px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+              <td>
+                <p style="margin:0 0 8px;font-size:11px;color:#92400e;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Neues Höchstgebot</p>
+                <p style="margin:0;font-size:28px;font-weight:700;color:#d97706;line-height:1.2;">{{newAmount}} {{currency}}</p>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <!-- Action Button -->
+        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:28px 0 0;width:100%;">
+          <tr>
+            <td style="text-align:center;">
+              <a href="{{leadUrl}}" style="display:inline-block;background:#1e293b;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:15px;letter-spacing:0.3px;">Anzeige ansehen und bieten</a>
+            </td>
+          </tr>
+        </table>
+        <p style="margin:28px 0 0;font-size:13px;color:#64748b;line-height:1.5;text-align:center;">Diese E-Mail wurde automatisch gesendet.</p>
+      </td>
+    </tr>
+    <!-- Footer -->
+    <tr>
+      <td style="padding:24px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;">
+        <p style="margin:0;font-size:12px;color:#64748b;text-align:center;">© {{year}} {{companyName}}. Alle Rechte vorbehalten.</p>
       </td>
     </tr>
   </table>
 </div>`,
-    textContent: 'Ihr Gebot wurde überboten\n\nNeues Gebot für {{leadTitle}}: {{newAmount}} {{currency}}.\n\nAnzeige: {{leadUrl}}\n\n{{companyName}}',
-    variables: ['companyName', 'leadTitle', 'newAmount', 'currency', 'leadUrl', 'year']
+    textContent: 'Ihr Gebot wurde überboten\n\nNeues Gebot für {{leadTitle}} ({{leadId}}): {{newAmount}} {{currency}}.\n\nAnzeige: {{leadUrl}}\n\n© {{year}} {{companyName}}',
+    variables: ['companyName', 'leadTitle', 'leadId', 'newAmount', 'currency', 'leadUrl', 'year']
   },
   {
     type: 'leadWon',
     name: 'Auktion gewonnen',
     description: 'E-Mail, die gesendet wird, wenn ein Benutzer eine Auktion gewinnt',
     subject: 'Glückwunsch! Sie haben die Auktion gewonnen: {{leadTitle}}',
-    htmlContent: `<div style="background:#f6f8fb;padding:24px;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111827;">
-  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
+    htmlContent: `<div style="background:#f8fafc;padding:40px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);">
+    <!-- Header with primary color -->
     <tr>
-      <td style="background:#059669;color:#ffffff;padding:20px 24px;font-size:18px;font-weight:700;">
-        {{companyName}}
+      <td style="background:#1e293b;color:#ffffff;padding:28px 32px;text-align:center;">
+        <h1 style="margin:0;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">{{companyName}}</h1>
       </td>
     </tr>
+    <!-- Success Icon Section -->
     <tr>
-      <td style="padding:24px;">
-        <h1 style="margin:0 0 12px 0;font-size:20px;color:#111827;">🎉 Glückwunsch!</h1>
-        <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">
-          Sie haben die Auktion für <strong>{{leadTitle}}</strong> für <strong>{{amount}} {{currency}}</strong> gewonnen!
-        </p>
-        <a href="{{leadUrl}}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;">Lead-Details ansehen</a>
-        <p style="margin:16px 0 0 0;color:#6b7280;font-size:12px;">Diese E-Mail wurde automatisch gesendet.</p>
+      <td style="padding:32px 32px 0;text-align:center;">
+        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 20px;">
+          <tr>
+            <td style="text-align:center;">
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                <tr>
+                  <td style="width:64px;height:64px;background:#f0fdf4;border-radius:50%;text-align:center;vertical-align:middle;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" height="100%">
+                      <tr>
+                        <td style="text-align:center;vertical-align:middle;padding:8px;">
+                          <div style="width:48px;height:48px;background:#059669;border-radius:50%;margin:0 auto;text-align:center;line-height:48px;align-items:center;justify-content:center;">
+                            <span style="color:#ffffff;font-size:28px;font-weight:bold;display:inline-block;line-height:48px;vertical-align:middle;">🎉</span>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <h2 style="margin:0 0 8px;font-size:22px;font-weight:600;color:#1e293b;">Glückwunsch!</h2>
+        <p style="margin:0;font-size:14px;color:#64748b;">Sie haben die Auktion gewonnen</p>
       </td>
     </tr>
+    <!-- Content Section -->
     <tr>
-      <td style="background:#f9fafb;color:#6b7280;padding:16px 24px;font-size:12px;text-align:center;">
-        © {{year}} {{companyName}}
+      <td style="padding:32px;">
+        <!-- Lead Info Card -->
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:20px;margin-bottom:20px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+              <td style="padding-bottom:12px;border-bottom:1px solid #e2e8f0;">
+                <p style="margin:0;font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Gewonnene Anzeige</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-top:12px;">
+                <p style="margin:0 0 6px;font-size:16px;font-weight:600;color:#1e293b;line-height:1.4;">{{leadTitle}}</p>
+                <p style="margin:0;font-size:13px;color:#64748b;">Anzeigen-ID: <span style="color:#1e293b;font-weight:500;">{{leadId}}</span></p>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <!-- Winning Bid Amount Card -->
+        <div style="background:#f0fdf4;border-left:4px solid #059669;border-radius:6px;padding:20px;margin-bottom:24px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+              <td>
+                <p style="margin:0 0 8px;font-size:11px;color:#166534;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Gewinngebot</p>
+                <p style="margin:0;font-size:28px;font-weight:700;color:#059669;line-height:1.2;">{{amount}} {{currency}}</p>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <!-- Action Button -->
+        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:28px 0 0;width:100%;">
+          <tr>
+            <td style="text-align:center;">
+              <a href="{{leadUrl}}" style="display:inline-block;background:#1e293b;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:15px;letter-spacing:0.3px;">Lead-Details ansehen</a>
+            </td>
+          </tr>
+        </table>
+        <p style="margin:28px 0 0;font-size:13px;color:#64748b;line-height:1.5;text-align:center;">Diese E-Mail wurde automatisch gesendet.</p>
+      </td>
+    </tr>
+    <!-- Footer -->
+    <tr>
+      <td style="padding:24px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;">
+        <p style="margin:0;font-size:12px;color:#64748b;text-align:center;">© {{year}} {{companyName}}. Alle Rechte vorbehalten.</p>
       </td>
     </tr>
   </table>
 </div>`,
-    textContent: 'Glückwunsch!\n\nSie haben die Auktion für {{leadTitle}} für {{amount}} {{currency}} gewonnen!\n\nLead-Details: {{leadUrl}}\n\n{{companyName}}',
-    variables: ['companyName', 'leadTitle', 'amount', 'currency', 'leadUrl', 'year']
+    textContent: 'Glückwunsch!\n\nSie haben die Auktion für {{leadTitle}} ({{leadId}}) für {{amount}} {{currency}} gewonnen!\n\nLead-Details: {{leadUrl}}\n\n© {{year}} {{companyName}}',
+    variables: ['companyName', 'leadTitle', 'leadId', 'amount', 'currency', 'leadUrl', 'year']
   },
   {
     type: 'leadExpired',
     name: 'Auktion abgelaufen',
     description: 'E-Mail, die gesendet wird, wenn eine verfolgte Auktion abgelaufen ist',
     subject: 'Auktion abgelaufen: {{leadTitle}}',
-    htmlContent: `<div style="background:#f6f8fb;padding:24px;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111827;">
-  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
+    htmlContent: `<div style="background:#f8fafc;padding:40px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);">
+    <!-- Header with primary color -->
     <tr>
-      <td style="background:#6b7280;color:#ffffff;padding:20px 24px;font-size:18px;font-weight:700;">
-        {{companyName}}
+      <td style="background:#1e293b;color:#ffffff;padding:28px 32px;text-align:center;">
+        <h1 style="margin:0;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">{{companyName}}</h1>
       </td>
     </tr>
+    <!-- Info Icon Section -->
     <tr>
-      <td style="padding:24px;">
-        <h1 style="margin:0 0 12px 0;font-size:20px;color:#111827;">Auktion abgelaufen</h1>
-        <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">
-          Die Auktion für <strong>{{leadTitle}}</strong> ist beendet.
-        </p>
-        <a href="{{leadUrl}}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;">Neue Auktionen ansehen</a>
-        <p style="margin:16px 0 0 0;color:#6b7280;font-size:12px;">Diese E-Mail wurde automatisch gesendet.</p>
+      <td style="padding:32px 32px 0;text-align:center;">
+        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 20px;">
+          <tr>
+            <td style="text-align:center;">
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                <tr>
+                  <td style="width:64px;height:64px;background:#f3f4f6;border-radius:50%;text-align:center;vertical-align:middle;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" height="100%">
+                      <tr>
+                        <td style="text-align:center;vertical-align:middle;padding:8px;">
+                          <div style="width:48px;height:48px;background:#64748b;border-radius:50%;margin:0 auto;text-align:center;line-height:48px;align-items:center;justify-content:center;">
+                            <span style="color:#ffffff;font-size:28px;font-weight:bold;display:inline-block;line-height:48px;vertical-align:middle;">⏱</span>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <h2 style="margin:0 0 8px;font-size:22px;font-weight:600;color:#1e293b;">Auktion abgelaufen</h2>
+        <p style="margin:0;font-size:14px;color:#64748b;">Die Auktion ist beendet</p>
       </td>
     </tr>
+    <!-- Content Section -->
     <tr>
-      <td style="background:#f9fafb;color:#6b7280;padding:16px 24px;font-size:12px;text-align:center;">
-        © {{year}} {{companyName}}
+      <td style="padding:32px;">
+        <!-- Lead Info Card -->
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:20px;margin-bottom:24px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+              <td style="padding-bottom:12px;border-bottom:1px solid #e2e8f0;">
+                <p style="margin:0;font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Abgelaufene Anzeige</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-top:12px;">
+                <p style="margin:0 0 6px;font-size:16px;font-weight:600;color:#1e293b;line-height:1.4;">{{leadTitle}}</p>
+                <p style="margin:0;font-size:13px;color:#64748b;">Anzeigen-ID: <span style="color:#1e293b;font-weight:500;">{{leadId}}</span></p>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <!-- Action Button -->
+        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:28px 0 0;width:100%;">
+          <tr>
+            <td style="text-align:center;">
+              <a href="{{leadUrl}}" style="display:inline-block;background:#1e293b;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:15px;letter-spacing:0.3px;">Neue Auktionen ansehen</a>
+            </td>
+          </tr>
+        </table>
+        <p style="margin:28px 0 0;font-size:13px;color:#64748b;line-height:1.5;text-align:center;">Diese E-Mail wurde automatisch gesendet.</p>
+      </td>
+    </tr>
+    <!-- Footer -->
+    <tr>
+      <td style="padding:24px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;">
+        <p style="margin:0;font-size:12px;color:#64748b;text-align:center;">© {{year}} {{companyName}}. Alle Rechte vorbehalten.</p>
       </td>
     </tr>
   </table>
 </div>`,
-    textContent: 'Auktion abgelaufen\n\nDie Auktion für {{leadTitle}} ist beendet.\n\nNeue Auktionen: {{leadUrl}}\n\n{{companyName}}',
-    variables: ['companyName', 'leadTitle', 'leadUrl', 'year']
+    textContent: 'Auktion abgelaufen\n\nDie Auktion für {{leadTitle}} ({{leadId}}) ist beendet.\n\nNeue Auktionen: {{leadUrl}}\n\n© {{year}} {{companyName}}',
+    variables: ['companyName', 'leadTitle', 'leadId', 'leadUrl', 'year']
   }
 ]
 
@@ -606,34 +839,53 @@ router.delete('/sms-templates/:id', requireAdmin, async (req, res) => {
   }
 })
 
-// Default template'leri yeniden oluştur
+// Default template'leri yeniden oluştur (mevcut template'leri güncelle)
 router.post('/reset-defaults', requireAdmin, async (req, res) => {
   try {
-    // Mevcut tüm template'leri sil
-    await prisma.emailTemplate.deleteMany({})
-    await prisma.sMSTemplate.deleteMany({})
-    
-    // Default template'leri oluştur
+    // Default email template'leri güncelle veya oluştur (upsert)
     const emailTemplates = await Promise.all(
       defaultEmailTemplates.map(template => 
-        prisma.emailTemplate.create({ data: template })
+        prisma.emailTemplate.upsert({
+          where: { type: template.type },
+          update: {
+            name: template.name,
+            description: template.description,
+            subject: template.subject,
+            htmlContent: template.htmlContent,
+            textContent: template.textContent,
+            variables: template.variables,
+            isActive: true
+          },
+          create: template
+        })
       )
     )
     
+    // Default SMS template'leri güncelle veya oluştur (upsert)
     const smsTemplates = await Promise.all(
       defaultSMSTemplates.map(template => 
-        prisma.sMSTemplate.create({ data: template })
+        prisma.sMSTemplate.upsert({
+          where: { type: template.type },
+          update: {
+            name: template.name,
+            description: template.description,
+            content: template.content,
+            variables: template.variables,
+            isActive: true
+          },
+          create: template
+        })
       )
     )
     
     res.json({ 
-      message: 'Standard-Vorlagen wurden neu erstellt',
+      message: 'Standard-Vorlagen wurden aktualisiert',
       emailTemplates,
       smsTemplates
     })
   } catch (error) {
     console.error('Reset defaults error:', error)
-    res.status(500).json({ message: 'Standard-Vorlagen konnten nicht erstellt werden' })
+    res.status(500).json({ message: 'Standard-Vorlagen konnten nicht aktualisiert werden' })
   }
 })
 
