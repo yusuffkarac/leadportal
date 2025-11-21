@@ -4,15 +4,15 @@ import { logActivity, ActivityTypes, extractRequestInfo } from '../utils/activit
 import { createNotification } from '../services/notificationService.js'
 
 const addBalanceSchema = z.object({
-  userId: z.string().min(1, 'Kullanıcı ID gereklidir'),
-  amount: z.number().positive('Miktar pozitif olmalıdır'),
+  userId: z.string().min(1, 'Benutzer-ID ist erforderlich'),
+  amount: z.number().positive('Betrag muss positiv sein'),
   description: z.string().optional()
 })
 
 const deductBalanceSchema = z.object({
-  userId: z.string().min(1, 'Kullanıcı ID gereklidir'),
-  amount: z.number().positive('Miktar pozitif olmalıdır'),
-  description: z.string().min(1, 'Açıklama gereklidir')
+  userId: z.string().min(1, 'Benutzer-ID ist erforderlich'),
+  amount: z.number().positive('Betrag muss positiv sein'),
+  description: z.string().min(1, 'Beschreibung ist erforderlich')
 })
 
 const updateBalanceEnabledSchema = z.object({
@@ -26,12 +26,12 @@ export default function balanceRouter(prisma) {
   // Admin: Kullanıcılara bakiye ekle
   router.post('/admin/add', async (req, res) => {
     if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') {
-      return res.status(403).json({ error: 'Bu işlem için yetkiniz yok' })
+      return res.status(403).json({ error: 'Sie haben keine Berechtigung für diese Aktion' })
     }
 
     const parsed = addBalanceSchema.safeParse(req.body)
     if (!parsed.success) {
-      const errors = parsed.error?.errors?.map(e => e.message).join(', ') || 'Geçersiz veri'
+      const errors = parsed.error?.errors?.map(e => e.message).join(', ') || 'Ungültige Daten'
       return res.status(400).json({ error: errors })
     }
 
@@ -44,7 +44,7 @@ export default function balanceRouter(prisma) {
       })
 
       if (!user) {
-        return res.status(404).json({ error: 'Kullanıcı bulunamadı' })
+        return res.status(404).json({ error: 'Benutzer nicht gefunden' })
       }
 
       // Bakiye ekle ve transaction kaydı oluştur
@@ -62,7 +62,7 @@ export default function balanceRouter(prisma) {
             userId,
             amount,
             type: 'ADMIN_ADD',
-            description: description || `Admin tarafından ${amount}€ bakiye eklendi`,
+            description: description || `Guthaben von ${amount}€ wurde vom Admin hinzugefügt`,
             adminId: req.user.id
           }
         })
@@ -95,8 +95,8 @@ export default function balanceRouter(prisma) {
         await createNotification(
           userId,
           'BALANCE_ADDED',
-          'Bakiye Eklendi',
-          `Hesabınıza ${amount}€ bakiye eklendi. Yeni bakiyeniz: ${updatedUser.balance}€`,
+          'Guthaben hinzugefügt',
+          `Ihrem Konto wurde ${amount}€ Guthaben hinzugefügt. Ihr neues Guthaben: ${updatedUser.balance}€`,
           {
             amount,
             newBalance: updatedUser.balance,
@@ -115,19 +115,19 @@ export default function balanceRouter(prisma) {
       })
     } catch (error) {
       console.error('Add balance error:', error)
-      res.status(500).json({ error: 'Bakiye eklenirken bir hata oluştu' })
+      res.status(500).json({ error: 'Fehler beim Hinzufügen des Guthabens' })
     }
   })
 
   // Admin: Kullanıcıdan bakiye sil
   router.post('/admin/deduct', async (req, res) => {
     if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') {
-      return res.status(403).json({ error: 'Bu işlem için yetkiniz yok' })
+      return res.status(403).json({ error: 'Sie haben keine Berechtigung für diese Aktion' })
     }
 
     const parsed = deductBalanceSchema.safeParse(req.body)
     if (!parsed.success) {
-      const errors = parsed.error?.errors?.map(e => e.message).join(', ') || 'Geçersiz veri'
+      const errors = parsed.error?.errors?.map(e => e.message).join(', ') || 'Ungültige Daten'
       return res.status(400).json({ error: errors })
     }
 
@@ -140,13 +140,13 @@ export default function balanceRouter(prisma) {
       })
 
       if (!user) {
-        return res.status(404).json({ error: 'Kullanıcı bulunamadı' })
+        return res.status(404).json({ error: 'Benutzer nicht gefunden' })
       }
 
       // Kullanıcının bakiyesinin yeterli olup olmadığını kontrol et
       if (user.balance < amount) {
         return res.status(400).json({
-          error: 'Kullanıcının bakiyesi yetersiz',
+          error: 'Unzureichendes Guthaben des Benutzers',
           currentBalance: user.balance,
           requestedAmount: amount
         })
@@ -200,8 +200,8 @@ export default function balanceRouter(prisma) {
         await createNotification(
           userId,
           'BALANCE_DEDUCTED',
-          'Bakiye Düşürüldü',
-          `Hesabınızdan ${amount}€ bakiye düşürüldü. Yeni bakiyeniz: ${updatedUser.balance}€`,
+          'Guthaben abgezogen',
+          `Von Ihrem Konto wurde ${amount}€ Guthaben abgezogen. Ihr neues Guthaben: ${updatedUser.balance}€`,
           {
             amount,
             newBalance: updatedUser.balance,
@@ -220,19 +220,19 @@ export default function balanceRouter(prisma) {
       })
     } catch (error) {
       console.error('Deduct balance error:', error)
-      res.status(500).json({ error: 'Bakiye düşürülürken bir hata oluştu' })
+      res.status(500).json({ error: 'Fehler beim Abziehen des Guthabens' })
     }
   })
 
   // Admin: Kullanıcının bakiye özelliğini aç/kapat
   router.put('/admin/toggle-enabled', async (req, res) => {
     if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') {
-      return res.status(403).json({ error: 'Bu işlem için yetkiniz yok' })
+      return res.status(403).json({ error: 'Sie haben keine Berechtigung für diese Aktion' })
     }
 
     const parsed = updateBalanceEnabledSchema.safeParse(req.body)
     if (!parsed.success) {
-      const errors = parsed.error?.errors?.map(e => e.message).join(', ') || 'Geçersiz veri'
+      const errors = parsed.error?.errors?.map(e => e.message).join(', ') || 'Ungültige Daten'
       return res.status(400).json({ error: errors })
     }
 
@@ -244,7 +244,7 @@ export default function balanceRouter(prisma) {
       })
 
       if (!user) {
-        return res.status(404).json({ error: 'Kullanıcı bulunamadı' })
+        return res.status(404).json({ error: 'Benutzer nicht gefunden' })
       }
 
       const updatedUser = await prisma.user.update({
@@ -280,14 +280,14 @@ export default function balanceRouter(prisma) {
       })
     } catch (error) {
       console.error('Toggle balance enabled error:', error)
-      res.status(500).json({ error: 'Bakiye durumu güncellenirken bir hata oluştu' })
+      res.status(500).json({ error: 'Fehler beim Aktualisieren des Guthabenstatus' })
     }
   })
 
   // Admin: Tüm kullanıcıların bakiye bilgilerini getir
   router.get('/admin/all', async (req, res) => {
     if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') {
-      return res.status(403).json({ error: 'Bu işlem için yetkiniz yok' })
+      return res.status(403).json({ error: 'Sie haben keine Berechtigung für diese Aktion' })
     }
 
     try {
@@ -315,14 +315,14 @@ export default function balanceRouter(prisma) {
       res.json(users)
     } catch (error) {
       console.error('Get all balances error:', error)
-      res.status(500).json({ error: 'Bakiye bilgileri alınırken bir hata oluştu' })
+      res.status(500).json({ error: 'Fehler beim Abrufen der Guthabeninformationen' })
     }
   })
 
   // Admin: Kullanıcının bakiye geçmişini getir
   router.get('/admin/history/:userId', async (req, res) => {
     if (req.user?.userTypeId !== 'ADMIN' && req.user?.userTypeId !== 'SUPERADMIN') {
-      return res.status(403).json({ error: 'Bu işlem için yetkiniz yok' })
+      return res.status(403).json({ error: 'Sie haben keine Berechtigung für diese Aktion' })
     }
 
     const { userId } = req.params
@@ -337,7 +337,7 @@ export default function balanceRouter(prisma) {
       res.json(transactions)
     } catch (error) {
       console.error('Get balance history error:', error)
-      res.status(500).json({ error: 'Bakiye geçmişi alınırken bir hata oluştu' })
+      res.status(500).json({ error: 'Fehler beim Abrufen des Guthabenverlaufs' })
     }
   })
 
@@ -354,13 +354,13 @@ export default function balanceRouter(prisma) {
       })
 
       if (!user) {
-        return res.status(404).json({ error: 'Kullanıcı bulunamadı' })
+        return res.status(404).json({ error: 'Benutzer nicht gefunden' })
       }
 
       res.json(user)
     } catch (error) {
       console.error('Get my balance error:', error)
-      res.status(500).json({ error: 'Bakiye bilgisi alınırken bir hata oluştu' })
+      res.status(500).json({ error: 'Fehler beim Abrufen der Guthabeninformation' })
     }
   })
 
@@ -376,7 +376,7 @@ export default function balanceRouter(prisma) {
       res.json(transactions)
     } catch (error) {
       console.error('Get my balance history error:', error)
-      res.status(500).json({ error: 'Bakiye geçmişi alınırken bir hata oluştu' })
+      res.status(500).json({ error: 'Fehler beim Abrufen des Guthabenverlaufs' })
     }
   })
 

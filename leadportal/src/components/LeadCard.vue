@@ -42,7 +42,7 @@ function formatTimeRemaining(endsAt) {
   const endTime = new Date(endsAt)
   const diff = endTime - now
 
-  if (diff <= 0) return 'Süresi doldu'
+  if (diff <= 0) return 'Abgelaufen'
 
   const days = Math.floor(diff / (1000 * 60 * 60 * 24))
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
@@ -74,7 +74,7 @@ function formatTimeRemainingCompact(endsAt) {
   const endTime = new Date(endsAt)
   const diff = endTime - now
 
-  if (diff <= 0) return 'Süresi doldu'
+  if (diff <= 0) return 'Abgelaufen'
 
   const totalSeconds = Math.floor(diff / 1000)
   const days = Math.floor(totalSeconds / (3600 * 24))
@@ -234,8 +234,8 @@ const isSold = computed(() => {
 })
 
 const statusBadgeText = computed(() => {
-  if (isSold.value) return 'Satıldı'
-  if (isExpired.value) return 'Süresi Doldu'
+  if (isSold.value) return 'Verkauft'
+  if (isExpired.value) return 'Abgelaufen'
   return null
 })
 </script>
@@ -245,7 +245,7 @@ const statusBadgeText = computed(() => {
     <!-- Scheduled Badge -->
     <div v-if="lead.isScheduled" class="scheduled-badge">
       <Icon icon="mdi:calendar-clock" width="18" height="18" />
-      <span>Zamanlanmış - {{ new Date(lead.startsAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) }} tarihinde başlayacak</span>
+      <span>Geplant - startet am {{ new Date(lead.startsAt).toLocaleDateString('de-DE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) }}</span>
     </div>
 
     <!-- Card Top Header -->
@@ -349,7 +349,7 @@ const statusBadgeText = computed(() => {
           :class="{ 'outside-bidding-hours': !isBiddingHoursActive }"
         >
           <span v-if="isSubmittingBid">...</span>
-          <span class="teklif-ver-btn"  v-else>Teklif Ver         <Icon icon="mdi:gavel" width="20" height="20" /></span>
+          <span class="teklif-ver-btn"  v-else>Gebot abgeben         <Icon icon="mdi:gavel" width="20" height="20" /></span>
         </button>
       </div>
       <div class="quick-bid-suggestions">
@@ -389,10 +389,10 @@ const statusBadgeText = computed(() => {
         @click="handleInstantBuy"
         :disabled="lead.isExpired || !lead.isActive || lead.isScheduled || !isBiddingHoursActive"
         :class="{ 'outside-bidding-hours': !isBiddingHoursActive }"
-        :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''"
+        :title="!isBiddingHoursActive ? 'Kauf außerhalb der Geschäftszeiten nicht möglich' : ''"
       >
         <Icon icon="mdi:flash" width="20" height="20" />
-        Satın Al
+        Kaufen
         <span style="font-weight: bolder">{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
       </button>
 
@@ -402,7 +402,7 @@ const statusBadgeText = computed(() => {
           class="bid-action-btn"
           @click.stop="handleClick"
         >
-          Detaylı Görünüm
+          Details anzeigen
         </button>
         <button
           v-if="lead.instantBuyPrice && !lead.isExpired && lead.isActive && !lead.isScheduled && !isAdmin"
@@ -410,7 +410,7 @@ const statusBadgeText = computed(() => {
           @click="handleInstantBuy"
           :disabled="!isBiddingHoursActive"
           :class="{ 'outside-bidding-hours': !isBiddingHoursActive }"
-          :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''"
+          :title="!isBiddingHoursActive ? 'Kauf außerhalb der Geschäftszeiten nicht möglich' : ''"
         >
           <Icon icon="mdi:lightning-bolt" width="20" height="20" />
           Sofort Kaufen
@@ -419,7 +419,7 @@ const statusBadgeText = computed(() => {
         <!-- Edit button for admin -->
         <button v-if="isAdmin" class="edit-action-btn" @click.stop="emit('editLead')">
           <Icon icon="mdi:pencil" width="20" height="20" />
-          Düzenle
+          Bearbeiten
         </button>
       </template>
     </div>

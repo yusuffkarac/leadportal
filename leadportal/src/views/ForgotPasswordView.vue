@@ -5,7 +5,7 @@
         <img alt="Logo" class="logo" :src="companyLogoUrl || defaultLogo" width="36" height="36" />
         <div class="brand-text">
           <h1>{{ companyName }}</h1>
-          <p>Şifrenizi sıfırlayın</p>
+          <p>Setzen Sie Ihr Passwort zurück</p>
         </div>
       </div>
 
@@ -28,11 +28,11 @@
       <!-- Form - sadece success mesajı yoksa göster -->
       <form v-if="!success" class="form" @submit.prevent="submit">
         <p class="description">
-          Email adresinizi girin. Size şifre sıfırlama linki göndereceğiz.
+          Geben Sie Ihre E-Mail-Adresse ein. Wir senden Ihnen einen Link zum Zurücksetzen des Passworts.
         </p>
 
         <label class="field">
-          <span class="label">Email Adresi</span>
+          <span class="label">E-Mail-Adresse</span>
           <div class="control">
             <span class="icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="18" height="18">
@@ -43,7 +43,7 @@
               class="input"
               v-model="email"
               type="email"
-              placeholder="ornek@site.com"
+              placeholder="beispiel@seite.com"
               autocomplete="email"
               required
               :disabled="loading"
@@ -54,7 +54,7 @@
 
         <button class="btn primary" type="submit" :disabled="!canSubmit">
           <span v-if="loading" class="spinner" aria-hidden="true"></span>
-          <span>{{ loading ? 'Gönderiliyor...' : 'Şifre Sıfırlama Linki Gönder' }}</span>
+          <span>{{ loading ? 'Wird gesendet...' : 'Passwort-Zurücksetzungs-Link senden' }}</span>
         </button>
 
         <div class="back-to-login">
@@ -62,7 +62,7 @@
             <svg viewBox="0 0 24 24" width="16" height="16">
               <path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
             </svg>
-            Giriş sayfasına dön
+            Zur Anmeldeseite zurückkehren
           </router-link>
         </div>
       </form>
@@ -70,7 +70,7 @@
       <!-- Success durumunda giriş linki göster -->
       <div v-else class="success-actions">
         <router-link to="/login" class="btn primary">
-          Giriş Sayfasına Dön
+          Zur Anmeldeseite zurückkehren
         </router-link>
       </div>
     </div>
@@ -108,14 +108,14 @@ function validate() {
   const emailVal = email.value.trim()
 
   if (!emailVal) {
-    emailError.value = 'Email adresi zorunlu'
+    emailError.value = 'E-Mail-Adresse erforderlich'
     return false
   }
 
   // Basic email validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(emailVal)) {
-    emailError.value = 'Geçerli bir email adresi girin'
+    emailError.value = 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
     return false
   }
 
@@ -134,14 +134,14 @@ async function submit() {
       email: email.value.trim()
     })
 
-    success.value = data.message || 'Şifre sıfırlama linki email adresinize gönderildi2.'
+    success.value = data.message || 'Der Passwort-Zurücksetzungs-Link wurde an Ihre E-Mail-Adresse gesendet.'
     email.value = ''
   } catch (e) {
     const errorMessage = e.response?.data?.error
     if (errorMessage) {
       error.value = errorMessage
     } else {
-      error.value = 'Bir hata oluştu. Lütfen daha sonra tekrar deneyin.'
+      error.value = 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.'
     }
   } finally {
     loading.value = false

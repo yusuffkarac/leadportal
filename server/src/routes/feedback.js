@@ -199,14 +199,14 @@ const feedbackRouter = (prisma, io) => {
 
       // Check access - user can see their own, admins can see all
       if (feedback.userId !== req.user.id && req.user.userTypeId !== 'ADMIN' && req.user.userTypeId !== 'FULL_ADMIN' && req.user.userTypeId !== 'SUPERADMIN') {
-        return res.status(403).json({ error: 'Bu geri bildirimi göremezsiniz' })
+        return res.status(403).json({ error: 'Sie können dieses Feedback nicht anzeigen' })
       }
 
 
       res.json(feedback)
     } catch (error) {
-      console.error('Geri bildirim yükleme hatası:', error)
-      res.status(500).json({ error: 'Geri bildirim yüklenemedi' })
+      console.error('Fehler beim Laden des Feedbacks:', error)
+      res.status(500).json({ error: 'Feedback konnte nicht geladen werden' })
     }
   })
 
@@ -229,7 +229,7 @@ const feedbackRouter = (prisma, io) => {
 
       // Check if feedback is closed or resolved - cannot reply to closed/resolved feedbacks
       if (feedback.status === 'CLOSED' || feedback.status === 'RESOLVED') {
-        return res.status(400).json({ error: 'Kapalı veya çözüldü durumundaki geri bildirimlere cevap yazılamaz' })
+        return res.status(400).json({ error: 'Auf geschlossene oder gelöste Feedbacks kann nicht geantwortet werden' })
       }
 
       // Check if user is admin

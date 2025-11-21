@@ -2,7 +2,7 @@
   <div class="purchased-leads-page">
     <div class="page-content">
       <div class="page-header">
-        <h1>Satın Aldığım Lead'ler</h1>
+        <h1>Meine gekauften Leads</h1>
       </div>
 
       <!-- Stats Section -->
@@ -18,7 +18,7 @@
             </div>
             <div class="stat-content">
               <div class="stat-value">{{ purchasedLeads.length }}</div>
-              <div class="stat-label">Toplam Satın Alınan</div>
+              <div class="stat-label">Gesamt gekauft</div>
             </div>
           </div>
           <div class="stat-card">
@@ -30,7 +30,7 @@
             </div>
             <div class="stat-content">
               <div class="stat-value">{{ formatPrice(totalSpent, settings.defaultCurrency) }}</div>
-              <div class="stat-label">Toplam Harcama</div>
+              <div class="stat-label">Gesamtausgaben</div>
             </div>
           </div>
           <div class="stat-card">
@@ -44,7 +44,7 @@
             </div>
             <div class="stat-content">
               <div class="stat-value">{{ formatPrice(averagePrice, settings.defaultCurrency) }}</div>
-              <div class="stat-label">Ortalama Fiyat</div>
+              <div class="stat-label">Durchschnittspreis</div>
             </div>
           </div>
         </div>
@@ -60,12 +60,12 @@
           <input 
             v-model="searchQuery" 
             type="text" 
-            placeholder="Lead başlığı veya açıklamasında ara..."
+            placeholder="In Lead-Titel oder Beschreibung suchen..."
             class="search-input"
           >
         </div>
         <div class="filter-controls">
-          <button class="view-toggle-btn" @click="toggleMapVisibility" :title="showMap ? 'Haritayı Gizle' : 'Haritayı Göster'">
+          <button class="view-toggle-btn" @click="toggleMapVisibility" :title="showMap ? 'Karte ausblenden' : 'Karte anzeigen'">
             <svg v-if="showMap" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
               <circle cx="12" cy="10" r="3"/>
@@ -76,7 +76,7 @@
               <line x1="2" y1="2" x2="22" y2="22"/>
             </svg>
           </button>
-          <button class="view-toggle-btn" @click="toggleViewMode" :title="viewMode === 'grid' ? 'Tablo Görünümü' : 'Kart Görünümü'">
+          <button class="view-toggle-btn" @click="toggleViewMode" :title="viewMode === 'grid' ? 'Tabellenansicht' : 'Kartenansicht'">
             <svg v-if="viewMode === 'grid'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="8" y1="6" x2="21" y2="6"/>
               <line x1="8" y1="12" x2="21" y2="12"/>
@@ -93,13 +93,13 @@
             </svg>
           </button>
           <select v-model="sortBy" class="sort-select">
-            <option value="date">Tarihe Göre</option>
-            <option value="price">Fiyata Göre</option>
-            <option value="title">Başlığa Göre</option>
+            <option value="date">Nach Datum</option>
+            <option value="price">Nach Preis</option>
+            <option value="title">Nach Titel</option>
           </select>
           <select v-model="sortOrder" class="sort-order">
-            <option value="desc">Azalan</option>
-            <option value="asc">Artan</option>
+            <option value="desc">Absteigend</option>
+            <option value="asc">Aufsteigend</option>
           </select>
         </div>
       </div>
@@ -107,7 +107,7 @@
       <!-- Loading State -->
       <div v-if="loading" class="loading-state">
         <div class="loading-spinner"></div>
-        <p>Lead'ler yükleniyor...</p>
+        <p>Leads werden geladen...</p>
       </div>
 
       <!-- Empty State -->
@@ -119,9 +119,9 @@
             <path d="M16 10a4 4 0 0 1-8 0"/>
           </svg>
         </div>
-        <h3>Henüz satın aldığınız lead yok</h3>
-        <p>Açık artırmalardan teklif vererek lead satın alabilirsiniz.</p>
-        <RouterLink to="/" class="btn btn-primary">Açık Artırmalara Git</RouterLink>
+        <h3>Sie haben noch keine Leads gekauft</h3>
+        <p>Sie können Leads kaufen, indem Sie bei Auktionen bieten.</p>
+        <RouterLink to="/" class="btn btn-primary">Zu den Auktionen</RouterLink>
       </div>
 
       <!-- Harita -->
@@ -135,13 +135,13 @@
           <thead>
             <tr>
               <th>Lead</th>
-              <th>Lead ID</th>
-              <th>Satın Alma Fiyatı</th>
-              <th>Ödeme Yöntemi</th>
-              <th>Bakiye Bilgisi</th>
-              <th>Satıcı</th>
-              <th>Satın Alma Tarihi</th>
-              <th>İşlemler</th>
+              <th>Lead-ID</th>
+              <th>Kaufpreis</th>
+              <th>Zahlungsmethode</th>
+              <th>Guthabeninformationen</th>
+              <th>Verkäufer</th>
+              <th>Kaufdatum</th>
+              <th>Aktionen</th>
             </tr>
           </thead>
           <tbody>
@@ -164,13 +164,13 @@
               </td>
               <td>
                 <span class="payment-method-badge" :class="sale.paymentMethod">
-                  {{ sale.paymentMethod === 'balance' ? 'Bakiye' : 'IBAN' }}
+                  {{ sale.paymentMethod === 'balance' ? 'Guthaben' : 'IBAN' }}
                 </span>
               </td>
               <td>
                 <div v-if="sale.paymentMethod === 'balance' && sale.balanceBefore !== null && sale.balanceAfter !== null" class="balance-info">
-                  <div class="balance-before">Öncesi: {{ formatPrice(sale.balanceBefore, settings.defaultCurrency) }}</div>
-                  <div class="balance-after">Sonrası: {{ formatPrice(sale.balanceAfter, settings.defaultCurrency) }}</div>
+                  <div class="balance-before">Vorher: {{ formatPrice(sale.balanceBefore, settings.defaultCurrency) }}</div>
+                  <div class="balance-after">Nachher: {{ formatPrice(sale.balanceAfter, settings.defaultCurrency) }}</div>
                 </div>
                 <div v-else class="balance-info">
                   <span class="text-muted">-</span>
@@ -185,15 +185,15 @@
               <td>
                 <div class="table-actions">
                   <button class="table-btn primary" @click="viewLeadDetails(sale.lead.id)">
-                    Detay
+                    Details
                   </button>
-                  <button class="table-btn secondary" @click="downloadLeadInfo(sale)" title="JSON İndir">
+                  <button class="table-btn secondary" @click="downloadLeadInfo(sale)" title="JSON herunterladen">
                     JSON
                   </button>
-                  <button class="table-btn secondary" @click="() => downloadLeadAsPDF(sale)" title="PDF İndir">
+                  <button class="table-btn secondary" @click="() => downloadLeadAsPDF(sale)" title="PDF herunterladen">
                     PDF
                   </button>
-                  <button class="table-btn secondary feedback-btn" @click="openFeedbackModal(sale)" title="Geri Bildirim Ver">
+                  <button class="table-btn secondary feedback-btn" @click="openFeedbackModal(sale)" title="Feedback geben">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                     </svg>
@@ -218,7 +218,7 @@
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="20,6 9,17 4,12"/>
                 </svg>
-                Satın Alındı
+                Gekauft
               </span>
             </div>
           </div>
@@ -233,7 +233,7 @@
                   </svg>
                 </div>
                 <div class="detail-content">
-                  <span class="detail-label">Satın Alma Fiyatı</span>
+                  <span class="detail-label">Kaufpreis</span>
                   <span class="detail-value price">{{ formatPrice(sale.amount, settings.defaultCurrency) }}</span>
                 </div>
               </div>
@@ -246,10 +246,10 @@
                   </svg>
                 </div>
                 <div class="detail-content">
-                  <span class="detail-label">Ödeme Yöntemi</span>
+                  <span class="detail-label">Zahlungsmethode</span>
                   <span class="detail-value">
                     <span class="payment-method-badge" :class="sale.paymentMethod">
-                      {{ sale.paymentMethod === 'balance' ? 'Bakiye' : 'IBAN' }}
+                      {{ sale.paymentMethod === 'balance' ? 'Guthaben' : 'IBAN' }}
                     </span>
                   </span>
                 </div>
@@ -263,7 +263,7 @@
                   </svg>
                 </div>
                 <div class="detail-content">
-                  <span class="detail-label">Bakiye Değişimi</span>
+                  <span class="detail-label">Guthabenänderung</span>
                   <span class="detail-value">
                     <div class="balance-change">
                       <span class="balance-before">{{ formatPrice(sale.balanceBefore, settings.defaultCurrency) }}</span>
@@ -282,7 +282,7 @@
                   </svg>
                 </div>
                 <div class="detail-content">
-                  <span class="detail-label">Satıcı</span>
+                  <span class="detail-label">Verkäufer</span>
                   <span class="detail-value">{{ sale.lead.owner.email }}</span>
                 </div>
               </div>
@@ -295,7 +295,7 @@
                   </svg>
                 </div>
                 <div class="detail-content">
-                  <span class="detail-label">Satın Alma Tarihi</span>
+                  <span class="detail-label">Kaufdatum</span>
                   <span class="detail-value">{{ formatDate(sale.soldAt) }}</span>
                 </div>
               </div>
@@ -304,7 +304,7 @@
 
           <!-- Özel detaylar: satın alınmış leadlerde backend görünürlüğü sağlıyor -->
           <div v-if="sale.lead.privateDetails" class="private-details">
-            <div class="private-title">Satın Alanlara Özel Detaylar</div>
+            <div class="private-title">Private Details für Käufer</div>
             <pre class="private-content">{{ sale.lead.privateDetails }}</pre>
           </div>
 
@@ -314,10 +314,10 @@
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                 <circle cx="12" cy="12" r="3"/>
               </svg>
-              Detayları Görüntüle
+              Details anzeigen
             </button>
             <div class="action-buttons">
-              <button class="btn btn-secondary" @click="downloadLeadInfo(sale)" title="JSON İndir">
+              <button class="btn btn-secondary" @click="downloadLeadInfo(sale)" title="JSON herunterladen">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                   <polyline points="7,10 12,15 17,10"/>
@@ -325,7 +325,7 @@
                 </svg>
                 JSON
               </button>
-              <button class="btn btn-secondary" @click="() => downloadLeadAsPDF(sale)" title="PDF İndir">
+              <button class="btn btn-secondary" @click="() => downloadLeadAsPDF(sale)" title="PDF herunterladen">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                   <polyline points="14,2 14,8 20,8"/>
@@ -335,11 +335,11 @@
                 </svg>
                 PDF
               </button>
-              <button class="btn btn-secondary" @click="openFeedbackModal(sale)" title="Geri Bildirim Ver">
+              <button class="btn btn-secondary" @click="openFeedbackModal(sale)" title="Feedback geben">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                 </svg>
-                Geri Bildirim
+                Feedback
               </button>
             </div>
           </div>
@@ -400,7 +400,7 @@ async function loadSettings() {
     })
     settings.value = response.data
   } catch (error) {
-    console.error('Ayarlar yüklenemedi:', error)
+    console.error('Einstellungen konnten nicht geladen werden:', error)
   }
 }
 
@@ -488,7 +488,7 @@ async function fetchPurchasedLeads() {
 
 function formatDate(dateString) {
   const date = new Date(dateString)
-  return date.toLocaleDateString('tr-TR', {
+  return date.toLocaleDateString('de-DE', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -755,11 +755,11 @@ async function downloadLeadAsPDF(sale) {
     // PDF'i indir
     doc.save(`lead-${sale.lead.id}.pdf`)
     
-    console.log('PDF başarıyla oluşturuldu')
+    console.log('PDF erfolgreich erstellt')
     
   } catch (error) {
-    console.error('PDF oluşturma hatası:', error)
-    alert('PDF oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.')
+    console.error('Fehler beim Erstellen des PDFs:', error)
+    alert('Beim Erstellen des PDFs ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.')
   }
 }
 

@@ -232,14 +232,14 @@ async function submitFeedback() {
     })
 
     feedback.value = response.data
-    success.value = 'Geri bildirim başarıyla gönderildi!'
+    success.value = 'Feedback erfolgreich gesendet!'
     emit('feedback-submitted')
 
     setTimeout(() => {
       success.value = ''
     }, 3000)
   } catch (err) {
-    error.value = err.response?.data?.error || 'Geri bildirim gönderilemedi'
+    error.value = err.response?.data?.error || 'Feedback konnte nicht gesendet werden'
   } finally {
     isSubmitting.value = false
   }
@@ -260,7 +260,7 @@ async function submitReply() {
 
     replies.value.push(response.data)
     replyMessage.value = ''
-    success.value = 'Cevap başarıyla gönderildi!'
+    success.value = 'Antwort erfolgreich gesendet!'
 
     // Scroll to bottom after sending reply
     await nextTick()
@@ -275,7 +275,7 @@ async function submitReply() {
       success.value = ''
     }, 3000)
   } catch (err) {
-    error.value = err.response?.data?.error || 'Cevap gönderilemedi'
+    error.value = err.response?.data?.error || 'Antwort konnte nicht gesendet werden'
   } finally {
     isReplySubmitting.value = false
   }
@@ -317,12 +317,12 @@ async function refreshFeedback() {
   try {
     isRefreshing.value = true
     await loadFeedback()
-    success.value = 'Güncellendi!'
+    success.value = 'Aktualisiert!'
     setTimeout(() => {
       success.value = ''
     }, 2000)
   } catch (err) {
-    error.value = 'Güncelleme başarısız oldu'
+    error.value = 'Aktualisierung fehlgeschlagen'
   } finally {
     isRefreshing.value = false
   }
@@ -345,12 +345,12 @@ defineExpose({
       <!-- Header -->
       <div class="modal-header">
         <div>
-          <h2 class="modal-title">Geri Bildirim</h2>
+          <h2 class="modal-title">Feedback</h2>
           <p class="modal-subtitle">{{ selectedLead.lead?.title }}</p>
           <div class="header-info">
             <span v-if="selectedLead.lead?.id" class="info-item">
               <Icon icon="mdi:identifier" width="14" height="14" />
-              Lead ID: {{ selectedLead.lead.id }}
+              Lead-ID: {{ selectedLead.lead.id }}
             </span>
             <span v-if="selectedLead.amount" class="info-item">
               <Icon icon="mdi:currency-eur" width="14" height="14" />
@@ -374,14 +374,14 @@ defineExpose({
         <!-- Loading State -->
         <div v-if="isLoading" class="modal-body loading">
           <div class="spinner"></div>
-          <p>Yükleniyor...</p>
+          <p>Wird geladen...</p>
         </div>
 
         <!-- Feedback Form -->
         <div v-else-if="!hasExistingFeedback && !props.isAdmin" class="modal-body">
         <!-- Star Rating -->
         <div class="form-group">
-          <label class="form-label">Puan (İsteğe bağlı)</label>
+          <label class="form-label">Bewertung (Optional)</label>
           <div class="star-rating">
             <button
               v-for="(_, index) in 5"
@@ -391,21 +391,21 @@ defineExpose({
               @click="rating = index + 1"
               @mouseenter="hoverRating = index + 1"
               @mouseleave="hoverRating = 0"
-              :title="`${index + 1} yıldız`"
+              :title="`${index + 1} Sterne`"
             >
               <Icon icon="mdi:star" width="32" height="32" />
             </button>
           </div>
-          <p v-if="rating > 0" class="rating-text">{{ rating }} / 5 yıldız</p>
+          <p v-if="rating > 0" class="rating-text">{{ rating }} / 5 Sterne</p>
         </div>
 
         <!-- Comment -->
         <div class="form-group">
-          <label class="form-label">Yorum (İsteğe bağlı)</label>
+          <label class="form-label">Kommentar (Optional)</label>
           <textarea
             v-model="comment"
             class="comment-input"
-            placeholder="Deneyiminiz hakkında yorum yazın..."
+            placeholder="Schreiben Sie einen Kommentar zu Ihrer Erfahrung..."
             rows="5"
           ></textarea>
           <p class="char-count">{{ comment.length }} / 5000</p>
@@ -422,7 +422,7 @@ defineExpose({
         <!-- Note -->
         <p class="form-note">
           <Icon icon="mdi:information-outline" width="16" height="16" />
-          En az puan veya yorum gerekli
+          Mindestens Bewertung oder Kommentar erforderlich
         </p>
       </div>
 
@@ -463,24 +463,24 @@ defineExpose({
           <div class="replies-header">
             <h3 class="replies-title">
               <Icon icon="mdi:chat-multiple" width="18" height="18" />
-              Konuşma ({{ replies.length }})
+              Unterhaltung ({{ replies.length }})
             </h3>
             <!-- <button
               class="refresh-btn"
               @click="refreshFeedback"
               :disabled="isRefreshing"
-              title="Cevapları yenile"
+              title="Antworten aktualisieren"
             >
               <Icon icon="mdi:refresh" width="16" height="16" />
-              <span v-if="isRefreshing">Yenileniyor...</span>
-              <span v-else>Yenile</span>
+              <span v-if="isRefreshing">Wird aktualisiert...</span>
+              <span v-else>Aktualisieren</span>
             </button> -->
           </div>
 
           <div v-if="replies.length === 0" class="no-replies">
             <Icon icon="mdi:chat-outline" width="40" height="40" />
-            <p>Henüz cevap yok</p>
-            <p class="no-replies-hint">Admin'in cevabını bekleyin veya "Yenile" butonuna tıklayın.</p>
+            <p>Noch keine Antworten</p>
+            <p class="no-replies-hint">Warten Sie auf die Antwort des Admins oder klicken Sie auf die Schaltfläche "Aktualisieren".</p>
           </div>
 
           <div v-else class="chat-container" ref="chatContainer">
@@ -513,7 +513,7 @@ defineExpose({
           <textarea
             v-model="replyMessage"
             class="reply-input"
-            placeholder="Cevapla..."
+            placeholder="Antworten..."
             rows="3"
           ></textarea>
           <button
@@ -522,7 +522,7 @@ defineExpose({
             :disabled="!replyMessage.trim() || isReplySubmitting"
           >
             <Icon v-if="!isReplySubmitting" icon="mdi:send" width="16" height="16" />
-            <span>{{ isReplySubmitting ? 'Gönderiliyor...' : 'Cevapla' }}</span>
+            <span>{{ isReplySubmitting ? 'Wird gesendet...' : 'Antworten' }}</span>
           </button>
         </div>
         
@@ -530,7 +530,7 @@ defineExpose({
         <div v-else class="reply-input-section">
           <div class="status-message">
             <Icon icon="mdi:lock" width="18" height="18" />
-            <p>Bu geri bildirim {{ feedback.status === 'CLOSED' ? 'kapatıldı' : 'çözüldü' }}. Artık cevap yazılamaz.</p>
+            <p>Dieses Feedback wurde {{ feedback.status === 'CLOSED' ? 'geschlossen' : 'gelöst' }}. Es können keine weiteren Antworten geschrieben werden.</p>
           </div>
         </div>
 
@@ -545,7 +545,7 @@ defineExpose({
 
       <!-- Footer -->
       <div class="modal-footer">
-        <button class="btn-secondary" @click="$emit('close')">Kapat</button>
+        <button class="btn-secondary" @click="$emit('close')">Schließen</button>
         <button
           v-if="!hasExistingFeedback && !props.isAdmin"
           class="btn-primary"
@@ -553,7 +553,7 @@ defineExpose({
           :disabled="!canSubmit || isSubmitting"
         >
           <Icon icon="mdi:send" width="16" height="16" />
-          {{ isSubmitting ? 'Gönderiliyor...' : 'Gönder' }}
+          {{ isSubmitting ? 'Wird gesendet...' : 'Senden' }}
         </button>
       </div>
     </div>
@@ -564,7 +564,7 @@ defineExpose({
 export default {
   methods: {
     formatDate(dateStr) {
-      return new Date(dateStr).toLocaleDateString('tr-TR', {
+      return new Date(dateStr).toLocaleDateString('de-DE', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
@@ -574,10 +574,10 @@ export default {
     },
     getStatusLabel(status) {
       const labels = {
-        OPEN: 'Açık',
-        IN_PROGRESS: 'İşleniyor',
-        RESOLVED: 'Çözüldü',
-        CLOSED: 'Kapatıldı'
+        OPEN: 'Offen',
+        IN_PROGRESS: 'In Bearbeitung',
+        RESOLVED: 'Gelöst',
+        CLOSED: 'Geschlossen'
       }
       return labels[status] || status
     }

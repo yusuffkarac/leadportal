@@ -15,12 +15,12 @@ const STORAGE_KEY = 'admin-statistics-sections'
 
 // Kategoriler ve açık/kapalı durumları
 const categories = ref([
-  { id: 'general', title: 'Genel Metrikler', isOpen: true },
-  { id: 'sales', title: 'Satış Analizi', isOpen: true },
-  { id: 'bids', title: 'Teklif ve İhale Analizi', isOpen: true },
-  { id: 'financial', title: 'Finansal Analiz', isOpen: true },
-  { id: 'activity', title: 'Kullanıcı Aktivitesi', isOpen: true },
-  { id: 'feedback', title: 'Geri Bildirimler', isOpen: true }
+  { id: 'general', title: 'Allgemeine Metriken', isOpen: true },
+  { id: 'sales', title: 'Verkaufsanalyse', isOpen: true },
+  { id: 'bids', title: 'Gebots- und Auktionsanalyse', isOpen: true },
+  { id: 'financial', title: 'Finanzanalyse', isOpen: true },
+  { id: 'activity', title: 'Benutzeraktivität', isOpen: true },
+  { id: 'feedback', title: 'Feedback', isOpen: true }
 ])
 
 // localStorage'dan durumu yükle
@@ -36,7 +36,7 @@ function loadSectionStates() {
       })
     }
   } catch (err) {
-    console.error('Bölüm durumları yüklenemedi:', err)
+    console.error('Abschnittsstatus konnte nicht geladen werden:', err)
   }
 }
 
@@ -49,7 +49,7 @@ function saveSectionStates() {
     })
     localStorage.setItem(STORAGE_KEY, JSON.stringify(states))
   } catch (err) {
-    console.error('Bölüm durumları kaydedilemedi:', err)
+    console.error('Abschnittsstatus konnte nicht gespeichert werden:', err)
   }
 }
 
@@ -83,7 +83,7 @@ const salesTrendChartData = computed(() => {
     }),
     datasets: [
       {
-        label: 'Satışlar',
+        label: 'Verkäufe',
         data: statistics.value.salesTrend.map(d => d.count),
         borderColor: '#1d4ed8',
         backgroundColor: 'rgba(29, 78, 216, 0.1)',
@@ -110,7 +110,7 @@ const hourlyActivityChartData = computed(() => {
     labels: Array.from({ length: 24 }, (_, i) => `${i}:00`),
     datasets: [
       {
-        label: 'Aktivite',
+        label: 'Aktivität',
         data: statistics.value.userEngagement.hourlyActivity,
         backgroundColor: 'rgba(29, 78, 216, 0.6)',
         borderColor: '#1d4ed8',
@@ -125,7 +125,7 @@ const revenueComparisonChartData = computed(() => {
 
   const fc = statistics.value.financialComparison
   return {
-    labels: ['Bu Hafta', 'Geçen Hafta', 'Bu Ay', 'Geçen Ay'],
+    labels: ['Diese Woche', 'Letzte Woche', 'Dieser Monat', 'Letzter Monat'],
     datasets: [
       {
         label: 'Gelir',
@@ -155,8 +155,8 @@ async function loadStatistics() {
     statistics.value = statsRes.data
     settings.value.defaultCurrency = settingsRes.data?.defaultCurrency || 'EUR'
   } catch (err) {
-    console.error('İstatistikler yüklenemedi:', err)
-    error.value = 'İstatistikler yüklenirken bir hata oluştu.'
+    console.error('Statistiken konnten nicht geladen werden:', err)
+    error.value = 'Beim Laden der Statistiken ist ein Fehler aufgetreten.'
   } finally {
     isLoading.value = false
   }
@@ -171,20 +171,20 @@ onMounted(() => {
   <div class="admin-statistics">
     <div class="page-header">
       <div class="header-left">
-        <h1>Platform İstatistikleri</h1>
-        <p class="subtitle">Detaylı performans metrikleri ve analiz</p>
+        <h1>Plattform-Statistiken</h1>
+        <p class="subtitle">Detaillierte Leistungsmetriken und Analysen</p>
       </div>
       <button class="refresh-btn" @click="loadStatistics" :disabled="isLoading">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
         </svg>
-        Yenile
+        Aktualisieren
       </button>
     </div>
 
     <div v-if="isLoading" class="loading-state">
       <div class="spinner"></div>
-      <p>İstatistikler yükleniyor...</p>
+      <p>Statistiken werden geladen...</p>
     </div>
 
     <div v-else-if="error" class="error-state">
@@ -194,7 +194,7 @@ onMounted(() => {
         <line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
       <p>{{ error }}</p>
-      <button @click="loadStatistics" class="retry-btn">Tekrar Dene</button>
+      <button @click="loadStatistics" class="retry-btn">Erneut versuchen</button>
     </div>
 
     <div v-else class="statistics-content">
@@ -225,7 +225,7 @@ onMounted(() => {
           <div class="metrics-grid">
         <div class="metric-card">
           <div class="metric-header">
-            <span class="metric-label">Toplam Kullanıcılar</span>
+            <span class="metric-label">Gesamtbenutzer</span>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
               <circle cx="9" cy="7" r="4"/>
@@ -235,35 +235,35 @@ onMounted(() => {
           </div>
           <div class="metric-value">{{ statistics.totalUsers?.toLocaleString() || '0' }}</div>
           <div class="metric-detail">
-            <span class="detail-label">Aktif Kullanıcılar:</span>
+            <span class="detail-label">Aktive Benutzer:</span>
             <span class="detail-value">{{ statistics.activeUsers || 0 }}</span>
           </div>
           <div class="metric-footer">
             <span class="badge badge-success">+{{ statistics.newUsersLast24h || 0 }}</span>
-            <span class="footer-text">Son 24 saat</span>
+            <span class="footer-text">Letzte 24 Stunden</span>
           </div>
         </div>
 
         <div class="metric-card">
           <div class="metric-header">
-            <span class="metric-label">Bugün Satılan Leadler</span>
+            <span class="metric-label">Heute verkaufte Leads</span>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
             </svg>
           </div>
           <div class="metric-value">{{ statistics.todayLeadsSold || 0 }}</div>
           <div class="metric-detail">
-            <span class="detail-label">Bugünkü Gelir:</span>
+            <span class="detail-label">Heutiger Umsatz:</span>
             <span class="detail-value">{{ formatPrice(statistics.todayRevenue || 0, settings.defaultCurrency) }}</span>
           </div>
           <div class="metric-footer">
-            <span class="badge badge-primary">{{ statistics.todayLeadsSold || 0 }} lead</span>
+            <span class="badge badge-primary">{{ statistics.todayLeadsSold || 0 }} Lead</span>
           </div>
         </div>
 
         <div class="metric-card">
           <div class="metric-header">
-            <span class="metric-label">Toplam Satış</span>
+            <span class="metric-label">Gesamtumsatz</span>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="12" y1="1" x2="12" y2="23"/>
               <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
@@ -271,11 +271,11 @@ onMounted(() => {
           </div>
           <div class="metric-value">{{ formatPrice(statistics.allTimeRevenue || 0, settings.defaultCurrency) }}</div>
           <div class="metric-detail">
-            <span class="detail-label">Toplam Lead:</span>
+            <span class="detail-label">Gesamt Leads:</span>
             <span class="detail-value">{{ statistics.allTimeLeadsSold?.toLocaleString() || '0' }}</span>
           </div>
           <div class="metric-footer">
-            <span class="badge badge-warning">Ortalama: {{ formatPrice(statistics.avgLeadPrice || 0, settings.defaultCurrency) }}</span>
+            <span class="badge badge-warning">Durchschnitt: {{ formatPrice(statistics.avgLeadPrice || 0, settings.defaultCurrency) }}</span>
           </div>
         </div>
       </div>
@@ -306,8 +306,8 @@ onMounted(() => {
         <!-- En Çok Satın Alanlar -->
         <div class="detail-card">
           <div class="card-header">
-            <h2>En Çok Satın Alanlar</h2>
-            <span class="subtitle">Bu ay en aktif alıcılar</span>
+            <h2>Top-Käufer</h2>
+            <span class="subtitle">Aktivste Käufer diesen Monat</span>
           </div>
           <div class="buyers-list">
             <div
@@ -317,8 +317,8 @@ onMounted(() => {
             >
               <div class="buyer-rank" :class="`rank-${index + 1}`">{{ index + 1 }}</div>
               <div class="buyer-info">
-                <span class="buyer-name">{{ buyer.name || 'Bilinmeyen' }}</span>
-                <span class="buyer-stats">{{ buyer.leadCount || 0 }} lead satın aldı</span>
+                <span class="buyer-name">{{ buyer.name || 'Unbekannt' }}</span>
+                <span class="buyer-stats">{{ buyer.leadCount || 0 }} Leads gekauft</span>
               </div>
               <div class="buyer-amount">
                 <span class="amount">{{ formatPrice(buyer.totalSpent || 0, settings.defaultCurrency) }}</span>
@@ -328,7 +328,7 @@ onMounted(() => {
               </div>
             </div>
             <div v-if="!statistics.topBuyers || statistics.topBuyers.length === 0" class="empty-state">
-              <p>Henüz satın alma verisi bulunmuyor.</p>
+              <p>Noch keine Kaufdaten verfügbar.</p>
             </div>
           </div>
         </div>
@@ -336,8 +336,8 @@ onMounted(() => {
         <!-- Sigorta Tipi Dağılımı -->
         <div class="detail-card">
           <div class="card-header">
-            <h2>Sigorta Tipi Dağılımı</h2>
-            <span class="subtitle">Gelir dağılımı analizi</span>
+            <h2>Versicherungstyp-Verteilung</h2>
+            <span class="subtitle">Umsatzverteilungsanalyse</span>
           </div>
           <div class="revenue-by-type">
             <div
@@ -346,7 +346,7 @@ onMounted(() => {
               class="type-item"
             >
               <div class="type-header">
-                <span class="type-name">{{ type.insuranceType || 'Belirtilmemiş' }}</span>
+                <span class="type-name">{{ type.insuranceType || 'Nicht angegeben' }}</span>
                 <span class="type-amount">{{ formatPrice(type.revenue || 0, settings.defaultCurrency) }}</span>
               </div>
               <div class="type-progress">
@@ -356,12 +356,12 @@ onMounted(() => {
                 ></div>
               </div>
               <div class="type-stats">
-                <span>{{ type.leadCount || 0 }} lead</span>
+                <span>{{ type.leadCount || 0 }} Lead</span>
                 <span>{{ type.percentage || 0 }}%</span>
               </div>
             </div>
             <div v-if="!statistics.revenueByType || statistics.revenueByType.length === 0" class="empty-state">
-              <p>Henüz sigorta tipi verisi bulunmuyor.</p>
+              <p>Noch keine Versicherungstyp-Daten verfügbar.</p>
             </div>
           </div>
         </div>
@@ -370,8 +370,8 @@ onMounted(() => {
           <!-- Satış Trendi Grafiği -->
           <div v-if="salesTrendChartData" class="chart-section">
             <div class="card-header">
-              <h2>Son 30 Gün Satış Trendi</h2>
-              <span class="subtitle">Günlük satış ve gelir performansı</span>
+              <h2>Verkaufstrend der letzten 30 Tage</h2>
+              <span class="subtitle">Tägliche Verkaufs- und Umsatzleistung</span>
             </div>
             <div class="chart-container">
               <LineChart :data="salesTrendChartData" />
@@ -381,45 +381,45 @@ onMounted(() => {
           <!-- Lead Performans -->
           <div v-if="statistics.leadPerformance" class="detail-card">
             <div class="card-header">
-              <h2>Lead Performans Metrikleri</h2>
-              <span class="subtitle">Lead yaşam döngüsü ve dönüşüm analizi</span>
+              <h2>Lead-Leistungsmetriken</h2>
+              <span class="subtitle">Lead-Lebenszyklus- und Konversionsanalyse</span>
             </div>
             <div class="performance-grid">
               <div class="perf-metric">
-                <span class="perf-label">Aktif Leadler</span>
+                <span class="perf-label">Aktive Leads</span>
                 <span class="perf-value">{{ statistics.leadPerformance.activeLeads }}</span>
               </div>
               <div class="perf-metric">
-                <span class="perf-label">Toplam Lead</span>
+                <span class="perf-label">Gesamt Leads</span>
                 <span class="perf-value">{{ statistics.leadPerformance.totalLeads }}</span>
               </div>
               <div class="perf-metric">
-                <span class="perf-label">Satılan Lead</span>
+                <span class="perf-label">Verkaufte Leads</span>
                 <span class="perf-value">{{ statistics.leadPerformance.soldLeads }}</span>
               </div>
               <div class="perf-metric">
-                <span class="perf-label">Dönüşüm Oranı</span>
+                <span class="perf-label">Konversionsrate</span>
                 <span class="perf-value">%{{ statistics.leadPerformance.conversionRate }}</span>
               </div>
               <div class="perf-metric">
-                <span class="perf-label">Ort. Satış Süresi</span>
-                <span class="perf-value">{{ statistics.leadPerformance.avgSaleTime }} saat</span>
+                <span class="perf-label">Ø Verkaufsdauer</span>
+                <span class="perf-value">{{ statistics.leadPerformance.avgSaleTime }} Stunden</span>
               </div>
             </div>
 
             <div class="subsection">
-              <h3>En Hızlı Satışlar</h3>
+              <h3>Schnellste Verkäufe</h3>
               <div class="fastest-sales-list">
                 <div v-for="sale in statistics.leadPerformance.fastestSales" :key="sale.title" class="fast-sale-item">
                   <span class="sale-title">{{ sale.title }}</span>
-                  <span class="sale-time">{{ sale.hours }} saat</span>
+                  <span class="sale-time">{{ sale.hours }} Stunden</span>
                   <span class="sale-amount">{{ formatPrice(sale.amount, settings.defaultCurrency) }}</span>
                 </div>
               </div>
             </div>
 
             <div class="subsection">
-              <h3>En Yüksek Fiyatlı Satışlar</h3>
+              <h3>Höchstpreis-Verkäufe</h3>
               <div class="highest-sales-list">
                 <div v-for="sale in statistics.leadPerformance.highestSales" :key="sale.title" class="high-sale-item">
                   <span class="sale-title">{{ sale.title }}</span>
@@ -433,18 +433,18 @@ onMounted(() => {
           <!-- Satıcı İstatistikleri -->
           <div v-if="statistics.sellerStatistics" class="detail-card">
             <div class="card-header">
-              <h2>En Başarılı Satıcılar</h2>
-              <span class="subtitle">Lead satış performansı</span>
+              <h2>Erfolgreichste Verkäufer</h2>
+              <span class="subtitle">Lead-Verkaufsleistung</span>
             </div>
             <div class="sellers-table">
               <table>
                 <thead>
                   <tr>
-                    <th>Sıra</th>
-                    <th>Satıcı</th>
-                    <th>Satılan Lead</th>
-                    <th>Toplam Gelir</th>
-                    <th>Ortalama Fiyat</th>
+                    <th>Rang</th>
+                    <th>Verkäufer</th>
+                    <th>Verkaufte Leads</th>
+                    <th>Gesamtumsatz</th>
+                    <th>Durchschnittspreis</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -485,16 +485,16 @@ onMounted(() => {
           <div v-if="statistics.bidStatistics" class="stats-grid-2">
             <div class="detail-card">
               <div class="card-header">
-                <h2>Teklif İstatistikleri</h2>
-                <span class="subtitle">Tekliflere genel bakış</span>
+                <h2>Gebotsstatistiken</h2>
+                <span class="subtitle">Überblick über Gebote</span>
               </div>
               <div class="bid-stats">
                 <div class="bid-stat-item">
-                  <span class="stat-label">Toplam Teklif</span>
+                  <span class="stat-label">Gesamt Gebote</span>
                   <span class="stat-value large">{{ statistics.bidStatistics.totalBids?.toLocaleString() }}</span>
                 </div>
                 <div class="bid-stat-item">
-                  <span class="stat-label">Son 24 Saat</span>
+                  <span class="stat-label">Letzte 24 Stunden</span>
                   <span class="stat-value">{{ statistics.bidStatistics.bidsLast24h }}</span>
                 </div>
                 <div class="bid-stat-item">
@@ -502,19 +502,19 @@ onMounted(() => {
                   <span class="stat-value">{{ statistics.bidStatistics.avgBidsPerLead }}</span>
                 </div>
                 <div class="bid-stat-item">
-                  <span class="stat-label">Dönüşüm Oranı</span>
+                  <span class="stat-label">Konversionsrate</span>
                   <span class="stat-value">%{{ statistics.bidStatistics.bidConversionRate }}</span>
                 </div>
               </div>
 
               <div class="subsection">
-                <h3>En Çok Teklif Alan Leadler</h3>
+                <h3>Leads mit den meisten Geboten</h3>
                 <div class="bidded-leads-list">
                   <div v-for="lead in statistics.bidStatistics.mostBiddedLeads" :key="lead.title" class="bidded-lead-item">
                     <span class="lead-title">{{ lead.title }}</span>
-                    <span class="bid-count badge badge-primary">{{ lead.bidCount }} teklif</span>
+                    <span class="bid-count badge badge-primary">{{ lead.bidCount }} Gebote</span>
                     <span :class="['status-badge', lead.isActive ? 'active' : 'inactive']">
-                      {{ lead.isActive ? 'Aktif' : 'Pasif' }}
+                      {{ lead.isActive ? 'Aktiv' : 'Inaktiv' }}
                     </span>
                   </div>
                 </div>
@@ -561,7 +561,7 @@ onMounted(() => {
           <!-- Finansal Karşılaştırmalar -->
           <div v-if="statistics.financialComparison" class="comparison-section">
         <div class="card-header">
-          <h2>Finansal Karşılaştırmalar</h2>
+          <h2>Finanzvergleiche</h2>
           <span class="subtitle">Dönemsel büyüme analizi</span>
         </div>
 
@@ -605,17 +605,17 @@ onMounted(() => {
           </div>
 
           <div class="comparison-card">
-            <h3>Satış Türü Karşılaştırma</h3>
+            <h3>Verkaufstyp-Vergleich</h3>
             <div class="sale-type-comparison">
               <div class="sale-type">
-                <span class="type-label">Hemen Al</span>
+                <span class="type-label">Sofortkauf</span>
                 <span class="type-value">{{ formatPrice(statistics.financialComparison.instantBuy.revenue, settings.defaultCurrency) }}</span>
-                <span class="type-count">{{ statistics.financialComparison.instantBuy.count }} satış</span>
+                <span class="type-count">{{ statistics.financialComparison.instantBuy.count }} Verkäufe</span>
               </div>
               <div class="sale-type">
-                <span class="type-label">Açık Artırma</span>
+                <span class="type-label">Auktion</span>
                 <span class="type-value">{{ formatPrice(statistics.financialComparison.auction.revenue, settings.defaultCurrency) }}</span>
-                <span class="type-count">{{ statistics.financialComparison.auction.count }} satış</span>
+                <span class="type-count">{{ statistics.financialComparison.auction.count }} Verkäufe</span>
               </div>
             </div>
           </div>
@@ -695,7 +695,7 @@ onMounted(() => {
                   <line x1="12" y1="8" x2="12" y2="12"/>
                   <line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>
-                <p>Henüz aktivite bulunmuyor.</p>
+                <p>Noch keine Aktivität vorhanden.</p>
               </div>
             </div>
           </div>
@@ -703,7 +703,7 @@ onMounted(() => {
           <!-- Kullanıcı Aktivite İstatistikleri -->
       <div v-if="statistics.userActivity" class="activity-stats-section">
         <div class="card-header">
-          <h2>Son Kullanıcı Aktiviteleri</h2>
+          <h2>Letzte Benutzeraktivitäten</h2>
           <span class="subtitle">En son aktif olan kullanıcılar ve online durum</span>
         </div>
 
@@ -719,7 +719,7 @@ onMounted(() => {
             <thead>
               <tr>
                 <th>Durum</th>
-                <th>Kullanıcı</th>
+                <th>Benutzer</th>
                 <th>Son Aktivite</th>
                 <th>IP Adresi</th>
                 <th>Cihaz</th>
@@ -749,7 +749,7 @@ onMounted(() => {
             </tbody>
           </table>
           <div v-if="!statistics.userActivity.recentActiveUsers || statistics.userActivity.recentActiveUsers.length === 0" class="empty-state">
-            <p>Henüz aktivite verisi bulunmuyor.</p>
+            <p>Noch keine Aktivitätsdaten verfügbar.</p>
           </div>
         </div>
       </div>
@@ -757,34 +757,34 @@ onMounted(() => {
       <!-- Kullanıcı Engagement -->
       <div v-if="statistics.userEngagement" class="engagement-section">
         <div class="card-header">
-          <h2>Kullanıcı Etkileşimi</h2>
+          <h2>Benutzerinteraktion</h2>
           <span class="subtitle">Aktivite paternleri ve watchlist kullanımı</span>
         </div>
 
         <div class="engagement-grid">
           <div class="engagement-card">
-            <h3>Watchlist İstatistikleri</h3>
+            <h3>Merkzettel-Statistiken</h3>
             <div class="watch-stats">
               <div class="watch-stat">
-                <span>Toplam Takip</span>
+                <span>Gesamt Beobachtungen</span>
                 <strong>{{ statistics.userEngagement.totalWatches }}</strong>
               </div>
               <div class="watch-stat">
-                <span>Son 24 Saat</span>
+                <span>Letzte 24 Stunden</span>
                 <strong>{{ statistics.userEngagement.watchesLast24h }}</strong>
               </div>
             </div>
             <div class="watched-leads">
-              <h4>En Çok Takip Edilen Leadler</h4>
+              <h4>Am meisten beobachtete Leads</h4>
               <div v-for="lead in statistics.userEngagement.mostWatchedLeads" :key="lead.title" class="watched-lead-item">
                 <span class="lead-title">{{ lead.title }}</span>
-                <span class="watch-count">{{ lead.watchCount }} takipçi</span>
+                <span class="watch-count">{{ lead.watchCount }} Beobachter</span>
               </div>
             </div>
           </div>
 
           <div class="engagement-card">
-            <h3>En Aktif Saatler</h3>
+            <h3>Aktivste Stunden</h3>
             <div class="peak-hours-list">
               <div v-for="hour in statistics.userEngagement.peakHours" :key="hour.hour" class="peak-hour-item">
                 <span class="hour">{{ hour.hour }}:00 - {{ hour.hour + 1 }}:00</span>
@@ -795,7 +795,7 @@ onMounted(() => {
         </div>
 
         <div v-if="hourlyActivityChartData" class="chart-container" style="margin-top: 2rem;">
-          <h3 style="margin-bottom: 1rem;">Saatlik Aktivite Dağılımı</h3>
+          <h3 style="margin-bottom: 1rem;">Stündliche Aktivitätsverteilung</h3>
           <BarChart :data="hourlyActivityChartData" />
         </div>
       </div>
@@ -823,49 +823,49 @@ onMounted(() => {
           <!-- Feedback İstatistikleri -->
       <div v-if="statistics.feedbackStatistics" class="feedback-stats-section">
         <div class="card-header">
-          <h2>Geri Bildirim İstatistikleri</h2>
+          <h2>Feedback-Statistiken</h2>
           <span class="subtitle">Ticket ve müşteri memnuniyeti metrikleri</span>
         </div>
 
         <div class="feedback-metrics-grid">
           <div class="feedback-metric-card">
             <div class="metric-header">
-              <span class="metric-label">Toplam Ticket</span>
+              <span class="metric-label">Gesamt Tickets</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
             </div>
             <div class="metric-value">{{ statistics.feedbackStatistics.totalFeedbacks?.toLocaleString() || '0' }}</div>
             <div class="metric-detail">
-              <span class="detail-label">Son 24 saat:</span>
+              <span class="detail-label">Letzte 24 Stunden:</span>
               <span class="detail-value">{{ statistics.feedbackStatistics.feedbacksLast24h || 0 }}</span>
             </div>
           </div>
 
           <div class="feedback-metric-card">
             <div class="metric-header">
-              <span class="metric-label">Ortalama Yıldız</span>
+              <span class="metric-label">Durchschnittliche Sterne</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
               </svg>
             </div>
             <div class="metric-value">{{ statistics.feedbackStatistics.avgRating || '0' }}/5</div>
             <div class="metric-detail">
-              <span class="detail-label">Toplam değerlendirme:</span>
+              <span class="detail-label">Gesamt Bewertungen:</span>
               <span class="detail-value">{{ statistics.feedbackStatistics.totalFeedbacks || 0 }}</span>
             </div>
           </div>
 
           <div class="feedback-metric-card">
             <div class="metric-header">
-              <span class="metric-label">Kapanan Ticket</span>
+              <span class="metric-label">Geschlossene Tickets</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
             </div>
             <div class="metric-value">{{ statistics.feedbackStatistics.closedFeedbacks?.toLocaleString() || '0' }}</div>
             <div class="metric-detail">
-              <span class="detail-label">Kapanma oranı:</span>
+              <span class="detail-label">Schließungsrate:</span>
               <span class="detail-value">
                 {{ statistics.feedbackStatistics.totalFeedbacks > 0 
                   ? Math.round((statistics.feedbackStatistics.closedFeedbacks / statistics.feedbackStatistics.totalFeedbacks) * 100) 
@@ -882,9 +882,9 @@ onMounted(() => {
                 <polyline points="12 6 12 12 16 14"/>
               </svg>
             </div>
-            <div class="metric-value">{{ statistics.feedbackStatistics.avgResponseTime || '0' }} saat</div>
+            <div class="metric-value">{{ statistics.feedbackStatistics.avgResponseTime || '0' }} Stunden</div>
             <div class="metric-detail">
-              <span class="detail-label">Toplam cevap:</span>
+              <span class="detail-label">Gesamt Antworten:</span>
               <span class="detail-value">{{ statistics.feedbackStatistics.totalReplies?.toLocaleString() || '0' }}</span>
             </div>
           </div>
@@ -893,7 +893,7 @@ onMounted(() => {
         <div class="feedback-status-grid">
           <div class="status-card">
             <div class="status-header">
-              <span class="status-label">Açık</span>
+              <span class="status-label">Offen</span>
               <span class="status-badge status-open">{{ statistics.feedbackStatistics.openFeedbacks || 0 }}</span>
             </div>
             <div class="status-progress">
@@ -911,7 +911,7 @@ onMounted(() => {
 
           <div class="status-card">
             <div class="status-header">
-              <span class="status-label">İşlemde</span>
+              <span class="status-label">In Bearbeitung</span>
               <span class="status-badge status-in-progress">{{ statistics.feedbackStatistics.inProgressFeedbacks || 0 }}</span>
             </div>
             <div class="status-progress">
@@ -929,7 +929,7 @@ onMounted(() => {
 
           <div class="status-card">
             <div class="status-header">
-              <span class="status-label">Çözüldü</span>
+              <span class="status-label">Gelöst</span>
               <span class="status-badge status-resolved">{{ statistics.feedbackStatistics.resolvedFeedbacks || 0 }}</span>
             </div>
             <div class="status-progress">
@@ -947,7 +947,7 @@ onMounted(() => {
 
           <div class="status-card">
             <div class="status-header">
-              <span class="status-label">Kapalı</span>
+              <span class="status-label">Geschlossen</span>
               <span class="status-badge status-closed">{{ statistics.feedbackStatistics.closedFeedbacks || 0 }}</span>
             </div>
             <div class="status-progress">

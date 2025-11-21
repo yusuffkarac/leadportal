@@ -1,8 +1,8 @@
 <template>
   <div class="balance-management">
     <div class="page-header">
-      <h1>Bakiye Yönetimi</h1>
-      <p>Kullanıcı bakiyelerini yönetin ve işlemleri görüntüleyin</p>
+      <h1>Guthabenverwaltung</h1>
+      <p>Benutzerguthaben verwalten und Transaktionen anzeigen</p>
     </div>
 
     <div class="content-wrapper">
@@ -12,15 +12,15 @@
           <input
             type="text"
             v-model="searchQuery"
-            placeholder="Kullanıcı ara..."
+            placeholder="Benutzer suchen..."
             class="search-input"
           />
         </div>
 
-        <div v-if="isLoading" class="loading-state">Yükleniyor...</div>
+        <div v-if="isLoading" class="loading-state">Wird geladen...</div>
         <div v-else-if="filteredUsers.length === 0" class="empty-state">
           <Icon icon="mdi:account-search" width="48" />
-          <p>Kullanıcı bulunamadı</p>
+          <p>Kein Benutzer gefunden</p>
         </div>
         <div v-else class="user-cards">
           <div
@@ -36,7 +36,7 @@
                 <span v-if="user.lastName">{{ user.lastName }}</span>
               </div>
               <div class="user-email">{{ user.email }}</div>
-              <div class="user-type">{{ user.userType?.name || 'Kullanıcı' }}</div>
+              <div class="user-type">{{ user.userType?.name || 'Benutzer' }}</div>
             </div>
             <div class="balance-info">
               <div class="balance-amount">{{ formatCurrency(user.balance) }}</div>
@@ -45,7 +45,7 @@
                   :icon="user.balanceEnabled ? 'mdi:check-circle' : 'mdi:close-circle'"
                   width="16"
                 />
-                {{ user.balanceEnabled ? 'Aktif' : 'Pasif' }}
+                {{ user.balanceEnabled ? 'Aktiv' : 'Inaktiv' }}
               </div>
             </div>
           </div>
@@ -60,7 +60,7 @@
             :disabled="isProcessing"
           >
             <Icon icon="mdi:arrow-left" width="20" />
-            <span>Geri</span>
+            <span>Zurück</span>
           </button>
           <div>
             <h2>{{ selectedUser.firstName || selectedUser.username || selectedUser.email }}</h2>
@@ -76,7 +76,7 @@
               :icon="selectedUser.balanceEnabled ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off'"
               width="24"
             />
-            {{ selectedUser.balanceEnabled ? 'Bakiye Aktif' : 'Bakiye Pasif' }}
+            {{ selectedUser.balanceEnabled ? 'Guthaben aktiv' : 'Guthaben inaktiv' }}
           </button>
         </div>
 
@@ -84,16 +84,16 @@
           <div class="summary-card">
             <Icon icon="mdi:wallet" width="24" />
             <div>
-              <div class="summary-label">Mevcut Bakiye</div>
+              <div class="summary-label">Aktuelles Guthaben</div>
               <div class="summary-value">{{ formatCurrency(selectedUser.balance) }}</div>
             </div>
           </div>
           <div class="summary-card">
             <Icon icon="mdi:credit-card" width="24" />
             <div>
-              <div class="summary-label">Ödeme Yöntemi</div>
+              <div class="summary-label">Zahlungsmethode</div>
               <div class="summary-value">
-                {{ selectedUser.paymentMethod === 'balance' ? 'Bakiye' : 'IBAN' }}
+                {{ selectedUser.paymentMethod === 'balance' ? 'Guthaben' : 'IBAN' }}
               </div>
             </div>
           </div>
@@ -101,14 +101,14 @@
 
         <div class="balance-operations">
           <div class="operation-form">
-            <h3>Bakiye Ekle</h3>
+            <h3>Guthaben hinzufügen</h3>
             <form @submit.prevent="addBalance">
               <div class="form-group">
-                <label>Miktar (€)</label>
+                <label>Betrag (€)</label>
                 <input
                   type="number"
                   v-model.number="balanceAmount"
-                  placeholder="Örn: 100"
+                  placeholder="z.B.: 100"
                   min="0.01"
                   step="0.01"
                   required
@@ -116,31 +116,31 @@
                 />
               </div>
               <div class="form-group">
-                <label>Açıklama *</label>
+                <label>Beschreibung *</label>
                 <input
                   type="text"
                   v-model="balanceDescription"
-                  placeholder="Örn: Aylık bakiye yüklemesi"
+                  placeholder="z.B.: Monatliche Guthabenaufladung"
                   required
                   class="form-input"
                 />
               </div>
               <button type="submit" class="btn-primary" :disabled="isProcessing || !balanceAmount || !balanceDescription">
                 <Icon icon="mdi:plus-circle" width="20" />
-                {{ isProcessing ? 'Ekleniyor...' : 'Bakiye Ekle' }}
+                {{ isProcessing ? 'Wird hinzugefügt...' : 'Guthaben hinzufügen' }}
               </button>
             </form>
           </div>
 
           <div class="operation-form deduct">
-            <h3>Bakiye Sil</h3>
+            <h3>Guthaben abziehen</h3>
             <form @submit.prevent="deductBalance">
               <div class="form-group">
                 <label>Miktar (€)</label>
                 <input
                   type="number"
                   v-model.number="deductAmount"
-                  placeholder="Örn: 50"
+                  placeholder="z.B.: 50"
                   min="0.01"
                   step="0.01"
                   required
@@ -152,25 +152,25 @@
                 <input
                   type="text"
                   v-model="deductDescription"
-                  placeholder="Örn: Düzeltme işlemi"
+                  placeholder="z.B.: Korrekturvorgang"
                   required
                   class="form-input"
                 />
               </div>
               <button type="submit" class="btn-danger" :disabled="isProcessing || !deductAmount || !deductDescription">
                 <Icon icon="mdi:minus-circle" width="20" />
-                {{ isProcessing ? 'Siliniyor...' : 'Bakiye Sil' }}
+                {{ isProcessing ? 'Wird abgezogen...' : 'Guthaben abziehen' }}
               </button>
             </form>
           </div>
         </div>
 
         <div class="transaction-history">
-          <h3>İşlem Geçmişi</h3>
-          <div v-if="isLoadingHistory" class="loading-state">Geçmiş yükleniyor...</div>
+          <h3>Transaktionsverlauf</h3>
+          <div v-if="isLoadingHistory" class="loading-state">Verlauf wird geladen...</div>
           <div v-else-if="transactions.length === 0" class="empty-state">
             <Icon icon="mdi:history" width="48" />
-            <p>Henüz işlem yapılmamış</p>
+            <p>Noch keine Transaktionen</p>
           </div>
           <div v-else class="transactions">
             <div
@@ -197,7 +197,7 @@
 
       <div v-else class="no-selection">
         <Icon icon="mdi:account-arrow-left" width="64" />
-        <p>Kullanıcı seçin</p>
+        <p>Benutzer auswählen</p>
       </div>
     </div>
   </div>
@@ -241,8 +241,8 @@ async function loadUsers() {
     const response = await api.get('/balance/admin/all')
     users.value = response.data
   } catch (err) {
-    console.error('Kullanıcılar yüklenemedi:', err)
-    error('Kullanıcı listesi yüklenirken hata oluştu')
+    console.error('Benutzer konnten nicht geladen werden:', err)
+    error('Fehler beim Laden der Benutzerliste')
   } finally {
     isLoading.value = false
   }
@@ -263,8 +263,8 @@ async function loadTransactionHistory(userId) {
     const response = await api.get(`/balance/admin/history/${userId}`)
     transactions.value = response.data
   } catch (err) {
-    console.error('İşlem geçmişi yüklenemedi:', err)
-    error('İşlem geçmişi yüklenirken hata oluştu')
+    console.error('Transaktionsverlauf konnte nicht geladen werden:', err)
+    error('Fehler beim Laden des Transaktionsverlaufs')
   } finally {
     isLoadingHistory.value = false
   }
@@ -272,12 +272,12 @@ async function loadTransactionHistory(userId) {
 
 async function addBalance() {
   if (!balanceAmount.value || balanceAmount.value <= 0) {
-    error('Geçerli bir miktar girin')
+    error('Bitte geben Sie einen gültigen Betrag ein')
     return
   }
 
   if (!balanceDescription.value || balanceDescription.value.trim() === '') {
-    error('Açıklama zorunludur')
+    error('Beschreibung ist erforderlich')
     return
   }
 
@@ -303,10 +303,10 @@ async function addBalance() {
     balanceAmount.value = null
     balanceDescription.value = ''
 
-    success(`${formatCurrency(response.data.transaction.amount)} bakiye eklendi`)
+    success(`${formatCurrency(response.data.transaction.amount)} Guthaben hinzugefügt`)
   } catch (err) {
-    console.error('Bakiye eklenemedi:', err)
-    error(err.response?.data?.error || 'Bakiye eklenirken hata oluştu')
+    console.error('Guthaben konnte nicht hinzugefügt werden:', err)
+    error(err.response?.data?.error || 'Fehler beim Hinzufügen des Guthabens')
   } finally {
     isProcessing.value = false
   }
@@ -314,17 +314,17 @@ async function addBalance() {
 
 async function deductBalance() {
   if (!deductAmount.value || deductAmount.value <= 0) {
-    error('Geçerli bir miktar girin')
+    error('Bitte geben Sie einen gültigen Betrag ein')
     return
   }
 
   if (!deductDescription.value || deductDescription.value.trim() === '') {
-    error('Açıklama zorunludur')
+    error('Beschreibung ist erforderlich')
     return
   }
 
   if (deductAmount.value > selectedUser.value.balance) {
-    error('Silmek istediğiniz miktar kullanıcının bakiyesinden fazla')
+    error('Der zu löschende Betrag übersteigt das Guthaben des Benutzers')
     return
   }
 
@@ -350,10 +350,10 @@ async function deductBalance() {
     deductAmount.value = null
     deductDescription.value = ''
 
-    success(`${formatCurrency(deductAmount.value)} bakiye silindi`)
+    success(`${formatCurrency(deductAmount.value)} Guthaben abgezogen`)
   } catch (err) {
-    console.error('Bakiye silinemedi:', err)
-    error(err.response?.data?.error || 'Bakiye silinirken hata oluştu')
+    console.error('Guthaben konnte nicht abgezogen werden:', err)
+    error(err.response?.data?.error || 'Fehler beim Abziehen des Guthabens')
   } finally {
     isProcessing.value = false
   }
@@ -378,11 +378,11 @@ async function toggleBalanceEnabled() {
     }
 
     success(
-      newStatus ? 'Bakiye özelliği etkinleştirildi' : 'Bakiye özelliği devre dışı bırakıldı'
+      newStatus ? 'Guthaben-Funktion aktiviert' : 'Guthaben-Funktion deaktiviert'
     )
   } catch (err) {
-    console.error('Bakiye durumu güncellenemedi:', err)
-    error(err.response?.data?.error || 'Bakiye durumu güncellenirken hata oluştu')
+    console.error('Guthabenstatus konnte nicht aktualisiert werden:', err)
+    error(err.response?.data?.error || 'Fehler beim Aktualisieren des Guthabenstatus')
   } finally {
     isProcessing.value = false
   }
@@ -398,7 +398,7 @@ function formatCurrency(amount) {
 function formatDate(dateString) {
   if (!dateString) return '-'
   const date = new Date(dateString)
-  return date.toLocaleString('tr-TR', {
+  return date.toLocaleString('de-DE', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',

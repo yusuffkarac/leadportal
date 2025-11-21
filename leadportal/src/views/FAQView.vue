@@ -2,27 +2,27 @@
   <div class="faq-page">
     <div class="page-content">
       <div class="page-header">
-        <h1>Sıkça Sorulan Sorular</h1>
+        <h1>Häufig gestellte Fragen</h1>
       </div>
 
       <!-- Hero Section -->
       <section class="faq-hero">
         <div class="faq-hero-content">
           <div class="faq-hero-text">
-            <h2>Yardıma mı ihtiyacınız var?</h2>
-            <p>LeadPortal platformumuz hakkında en çok sorulan soruları ve cevaplarını burada bulabilirsiniz. Aradığınızı bulamazsanız bizimle iletişime geçin.</p>
+            <h2>Benötigen Sie Hilfe?</h2>
+            <p>Hier finden Sie die am häufigsten gestellten Fragen und Antworten zu unserer LeadPortal-Plattform. Wenn Sie nicht finden, wonach Sie suchen, kontaktieren Sie uns.</p>
             <div class="faq-stats">
               <div class="stat-item">
                 <span class="stat-number">500+</span>
-                <span class="stat-label">Aktif Kullanıcı</span>
+                <span class="stat-label">Aktive Benutzer</span>
               </div>
               <div class="stat-item">
                 <span class="stat-number">1000+</span>
-                <span class="stat-label">Başarılı Açık Artırma</span>
+                <span class="stat-label">Erfolgreiche Auktionen</span>
               </div>
               <div class="stat-item">
                 <span class="stat-number">24/7</span>
-                <span class="stat-label">Destek</span>
+                <span class="stat-label">Support</span>
               </div>
             </div>
           </div>
@@ -36,7 +36,7 @@
       <section class="faq-categories">
         <div class="categories-background"></div>
         <div class="categories-content">
-          <h3>Kategoriler</h3>
+          <h3>Kategorien</h3>
           <div class="category-grid">
           <div class="category-card" @click="scrollToCategory('general')">
             <div class="category-icon">
@@ -46,8 +46,8 @@
                 <line x1="12" y1="17" x2="12.01" y2="17"/>
               </svg>
             </div>
-            <h4>Genel Sorular</h4>
-            <p>Platform hakkında temel bilgiler</p>
+            <h4>Allgemeine Fragen</h4>
+            <p>Grundlegende Informationen zur Plattform</p>
           </div>
           
           <div class="category-card" @click="scrollToCategory('bidding')">
@@ -56,8 +56,8 @@
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
               </svg>
             </div>
-            <h4>Teklif Verme</h4>
-            <p>Açık artırmalarda teklif verme süreci</p>
+            <h4>Gebote abgeben</h4>
+            <p>Prozess der Gebotsabgabe bei Auktionen</p>
           </div>
           
           <div class="category-card" @click="scrollToCategory('account')">
@@ -67,8 +67,8 @@
                 <circle cx="12" cy="7" r="4"/>
               </svg>
             </div>
-            <h4>Hesap Yönetimi</h4>
-            <p>Hesap ayarları ve güvenlik</p>
+            <h4>Kontoverwaltung</h4>
+            <p>Kontoeinstellungen und Sicherheit</p>
           </div>
           
           <div class="category-card" @click="scrollToCategory('payment')">
@@ -78,8 +78,8 @@
                 <line x1="1" y1="10" x2="23" y2="10"/>
               </svg>
             </div>
-            <h4>Ödeme</h4>
-            <p>Ödeme yöntemleri ve süreçleri</p>
+            <h4>Zahlung</h4>
+            <p>Zahlungsmethoden und -prozesse</p>
           </div>
           </div>
         </div>
@@ -90,12 +90,12 @@
         <!-- Loading State -->
         <div v-if="loading" class="loading-section">
           <div class="loading-spinner"></div>
-          <p>FAQ'lar yükleniyor...</p>
+          <p>FAQs werden geladen...</p>
         </div>
         
         <!-- General Questions -->
         <div v-else-if="generalFAQs.length > 0" id="general" class="faq-section">
-          <h3>Genel Sorular</h3>
+          <h3>Allgemeine Fragen</h3>
           <div class="faq-item" v-for="(faq, index) in generalFAQs" :key="faq.id">
             <div class="faq-question" @click="toggleFAQ(index, 'general')">
               <h4>{{ faq.question }}</h4>
@@ -111,7 +111,7 @@
 
         <!-- Bidding Questions -->
         <div v-if="biddingFAQs.length > 0" id="bidding" class="faq-section">
-          <h3>Teklif Verme</h3>
+          <h3>Gebote abgeben</h3>
           <div class="faq-item" v-for="(faq, index) in biddingFAQs" :key="faq.id">
             <div class="faq-question" @click="toggleFAQ(index, 'bidding')">
               <h4>{{ faq.question }}</h4>
@@ -127,7 +127,7 @@
 
         <!-- Account Questions -->
         <div v-if="accountFAQs.length > 0" id="account" class="faq-section">
-          <h3>Hesap Yönetimi</h3>
+          <h3>Kontoverwaltung</h3>
           <div class="faq-item" v-for="(faq, index) in accountFAQs" :key="faq.id">
             <div class="faq-question" @click="toggleFAQ(index, 'account')">
               <h4>{{ faq.question }}</h4>
@@ -143,7 +143,7 @@
 
         <!-- Payment Questions -->
         <div v-if="paymentFAQs.length > 0" id="payment" class="faq-section">
-          <h3>Ödeme</h3>
+          <h3>Zahlung</h3>
           <div class="faq-item" v-for="(faq, index) in paymentFAQs" :key="faq.id">
             <div class="faq-question" @click="toggleFAQ(index, 'payment')">
               <h4>{{ faq.question }}</h4>
@@ -162,8 +162,8 @@
       <section class="faq-contact">
         <div class="contact-content">
           <div class="contact-text">
-            <h3>Hala sorunuz mu var?</h3>
-            <p>FAQ'da aradığınızı bulamadınız mı? Bizimle iletişime geçin, size yardımcı olmaktan mutluluk duyarız.</p>
+            <h3>Haben Sie noch Fragen?</h3>
+            <p>Haben Sie in den FAQs nicht gefunden, wonach Sie suchen? Kontaktieren Sie uns, wir helfen Ihnen gerne weiter.</p>
             <div class="contact-methods">
               <div class="contact-method">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -213,7 +213,7 @@ async function loadFAQs() {
     accountFAQs.value = (faqData.account || []).map(faq => ({ ...faq, open: false }))
     paymentFAQs.value = (faqData.payment || []).map(faq => ({ ...faq, open: false }))
   } catch (error) {
-    console.error('FAQ\'lar yüklenemedi:', error)
+    console.error('FAQs konnten nicht geladen werden:', error)
     // Fallback to empty arrays if API fails
     generalFAQs.value = []
     biddingFAQs.value = []

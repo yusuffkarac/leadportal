@@ -2,24 +2,24 @@
   <div class="user-dashboard">
     <div class="page-header">
       <div class="header-left">
-        <h1>Kişisel Dashboard</h1>
-        <p class="subtitle">Satın alma performansınız ve aktivite analizleriniz</p>
+        <h1>Persönliches Dashboard</h1>
+        <p class="subtitle">Ihre Kaufleistung und Aktivitätsanalysen</p>
       </div>
      <button style= 'display: none!important' class="refresh-btn" @click="loadUserStats" :disabled="isLoading" >
         <Icon icon="mdi:refresh" width="18" height="18" />
-        Yenile
+        Aktualisieren
       </button>
     </div>
 
     <div v-if="isLoading" class="loading-state">
       <div class="spinner"></div>
-      <p>İstatistikler yükleniyor...</p>
+      <p>Statistiken werden geladen...</p>
     </div>
 
     <div v-else-if="error" class="error-state">
       <Icon icon="mdi:alert-circle" width="48" height="48" />
       <p>{{ error }}</p>
-      <button @click="loadUserStats" class="retry-btn">Tekrar Dene</button>
+      <button @click="loadUserStats" class="retry-btn">Erneut versuchen</button>
     </div>
 
     <div v-else class="dashboard-content">
@@ -27,48 +27,48 @@
       <div class="metrics-grid">
         <div class="metric-card">
           <div class="metric-header">
-            <span class="metric-label">Toplam Satın Alınan</span>
+            <span class="metric-label">Gesamt gekauft</span>
             <Icon icon="mdi:shopping" width="20" height="20" />
           </div>
           <div class="metric-value">{{ userStats.totalPurchases }}</div>
           <div class="metric-detail">
-            <span class="detail-label">Son 30 gün:</span>
+            <span class="detail-label">Letzte 30 Tage:</span>
             <span class="detail-value">{{ userStats.last30Days.purchases }}</span>
           </div>
         </div>
 
         <div class="metric-card">
           <div class="metric-header">
-            <span class="metric-label">Toplam Harcama</span>
+            <span class="metric-label">Gesamtausgaben</span>
             <Icon icon="mdi:currency-eur" width="20" height="20" />
           </div>
           <div class="metric-value">{{ formatPrice(userStats.totalSpent, settings.defaultCurrency) }}</div>
           <div class="metric-detail">
-            <span class="detail-label">Ortalama:</span>
+            <span class="detail-label">Durchschnitt:</span>
             <span class="detail-value">{{ formatPrice(userStats.avgPurchasePrice, settings.defaultCurrency) }}</span>
           </div>
         </div>
 
         <div class="metric-card">
           <div class="metric-header">
-            <span class="metric-label">Teklif Kazanma Oranı</span>
+            <span class="metric-label">Gebotsgewinnrate</span>
             <Icon icon="mdi:target" width="20" height="20" />
           </div>
           <div class="metric-value">%{{ userStats.bidWinRate }}</div>
           <div class="metric-detail">
-            <span class="detail-label">Kazanılan:</span>
+            <span class="detail-label">Gewonnen:</span>
             <span class="detail-value">{{ userStats.wonBids }}/{{ userStats.totalBids }}</span>
           </div>
         </div>
 
         <div class="metric-card">
           <div class="metric-header">
-            <span class="metric-label">Watchlist Dönüşüm</span>
+            <span class="metric-label">Watchlist-Konversion</span>
             <Icon icon="mdi:eye" width="20" height="20" />
           </div>
           <div class="metric-value">%{{ userStats.watchlistConversionRate }}</div>
           <div class="metric-detail">
-            <span class="detail-label">Satın alınan:</span>
+            <span class="detail-label">Gekauft:</span>
             <span class="detail-value">{{ userStats.purchasedFromWatchlist }}/{{ userStats.totalWatched }}</span>
           </div>
         </div>
@@ -77,17 +77,17 @@
       <!-- Aylık Karşılaştırma ve Hedef -->
       <div class="comparison-section">
         <div class="comparison-card">
-          <h3>Aylık Karşılaştırma</h3>
+          <h3>Monatsvergleich</h3>
           <div class="comparison-data">
             <div class="period">
-              <span class="period-label">Bu Ay</span>
+              <span class="period-label">Dieser Monat</span>
               <span class="period-value">{{ formatPrice(userStats.monthlyComparison.thisMonth.spent, settings.defaultCurrency) }}</span>
-              <span class="period-count">{{ userStats.monthlyComparison.thisMonth.purchases }} satın alma</span>
+              <span class="period-count">{{ userStats.monthlyComparison.thisMonth.purchases }} Käufe</span>
             </div>
             <div class="period">
-              <span class="period-label">Geçen Ay</span>
+              <span class="period-label">Letzter Monat</span>
               <span class="period-value">{{ formatPrice(userStats.monthlyComparison.lastMonth.spent, settings.defaultCurrency) }}</span>
-              <span class="period-count">{{ userStats.monthlyComparison.lastMonth.purchases }} satın alma</span>
+              <span class="period-count">{{ userStats.monthlyComparison.lastMonth.purchases }} Käufe</span>
             </div>
             <div class="growth-indicator" :class="userStats.monthlyComparison.growth >= 0 ? 'positive' : 'negative'">
               <span>{{ userStats.monthlyComparison.growth >= 0 ? '+' : '' }}{{ userStats.monthlyComparison.growth }}%</span>
@@ -96,16 +96,16 @@
         </div>
 
         <div class="goal-card">
-          <h3>Aylık Hedef</h3>
+          <h3>Monatsziel</h3>
           <div class="goal-progress">
             <div class="goal-info">
-              <span class="goal-label">Hedef: {{ formatPrice(userStats.monthlyGoal, settings.defaultCurrency) }}</span>
+              <span class="goal-label">Ziel: {{ formatPrice(userStats.monthlyGoal, settings.defaultCurrency) }}</span>
               <span class="goal-current">{{ formatPrice(userStats.monthlyComparison.thisMonth.spent, settings.defaultCurrency) }}</span>
             </div>
             <div class="progress-bar-container">
               <div class="progress-bar" :style="{ width: userStats.goalProgress + '%' }"></div>
             </div>
-            <div class="goal-percentage">{{ userStats.goalProgress }}% tamamlandı</div>
+            <div class="goal-percentage">{{ userStats.goalProgress }}% abgeschlossen</div>
           </div>
         </div>
       </div>
@@ -113,8 +113,8 @@
       <!-- Başarımlar -->
       <div v-if="userStats.achievements.length > 0" class="achievements-section">
         <div class="card-header">
-          <h2>Başarımlar</h2>
-          <span class="subtitle">Elde ettiğiniz rozetler</span>
+          <h2>Erfolge</h2>
+          <span class="subtitle">Ihre verdienten Abzeichen</span>
         </div>
         <div class="achievements-grid">
           <div v-for="achievement in userStats.achievements" :key="achievement.name" class="achievement-card">
@@ -132,14 +132,14 @@
       <!-- Coğrafi Analiz -->
       <div v-if="userStats.topPostalCodes.length > 0" class="geographic-section">
         <div class="card-header">
-          <h2>Coğrafi Analiz</h2>
-          <span class="subtitle">En çok satın aldığınız bölgeler</span>
+          <h2>Geografische Analyse</h2>
+          <span class="subtitle">Ihre meistgekauften Regionen</span>
         </div>
         <div class="postal-codes-list">
           <div v-for="(pc, index) in userStats.topPostalCodes" :key="pc.postalCode" class="postal-code-item">
             <span class="rank">#{{ index + 1 }}</span>
             <span class="postal-code">{{ pc.postalCode }}</span>
-            <span class="count">{{ pc.count }} satın alma</span>
+            <span class="count">{{ pc.count }} Käufe</span>
             <span class="revenue">{{ formatPrice(pc.totalSpent, settings.defaultCurrency) }}</span>
           </div>
         </div>
@@ -151,8 +151,8 @@
           <!-- Son Satın Almalar -->
           <div class="activity-card">
             <div class="card-header">
-              <h3>Son Satın Almalar</h3>
-              <button @click="openPurchasesModal" class="view-all-link">Tümünü Gör</button>
+              <h3>Letzte Käufe</h3>
+              <button @click="openPurchasesModal" class="view-all-link">Alle ansehen</button>
             </div>
             <div class="activity-list">
               <div v-for="purchase in userStats.recentPurchases" :key="purchase.id" class="activity-item clickable" @click="goToLead(purchase.leadId)">
@@ -168,7 +168,7 @@
                 </div>
               </div>
               <div v-if="userStats.recentPurchases.length === 0" class="empty-state">
-                <p>Henüz satın alma yapmadınız.</p>
+                <p>Sie haben noch keine Käufe getätigt.</p>
               </div>
             </div>
           </div>
@@ -176,8 +176,8 @@
           <!-- Son Teklifler -->
           <div class="activity-card">
             <div class="card-header">
-              <h3>Son Teklifler</h3>
-              <button @click="openBidsModal" class="view-all-link">Tümünü Gör</button>
+              <h3>Letzte Gebote</h3>
+              <button @click="openBidsModal" class="view-all-link">Alle ansehen</button>
             </div>
             <div class="activity-list">
               <div v-for="bid in userStats.recentBids" :key="bid.id" class="activity-item clickable" @click="goToLead(bid.leadId)">
@@ -194,13 +194,13 @@
                 </div>
                 <div class="activity-meta">
                   <span class="activity-time">{{ formatDate(bid.createdAt) }}</span>
-                  <span v-if="bid.status === 'won'" class="status-badge won">Kazandı</span>
-                  <span v-else-if="bid.status === 'lost'" class="status-badge lost">Kaybetti</span>
-                  <span v-else class="status-badge waiting">Bekliyor</span>
+                  <span v-if="bid.status === 'won'" class="status-badge won">Gewonnen</span>
+                  <span v-else-if="bid.status === 'lost'" class="status-badge lost">Verloren</span>
+                  <span v-else class="status-badge waiting">Wartend</span>
                 </div>
               </div>
               <div v-if="userStats.recentBids.length === 0" class="empty-state">
-                <p>Henüz teklif vermediniz.</p>
+                <p>Sie haben noch keine Gebote abgegeben.</p>
               </div>
             </div>
           </div>
@@ -209,7 +209,7 @@
           <div class="activity-card">
             <div class="card-header">
               <h3>Watchlist</h3>
-              <button @click="openWatchlistModal" class="view-all-link">Tümünü Gör</button>
+              <button @click="openWatchlistModal" class="view-all-link">Alle ansehen</button>
             </div>
             <div class="activity-list">
               <div v-for="watch in userStats.recentWatchlist" :key="watch.id" class="activity-item clickable" @click="goToLead(watch.leadId)">
@@ -218,15 +218,15 @@
                 </div>
                 <div class="activity-content">
                   <p class="activity-title">{{ watch.leadTitle }}</p>
-                  <p class="activity-description">Takip ediliyor</p>
+                  <p class="activity-description">Wird beobachtet</p>
                 </div>
                 <div class="activity-meta">
                   <span class="activity-time">{{ formatDate(watch.watchedAt) }}</span>
-                  <span v-if="watch.purchased" class="status-badge purchased">Satın Alındı</span>
+                  <span v-if="watch.purchased" class="status-badge purchased">Gekauft</span>
                 </div>
               </div>
               <div v-if="userStats.recentWatchlist.length === 0" class="empty-state">
-                <p>Watchlist'iniz boş.</p>
+                <p>Ihre Watchlist ist leer.</p>
               </div>
             </div>
           </div>
@@ -239,7 +239,7 @@
     <div v-if="showPurchasesModal" class="modal-overlay" @click="showPurchasesModal = false">
       <div class="modal-container" @click.stop>
         <div class="modal-header">
-          <h2>Tüm Satın Almalar</h2>
+          <h2>Alle Käufe</h2>
           <button class="close-btn" @click="showPurchasesModal = false">
             <Icon icon="mdi:close" width="24" height="24" />
           </button>
@@ -247,11 +247,11 @@
         <div class="modal-body">
           <div v-if="isLoadingModal" class="modal-loading">
             <div class="spinner"></div>
-            <p>Yükleniyor...</p>
+            <p>Wird geladen...</p>
           </div>
           <div v-else-if="allPurchases.length === 0" class="modal-empty">
             <Icon icon="mdi:shopping-outline" width="48" height="48" />
-            <p>Henüz satın alma yapmadınız.</p>
+            <p>Sie haben noch keine Käufe getätigt.</p>
           </div>
           <div v-else class="modal-list">
             <div v-for="purchase in allPurchases" :key="purchase.id" class="modal-item clickable" @click="goToLead(purchase.leadId)">
@@ -263,7 +263,7 @@
                 <p class="item-description">{{ purchase.seller }}</p>
                 <div class="item-details">
                   <span class="item-price">{{ formatPrice(purchase.amount, settings.defaultCurrency) }}</span>
-                  <span class="item-method">{{ purchase.paymentMethod === 'balance' ? 'Bakiye' : 'IBAN' }}</span>
+                  <span class="item-method">{{ purchase.paymentMethod === 'balance' ? 'Guthaben' : 'IBAN' }}</span>
                 </div>
               </div>
               <div class="modal-item-meta">
@@ -279,7 +279,7 @@
     <div v-if="showBidsModal" class="modal-overlay" @click="showBidsModal = false">
       <div class="modal-container" @click.stop>
         <div class="modal-header">
-          <h2>Tüm Teklifler</h2>
+          <h2>Alle Gebote</h2>
           <button class="close-btn" @click="showBidsModal = false">
             <Icon icon="mdi:close" width="24" height="24" />
           </button>
@@ -287,11 +287,11 @@
         <div class="modal-body">
           <div v-if="isLoadingModal" class="modal-loading">
             <div class="spinner"></div>
-            <p>Yükleniyor...</p>
+            <p>Wird geladen...</p>
           </div>
           <div v-else-if="allBids.length === 0" class="modal-empty">
             <Icon icon="mdi:target-variant" width="48" height="48" />
-            <p>Henüz teklif vermediniz.</p>
+            <p>Sie haben noch keine Gebote abgegeben.</p>
           </div>
           <div v-else class="modal-list">
             <div v-for="bid in allBids" :key="bid.id" class="modal-item clickable" @click="goToLead(bid.leadId)">
@@ -306,9 +306,9 @@
                 <h4>{{ bid.leadTitle }}</h4>
                 <div class="item-details">
                   <span class="item-price">{{ formatPrice(bid.amount, settings.defaultCurrency) }}</span>
-                  <span v-if="bid.status === 'won'" class="status-badge won">Kazandı</span>
-                  <span v-else-if="bid.status === 'lost'" class="status-badge lost">Kaybetti</span>
-                  <span v-else class="status-badge waiting">Bekliyor</span>
+                  <span v-if="bid.status === 'won'" class="status-badge won">Gewonnen</span>
+                  <span v-else-if="bid.status === 'lost'" class="status-badge lost">Verloren</span>
+                  <span v-else class="status-badge waiting">Wartend</span>
                 </div>
               </div>
               <div class="modal-item-meta">
@@ -332,11 +332,11 @@
         <div class="modal-body">
           <div v-if="isLoadingModal" class="modal-loading">
             <div class="spinner"></div>
-            <p>Yükleniyor...</p>
+            <p>Wird geladen...</p>
           </div>
           <div v-else-if="allWatchlist.length === 0" class="modal-empty">
             <Icon icon="mdi:eye-outline" width="48" height="48" />
-            <p>Watchlist'iniz boş.</p>
+            <p>Ihre Watchlist ist leer.</p>
           </div>
           <div v-else class="modal-list">
             <div v-for="watch in allWatchlist" :key="watch.id" class="modal-item clickable" @click="goToLead(watch.leadId)">
@@ -345,11 +345,11 @@
               </div>
               <div class="modal-item-content">
                 <h4>{{ watch.leadTitle }}</h4>
-                <p class="item-description">Takip ediliyor</p>
+                <p class="item-description">Wird beobachtet</p>
               </div>
               <div class="modal-item-meta">
                 <span class="item-date">{{ formatDate(watch.watchedAt) }}</span>
-                <span v-if="watch.purchased" class="status-badge purchased">Satın Alındı</span>
+                <span v-if="watch.purchased" class="status-badge purchased">Gekauft</span>
               </div>
             </div>
           </div>
@@ -396,8 +396,8 @@ async function loadUserStats() {
     userStats.value = statsRes.data
     settings.value.defaultCurrency = settingsRes.data?.defaultCurrency || 'EUR'
   } catch (err) {
-    console.error('Kullanıcı istatistikleri yüklenemedi:', err)
-    error.value = 'İstatistikler yüklenirken bir hata oluştu.'
+    console.error('Benutzerstatistiken konnten nicht geladen werden:', err)
+    error.value = 'Beim Laden der Statistiken ist ein Fehler aufgetreten.'
   } finally {
     isLoading.value = false
   }
@@ -405,7 +405,7 @@ async function loadUserStats() {
 
 function formatDate(dateString) {
   const date = new Date(dateString)
-  return date.toLocaleDateString('tr-TR', {
+  return date.toLocaleDateString('de-DE', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -424,7 +424,7 @@ async function loadAllPurchases() {
     const response = await api.get('/statistics/user/purchases')
     allPurchases.value = response.data
   } catch (err) {
-    console.error('Satın almalar yüklenemedi:', err)
+    console.error('Käufe konnten nicht geladen werden:', err)
   } finally {
     isLoadingModal.value = false
   }
@@ -436,7 +436,7 @@ async function loadAllBids() {
     const response = await api.get('/statistics/user/bids')
     allBids.value = response.data
   } catch (err) {
-    console.error('Teklifler yüklenemedi:', err)
+    console.error('Gebote konnten nicht geladen werden:', err)
   } finally {
     isLoadingModal.value = false
   }
@@ -448,7 +448,7 @@ async function loadAllWatchlist() {
     const response = await api.get('/statistics/user/watchlist')
     allWatchlist.value = response.data
   } catch (err) {
-    console.error('Watchlist yüklenemedi:', err)
+    console.error('Watchlist konnte nicht geladen werden:', err)
   } finally {
     isLoadingModal.value = false
   }

@@ -3,8 +3,8 @@
     <div class="page-content">
       <div class="page-header">
         <div>
-          <h1>Mail/SMS Ayarları</h1>
-          <p class="subtitle">Email ve SMS template'lerini yönetin</p>
+          <h1>E-Mail/SMS-Einstellungen</h1>
+          <p class="subtitle">E-Mail- und SMS-Vorlagen verwalten</p>
         </div>
         <div class="header-actions">
           <button 
@@ -17,7 +17,7 @@
               <polyline points="7 10 12 15 17 10"/>
               <line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
-            <span v-if="isExporting">Export ediliyor...</span>
+            <span v-if="isExporting">Wird exportiert...</span>
             <span v-else>Export</span>
           </button>
           <button 
@@ -30,12 +30,12 @@
               <polyline points="17 8 12 3 7 8"/>
               <line x1="12" y1="3" x2="12" y2="15"/>
             </svg>
-            <span v-if="isImporting">Import ediliyor...</span>
+            <span v-if="isImporting">Wird importiert...</span>
             <span v-else>Import</span>
           </button>
           <button class="btn btn-primary" @click="openEmailModal(null)">
             <Icon icon="mdi:plus" width="16" height="16" />
-            Yeni Template
+            Neue Vorlage
           </button>
         </div>
       </div>
@@ -68,7 +68,7 @@
         <!-- Email Templates -->
         <div v-if="activeTab === 'email'" class="tab-panel">
         <div class="section-header">
-          <h2>Email Template'leri</h2>
+          <h2>E-Mail-Vorlagen</h2>
          
         </div>
 
@@ -81,17 +81,17 @@
               </div>
               <div class="template-status">
                 <span :class="['status-badge', template.isActive ? 'active' : 'inactive']">
-                  {{ template.isActive ? 'Aktif' : 'Pasif' }}
+                  {{ template.isActive ? 'Aktiv' : 'Inaktiv' }}
                 </span>
               </div>
             </div>
             <div class="template-body">
               <p class="template-description">{{ template.description }}</p>
               <div class="template-meta">
-                <strong>Konu:</strong> {{ template.subject }}
+                <strong>Betreff:</strong> {{ template.subject }}
               </div>
               <div class="template-variables" v-if="template.variables && template.variables.length">
-                <strong>Değişkenler:</strong>
+                <strong>Variablen:</strong>
                 <div class="variables-list">
                   <code v-for="variable in template.variables" :key="variable" v-text="`{{${variable}}}`"></code>
                 </div>
@@ -100,19 +100,19 @@
             <div class="template-footer">
               <button class="btn btn-sm btn-outline" @click="previewEmailTemplate(template)">
                 <Icon icon="mdi:eye" width="14" height="14" />
-                Önizle
+                Vorschau
               </button>
               <button class="btn btn-sm btn-outline" @click="openTestEmailModal(template)">
                 <Icon icon="mdi:email-send" width="14" height="14" />
-                Test Gönder
+                Test senden
               </button>
               <button class="btn btn-sm btn-outline" @click="openEmailModal(template)">
                 <Icon icon="mdi:pencil" width="14" height="14" />
-                Düzenle
+                Bearbeiten
               </button>
               <button class="btn btn-sm btn-danger" @click="deleteEmailTemplate(template.id)">
                 <Icon icon="mdi:delete" width="14" height="14" />
-                Sil
+                Löschen
               </button>
             </div>
           </div>
@@ -122,7 +122,7 @@
         <!-- SMS Templates -->
         <div v-if="activeTab === 'sms'" class="tab-panel">
         <div class="section-header">
-          <h2>SMS Template'leri</h2>
+          <h2>SMS-Vorlagen</h2>
           
         </div>
 
@@ -135,18 +135,18 @@
               </div>
               <div class="template-status">
                 <span :class="['status-badge', template.isActive ? 'active' : 'inactive']">
-                  {{ template.isActive ? 'Aktif' : 'Pasif' }}
+                  {{ template.isActive ? 'Aktiv' : 'Inaktiv' }}
                 </span>
               </div>
             </div>
             <div class="template-body">
               <p class="template-description">{{ template.description }}</p>
               <div class="template-content">
-                <strong>İçerik:</strong>
+                <strong>Inhalt:</strong>
                 <p>{{ template.content }}</p>
               </div>
               <div class="template-variables" v-if="template.variables && template.variables.length">
-                <strong>Değişkenler:</strong>
+                <strong>Variablen:</strong>
                 <div class="variables-list">
                   <code v-for="variable in template.variables" :key="variable" v-text="`{{${variable}}}`"></code>
                 </div>
@@ -155,11 +155,11 @@
             <div class="template-footer">
               <button class="btn btn-sm btn-outline" @click="openSmsModal(template)">
                 <Icon icon="mdi:pencil" width="14" height="14" />
-                Düzenle
+                Bearbeiten
               </button>
               <button class="btn btn-sm btn-danger" @click="deleteSmsTemplate(template.id)">
                 <Icon icon="mdi:delete" width="14" height="14" />
-                Sil
+                Löschen
               </button>
             </div>
           </div>
@@ -172,46 +172,46 @@
     <div v-if="showEmailModal" class="modal-overlay" @click.self="closeEmailModal">
       <div class="modal">
         <div class="modal-header">
-          <h2>{{ editingEmailTemplate ? 'Email Template Düzenle' : 'Yeni Email Template' }}</h2>
+          <h2>{{ editingEmailTemplate ? 'E-Mail-Vorlage bearbeiten' : 'Neue E-Mail-Vorlage' }}</h2>
           <button class="modal-close" @click="closeEmailModal">
             <Icon icon="mdi:close" width="24" height="24" />
           </button>
         </div>
         <div class="modal-body">
           <div class="field">
-            <label>Template Tipi *</label>
+            <label>Vorlagentyp *</label>
             <input
               v-model="emailForm.type"
               type="text"
               class="input"
-              placeholder="Örnek: bidReceived, outbid, leadWon"
+              placeholder="z.B.: bidReceived, outbid, leadWon"
               :disabled="!!editingEmailTemplate"
             >
-            <small class="help">Benzersiz bir tip belirtin (örn: bidReceived)</small>
+            <small class="help">Geben Sie einen eindeutigen Typ an (z.B.: bidReceived)</small>
           </div>
           
           <div class="field">
-            <label>Template Adı *</label>
+            <label>Vorlagenname *</label>
             <input
               v-model="emailForm.name"
               type="text"
               class="input"
-              placeholder="Örnek: Teklif Alındı"
+              placeholder="z.B.: Gebot erhalten"
             >
           </div>
           
           <div class="field">
-            <label>Açıklama</label>
+            <label>Beschreibung</label>
             <textarea
               v-model="emailForm.description"
               class="textarea"
               rows="2"
-              placeholder="Bu template ne için kullanılır?"
+              placeholder="Wofür wird diese Vorlage verwendet?"
             ></textarea>
           </div>
           
           <div class="field">
-            <label>Email Konusu *</label>
+            <label>E-Mail-Betreff *</label>
             <div class="variables-chips">
               <span 
                 v-for="variable in commonEmailVariables" 
@@ -220,7 +220,7 @@
                 draggable="true"
                 @dragstart="onDragStart($event, variable.name)"
                 @click="insertVariableToSubject(variable.name)"
-                :title="`Konu satırına eklemek için tıklayın veya sürükleyin`"
+                :title="`Klicken oder ziehen Sie, um zur Betreffzeile hinzuzufügen`"
               >
                 <i :class="['fas', variable.icon]"></i>
                 {{ variable.name }}
@@ -231,15 +231,15 @@
               v-model="emailForm.subject"
               type="text"
               class="input"
-              placeholder="Örnek: Teklifiniz alındı: {{leadTitle}}"
+              placeholder="z.B.: Ihr Gebot wurde erhalten: {{leadTitle}}"
               @drop="onDropToSubject"
               @dragover.prevent
             >
-            <small class="help">Değişkenleri tıklayın veya sürükleyin</small>
+            <small class="help">Klicken oder ziehen Sie Variablen</small>
           </div>
           
           <div class="field">
-            <label>Email İçeriği *</label>
+            <label>E-Mail-Inhalt *</label>
             <div class="variables-chips">
               <span 
                 v-for="variable in commonEmailVariables" 
@@ -248,7 +248,7 @@
                 draggable="true"
                 @dragstart="onDragStart($event, variable.name)"
                 @click="insertVariableToText(variable.name)"
-                :title="`İçeriğe eklemek için tıklayın veya sürükleyin`"
+                :title="`Klicken oder ziehen Sie, um zum Inhalt hinzuzufügen`"
               >
                 <i :class="['fas', variable.icon]"></i>
                 {{ variable.name }}
@@ -259,14 +259,14 @@
               v-model="emailForm.textContent"
               class="textarea"
               rows="8"
-              placeholder="Email içeriğinizi buraya yazın...
+              placeholder="Schreiben Sie hier Ihren E-Mail-Inhalt...
 
-Örnek:
-Merhaba {{userName}},
+Beispiel:
+Hallo {{userName}},
 
-{{leadTitle}} ilanına {{amount}} {{currency}} teklif verdiniz.
+Sie haben ein Gebot von {{amount}} {{currency}} für {{leadTitle}} abgegeben.
 
-Teşekkürler,
+Vielen Dank,
 {{companyName}}"
               @drop="onDropToText"
               @dragover.prevent
@@ -278,7 +278,7 @@ Teşekkürler,
             ></textarea>
             <small class="help">
               <i class="fas fa-info-circle"></i>
-              Buraya yazdığınız metin otomatik olarak güzel bir email tasarımına dönüştürülür
+              Der hier geschriebene Text wird automatisch in ein schönes E-Mail-Design umgewandelt
             </small>
           </div>
           
@@ -290,14 +290,14 @@ Teşekkürler,
               @click="showAdvancedHtml = !showAdvancedHtml"
             >
               <i :class="['fas', showAdvancedHtml ? 'fa-chevron-up' : 'fa-chevron-down']"></i>
-              Gelişmiş: HTML Düzenle
-              <span class="advanced-badge">İsteğe Bağlı</span>
+              Erweitert: HTML bearbeiten
+              <span class="advanced-badge">Optional</span>
             </button>
             
             <div v-show="showAdvancedHtml" class="advanced-content">
               <div class="advanced-warning">
                 <i class="fas fa-exclamation-triangle"></i>
-                <span>Dikkat: HTML'i manuel düzenlediğinizde, yukarıdaki metin içeriği değiştiğinde HTML otomatik güncellenmeyecektir.</span>
+                <span>Achtung: Wenn Sie HTML manuell bearbeiten, wird das HTML nicht automatisch aktualisiert, wenn sich der Textinhalt oben ändert.</span>
               </div>
               
               <div class="variables-chips">
@@ -308,7 +308,7 @@ Teşekkürler,
                   draggable="true"
                   @dragstart="onDragStart($event, variable.name)"
                   @click="insertVariableToHtml(variable.name)"
-                  :title="`HTML içeriğine eklemek için tıklayın veya sürükleyin`"
+                  :title="`Klicken oder ziehen Sie, um zum HTML-Inhalt hinzuzufügen`"
                 >
                   <i :class="['fas', variable.icon]"></i>
                   {{ variable.name }}
@@ -316,19 +316,19 @@ Teşekkürler,
               </div>
               
               <div class="editor-toolbar">
-                <button type="button" class="toolbar-btn" @click="wrapSelection('htmlContent', '<strong>', '</strong>')" title="Kalın">
+                <button type="button" class="toolbar-btn" @click="wrapSelection('htmlContent', '<strong>', '</strong>')" title="Fett">
                   <strong>B</strong>
                 </button>
-                <button type="button" class="toolbar-btn" @click="wrapSelection('htmlContent', '<em>', '</em>')" title="İtalik">
+                <button type="button" class="toolbar-btn" @click="wrapSelection('htmlContent', '<em>', '</em>')" title="Kursiv">
                   <em>I</em>
                 </button>
-                <button type="button" class="toolbar-btn" @click="wrapSelection('htmlContent', '<u>', '</u>')" title="Altı Çizili">
+                <button type="button" class="toolbar-btn" @click="wrapSelection('htmlContent', '<u>', '</u>')" title="Unterstrichen">
                   <u>U</u>
                 </button>
-                <button type="button" class="toolbar-btn" @click="insertTag('htmlContent', '<br>')" title="Satır Sonu">
+                <button type="button" class="toolbar-btn" @click="insertTag('htmlContent', '<br>')" title="Zeilenumbruch">
                   ↵
                 </button>
-                <button type="button" class="toolbar-btn" @click="generateHtmlFromText" title="Text'ten HTML Oluştur">
+                <button type="button" class="toolbar-btn" @click="generateHtmlFromText" title="HTML aus Text erstellen">
                   <i class="fas fa-sync"></i>
                 </button>
               </div>
@@ -345,7 +345,7 @@ Teşekkürler,
                 @click="updateCursorPos($event, 'html')"
                 @keyup="updateCursorPos($event, 'html')"
               ></textarea>
-              <small class="help">HTML email içeriği (gelişmiş kullanıcılar için)</small>
+              <small class="help">HTML-E-Mail-Inhalt (für fortgeschrittene Benutzer)</small>
             </div>
           </div>
           
@@ -355,23 +355,23 @@ Teşekkürler,
                 v-model="emailForm.isActive"
                 type="checkbox"
               >
-              <span>Template aktif</span>
+              <span>Vorlage aktiv</span>
             </label>
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-outline" @click="closeEmailModal">İptal</button>
+          <button class="btn btn-outline" @click="closeEmailModal">Abbrechen</button>
           <button v-if="editingEmailTemplate" class="btn btn-outline" @click="previewEmailTemplate(editingEmailTemplate)">
             <Icon icon="mdi:eye" width="14" height="14" />
-            Önizle
+            Vorschau
           </button>
           <button v-if="editingEmailTemplate" class="btn btn-outline" @click="openTestEmailModal(editingEmailTemplate)">
             <Icon icon="mdi:email-send" width="14" height="14" />
-            Test Gönder
+            Test senden
           </button>
           <button class="btn btn-primary" @click="saveEmailTemplate" :disabled="savingEmail">
             <span v-if="savingEmail" class="spinner-sm"></span>
-            <span v-else>{{ editingEmailTemplate ? 'Güncelle' : 'Oluştur' }}</span>
+            <span v-else>{{ editingEmailTemplate ? 'Aktualisieren' : 'Erstellen' }}</span>
           </button>
         </div>
       </div>
@@ -381,46 +381,46 @@ Teşekkürler,
     <div v-if="showSmsModal" class="modal-overlay" @click.self="closeSmsModal">
       <div class="modal">
         <div class="modal-header">
-          <h2>{{ editingSmsTemplate ? 'SMS Template Düzenle' : 'Yeni SMS Template' }}</h2>
+          <h2>{{ editingSmsTemplate ? 'SMS-Vorlage bearbeiten' : 'Neue SMS-Vorlage' }}</h2>
           <button class="modal-close" @click="closeSmsModal">
             <Icon icon="mdi:close" width="24" height="24" />
           </button>
         </div>
         <div class="modal-body">
           <div class="field">
-            <label>Template Tipi *</label>
+            <label>Vorlagentyp *</label>
             <input
               v-model="smsForm.type"
               type="text"
               class="input"
-              placeholder="Örnek: bidReceived, outbid, leadWon"
+              placeholder="z.B.: bidReceived, outbid, leadWon"
               :disabled="!!editingSmsTemplate"
             >
-            <small class="help">Benzersiz bir tip belirtin</small>
+            <small class="help">Geben Sie einen eindeutigen Typ an</small>
           </div>
           
           <div class="field">
-            <label>Template Adı *</label>
+            <label>Vorlagenname *</label>
             <input
               v-model="smsForm.name"
               type="text"
               class="input"
-              placeholder="Örnek: Teklif Alındı"
+              placeholder="z.B.: Gebot erhalten"
             >
           </div>
           
           <div class="field">
-            <label>Açıklama</label>
+            <label>Beschreibung</label>
             <textarea
               v-model="smsForm.description"
               class="textarea"
               rows="2"
-              placeholder="Bu template ne için kullanılır?"
+              placeholder="Wofür wird diese Vorlage verwendet?"
             ></textarea>
           </div>
           
           <div class="field">
-            <label>SMS İçeriği *</label>
+            <label>SMS-Inhalt *</label>
             <div class="variables-chips">
               <span 
                 v-for="variable in commonSmsVariables" 
@@ -429,7 +429,7 @@ Teşekkürler,
                 draggable="true"
                 @dragstart="onDragStart($event, variable.name)"
                 @click="insertVariableToSms(variable.name)"
-                :title="`SMS içeriğine eklemek için tıklayın veya sürükleyin`"
+                :title="`Klicken oder ziehen Sie, um zum SMS-Inhalt hinzuzufügen`"
               >
                 <i :class="['fas', variable.icon]"></i>
                 {{ variable.name }}
@@ -440,7 +440,7 @@ Teşekkürler,
               v-model="smsForm.content"
               class="textarea"
               rows="5"
-              placeholder="{{leadTitle}} ilanina {{amount}} {{currency}} teklif verdiniz."
+              placeholder="Sie haben ein Gebot von {{amount}} {{currency}} für {{leadTitle}} abgegeben."
               @drop="onDropToSmsContent"
               @dragover.prevent
               @dragenter="onDragEnter"
@@ -448,10 +448,10 @@ Teşekkürler,
               @keyup="updateCursorPos($event, 'sms')"
             ></textarea>
             <div class="sms-counter">
-              <span>{{ smsCharCount }} karakter</span>
+              <span>{{ smsCharCount }} Zeichen</span>
               <span class="muted">{{ smsPartCount }} SMS</span>
             </div>
-            <small class="help">SMS mesajı. Değişkenleri yukarıdan sürükleyin</small>
+            <small class="help">SMS-Nachricht. Ziehen Sie Variablen von oben</small>
           </div>
           
           <div class="field">
@@ -460,15 +460,15 @@ Teşekkürler,
                 v-model="smsForm.isActive"
                 type="checkbox"
               >
-              <span>Template aktif</span>
+              <span>Vorlage aktiv</span>
             </label>
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-outline" @click="closeSmsModal">İptal</button>
+          <button class="btn btn-outline" @click="closeSmsModal">Abbrechen</button>
           <button class="btn btn-primary" @click="saveSmsTemplate" :disabled="savingSms">
             <span v-if="savingSms" class="spinner-sm"></span>
-            <span v-else>{{ editingSmsTemplate ? 'Güncelle' : 'Oluştur' }}</span>
+            <span v-else>{{ editingSmsTemplate ? 'Aktualisieren' : 'Erstellen' }}</span>
           </button>
         </div>
       </div>
@@ -478,19 +478,19 @@ Teşekkürler,
     <div v-if="showPreviewModal" class="modal-overlay" @click.self="closePreviewModal">
       <div class="modal preview-modal">
         <div class="modal-header">
-          <h2>Email Önizlemesi</h2>
+          <h2>E-Mail-Vorschau</h2>
           <button class="modal-close" @click="closePreviewModal">
             <Icon icon="mdi:close" width="24" height="24" />
           </button>
         </div>
         <div class="preview-content" v-if="previewData">
           <div class="preview-section">
-            <strong>Konu:</strong>
+            <strong>Betreff:</strong>
             <p class="preview-subject">{{ previewData.subject }}</p>
           </div>
           <div class="preview-divider"></div>
           <div class="preview-section">
-            <strong>Email İçeriği:</strong>
+            <strong>E-Mail-Inhalt:</strong>
             <iframe
               v-if="previewData.html"
               class="email-preview-frame"
@@ -501,10 +501,10 @@ Teşekkürler,
         </div>
         <div v-else class="preview-loading">
           <div class="spinner-sm"></div>
-          <p>Yükleniyor...</p>
+          <p>Wird geladen...</p>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-outline" @click="closePreviewModal">Kapat</button>
+          <button class="btn btn-outline" @click="closePreviewModal">Schließen</button>
         </div>
       </div>
     </div>
@@ -513,33 +513,33 @@ Teşekkürler,
     <div v-if="showTestModal" class="modal-overlay" @click.self="closeTestModal">
       <div class="modal">
         <div class="modal-header">
-          <h2>Test Email Gönder</h2>
+          <h2>Test-E-Mail senden</h2>
           <button class="modal-close" @click="closeTestModal">
             <Icon icon="mdi:close" width="24" height="24" />
           </button>
         </div>
         <div class="modal-body">
           <div class="field">
-            <label>Test Email Adresi *</label>
+            <label>Test-E-Mail-Adresse *</label>
             <input
               v-model="testEmailAddress"
               type="email"
               class="input"
-              placeholder="ornek@example.com"
+              placeholder="beispiel@example.com"
               @keyup.enter="sendTestEmail"
             >
-            <small class="help">Test emailinin gönderileceği adres</small>
+            <small class="help">Adresse, an die die Test-E-Mail gesendet wird</small>
           </div>
 
           <div class="field">
-            <label>Lead (Opsiyonel)</label>
+            <label>Lead (Optional)</label>
             <select v-model="selectedTestLead" class="input">
-              <option :value="null">Örnek Veriler Kullan</option>
-              <optgroup v-for="lead in availableLeads" :key="lead.id" :label="`${lead.title} (${lead.bids && lead.bids.length > 0 ? lead.bids[0].amount : lead.startPrice} TL)`">
+              <option :value="null">Beispieldaten verwenden</option>
+              <optgroup v-for="lead in availableLeads" :key="lead.id" :label="`${lead.title} (${lead.bids && lead.bids.length > 0 ? lead.bids[0].amount : lead.startPrice} €)`">
                 <option :value="lead.id">{{ lead.title }}</option>
               </optgroup>
             </select>
-            <small class="help">Gerçek lead verilerini kullanmak için bir lead seçin</small>
+            <small class="help">Wählen Sie einen Lead, um echte Lead-Daten zu verwenden</small>
           </div>
 
           <div class="field">
@@ -548,18 +548,18 @@ Teşekkürler,
                 v-model="showTestVariables"
                 type="checkbox"
               >
-              <span>Kullanılacak değişkenleri göster</span>
+              <span>Zu verwendende Variablen anzeigen</span>
             </label>
           </div>
 
           <!-- Kullanılacak Değişkenler Tablosu -->
           <div v-if="showTestVariables && testVariables" class="variables-table">
-            <h4>Email'de Kullanılacak Değişkenler</h4>
+            <h4>In E-Mail verwendete Variablen</h4>
             <table>
               <thead>
                 <tr>
-                  <th>Değişken Adı</th>
-                  <th>Değeri</th>
+                  <th>Variablenname</th>
+                  <th>Wert</th>
                 </tr>
               </thead>
               <tbody>
@@ -572,10 +572,10 @@ Teşekkürler,
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-outline" @click="closeTestModal" :disabled="sendingTest">İptal</button>
+          <button class="btn btn-outline" @click="closeTestModal" :disabled="sendingTest">Abbrechen</button>
           <button class="btn btn-primary" @click="sendTestEmail" :disabled="sendingTest || !testEmailAddress">
             <span v-if="sendingTest" class="spinner-sm"></span>
-            <span v-else>Gönder</span>
+            <span v-else>Senden</span>
           </button>
         </div>
       </div>
@@ -1002,8 +1002,8 @@ async function loadEmailTemplates() {
     const response = await api.get('/email-sms-settings/email-templates')
     emailTemplates.value = response.data
   } catch (error) {
-    console.error('Email templates yüklenemedi:', error)
-    showAlert('Email template\'leri yüklenirken bir hata oluştu', 'error')
+    console.error('E-Mail-Vorlagen konnten nicht geladen werden:', error)
+    showAlert('Beim Laden der E-Mail-Vorlagen ist ein Fehler aufgetreten', 'error')
   }
 }
 
@@ -1012,8 +1012,8 @@ async function loadSmsTemplates() {
     const response = await api.get('/email-sms-settings/sms-templates')
     smsTemplates.value = response.data
   } catch (error) {
-    console.error('SMS templates yüklenemedi:', error)
-    showAlert('SMS template\'leri yüklenirken bir hata oluştu', 'error')
+    console.error('SMS-Vorlagen konnten nicht geladen werden:', error)
+    showAlert('Beim Laden der SMS-Vorlagen ist ein Fehler aufgetreten', 'error')
   }
 }
 
@@ -1057,7 +1057,7 @@ async function saveEmailTemplate() {
   try {
     // Validation
     if (!emailForm.value.type || !emailForm.value.name || !emailForm.value.subject || !emailForm.value.htmlContent) {
-      showAlert('Lütfen zorunlu alanları doldurun', 'error')
+      showAlert('Bitte füllen Sie die erforderlichen Felder aus', 'error')
       return
     }
 
@@ -1069,34 +1069,34 @@ async function saveEmailTemplate() {
 
     if (editingEmailTemplate.value) {
       await api.put(`/email-sms-settings/email-templates/${editingEmailTemplate.value.id}`, data)
-      showAlert('Email template güncellendi', 'success')
+      showAlert('E-Mail-Vorlage aktualisiert', 'success')
     } else {
       await api.post('/email-sms-settings/email-templates', data)
-      showAlert('Email template oluşturuldu', 'success')
+      showAlert('E-Mail-Vorlage erstellt', 'success')
     }
 
     await loadEmailTemplates()
     closeEmailModal()
   } catch (error) {
-    console.error('Email template kaydetme hatası:', error)
-    showAlert(error.response?.data?.message || 'Bir hata oluştu', 'error')
+    console.error('Fehler beim Speichern der E-Mail-Vorlage:', error)
+    showAlert(error.response?.data?.message || 'Ein Fehler ist aufgetreten', 'error')
   } finally {
     savingEmail.value = false
   }
 }
 
 async function deleteEmailTemplate(id) {
-  if (!confirm('Bu email template\'ini silmek istediğinize emin misiniz?')) {
+  if (!confirm('Möchten Sie diese E-Mail-Vorlage wirklich löschen?')) {
     return
   }
 
   try {
     await api.delete(`/email-sms-settings/email-templates/${id}`)
-    showAlert('Email template silindi', 'success')
+    showAlert('E-Mail-Vorlage gelöscht', 'success')
     await loadEmailTemplates()
   } catch (error) {
-    console.error('Email template silme hatası:', error)
-    showAlert('Email template silinirken bir hata oluştu', 'error')
+    console.error('Fehler beim Löschen der E-Mail-Vorlage:', error)
+    showAlert('Beim Löschen der E-Mail-Vorlage ist ein Fehler aufgetreten', 'error')
   }
 }
 
@@ -1135,7 +1135,7 @@ async function saveSmsTemplate() {
   try {
     // Validation
     if (!smsForm.value.type || !smsForm.value.name || !smsForm.value.content) {
-      showAlert('Lütfen zorunlu alanları doldurun', 'error')
+      showAlert('Bitte füllen Sie die erforderlichen Felder aus', 'error')
       return
     }
 
@@ -1147,34 +1147,34 @@ async function saveSmsTemplate() {
 
     if (editingSmsTemplate.value) {
       await api.put(`/email-sms-settings/sms-templates/${editingSmsTemplate.value.id}`, data)
-      showAlert('SMS template güncellendi', 'success')
+      showAlert('SMS-Vorlage aktualisiert', 'success')
     } else {
       await api.post('/email-sms-settings/sms-templates', data)
-      showAlert('SMS template oluşturuldu', 'success')
+      showAlert('SMS-Vorlage erstellt', 'success')
     }
 
     await loadSmsTemplates()
     closeSmsModal()
   } catch (error) {
-    console.error('SMS template kaydetme hatası:', error)
-    showAlert(error.response?.data?.message || 'Bir hata oluştu', 'error')
+    console.error('Fehler beim Speichern der SMS-Vorlage:', error)
+    showAlert(error.response?.data?.message || 'Ein Fehler ist aufgetreten', 'error')
   } finally {
     savingSms.value = false
   }
 }
 
 async function deleteSmsTemplate(id) {
-  if (!confirm('Bu SMS template\'ini silmek istediğinize emin misiniz?')) {
+  if (!confirm('Möchten Sie diese SMS-Vorlage wirklich löschen?')) {
     return
   }
 
   try {
     await api.delete(`/email-sms-settings/sms-templates/${id}`)
-    showAlert('SMS template silindi', 'success')
+    showAlert('SMS-Vorlage gelöscht', 'success')
     await loadSmsTemplates()
   } catch (error) {
-    console.error('SMS template silme hatası:', error)
-    showAlert('SMS template silinirken bir hata oluştu', 'error')
+    console.error('Fehler beim Löschen der SMS-Vorlage:', error)
+    showAlert('Beim Löschen der SMS-Vorlage ist ein Fehler aufgetreten', 'error')
   }
 }
 
@@ -1187,8 +1187,8 @@ async function previewEmailTemplate(template) {
     const response = await api.post(`/email-sms-settings/email-templates/${template.id}/preview`)
     previewData.value = response.data
   } catch (error) {
-    console.error('Email template preview hatası:', error)
-    showAlert('Email önizlenemedi', 'error')
+    console.error('Fehler bei der E-Mail-Vorlagenvorschau:', error)
+    showAlert('E-Mail konnte nicht in der Vorschau angezeigt werden', 'error')
     showPreviewModal.value = false
   }
 }
@@ -1226,8 +1226,8 @@ async function loadAvailableLeads() {
     const response = await api.get('/email-sms-settings/leads-for-test')
     availableLeads.value = response.data
   } catch (error) {
-    console.error('Lead\'ler yüklenemedi:', error)
-    showAlert('Lead\'ler yüklenemedi', 'error')
+    console.error('Leads konnten nicht geladen werden:', error)
+    showAlert('Leads konnten nicht geladen werden', 'error')
   } finally {
     loadingLeads.value = false
   }
@@ -1269,7 +1269,7 @@ function updateTestVariables() {
 
 async function sendTestEmail() {
   if (!currentTestingTemplate.value || !testEmailAddress.value) {
-    showAlert('Lütfen email adresini girin', 'error')
+    showAlert('Bitte geben Sie eine E-Mail-Adresse ein', 'error')
     return
   }
 
@@ -1286,7 +1286,7 @@ async function sendTestEmail() {
 
     const response = await api.post(`/email-sms-settings/email-templates/${currentTestingTemplate.value.id}/send-test`, payload)
 
-    showAlert(`Test email ${testEmailAddress.value} adresine gönderildi`, 'success')
+    showAlert(`Test-E-Mail wurde an ${testEmailAddress.value} gesendet`, 'success')
 
     // Gönderilen değişkenleri göster
     if (response.data.usedVariables) {
@@ -1296,8 +1296,8 @@ async function sendTestEmail() {
 
     closeTestModal()
   } catch (error) {
-    console.error('Test email gönderme hatası:', error)
-    const errorMessage = error.response?.data?.message || 'Test email gönderilemedi'
+    console.error('Fehler beim Senden der Test-E-Mail:', error)
+    const errorMessage = error.response?.data?.message || 'Test-E-Mail konnte nicht gesendet werden'
     showAlert(errorMessage, 'error')
   } finally {
     sendingTest.value = false
@@ -1327,7 +1327,7 @@ async function getAllTemplatesData() {
       smsTemplates: smsResponse.data || []
     }
   } catch (err) {
-    console.error('Template\'ler alınırken hata:', err)
+    console.error('Fehler beim Abrufen der Vorlagen:', err)
     return {
       version: '1.0',
       exportDate: new Date().toISOString(),
@@ -1340,7 +1340,7 @@ async function getAllTemplatesData() {
 async function setAllTemplatesData(data) {
   try {
     if (!data || typeof data !== 'object') {
-      throw new Error('Geçersiz veri formatı')
+      throw new Error('Ungültiges Datenformat')
     }
 
     // Email templates'i yükle
@@ -1369,18 +1369,18 @@ async function setAllTemplatesData(data) {
     await loadEmailTemplates()
     await loadSmsTemplates()
   } catch (err) {
-    console.error('Template\'ler yüklenirken hata:', err)
+    console.error('Fehler beim Laden der Vorlagen:', err)
     throw err
   }
 }
 
 function validateTemplatesData(data) {
   if (!data || typeof data !== 'object') {
-    return 'Geçersiz veri formatı'
+    return 'Ungültiges Datenformat'
   }
   
   if (!data.version) {
-    return 'Eksik versiyon bilgisi'
+    return 'Fehlende Versionsinformation'
   }
   
   return true

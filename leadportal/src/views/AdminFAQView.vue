@@ -2,7 +2,7 @@
   <div class="admin-faq-page">
     <div class="page-content">
       <div class="page-header">
-        <h1>FAQ Yönetimi</h1>
+        <h1>FAQ-Verwaltung</h1>
         <div class="header-actions">
           <button 
             class="btn btn-outline" 
@@ -14,7 +14,7 @@
               <polyline points="7 10 12 15 17 10"/>
               <line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
-            <span v-if="isExporting">Export ediliyor...</span>
+            <span v-if="isExporting">Wird exportiert...</span>
             <span v-else>Export</span>
           </button>
           <button 
@@ -27,16 +27,16 @@
               <polyline points="17 8 12 3 7 8"/>
               <line x1="12" y1="3" x2="12" y2="15"/>
             </svg>
-            <span v-if="isImporting">Import ediliyor...</span>
+            <span v-if="isImporting">Wird importiert...</span>
             <span v-else>Import</span>
           </button>
           <button class="btn btn-secondary" @click="showResetModal = true">
             <Icon icon="mdi:refresh" width="20" height="20" />
-            Varsayılana Sıfırla
+            Auf Standard zurücksetzen
           </button>
           <button class="btn btn-primary" @click="showCreateModal = true">
             <Icon icon="mdi:plus" width="20" height="20" />
-            Yeni FAQ Ekle
+            Neue FAQ hinzufügen
           </button>
         </div>
       </div>
@@ -44,38 +44,38 @@
       <!-- Filters -->
       <div class="filters">
         <div class="filter-group">
-          <label>Kategori:</label>
+          <label>Kategorie:</label>
           <select v-model="selectedCategory" @change="filterFAQs">
-            <option value="">Tüm Kategoriler</option>
+            <option value="">Alle Kategorien</option>
             <option v-for="category in categories" :key="category" :value="category">
               {{ getCategoryDisplayName(category) }}
             </option>
           </select>
         </div>
         <div class="filter-group">
-          <label>Durum:</label>
+          <label>Status:</label>
           <select v-model="selectedStatus" @change="filterFAQs">
-            <option value="">Tümü</option>
-            <option value="active">Aktif</option>
-            <option value="inactive">Pasif</option>
+            <option value="">Alle</option>
+            <option value="active">Aktiv</option>
+            <option value="inactive">Inaktiv</option>
           </select>
         </div>
         <div class="filter-group">
-          <label>Arama:</label>
+          <label>Suche:</label>
           <input 
             type="text" 
             v-model="searchQuery" 
             @input="filterFAQs"
-            placeholder="Soru veya cevap ara..."
+            placeholder="Frage oder Antwort suchen..."
           />
         </div>
       </div>
 
       <!-- FAQ List -->
       <div class="faq-list">
-        <div v-if="loading" class="loading">Yükleniyor...</div>
+        <div v-if="loading" class="loading">Wird geladen...</div>
         <div v-else-if="filteredFAQs.length === 0" class="no-data">
-          Hiç FAQ bulunamadı.
+          Keine FAQ gefunden.
         </div>
         <div v-else>
           <div class="faq-item" v-for="faq in filteredFAQs" :key="faq.id">
@@ -85,18 +85,18 @@
                   {{ getCategoryDisplayName(faq.category) }}
                 </span>
                 <span class="status-badge" :class="{ active: faq.isActive, inactive: !faq.isActive }">
-                  {{ faq.isActive ? 'Aktif' : 'Pasif' }}
+                  {{ faq.isActive ? 'Aktiv' : 'Inaktiv' }}
                 </span>
-                <span class="sort-order">Sıra: {{ faq.sortOrder }}</span>
+                <span class="sort-order">Reihenfolge: {{ faq.sortOrder }}</span>
               </div>
               <div class="faq-actions">
                 <button class="btn btn-sm btn-secondary" @click="editFAQ(faq)">
                   <Icon icon="mdi:pencil" width="16" height="16" />
-                  Düzenle
+                  Bearbeiten
                 </button>
                 <button class="btn btn-sm btn-danger" @click="deleteFAQ(faq)">
                   <Icon icon="mdi:delete" width="16" height="16" />
-                  Sil
+                  Löschen
                 </button>
               </div>
             </div>
@@ -105,9 +105,9 @@
               <p>{{ faq.answer }}</p>
             </div>
             <div class="faq-meta">
-              <span>Oluşturulma: {{ formatDate(faq.createdAt) }}</span>
+              <span>Erstellt: {{ formatDate(faq.createdAt) }}</span>
               <span v-if="faq.updatedAt !== faq.createdAt">
-                Güncelleme: {{ formatDate(faq.updatedAt) }}
+                Aktualisiert: {{ formatDate(faq.updatedAt) }}
               </span>
             </div>
           </div>
@@ -119,44 +119,44 @@
     <div v-if="showCreateModal || showEditModal" class="modal-overlay" @click="closeModal">
       <div class="modal" @click.stop>
         <div class="modal-header">
-          <h2>{{ showCreateModal ? 'Yeni FAQ Ekle' : 'FAQ Düzenle' }}</h2>
+          <h2>{{ showCreateModal ? 'Neue FAQ hinzufügen' : 'FAQ bearbeiten' }}</h2>
           <button class="close-btn" @click="closeModal">×</button>
         </div>
         <div class="modal-body">
           <form @submit.prevent="saveFAQ">
             <div class="form-group">
-              <label>Kategori *</label>
+              <label>Kategorie *</label>
               <select v-model="formData.category" required>
-                <option value="">Kategori Seçin</option>
-                <option value="general">Genel Sorular</option>
-                <option value="bidding">Teklif Verme</option>
-                <option value="account">Hesap Yönetimi</option>
-                <option value="payment">Ödeme</option>
+                <option value="">Kategorie auswählen</option>
+                <option value="general">Allgemeine Fragen</option>
+                <option value="bidding">Gebote abgeben</option>
+                <option value="account">Kontoverwaltung</option>
+                <option value="payment">Zahlung</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Soru *</label>
+              <label>Frage *</label>
               <input type="text" v-model="formData.question" required />
             </div>
             <div class="form-group">
-              <label>Cevap *</label>
+              <label>Antwort *</label>
               <textarea v-model="formData.answer" required rows="4"></textarea>
             </div>
             <div class="form-group">
-              <label>Sıra Numarası</label>
+              <label>Reihenfolge</label>
               <input type="number" v-model.number="formData.sortOrder" min="0" />
             </div>
             <div class="form-group">
               <label class="checkbox-label">
                 <input type="checkbox" v-model="formData.isActive" />
                 <span class="checkmark"></span>
-                Aktif
+                Aktiv
               </label>
             </div>
             <div class="form-actions">
-              <button type="button" class="btn btn-secondary" @click="closeModal">İptal</button>
+              <button type="button" class="btn btn-secondary" @click="closeModal">Abbrechen</button>
               <button type="submit" class="btn btn-primary" :disabled="saving">
-                {{ saving ? 'Kaydediliyor...' : (showCreateModal ? 'Oluştur' : 'Güncelle') }}
+                {{ saving ? 'Wird gespeichert...' : (showCreateModal ? 'Erstellen' : 'Aktualisieren') }}
               </button>
             </div>
           </form>
@@ -168,16 +168,16 @@
     <div v-if="showDeleteModal" class="modal-overlay" @click="showDeleteModal = false">
       <div class="modal" @click.stop>
         <div class="modal-header">
-          <h2>FAQ Sil</h2>
+          <h2>FAQ löschen</h2>
           <button class="close-btn" @click="showDeleteModal = false">×</button>
         </div>
         <div class="modal-body">
-          <p>Bu FAQ'ı silmek istediğinizden emin misiniz?</p>
+          <p>Möchten Sie diese FAQ wirklich löschen?</p>
           <p><strong>{{ faqToDelete?.question }}</strong></p>
           <div class="form-actions">
-            <button class="btn btn-secondary" @click="showDeleteModal = false">İptal</button>
+            <button class="btn btn-secondary" @click="showDeleteModal = false">Abbrechen</button>
             <button class="btn btn-danger" @click="confirmDelete" :disabled="deleting">
-              {{ deleting ? 'Siliniyor...' : 'Sil' }}
+              {{ deleting ? 'Wird gelöscht...' : 'Löschen' }}
             </button>
           </div>
         </div>
@@ -188,32 +188,32 @@
     <div v-if="showResetModal" class="modal-overlay" @click="showResetModal = false">
       <div class="modal" @click.stop>
         <div class="modal-header">
-          <h2>Varsayılana Sıfırla</h2>
+          <h2>Auf Standard zurücksetzen</h2>
           <button class="close-btn" @click="showResetModal = false">×</button>
         </div>
         <div class="modal-body">
           <div class="warning-message">
             <Icon icon="mdi:alert-triangle" width="48" height="48" />
             <div>
-              <h3>Dikkat!</h3>
-              <p>Bu işlem <strong>tüm mevcut FAQ'ları silecek</strong> ve varsayılan FAQ'ları yükleyecektir.</p>
-              <p>Bu işlem <strong>geri alınamaz</strong>. Devam etmek istediğinizden emin misiniz?</p>
+              <h3>Achtung!</h3>
+              <p>Diese Aktion <strong>löscht alle vorhandenen FAQs</strong> und lädt die Standard-FAQs.</p>
+              <p>Diese Aktion <strong>kann nicht rückgängig gemacht werden</strong>. Möchten Sie wirklich fortfahren?</p>
             </div>
           </div>
           <div class="default-faqs-info">
-            <h4>Yüklenecek varsayılan FAQ'lar:</h4>
+            <h4>Zu ladende Standard-FAQs:</h4>
             <ul>
-              <li><strong>Genel Sorular:</strong> 4 FAQ</li>
-              <li><strong>Teklif Verme:</strong> 4 FAQ</li>
-              <li><strong>Hesap Yönetimi:</strong> 4 FAQ</li>
-              <li><strong>Ödeme:</strong> 4 FAQ</li>
+              <li><strong>Allgemeine Fragen:</strong> 4 FAQs</li>
+              <li><strong>Gebote abgeben:</strong> 4 FAQs</li>
+              <li><strong>Kontoverwaltung:</strong> 4 FAQs</li>
+              <li><strong>Zahlung:</strong> 4 FAQs</li>
             </ul>
-            <p class="total-count">Toplam: <strong>16 FAQ</strong></p>
+            <p class="total-count">Gesamt: <strong>16 FAQs</strong></p>
           </div>
           <div class="form-actions">
-            <button class="btn btn-secondary" @click="showResetModal = false">İptal</button>
+            <button class="btn btn-secondary" @click="showResetModal = false">Abbrechen</button>
             <button class="btn btn-danger" @click="resetToDefaults" :disabled="resetting">
-              {{ resetting ? 'Sıfırlanıyor...' : 'Evet, Sıfırla' }}
+              {{ resetting ? 'Wird zurückgesetzt...' : 'Ja, zurücksetzen' }}
             </button>
           </div>
         </div>
@@ -271,8 +271,8 @@ async function loadFAQs() {
     
     filterFAQs()
   } catch (error) {
-    console.error('FAQ\'lar yüklenemedi:', error)
-    alert('FAQ\'lar yüklenemedi')
+    console.error('FAQs konnten nicht geladen werden:', error)
+    alert('FAQs konnten nicht geladen werden')
   } finally {
     loading.value = false
   }
@@ -306,10 +306,10 @@ function filterFAQs() {
 
 function getCategoryDisplayName(category) {
   const names = {
-    general: 'Genel Sorular',
-    bidding: 'Teklif Verme',
-    account: 'Hesap Yönetimi',
-    payment: 'Ödeme'
+    general: 'Allgemeine Fragen',
+    bidding: 'Gebote abgeben',
+    account: 'Kontoverwaltung',
+    payment: 'Zahlung'
   }
   return names[category] || category
 }
@@ -348,8 +348,8 @@ async function saveFAQ() {
     await loadFAQs()
     closeModal()
   } catch (error) {
-    console.error('FAQ kaydedilemedi:', error)
-    alert('FAQ kaydedilemedi')
+    console.error('FAQ konnte nicht gespeichert werden:', error)
+    alert('FAQ konnte nicht gespeichert werden')
   } finally {
     saving.value = false
   }
@@ -363,8 +363,8 @@ async function confirmDelete() {
     showDeleteModal.value = false
     faqToDelete.value = null
   } catch (error) {
-    console.error('FAQ silinemedi:', error)
-    alert('FAQ silinemedi')
+    console.error('FAQ konnte nicht gelöscht werden:', error)
+    alert('FAQ konnte nicht gelöscht werden')
   } finally {
     deleting.value = false
   }
@@ -376,10 +376,10 @@ async function resetToDefaults() {
     const response = await axios.post('faq/admin/reset-defaults')
     await loadFAQs()
     showResetModal.value = false
-    alert(`Başarılı! ${response.data.count} varsayılan FAQ yüklendi.`)
+    alert(`Erfolgreich! ${response.data.count} Standard-FAQs geladen.`)
   } catch (error) {
-    console.error('Varsayılan FAQ\'lar yüklenemedi:', error)
-    alert('Varsayılan FAQ\'lar yüklenemedi')
+    console.error('Standard-FAQs konnten nicht geladen werden:', error)
+    alert('Standard-FAQs konnten nicht geladen werden')
   } finally {
     resetting.value = false
   }
@@ -399,7 +399,7 @@ function closeModal() {
 }
 
 function formatDate(dateString) {
-  return new Date(dateString).toLocaleString('tr-TR')
+  return new Date(dateString).toLocaleString('de-DE')
 }
 
 // Export/Import Functions
@@ -412,7 +412,7 @@ async function getAllFAQsData() {
       faqs: response.data || []
     }
   } catch (err) {
-    console.error('FAQ\'lar alınırken hata:', err)
+    console.error('Fehler beim Abrufen der FAQs:', err)
     return {
       version: '1.0',
       exportDate: new Date().toISOString(),
@@ -424,7 +424,7 @@ async function getAllFAQsData() {
 async function setAllFAQsData(data) {
   try {
     if (!data || typeof data !== 'object') {
-      throw new Error('Geçersiz veri formatı')
+      throw new Error('Ungültiges Datenformat')
     }
 
     // FAQ'ları yükle
@@ -441,18 +441,18 @@ async function setAllFAQsData(data) {
     // Sayfayı yeniden yükle
     await loadFAQs()
   } catch (err) {
-    console.error('FAQ\'lar yüklenirken hata:', err)
+    console.error('Fehler beim Laden der FAQs:', err)
     throw err
   }
 }
 
 function validateFAQsData(data) {
   if (!data || typeof data !== 'object') {
-    return 'Geçersiz veri formatı'
+    return 'Ungültiges Datenformat'
   }
   
   if (!data.version) {
-    return 'Eksik versiyon bilgisi'
+    return 'Fehlende Versionsinformation'
   }
   
   return true

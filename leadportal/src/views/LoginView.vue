@@ -34,9 +34,9 @@ function validate() {
   passwordError.value = ''
   const emailOrUsernameVal = emailOrUsername.value.trim()
   const pwdVal = password.value
-  if (!emailOrUsernameVal) emailOrUsernameError.value = 'Email veya kullanıcı adı zorunlu'
-  if (!pwdVal) passwordError.value = 'Şifre zorunlu'
-  else if (pwdVal.length < 6) passwordError.value = 'En az 6 karakter olmalı'
+  if (!emailOrUsernameVal) emailOrUsernameError.value = 'E-Mail oder Benutzername ist erforderlich'
+  if (!pwdVal) passwordError.value = 'Passwort ist erforderlich'
+  else if (pwdVal.length < 6) passwordError.value = 'Mindestens 6 Zeichen erforderlich'
   return !emailOrUsernameError.value && !passwordError.value
 }
 
@@ -87,9 +87,9 @@ async function submit() {
     router.push('/')
   } catch (e) {
     if (requires2FA.value) {
-      twoFactorError.value = 'Geçersiz 2FA kodu'
+      twoFactorError.value = 'Ungültiger 2FA-Code'
     } else {
-      error.value = 'Giriş başarısız: Lütfen bilgilerinizi kontrol edin.'
+      error.value = 'Anmeldung fehlgeschlagen: Bitte überprüfen Sie Ihre Angaben.'
     }
   }
   finally {
@@ -120,7 +120,7 @@ async function loadLogoutMessage() {
           sessionTimeoutMessage.value = response.data.sessionTimeoutMessage
         } else {
           // Fallback default message
-          sessionTimeoutMessage.value = 'Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.'
+          sessionTimeoutMessage.value = 'Ihre Sitzung wurde aufgrund von Inaktivität beendet. Bitte melden Sie sich erneut an.'
         }
       } catch (e) {
         // Eğer ayarları alamazsak default mesajı kullan
@@ -150,7 +150,7 @@ onUnmounted(() => {
         <img alt="Logo" class="logo" :src="companyLogoUrl || defaultLogo" width="36" height="36" />
         <div class="brand-text">
           <h1>{{ companyName }}</h1>
-          <p>Hesabınıza güvenle giriş yapın</p>
+          <p>Melden Sie sich sicher in Ihrem Konto an</p>
         </div>
       </div>
 
@@ -172,12 +172,12 @@ onUnmounted(() => {
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
-            <h3>İki Faktörlü Kimlik Doğrulama</h3>
-            <p>Authenticator uygulamanızdan 6 haneli kodu girin</p>
+            <h3>Zwei-Faktor-Authentifizierung</h3>
+            <p>Geben Sie den 6-stelligen Code aus Ihrer Authenticator-App ein</p>
           </div>
 
           <label class="field">
-            <span class="label">2FA Kodu</span>
+            <span class="label">2FA-Code</span>
             <input
               class="input code-input"
               v-model="twoFactorCode"
@@ -194,11 +194,11 @@ onUnmounted(() => {
 
           <div class="twofa-actions">
             <button class="btn secondary" type="button" @click="goBack">
-              Geri
+              Zurück
             </button>
             <button class="btn primary" type="submit" :disabled="!canSubmit">
               <span v-if="loading" class="spinner" aria-hidden="true"></span>
-              <span>{{ loading ? 'Doğrulanıyor...' : 'Doğrula' }}</span>
+              <span>{{ loading ? 'Wird überprüft...' : 'Überprüfen' }}</span>
             </button>
           </div>
         </div>
@@ -206,24 +206,24 @@ onUnmounted(() => {
         <!-- Regular Login Fields -->
         <template v-else>
           <label class="field">
-            <span class="label">Email veya Kullanıcı Adı</span>
+            <span class="label">E-Mail oder Benutzername</span>
             <div class="control">
               <span class="icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
               </span>
-              <input class="input" v-model="emailOrUsername" type="text" placeholder="ornek@site.com veya kullaniciadi" autocomplete="username" required />
+              <input class="input" v-model="emailOrUsername" type="text" placeholder="beispiel@site.com oder benutzername" autocomplete="username" required />
             </div>
             <div v-if="emailOrUsernameError" class="field-error">{{ emailOrUsernameError }}</div>
           </label>
 
           <label class="field">
-            <span class="label">Şifre</span>
+            <span class="label">Passwort</span>
             <div class="control">
               <span class="icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M17 8V7a5 5 0 0 0-10 0v1H5v12h14V8h-2Zm-8 0V7a3 3 0 0 1 6 0v1H9Zm3 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/></svg>
               </span>
               <input class="input" :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="••••••••" autocomplete="current-password" required />
-              <button class="icon-btn" type="button" @click="showPassword = !showPassword" :aria-pressed="showPassword" :title="showPassword ? 'Gizle' : 'Göster'">
+              <button class="icon-btn" type="button" @click="showPassword = !showPassword" :aria-pressed="showPassword" :title="showPassword ? 'Verbergen' : 'Anzeigen'">
                 <svg v-if="showPassword" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0-5C7 3 2.73 6.11 1 12c1.73 5.89 6 9 11 9s9.27-3.11 11-9c-1.73-5.89-6-9-11-9Z"/></svg>
                 <svg v-else viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M2 5.27 3.28 4 20 20.72 18.73 22l-2.4-2.4A12.52 12.52 0 0 1 12 21C7 21 2.73 17.89 1 12a18.46 18.46 0 0 1 5.14-7.11L2 5.27Zm9.77 4.9 2.06 2.06A3 3 0 0 0 11 12a3 3 0 0 0 .77-1.83ZM12 7a5 5 0 0 1 5 5c0 .63-.12 1.22-.34 1.77l4.11 4.11A15.54 15.54 0 0 0 23 12C21.27 6.11 17 3 12 3a11.55 11.55 0 0 0-3.73.63l2.2 2.2C10.96 5.3 11.47 5.25 12 5.25Z"/></svg>
               </button>
@@ -233,14 +233,14 @@ onUnmounted(() => {
 
           <label class="row small">
             <input type="checkbox" v-model="remember" />
-            <span>Beni hatırla</span>
+            <span>Angemeldet bleiben</span>
             <span style="margin-left:auto"></span>
-            <router-link to="/forgot-password" class="muted">Şifremi unuttum?</router-link>
+            <router-link to="/forgot-password" class="muted">Passwort vergessen?</router-link>
           </label>
 
           <button class="btn primary" type="submit" :disabled="!canSubmit">
             <span v-if="loading" class="spinner" aria-hidden="true"></span>
-            <span>{{ loading ? 'Giriş yapılıyor...' : 'Giriş' }}</span>
+            <span>{{ loading ? 'Wird angemeldet...' : 'Anmelden' }}</span>
           </button>
         </template>
       </form>

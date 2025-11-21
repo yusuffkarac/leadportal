@@ -105,13 +105,13 @@ function showMaintenanceModal(message) {
           font-weight: 700;
           color: #1f2937;
           margin-bottom: 16px;
-        ">Sistem Bakımda</h1>
+        ">Systemwartung</h1>
         <p style="
           font-size: 16px;
           color: var(--primary);
           line-height: 1.6;
           margin-bottom: 32px;
-        ">${message || 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.'}</p>
+        ">${message || 'Das System wird gewartet. Bitte versuchen Sie es später erneut.'}</p>
         <button onclick="window.location.reload()" style="
           display: flex;
           align-items: center;
@@ -131,7 +131,7 @@ function showMaintenanceModal(message) {
             <polyline points="1 20 1 14 7 14"/>
             <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
           </svg>
-          Sayfayı Yenile
+          Seite aktualisieren
         </button>
       </div>
     </div>

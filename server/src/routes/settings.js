@@ -32,73 +32,73 @@ const uploadHero = multer({
     if (file.mimetype.startsWith('image/')) {
       cb(null, true)
     } else {
-      cb(new Error('Sadece resim dosyaları kabul edilir'), false)
+      cb(new Error('Nur Bilddateien werden akzeptiert'), false)
     }
   }
 })
 
 const defaultHomepage = {
   hero: {
-    eyebrow: 'Sigorta lead pazaryeri',
-    title: "Almanya'nın önde gelen",
-    highlight: 'sigorta lead',
-    titleSuffix: 'pazaryeri',
-    subtitle: 'LeadPortal, sigorta brokerleri için profesyonel açık artırma altyapısı, doğrulanmış lead kalitesi ve canlı teklif takibi sunar.',
-    primaryText: 'Şimdi kaydol',
+    eyebrow: 'Versicherungs-Lead-Marktplatz',
+    title: "Deutschlands führender",
+    highlight: 'Versicherungs-Lead',
+    titleSuffix: 'Marktplatz',
+    subtitle: 'LeadPortal bietet Versicherungsmaklern professionelle Auktionsinfrastruktur, verifizierte Lead-Qualität und Live-Gebotsverfolgung.',
+    primaryText: 'Jetzt registrieren',
     primaryLink: '/login',
-    secondaryText: 'Canlı açık artırmaları gör',
+    secondaryText: 'Live-Auktionen ansehen',
     secondaryLink: '/leads',
     backgroundImage: '',
     backgroundOpacity: 0.75
   },
-  featureHeading: "LeadPortal'ı neden seçmelisiniz?",
+  featureHeading: "Warum LeadPortal wählen?",
   features: [
     {
       icon: 'mdi:scale-balance',
-      title: 'Adil Açık Artırmalar',
-      description: 'Şeffaf kurallar ve gerçek zamanlı teklifler ile esnek açık artırma modelleri.'
+      title: 'Faire Auktionen',
+      description: 'Transparente Regeln und Echtzeit-Gebote mit flexiblen Auktionsmodellen.'
     },
     {
       icon: 'mdi:shield-check',
-      title: 'Onaylı Kalite',
-      description: 'Her lead yayına alınmadan önce kalite ve doğruluk kontrollerinden geçer.'
+      title: 'Verifizierte Qualität',
+      description: 'Jeder Lead durchläuft Qualitäts- und Verifizierungsprüfungen vor der Veröffentlichung.'
     },
     {
       icon: 'mdi:account-group',
-      title: 'Güvenilir İş Ortağı',
-      description: 'Broker topluluğumuz için doğrulama süreci ve puanlama sistemi.'
+      title: 'Zuverlässiger Partner',
+      description: 'Verifizierungsprozess und Bewertungssystem für unsere Makler-Community.'
     }
   ],
   showcase: {
-    eyebrow: 'Vitrin leadler',
-    title: 'Aktüel açık artırmalar',
-    ctaText: 'Hepsini gör',
+    eyebrow: 'Showcase-Leads',
+    title: 'Aktuelle Auktionen',
+    ctaText: 'Alle anzeigen',
     ctaLink: '/leads'
   },
   statsHeading: {
-    eyebrow: 'Güven veren rakamlar',
-    title: 'Broker topluluğumuz büyümeye devam ediyor'
+    eyebrow: 'Vertrauensvolle Zahlen',
+    title: 'Unsere Makler-Community wächst weiter'
   },
   stats: [
-    { value: '2.500+', label: 'Aktif Broker' },
-    { value: '15.000+', label: 'Satılan Lead' },
-    { value: '98%', label: 'Memnuniyet' },
-    { value: '€2.1M', label: 'Toplam Hacim' }
+    { value: '2.500+', label: 'Aktive Makler' },
+    { value: '15.000+', label: 'Verkaufte Leads' },
+    { value: '98%', label: 'Zufriedenheit' },
+    { value: '€2.1M', label: 'Gesamtvolumen' }
   ],
   cta: {
-    title: 'Başlamak için hazır mısınız?',
-    subtitle: 'LeadPortal topluluğuna katılın, doğrulanmış leadlere erişin ve işinizi güvenle büyütün.',
-    primaryText: 'Ücretsiz kaydol',
+    title: 'Bereit loszulegen?',
+    subtitle: 'Treten Sie der LeadPortal-Community bei, erhalten Sie Zugang zu verifizierten Leads und wachsen Sie Ihr Geschäft sicher.',
+    primaryText: 'Kostenlos registrieren',
     primaryLink: '/login',
-    secondaryText: 'Leadleri incele',
+    secondaryText: 'Leads durchsuchen',
     secondaryLink: '/leads'
   }
 }
 
 const defaultInsuranceTypes = [
-  { name: 'Hayvan', icon: 'fa-paw' },
-  { name: 'Araba', icon: 'fa-car' },
-  { name: 'Sağlık', icon: 'fa-heart-pulse' }
+  { name: 'Tier', icon: 'fa-paw' },
+  { name: 'Auto', icon: 'fa-car' },
+  { name: 'Gesundheit', icon: 'fa-heart-pulse' }
 ]
 
 function normalizeInsuranceTypesList(insuranceTypes) {
@@ -204,7 +204,7 @@ const requireAdmin = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.replace('Bearer ', '')
     if (!token) {
-      return res.status(401).json({ message: 'Token gerekli' })
+      return res.status(401).json({ message: 'Token erforderlich' })
     }
 
     // JWT token'ı verify et
@@ -216,14 +216,14 @@ const requireAdmin = async (req, res, next) => {
     })
 
     if (!user || (user.userTypeId !== 'ADMIN' && user.userTypeId !== 'SUPERADMIN')) {
-      return res.status(403).json({ message: 'Admin yetkisi gerekli' })
+      return res.status(403).json({ message: 'Admin-Berechtigung erforderlich' })
     }
 
     req.user = user
     next()
   } catch (error) {
     console.error('Admin check error:', error)
-    res.status(500).json({ message: 'Sunucu hatası' })
+    res.status(500).json({ message: 'Serverfehler' })
   }
 }
 
@@ -257,7 +257,7 @@ router.get('/', requireAdmin, async (req, res) => {
           biddingStartHour: '08:00',
           biddingEndHour: '20:00',
           maintenanceMode: false,
-          maintenanceMessage: 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.',
+          maintenanceMessage: 'System wird gewartet. Bitte versuchen Sie es später erneut.',
           smtpHost: '',
           smtpPort: 465,
           smtpUser: '',
@@ -323,7 +323,7 @@ router.get('/', requireAdmin, async (req, res) => {
     res.json(settings)
   } catch (error) {
     console.error('Settings get error:', error)
-    res.status(500).json({ message: 'Ayarlar alınamadı' })
+      res.status(500).json({ message: 'Einstellungen konnten nicht abgerufen werden' })
   }
 })
 
@@ -361,25 +361,25 @@ router.post('/', requireAdmin, async (req, res) => {
 
     // Validation
     if (!leadIdFormat || !['numeric', 'prefixed-numeric', 'date-numeric', 'custom'].includes(leadIdFormat)) {
-      return res.status(400).json({ message: 'Geçersiz ID formatı' })
+        return res.status(400).json({ message: 'Ungültiges ID-Format' })
     }
 
     if (leadIdFormat === 'custom' && !customFormat) {
-      return res.status(400).json({ message: 'Özel format gerekli' })
+        return res.status(400).json({ message: 'Benutzerdefiniertes Format erforderlich' })
     }
 
     if (startingNumber < 1) {
-      return res.status(400).json({ message: 'Başlangıç numarası 1\'den küçük olamaz' })
+        return res.status(400).json({ message: 'Startnummer darf nicht kleiner als 1 sein' })
     }
 
     // Sigorta türleri validasyonu
     if (insuranceTypes && !Array.isArray(insuranceTypes)) {
-      return res.status(400).json({ message: 'Sigorta türleri bir dizi olmalıdır' })
+        return res.status(400).json({ message: 'Versicherungstypen müssen ein Array sein' })
     }
 
     // Session timeout validasyonu
     if (sessionTimeoutMinutes !== undefined && (sessionTimeoutMinutes < 1 || sessionTimeoutMinutes > 10080)) {
-      return res.status(400).json({ message: 'Session timeout 1-10080 dakika arasında olmalıdır' })
+        return res.status(400).json({ message: 'Session-Timeout muss zwischen 1 und 10080 Minuten liegen' })
     }
 
     // Settings'i database'e kaydet
@@ -399,7 +399,7 @@ router.post('/', requireAdmin, async (req, res) => {
         biddingStartHour: biddingStartHour || '08:00',
         biddingEndHour: biddingEndHour || '20:00',
         maintenanceMode: maintenanceMode !== undefined ? maintenanceMode : false,
-        maintenanceMessage: maintenanceMessage || 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.',
+        maintenanceMessage: maintenanceMessage || 'System wird gewartet. Bitte versuchen Sie es später erneut.',
         smtpHost: smtpHost ?? '',
         smtpPort: smtpPort ?? 465,
         smtpUser: smtpUser ?? '',
@@ -408,7 +408,7 @@ router.post('/', requireAdmin, async (req, res) => {
         smtpUseTLS: smtpUseTLS ?? false,
         smtpUseSSL: smtpUseSSL ?? true,
         sessionTimeoutMinutes: sessionTimeoutMinutes ?? 120,
-        sessionTimeoutMessage: sessionTimeoutMessage ?? 'Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.',
+        sessionTimeoutMessage: sessionTimeoutMessage ?? 'Ihre Sitzung wurde aufgrund von Inaktivität beendet. Bitte melden Sie sich erneut an.',
         requireRegistrationApproval: requireRegistrationApproval !== undefined ? requireRegistrationApproval : true,
         registrationApprovalEmail: registrationApprovalEmail || null,
         showExpiredLeads: showExpiredLeads !== undefined ? showExpiredLeads : false
@@ -428,7 +428,7 @@ router.post('/', requireAdmin, async (req, res) => {
         biddingStartHour: biddingStartHour || '08:00',
         biddingEndHour: biddingEndHour || '20:00',
         maintenanceMode: maintenanceMode !== undefined ? maintenanceMode : false,
-        maintenanceMessage: maintenanceMessage || 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.',
+        maintenanceMessage: maintenanceMessage || 'System wird gewartet. Bitte versuchen Sie es später erneut.',
         smtpHost: smtpHost ?? '',
         smtpPort: smtpPort ?? 465,
         smtpUser: smtpUser ?? '',
@@ -437,7 +437,7 @@ router.post('/', requireAdmin, async (req, res) => {
         smtpUseTLS: smtpUseTLS ?? false,
         smtpUseSSL: smtpUseSSL ?? true,
         sessionTimeoutMinutes: sessionTimeoutMinutes ?? 120,
-        sessionTimeoutMessage: sessionTimeoutMessage ?? 'Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.',
+        sessionTimeoutMessage: sessionTimeoutMessage ?? 'Ihre Sitzung wurde aufgrund von Inaktivität beendet. Bitte melden Sie sich erneut an.',
         requireRegistrationApproval: requireRegistrationApproval !== undefined ? requireRegistrationApproval : true,
         registrationApprovalEmail: registrationApprovalEmail || null,
         showExpiredLeads: showExpiredLeads !== undefined ? showExpiredLeads : false
@@ -458,10 +458,10 @@ router.post('/', requireAdmin, async (req, res) => {
       console.error('Activity log error:', e.message)
     }
 
-    res.json({ message: 'Ayarlar başarıyla kaydedildi', settings })
+    res.json({ message: 'Einstellungen erfolgreich gespeichert', settings })
   } catch (error) {
     console.error('Settings update error:', error)
-    res.status(500).json({ message: 'Ayarlar kaydedilemedi' })
+    res.status(500).json({ message: 'Einstellungen konnten nicht gespeichert werden' })
   }
 })
 
@@ -504,14 +504,14 @@ router.get('/branding', async (req, res) => {
         legalLinks: null,
         socialMedia: null,
         defaultCurrency: 'EUR',
-        sessionTimeoutMessage: 'Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.'
+        sessionTimeoutMessage: 'Ihre Sitzung wurde aufgrund von Inaktivität beendet. Bitte melden Sie sich erneut an.'
       }
     }
 
     res.json(settings)
   } catch (error) {
     console.error('Branding get error:', error)
-    res.status(500).json({ message: 'Branding ayarları alınamadı' })
+    res.status(500).json({ message: 'Branding-Einstellungen konnten nicht abgerufen werden' })
   }
 })
 
@@ -580,10 +580,10 @@ router.post('/branding', requireAdmin, async (req, res) => {
       console.error('Activity log error:', e.message)
     }
 
-    res.json({ message: 'Branding ayarları başarıyla kaydedildi', settings })
+    res.json({ message: 'Branding-Einstellungen erfolgreich gespeichert', settings })
   } catch (error) {
     console.error('Branding update error:', error)
-    res.status(500).json({ message: 'Branding ayarları kaydedilemedi' })
+    res.status(500).json({ message: 'Branding-Einstellungen konnten nicht gespeichert werden' })
   }
 })
 
@@ -616,7 +616,7 @@ router.get('/homepage', async (req, res) => {
     })
   } catch (error) {
     console.error('Homepage settings get error:', error)
-    res.status(500).json({ message: 'Ana sayfa ayarları alınamadı' })
+    res.status(500).json({ message: 'Startseiteneinstellungen konnten nicht abgerufen werden' })
   }
 })
 
@@ -714,12 +714,12 @@ router.post('/homepage', requireAdmin, async (req, res) => {
     }
 
     res.json({
-      message: 'Ana sayfa ayarları başarıyla kaydedildi',
+      message: 'Startseiteneinstellungen erfolgreich gespeichert',
       homepage: mapHomepageSettings(settings)
     })
   } catch (error) {
     console.error('Homepage settings update error:', error)
-    res.status(500).json({ message: 'Ana sayfa ayarları kaydedilemedi' })
+    res.status(500).json({ message: 'Startseiteneinstellungen konnten nicht gespeichert werden' })
   }
 })
 
@@ -727,18 +727,18 @@ router.post('/homepage', requireAdmin, async (req, res) => {
 router.post('/homepage/upload-hero-image', requireAdmin, uploadHero.single('heroImage'), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: 'Dosya yüklenmedi' })
+      return res.status(400).json({ error: 'Keine Datei hochgeladen' })
     }
     
     const heroImageUrl = `/uploads/hero-images/${req.file.filename}`
     
     res.json({ 
-      message: 'Hero görseli başarıyla yüklendi',
+        message: 'Hero-Bild erfolgreich hochgeladen',
       imageUrl: heroImageUrl 
     })
   } catch (error) {
-    console.error('Hero görseli yükleme hatası:', error)
-    res.status(500).json({ error: 'Görsel yüklenirken hata oluştu' })
+      console.error('Fehler beim Hochladen des Hero-Bildes:', error)
+      res.status(500).json({ error: 'Fehler beim Hochladen des Bildes' })
   }
 })
 

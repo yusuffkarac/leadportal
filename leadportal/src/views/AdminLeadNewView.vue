@@ -55,7 +55,7 @@ async function loadInsuranceTypes() {
       }
     }
   } catch (e) {
-    console.error('Sigorta türleri yüklenemedi:', e)
+    console.error('Versicherungsarten konnten nicht geladen werden:', e)
     insuranceTypes.value = [
       { name: 'Hayvan', icon: 'fa-paw' },
       { name: 'Araba', icon: 'fa-car' },
@@ -69,7 +69,7 @@ onMounted(loadInsuranceTypes)
 // Formleadport'tan form verilerini çek
 async function fetchFormleadportData() {
   if (!formleadportFormId.value.trim()) {
-    formleadportError.value = 'Lütfen form numarası girin'
+    formleadportError.value = 'Bitte geben Sie eine Formularnummer ein'
     return
   }
   
@@ -85,20 +85,20 @@ async function fetchFormleadportData() {
       formleadportData.value = data.data
       showFormPreview.value = true
     } else {
-      formleadportError.value = data.error || 'Form verileri alınamadı'
+      formleadportError.value = data.error || 'Formulardaten konnten nicht abgerufen werden'
     }
   } catch (e) {
     const status = e?.response?.status
     const data = e?.response?.data
     
     if (status === 404) {
-      formleadportError.value = 'Bu form numarası bulunamadı'
+      formleadportError.value = 'Diese Formularnummer wurde nicht gefunden'
     } else if (status === 401) {
-      formleadportError.value = 'Yetkilendirme hatası'
+      formleadportError.value = 'Autorisierungsfehler'
     } else if (status === 429) {
-      formleadportError.value = 'Çok fazla istek gönderildi, lütfen bekleyin'
+      formleadportError.value = 'Zu viele Anfragen, bitte warten Sie'
     } else {
-      formleadportError.value = data?.error || 'Form verileri alınamadı'
+      formleadportError.value = data?.error || 'Formulardaten konnten nicht abgerufen werden'
     }
   } finally {
     isLoadingFormData.value = false
@@ -113,7 +113,7 @@ function useFormleadportData() {
   
   // Formleadport verilerini lead formuna map et
   title.value = `${formData.firma_adi} - ${formData.musteri_isim} ${formData.musteri_soyisim}`
-  description.value = `Müşteri: ${formData.musteri_isim} ${formData.musteri_soyisim}\nFirma: ${formData.firma_adi}\nTelefon: ${formData.telefon || 'Belirtilmemiş'}\nEmail: ${formData.email || 'Belirtilmemiş'}`
+  description.value = `Kunde: ${formData.musteri_isim} ${formData.musteri_soyisim}\nFirma: ${formData.firma_adi}\nTelefon: ${formData.telefon || 'Nicht angegeben'}\nE-Mail: ${formData.email || 'Nicht angegeben'}`
   postalCode.value = formData.posta_kodu || ''
   
   // Sigorta türü mapping
@@ -127,25 +127,25 @@ function useFormleadportData() {
   }
   
   // Private details'e detaylı bilgileri ekle
-  privateDetails.value = `FORMLEADPORT VERİLERİ:
-Form ID: ${formData.form_id}
-Müşteri: ${formData.musteri_isim} ${formData.musteri_soyisim}
-Cinsiyet: ${formData.musteri_cinsiyet || 'Belirtilmemiş'}
-Doğum Tarihi: ${formData.musteri_dogum_tarihi || 'Belirtilmemiş'}
-Email: ${formData.email || 'Belirtilmemiş'}
-Telefon: ${formData.telefon || 'Belirtilmemiş'}
-Sabit Telefon: ${formData.sabit_telefon || 'Belirtilmemiş'}
+  privateDetails.value = `FORMLEADPORT-DATEN:
+Formular-ID: ${formData.form_id}
+Kunde: ${formData.musteri_isim} ${formData.musteri_soyisim}
+Geschlecht: ${formData.musteri_cinsiyet || 'Nicht angegeben'}
+Geburtsdatum: ${formData.musteri_dogum_tarihi || 'Nicht angegeben'}
+E-Mail: ${formData.email || 'Nicht angegeben'}
+Telefon: ${formData.telefon || 'Nicht angegeben'}
+Festnetz: ${formData.sabit_telefon || 'Nicht angegeben'}
 Firma: ${formData.firma_adi}
-Adres: ${formData.adres || 'Belirtilmemiş'}
-Şehir: ${formData.sehir || 'Belirtilmemiş'}
-Medeni Durum: ${formData.medeni_durum || 'Belirtilmemiş'}
-Çalışma Durumu: ${formData.calisma_durumu || 'Belirtilmemiş'}
-Sigorta: ${formData.sigorta || 'Belirtilmemiş'}
-Sigorta Şirketi: ${formData.sigorta_sirket || 'Belirtilmemiş'}
-Randevu Tarihi: ${formData.randevu_tarihi || 'Belirtilmemiş'}
-Randevu Tipi: ${formData.randevu_tipi || 'Belirtilmemiş'}
+Adresse: ${formData.adres || 'Nicht angegeben'}
+Stadt: ${formData.sehir || 'Nicht angegeben'}
+Familienstand: ${formData.medeni_durum || 'Nicht angegeben'}
+Beschäftigungsstatus: ${formData.calisma_durumu || 'Nicht angegeben'}
+Versicherung: ${formData.sigorta || 'Nicht angegeben'}
+Versicherungsgesellschaft: ${formData.sigorta_sirket || 'Nicht angegeben'}
+Termindatum: ${formData.randevu_tarihi || 'Nicht angegeben'}
+Termintyp: ${formData.randevu_tipi || 'Nicht angegeben'}
 
-ORİJİNAL FORMLAADPORT VERİLERİ:
+ORIGINALE FORMLEADPORT-DATEN:
 ${JSON.stringify(formData, null, 2)}`
   
   // Modal'ı kapat
@@ -164,7 +164,7 @@ async function submit() {
   error.value = ''
   ok.value = ''
   if (!endsAt.value) {
-    error.value = 'Bitiş zamanı zorunludur.'
+    error.value = 'Endzeit ist erforderlich.'
     return
   }
 
@@ -173,7 +173,7 @@ async function submit() {
     const start = new Date(startsAt.value)
     const end = new Date(endsAt.value)
     if (start >= end) {
-      error.value = 'Başlangıç tarihi bitiş tarihinden önce olmalıdır.'
+      error.value = 'Das Startdatum muss vor dem Enddatum liegen.'
       return
     }
   }
@@ -193,7 +193,7 @@ async function submit() {
       endsAt: endsAt.value,
       isShowcase: isShowcase.value
     }, { headers: authHeaders() })
-    ok.value = 'Lead oluşturuldu'
+    ok.value = 'Lead erfolgreich erstellt'
     title.value = ''
     description.value = ''
     postalCode.value = ''
@@ -209,27 +209,27 @@ async function submit() {
   } catch (e) {
     const status = e?.response?.status
     const data = e?.response?.data
-    if (status === 403) error.value = 'Oluşturulamadı (ADMIN gerekir)'
+    if (status === 403) error.value = 'Konnte nicht erstellt werden (ADMIN erforderlich)'
     else if (data?.issues?.length) error.value = data.issues.map(i => i.message).join(' • ')
-    else error.value = data?.error || 'Geçersiz veri: lütfen alanları kontrol edin.'
+    else error.value = data?.error || 'Ungültige Daten: Bitte überprüfen Sie die Felder.'
   }
 }
 </script>
 
 <template>
   <section class="section" style="max-width:720px">
-    <h2>Yeni Lead Oluştur</h2>
+    <h2>Neuen Lead erstellen</h2>
     <div v-if="error" style="color:#ef4444">{{ error }}</div>
     <div v-if="ok" style="color:#16a34a">{{ ok }}</div>
     
     <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 16px; margin-top:10px">
       <div class="stack">
-        <label>Formleadport Form Numarası (Opsiyonel)</label>
+        <label>Formleadport Formularnummer (Optional)</label>
         <div style="display: flex; gap: 8px;">
           <input 
             class="input" 
             v-model="formleadportFormId" 
-            placeholder="Örn: 123456" 
+            placeholder="z.B.: 123456" 
             maxlength="6"
             @keyup.enter="fetchFormleadportData"
             style="flex: 1;"
@@ -240,7 +240,7 @@ async function submit() {
             :disabled="isLoadingFormData"
             style="background: #3b82f6; color: white; white-space: nowrap;"
           >
-            {{ isLoadingFormData ? 'Yükleniyor...' : 'Getir' }}
+            {{ isLoadingFormData ? 'Wird geladen...' : 'Abrufen' }}
           </button>
         </div>
         <div v-if="formleadportError" style="color: #ef4444; font-size: 0.875rem; margin-top: 4px;">
@@ -248,77 +248,77 @@ async function submit() {
         </div>
       </div>
       <div class="stack">
-        <label>Başlık</label>
-        <input class="input" v-model="title" placeholder="Örn. Avrupa e-ticaret lead'i" />
+        <label>Titel</label>
+        <input class="input" v-model="title" placeholder="z.B. Europa E-Commerce-Lead" />
       </div>
       <div class="stack">
-        <label>Posta Kodu</label>
-        <input class="input" v-model="postalCode" placeholder="Örn. 85309" />
+        <label>Postleitzahl</label>
+        <input class="input" v-model="postalCode" placeholder="z.B. 85309" />
       </div>
       <div class="stack">
-        <label>Lead Tipi</label>
+        <label>Lead-Typ</label>
         <select class="input" v-model="leadType">
-          <option value="AUCTION">Açık Artırma</option>
-          <option value="SOFORT_KAUF">Sofort Kauf (Anında Satın Alma)</option>
+          <option value="AUCTION">Auktion</option>
+          <option value="SOFORT_KAUF">Sofortkauf (Sofortiger Kauf)</option>
         </select>
         <small style="color: var(--primary); font-size: 0.875rem;">
-          {{ leadType === 'AUCTION' ? 'Açık artırma ile satılacak' : 'Sabit fiyattan anında satın alınabilir' }}
+          {{ leadType === 'AUCTION' ? 'Wird per Auktion verkauft' : 'Kann sofort zu einem festen Preis gekauft werden' }}
         </small>
       </div>
       <div class="stack">
-        <label>{{ leadType === 'SOFORT_KAUF' ? 'Satış Fiyatı' : 'Başlangıç Fiyatı' }} *</label>
+        <label>{{ leadType === 'SOFORT_KAUF' ? 'Verkaufspreis' : 'Startpreis' }} *</label>
         <input class="input" v-model="startPrice" type="number" />
       </div>
       <div class="stack" style="grid-column: 1 / 3;">
-        <label>Açıklama</label>
-        <textarea class="input" v-model="description" rows="4" placeholder="Kısa açıklama" />
+        <label>Beschreibung</label>
+        <textarea class="input" v-model="description" rows="4" placeholder="Kurze Beschreibung" />
       </div>
       <div class="stack">
-        <label>Sigorta Türü (Opsiyonel)</label>
+        <label>Versicherungstyp (Optional)</label>
         <select class="input" v-model="insuranceType">
-          <option value="">Sigorta türü seçin</option>
+          <option value="">Versicherungstyp auswählen</option>
           <option v-for="type in insuranceTypes" :key="type.name" :value="type.name">{{ type.name }}</option>
         </select>
       </div>
       <div class="stack" style="grid-column: 1 / 3;">
-        <label>Lead Detayları (Sadece Satın Alan Görür)</label>
-        <textarea class="input" v-model="privateDetails" rows="6" placeholder="Satın alan kişinin göreceği detay bilgileri girin" />
-        <small style="color: var(--primary); font-size: 0.875rem;">Bu alan sadece leadi satın alan kişi, lead sahibi ve adminler tarafından görülebilir.</small>
+        <label>Lead-Details (Nur für Käufer sichtbar)</label>
+        <textarea class="input" v-model="privateDetails" rows="6" placeholder="Geben Sie Detailinformationen ein, die der Käufer sehen wird" />
+        <small style="color: var(--primary); font-size: 0.875rem;">Dieses Feld ist nur für den Käufer des Leads, den Lead-Besitzer und Administratoren sichtbar.</small>
       </div>
       <div class="stack" v-if="leadType === 'AUCTION'">
-        <label>Min. Artış</label>
+        <label>Mindesterhöhung</label>
         <input class="input" v-model="minIncrement" type="number" />
       </div>
       <div class="stack" v-if="leadType === 'AUCTION'">
-        <label>Anında Satın Alma Fiyatı (Opsiyonel)</label>
-        <input class="input" v-model="instantBuyPrice" type="number" placeholder="Boş bırakılabilir" />
-        <small style="color: var(--primary); font-size: 0.875rem;">Bu fiyatı ödeyen kişi açık artırmayı beklemeden hemen satın alabilir</small>
+        <label>Sofortkaufpreis (Optional)</label>
+        <input class="input" v-model="instantBuyPrice" type="number" placeholder="Kann leer gelassen werden" />
+        <small style="color: var(--primary); font-size: 0.875rem;">Wer diesen Preis zahlt, kann sofort kaufen, ohne auf die Auktion zu warten</small>
       </div>
       <div class="stack">
-        <label>Başlangıç Zamanı (Opsiyonel)</label>
+        <label>Startzeit (Optional)</label>
         <input class="input" v-model="startsAt" type="datetime-local" />
-        <small style="color: var(--primary); font-size: 0.875rem;">Boş bırakırsanız lead hemen aktif olur. İleri tarih seçerseniz belirlenen zamanda aktif olur.</small>
+        <small style="color: var(--primary); font-size: 0.875rem;">Wenn leer gelassen, wird der Lead sofort aktiv. Wenn Sie ein zukünftiges Datum wählen, wird er zu diesem Zeitpunkt aktiv.</small>
       </div>
       <div class="stack">
-        <label>Bitiş Zamanı</label>
+        <label>Endzeit</label>
         <input class="input" v-model="endsAt" type="datetime-local" />
       </div>
       <div class="stack toggle-field" style="grid-column: 1 / 3;">
-        <label>Vitrine Ekle</label>
+        <label>Zu Showcase hinzufügen</label>
         <div class="toggle-container">
           <label class="toggle-switch">
             <input type="checkbox" v-model="isShowcase" />
             <span class="toggle-slider"></span>
           </label>
-          <span class="toggle-label">{{ isShowcase ? 'Açık' : 'Kapalı' }}</span>
+          <span class="toggle-label">{{ isShowcase ? 'Aktiv' : 'Inaktiv' }}</span>
         </div>
         <small class="toggle-help">
-          Vitrine alınan leadler ana sayfanın vitrin bölümünde öne çıkarılır.
+          Leads im Showcase werden im Showcase-Bereich der Startseite hervorgehoben.
         </small>
       </div>
     </div>
     <div class="row" style="margin-top:12px">
-      <button class="btn" @click="submit">Oluştur</button>
+      <button class="btn" @click="submit">Erstellen</button>
     </div>
   </section>
 
@@ -326,67 +326,67 @@ async function submit() {
   <div v-if="showFormPreview" class="modal-overlay" @click="closeFormPreview">
     <div class="modal-content" @click.stop style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
       <div class="modal-header">
-        <h3>📋 Formleadport Verileri Önizleme</h3>
+        <h3>📋 Formleadport-Datenvorschau</h3>
         <button @click="closeFormPreview" class="modal-close">&times;</button>
       </div>
       
       <div class="modal-body" v-if="formleadportData">
         <div class="form-preview">
           <div class="preview-section">
-            <h4>👤 Müşteri Bilgileri</h4>
+            <h4>👤 Kundeninformationen</h4>
             <div class="preview-grid">
-              <div><strong>Ad Soyad:</strong> {{ formleadportData.musteri_isim }} {{ formleadportData.musteri_soyisim }}</div>
-              <div><strong>Cinsiyet:</strong> {{ formleadportData.musteri_cinsiyet || 'Belirtilmemiş' }}</div>
-              <div><strong>Doğum Tarihi:</strong> {{ formleadportData.musteri_dogum_tarihi || 'Belirtilmemiş' }}</div>
-              <div><strong>Email:</strong> {{ formleadportData.email || 'Belirtilmemiş' }}</div>
-              <div><strong>Telefon:</strong> {{ formleadportData.telefon || 'Belirtilmemiş' }}</div>
-              <div><strong>Sabit Telefon:</strong> {{ formleadportData.sabit_telefon || 'Belirtilmemiş' }}</div>
+              <div><strong>Vor- und Nachname:</strong> {{ formleadportData.musteri_isim }} {{ formleadportData.musteri_soyisim }}</div>
+              <div><strong>Geschlecht:</strong> {{ formleadportData.musteri_cinsiyet || 'Nicht angegeben' }}</div>
+              <div><strong>Geburtsdatum:</strong> {{ formleadportData.musteri_dogum_tarihi || 'Nicht angegeben' }}</div>
+              <div><strong>E-Mail:</strong> {{ formleadportData.email || 'Nicht angegeben' }}</div>
+              <div><strong>Telefon:</strong> {{ formleadportData.telefon || 'Nicht angegeben' }}</div>
+              <div><strong>Festnetz:</strong> {{ formleadportData.sabit_telefon || 'Nicht angegeben' }}</div>
             </div>
           </div>
           
           <div class="preview-section">
-            <h4>🏢 Firma Bilgileri</h4>
+            <h4>🏢 Firmeninformationen</h4>
             <div class="preview-grid">
-              <div><strong>Firma Adı:</strong> {{ formleadportData.firma_adi }}</div>
-              <div><strong>Adres:</strong> {{ formleadportData.adres || 'Belirtilmemiş' }}</div>
-              <div><strong>Şehir:</strong> {{ formleadportData.sehir || 'Belirtilmemiş' }}</div>
-              <div><strong>Posta Kodu:</strong> {{ formleadportData.posta_kodu || 'Belirtilmemiş' }}</div>
+              <div><strong>Firmenname:</strong> {{ formleadportData.firma_adi }}</div>
+              <div><strong>Adresse:</strong> {{ formleadportData.adres || 'Nicht angegeben' }}</div>
+              <div><strong>Stadt:</strong> {{ formleadportData.sehir || 'Nicht angegeben' }}</div>
+              <div><strong>Postleitzahl:</strong> {{ formleadportData.posta_kodu || 'Nicht angegeben' }}</div>
             </div>
           </div>
           
           <div class="preview-section">
-            <h4>📅 Randevu Bilgileri</h4>
+            <h4>📅 Termininformationen</h4>
             <div class="preview-grid">
-              <div><strong>Randevu Tarihi:</strong> {{ formleadportData.randevu_tarihi || 'Belirtilmemiş' }}</div>
-              <div><strong>Randevu Tipi:</strong> {{ formleadportData.randevu_tipi || 'Belirtilmemiş' }}</div>
+              <div><strong>Termindatum:</strong> {{ formleadportData.randevu_tarihi || 'Nicht angegeben' }}</div>
+              <div><strong>Termintyp:</strong> {{ formleadportData.randevu_tipi || 'Nicht angegeben' }}</div>
             </div>
           </div>
           
           <div class="preview-section">
-            <h4>🏥 Sigorta Bilgileri</h4>
+            <h4>🏥 Versicherungsinformationen</h4>
             <div class="preview-grid">
-              <div><strong>Sigorta Türü:</strong> {{ formleadportData.sigorta || 'Belirtilmemiş' }}</div>
-              <div><strong>Sigorta Şirketi:</strong> {{ formleadportData.sigorta_sirket || 'Belirtilmemiş' }}</div>
-              <div><strong>Sigorta Başlangıç:</strong> {{ formleadportData.sigorta_baslangic_tarihi || 'Belirtilmemiş' }}</div>
-              <div><strong>Katkı Payı:</strong> {{ formleadportData.sigorta_katki_payi || 'Belirtilmemiş' }}</div>
+              <div><strong>Versicherungstyp:</strong> {{ formleadportData.sigorta || 'Nicht angegeben' }}</div>
+              <div><strong>Versicherungsgesellschaft:</strong> {{ formleadportData.sigorta_sirket || 'Nicht angegeben' }}</div>
+              <div><strong>Versicherungsbeginn:</strong> {{ formleadportData.sigorta_baslangic_tarihi || 'Nicht angegeben' }}</div>
+              <div><strong>Selbstbeteiligung:</strong> {{ formleadportData.sigorta_katki_payi || 'Nicht angegeben' }}</div>
             </div>
           </div>
           
           <div class="preview-section">
-            <h4>👨‍👩‍👧‍👦 Kişisel Bilgiler</h4>
+            <h4>👨‍👩‍👧‍👦 Persönliche Informationen</h4>
             <div class="preview-grid">
-              <div><strong>Medeni Durum:</strong> {{ formleadportData.medeni_durum || 'Belirtilmemiş' }}</div>
-              <div><strong>Çalışma Durumu:</strong> {{ formleadportData.calisma_durumu || 'Belirtilmemiş' }}</div>
-              <div><strong>Çocuk Sayısı:</strong> {{ formleadportData.aile_cocuk_sayisi || 'Belirtilmemiş' }}</div>
-              <div><strong>Eş Yaşı:</strong> {{ formleadportData.es_yasi || 'Belirtilmemiş' }}</div>
+              <div><strong>Familienstand:</strong> {{ formleadportData.medeni_durum || 'Nicht angegeben' }}</div>
+              <div><strong>Beschäftigungsstatus:</strong> {{ formleadportData.calisma_durumu || 'Nicht angegeben' }}</div>
+              <div><strong>Anzahl der Kinder:</strong> {{ formleadportData.aile_cocuk_sayisi || 'Nicht angegeben' }}</div>
+              <div><strong>Alter des Partners:</strong> {{ formleadportData.es_yasi || 'Nicht angegeben' }}</div>
             </div>
           </div>
         </div>
       </div>
       
       <div class="modal-footer">
-        <button @click="closeFormPreview" class="btn btn-secondary">İptal</button>
-        <button @click="useFormleadportData" class="btn btn-primary">Bu Verileri Kullan</button>
+        <button @click="closeFormPreview" class="btn btn-secondary">Abbrechen</button>
+        <button @click="useFormleadportData" class="btn btn-primary">Diese Daten verwenden</button>
       </div>
     </div>
   </div>

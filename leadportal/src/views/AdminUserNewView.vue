@@ -96,7 +96,7 @@ const filteredUsers = computed(() => {
 })
 
 function formatTimeAgo(date) {
-  if (!date) return 'Hiç'
+  if (!date) return 'Nie'
 
   const now = new Date()
   const diff = now - new Date(date)
@@ -104,10 +104,10 @@ function formatTimeAgo(date) {
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
 
-  if (minutes < 1) return 'Şimdi'
-  if (minutes < 60) return `${minutes} dk önce`
-  if (hours < 24) return `${hours} saat önce`
-  return `${days} gün önce`
+  if (minutes < 1) return 'Jetzt'
+  if (minutes < 60) return `vor ${minutes} Min.`
+  if (hours < 24) return `vor ${hours} Std.`
+  return `vor ${days} Tagen`
 }
 
 function authHeaders() {
@@ -121,33 +121,33 @@ async function submitModal() {
   
   // Frontend validation
   if (!email.value.trim()) {
-    error('Email adresi gerekli')
+    error('E-Mail-Adresse ist erforderlich')
     return
   }
   
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(email.value)) {
-    error('Geçerli bir email adresi giriniz')
+    error('Bitte geben Sie eine gültige E-Mail-Adresse ein')
     return
   }
   
   if (modalMode.value === 'create' && !password.value.trim()) {
-    error('Şifre gerekli')
+    error('Passwort ist erforderlich')
     return
   }
   
   if (modalMode.value === 'create' && password.value.length < 6) {
-    error('Şifre en az 6 karakter olmalıdır')
+    error('Passwort muss mindestens 6 Zeichen lang sein')
     return
   }
   
   if (password.value && !modalPassValid.value.ok) {
-    error('Şifre kurallara uygun değil')
+    error('Passwort entspricht nicht den Regeln')
     return
   }
   
   if (!modalUserTypeId.value) {
-    error('Kullanıcı tipi seçilmelidir')
+    error('Benutzertyp muss ausgewählt werden')
     return
   }
   
@@ -163,14 +163,14 @@ async function submitModal() {
     if (modalMode.value === 'create') {
       userData.password = password.value
       await axios.post('/api/users', userData, { headers: authHeaders() })
-      success('Kullanıcı başarıyla oluşturuldu')
+      success('Benutzer erfolgreich erstellt')
     } else {
       // Edit mode
       if (password.value) {
         await axios.put(`/api/users/${editUserId.value}/password`, { password: password.value }, { headers: authHeaders() })
       }
       await axios.put(`/api/users/${editUserId.value}`, userData, { headers: authHeaders() })
-      success('Kullanıcı başarıyla güncellendi')
+      success('Benutzer erfolgreich aktualisiert')
     }
     
     closeModal()
@@ -182,19 +182,19 @@ async function submitModal() {
     if (serverError) {
       error(serverError)
     } else if (status === 409) {
-      error('Bu email adresi zaten kullanılıyor')
+      error('Diese E-Mail-Adresse wird bereits verwendet')
     } else if (status === 403) {
-      error('Bu işlem için yetkiniz yok')
+      error('Sie sind für diese Aktion nicht autorisiert')
     } else if (status === 400) {
-      error('Girilen bilgilerde hata var')
+      error('Fehler in den eingegebenen Informationen')
     } else if (status === 404) {
-      error('Kullanıcı bulunamadı')
+      error('Benutzer nicht gefunden')
     } else if (status === 500) {
-      error('Sunucu hatası oluştu')
+      error('Serverfehler aufgetreten')
     } else if (status === 0 || !status) {
-      error('Sunucuya bağlanılamıyor')
+      error('Verbindung zum Server nicht möglich')
     } else {
-      error('Beklenmeyen bir hata oluştu')
+      error('Ein unerwarteter Fehler ist aufgetreten')
     }
   }
 }
@@ -256,7 +256,7 @@ async function loadPendingCount() {
     const { data } = await axios.get('/api/users/pending-registrations/list', { headers: authHeaders() })
     pendingCount.value = data.length
   } catch (e) {
-    console.error('Onay bekleyen kullanıcı sayısı yüklenemedi:', e)
+    console.error('Anzahl der wartenden Benutzer konnte nicht geladen werden:', e)
     pendingCount.value = 0
   }
 }
@@ -309,19 +309,19 @@ async function confirmReset() {
 
   // Frontend validation
   if (!resetPass.value.trim()) {
-    error('Şifre gerekli')
+    error('Passwort ist erforderlich')
     return
   }
 
   if (!passValid.value.ok) {
-    error('Şifre kurallara uygun değil')
+    error('Passwort entspricht nicht den Regeln')
     return
   }
 
   try {
     await axios.put(`/api/users/${resetUserId.value}/password`, { password: resetPass.value }, { headers: authHeaders() })
     showReset.value = false
-    success('Şifre başarıyla sıfırlandı')
+    success('Passwort erfolgreich zurückgesetzt')
   } catch (e) {
     const status = e?.response?.status
     const serverError = e?.response?.data?.error
@@ -329,17 +329,17 @@ async function confirmReset() {
     if (serverError) {
       error(serverError)
     } else if (status === 403) {
-      error('Bu işlem için yetkiniz yok')
+      error('Sie sind für diese Aktion nicht autorisiert')
     } else if (status === 400) {
-      error('Şifre formatı hatalı')
+      error('Ungültiges Passwortformat')
     } else if (status === 404) {
-      error('Kullanıcı bulunamadı')
+      error('Benutzer nicht gefunden')
     } else if (status === 500) {
-      error('Sunucu hatası oluştu')
+      error('Serverfehler aufgetreten')
     } else if (status === 0 || !status) {
-      error('Sunucuya bağlanılamıyor')
+      error('Verbindung zum Server nicht möglich')
     } else {
-      error('Şifre sıfırlanamadı')
+      error('Passwort konnte nicht zurückgesetzt werden')
     }
   }
 }
@@ -359,13 +359,13 @@ function closeDeleteConfirm() {
 }
 
 async function adminDisable2FA(userId) {
-  if (!confirm('Bu kullanıcının 2FA korumasını devre dışı bırakmak istediğinize emin misiniz?')) {
+  if (!confirm('Sind Sie sicher, dass Sie den 2FA-Schutz dieses Benutzers deaktivieren möchten?')) {
     return
   }
 
   try {
     await axios.delete(`/api/2fa/admin/${userId}`, { headers: authHeaders() })
-    success('Kullanıcının 2FA\'sı başarıyla devre dışı bırakıldı')
+    success('2FA des Benutzers wurde erfolgreich deaktiviert')
     loadUsers()
     // Modalı kapatıp tekrar aç, güncel veriyi görmek için
     const currentUserId = editUserId.value
@@ -379,7 +379,7 @@ async function adminDisable2FA(userId) {
     if (serverError) {
       error(serverError)
     } else {
-      error('2FA devre dışı bırakılırken hata oluştu')
+      error('Fehler beim Deaktivieren von 2FA')
     }
   }
 }
@@ -387,7 +387,7 @@ async function adminDisable2FA(userId) {
 async function confirmDelete() {
   try {
     await axios.put(`/api/users/${deleteUserId.value}/deactivate`, {}, { headers: authHeaders() })
-    success('Kullanıcı başarıyla silindi')
+    success('Benutzer erfolgreich gelöscht')
     closeDeleteConfirm()
     closeModal()
     loadUsers()
@@ -398,17 +398,17 @@ async function confirmDelete() {
     if (serverError) {
       error(serverError)
     } else if (status === 403) {
-      error('Bu işlem için yetkiniz yok')
+      error('Sie sind für diese Aktion nicht autorisiert')
     } else if (status === 400) {
-      error('Kendinizi silemezsiniz')
+      error('Sie können sich nicht selbst löschen')
     } else if (status === 404) {
-      error('Kullanıcı bulunamadı')
+      error('Benutzer nicht gefunden')
     } else if (status === 500) {
-      error('Sunucu hatası oluştu')
+      error('Serverfehler aufgetreten')
     } else if (status === 0 || !status) {
-      error('Sunucuya bağlanılamıyor')
+      error('Verbindung zum Server nicht möglich')
     } else {
-      error('Kullanıcı silinemedi')
+      error('Benutzer konnte nicht gelöscht werden')
     }
   }
 }
@@ -439,9 +439,9 @@ onUnmounted(() => {
       <!-- Header -->
       <div class="page-header">
         <div class="section-header">
-          <h1>Kullanıcılar</h1>
+          <h1>Benutzer</h1>
           <div class="header-stats">
-            <p class="page-subtitle">{{ filteredUsers.length }} kullanıcı</p>
+            <p class="page-subtitle">{{ filteredUsers.length }} Benutzer</p>
             <div class="online-indicator-badge">
               <span class="online-dot"></span>
               <span>{{ onlineCount }} online</span>
@@ -454,7 +454,7 @@ onUnmounted(() => {
               <circle cx="11" cy="11" r="8"/>
               <path d="m21 21-4.35-4.35"/>
             </svg>
-            Onay Bekleyen
+            Ausstehende Genehmigung
             <span v-if="pendingCount > 0" class="pending-badge">{{ pendingCount }}</span>
           </router-link>
           <button class="btn btn-primary" @click="openNewUser">
@@ -462,7 +462,7 @@ onUnmounted(() => {
               <line x1="12" y1="5" x2="12" y2="19"/>
               <line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
-            Yeni Kullanıcı
+            Neuer Benutzer
           </button>
         </div>
       </div>
@@ -473,13 +473,13 @@ onUnmounted(() => {
           <input
             class="filter-input"
             v-model="query"
-            placeholder="Email, ad veya kullanıcı adı ile ara..."
+            placeholder="Nach E-Mail, Name oder Benutzername suchen..."
             type="text"
           />
         </div>
         <div class="filter-group">
           <select class="filter-select" v-model="filterUserType">
-            <option value="">Tüm Kullanıcı Tipleri</option>
+            <option value="">Alle Benutzertypen</option>
             <option v-for="userType in userTypes" :key="userType.id" :value="userType.id">
               {{ userType.name }}
             </option>
@@ -497,8 +497,8 @@ onUnmounted(() => {
             <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
           </svg>
         </div>
-        <h3>Henüz kullanıcı yok</h3>
-        <p>İlk kullanıcınızı oluşturmak için "Yeni Kullanıcı" butonuna tıklayın</p>
+        <h3>Noch keine Benutzer vorhanden</h3>
+        <p>Klicken Sie auf "Neuer Benutzer", um Ihren ersten Benutzer zu erstellen</p>
       </div>
       
       <div v-else class="users-container">
@@ -506,13 +506,13 @@ onUnmounted(() => {
         <div class="users-table desktop-only">
           <div class="table-header">
             <div class="header-cell status-col sortable" @click="setSortKey('status')">
-              <span>Durum</span>
+              <span>Status</span>
               <svg v-if="sortKey === 'status'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ 'rotate-180': sortDir === 'desc' }">
                 <polyline points="18 15 12 9 6 15"/>
               </svg>
             </div>
             <div class="header-cell sortable" @click="setSortKey('name')">
-              <span>Kullanıcı</span>
+              <span>Benutzer</span>
               <svg v-if="sortKey === 'name'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ 'rotate-180': sortDir === 'desc' }">
                 <polyline points="18 15 12 9 6 15"/>
               </svg>
@@ -524,7 +524,7 @@ onUnmounted(() => {
               </svg>
             </div>
             <div class="header-cell sortable" @click="setSortKey('username')">
-              <span>Kullanıcı Adı</span>
+              <span>Benutzername</span>
               <svg v-if="sortKey === 'username'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ 'rotate-180': sortDir === 'desc' }">
                 <polyline points="18 15 12 9 6 15"/>
               </svg>
@@ -536,13 +536,13 @@ onUnmounted(() => {
               </svg>
             </div>
             <div class="header-cell sortable" @click="setSortKey('lastActivity')">
-              <span>Son Aktivite</span>
+              <span>Letzte Aktivität</span>
               <svg v-if="sortKey === 'lastActivity'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ 'rotate-180': sortDir === 'desc' }">
                 <polyline points="18 15 12 9 6 15"/>
               </svg>
             </div>
             <div class="header-cell">2FA</div>
-            <div class="header-cell actions">İşlemler</div>
+            <div class="header-cell actions">Aktionen</div>
           </div>
 
           <div class="table-body">
@@ -566,7 +566,7 @@ onUnmounted(() => {
                     {{ u.firstName }} {{ u.lastName }}
                   </div>
                   <div class="user-name-placeholder" v-else>
-                    İsim belirtilmemiş
+                    Name nicht angegeben
                   </div>
                 </div>
               </div>
@@ -586,7 +586,7 @@ onUnmounted(() => {
 
               <div class="table-cell">
                 <span class="user-type-badge" :class="'type-' + (u.userType?.id || 'none')">
-                  {{ u.userType?.name || 'Tip Yok' }}
+                  {{ u.userType?.name || 'Kein Typ' }}
                 </span>
               </div>
 
@@ -598,26 +598,26 @@ onUnmounted(() => {
 
               <div class="table-cell">
                 <div class="twofa-cell">
-                  <span v-if="u.twoFactorEnabled" class="twofa-badge enabled" title="2FA Aktif">
+                  <span v-if="u.twoFactorEnabled" class="twofa-badge enabled" title="2FA Aktiv">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                       <polyline points="22 4 12 14.01 9 11.01"/>
                     </svg>
-                    Aktif
+                    Aktiv
                   </span>
-                  <span v-else class="twofa-badge disabled" title="2FA Kapalı">
+                  <span v-else class="twofa-badge disabled" title="2FA Inaktiv">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <line x1="18" y1="6" x2="6" y2="18"/>
                       <line x1="6" y1="6" x2="18" y2="18"/>
                     </svg>
-                    Kapalı
+                    Inaktiv
                   </span>
                 </div>
               </div>
 
               <div class="table-cell actions">
                 <div class="action-buttons">
-                  <button class="action-btn edit-btn" @click="openEditUser(u)" title="Düzenle">
+                  <button class="action-btn edit-btn" @click="openEditUser(u)" title="Bearbeiten">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -667,19 +667,19 @@ onUnmounted(() => {
 
             <div class="card-body">
               <div class="card-info-row" v-if="u.username">
-                <span class="card-label">Kullanıcı Adı:</span>
+                <span class="card-label">Benutzername:</span>
                 <span class="username-badge">@{{ u.username }}</span>
               </div>
 
               <div class="card-info-row">
-                <span class="card-label">Tip:</span>
+                <span class="card-label">Typ:</span>
                 <span class="user-type-badge" :class="'type-' + (u.userType?.id || 'none')">
-                  {{ u.userType?.name || 'Tip Yok' }}
+                  {{ u.userType?.name || 'Kein Typ' }}
                 </span>
               </div>
 
               <div class="card-info-row">
-                <span class="card-label">Son Aktivite:</span>
+                <span class="card-label">Letzte Aktivität:</span>
                 <span class="card-value">{{ formatTimeAgo(u.lastActivity) }}</span>
               </div>
 
@@ -709,7 +709,7 @@ onUnmounted(() => {
     <!-- Kullanıcı Modal -->
     <div v-if="showModal" class="modal-backdrop">
       <div class="modal edit-modal">
-        <h3>{{ modalMode === 'create' ? 'Kullanıcı Ekle' : 'Kullanıcı Düzenle' }}</h3>
+        <h3>{{ modalMode === 'create' ? 'Benutzer hinzufügen' : 'Benutzer bearbeiten' }}</h3>
         <div v-if="ok" style="color:#16a34a; margin-top:8px">{{ ok }}</div>
         <div v-if="err" style="color:#ef4444; margin-top:8px">{{ err }}</div>
         <form @submit.prevent="submitModal" style="margin-top:20px">
@@ -717,11 +717,11 @@ onUnmounted(() => {
             <!-- Ad - Soyad -->
             <div class="form-row">
               <div class="form-group">
-                <label>Ad</label>
+                <label>Vorname</label>
                 <input class="input" v-model="firstName" type="text" autocomplete="given-name" />
               </div>
               <div class="form-group">
-                <label>Soyad</label>
+                <label>Nachname</label>
                 <input class="input" v-model="lastName" type="text" autocomplete="family-name" />
               </div>
             </div>
@@ -729,11 +729,11 @@ onUnmounted(() => {
             <!-- Kullanıcı Adı - Email -->
             <div class="form-row">
               <div class="form-group">
-                <label>Kullanıcı Adı</label>
+                <label>Benutzername</label>
                 <input class="input" v-model="username" type="text" autocomplete="username" />
               </div>
               <div class="form-group">
-                <label>Email *</label>
+                <label>E-Mail *</label>
                 <input class="input" v-model="email" type="email" required autocomplete="email" />
               </div>
             </div>
@@ -741,9 +741,9 @@ onUnmounted(() => {
             <!-- Kullanıcı Tipi - Şifre -->
             <div class="form-row">
               <div class="form-group">
-                <label>Kullanıcı Tipi *</label>
+                <label>Benutzertyp *</label>
                 <select class="input" v-model="modalUserTypeId" required>
-                  <option value="">Kullanıcı Tipi Seçin</option>
+                  <option value="">Benutzertyp auswählen</option>
                   <option v-for="userType in userTypes" :key="userType.id" :value="userType.id">
                     {{ userType.name }}
                   </option>
@@ -751,8 +751,8 @@ onUnmounted(() => {
               </div>
               <div class="form-group">
                 <label>
-                  {{ modalMode === 'create' ? 'Şifre *' : 'Yeni Şifre' }}
-                  <span v-if="modalMode === 'edit'" class="muted">(boş bırakılırsa değişmez)</span>
+                  {{ modalMode === 'create' ? 'Passwort *' : 'Neues Passwort' }}
+                  <span v-if="modalMode === 'edit'" class="muted">(wenn leer gelassen, bleibt unverändert)</span>
                 </label>
                 <input 
                   class="input" 
@@ -760,7 +760,7 @@ onUnmounted(() => {
                   type="password" 
                   :required="modalMode === 'create'" 
                   autocomplete="new-password" 
-                  :placeholder="modalMode === 'edit' ? 'Şifre değiştirmek için doldurun' : ''"
+                  :placeholder="modalMode === 'edit' ? 'Ausfüllen, um Passwort zu ändern' : ''"
                 />
               </div>
             </div>
@@ -768,17 +768,17 @@ onUnmounted(() => {
             <!-- Şifre Kuralları -->
             <div v-if="password" class="password-rules">
               <div class="row" style="flex-wrap:wrap; gap:6px; margin-top:8px">
-                <span class="badge" :style="{color: modalPassValid.long? '#16a34a':'#ef4444'}">En az 8 karakter</span>
-                <span class="badge" :style="{color: modalPassValid.hasNum? '#16a34a':'#ef4444'}">Rakam</span>
-                <span class="badge" :style="{color: modalPassValid.hasUpper? '#16a34a':'#ef4444'}">Büyük harf</span>
-                <span class="badge" :style="{color: modalPassValid.hasLower? '#16a34a':'#ef4444'}">Küçük harf</span>
+                <span class="badge" :style="{color: modalPassValid.long? '#16a34a':'#ef4444'}">Mindestens 8 Zeichen</span>
+                <span class="badge" :style="{color: modalPassValid.hasNum? '#16a34a':'#ef4444'}">Zahl</span>
+                <span class="badge" :style="{color: modalPassValid.hasUpper? '#16a34a':'#ef4444'}">Großbuchstabe</span>
+                <span class="badge" :style="{color: modalPassValid.hasLower? '#16a34a':'#ef4444'}">Kleinbuchstabe</span>
               </div>
             </div>
           </div>
           
           <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" @click="closeModal">İptal</button>
-            <button type="submit" class="btn btn-primary">{{ modalMode === 'create' ? 'Oluştur' : 'Güncelle' }}</button>
+            <button type="button" class="btn btn-secondary" @click="closeModal">Abbrechen</button>
+            <button type="submit" class="btn btn-primary">{{ modalMode === 'create' ? 'Erstellen' : 'Aktualisieren' }}</button>
           </div>
         </form>
 
@@ -790,25 +790,25 @@ onUnmounted(() => {
               <line x1="12" y1="9" x2="12" y2="13"/>
               <line x1="12" y1="17" x2="12.01" y2="17"/>
             </svg>
-            <h4>Tehlikeli Bölge</h4>
+            <h4>Gefahrenzone</h4>
           </div>
 
           <!-- 2FA Disable -->
           <div v-if="users.find(u => u.id === editUserId)?.twoFactorEnabled" class="danger-zone-section">
-            <p class="danger-zone-description">Kullanıcının 2FA korumasını devre dışı bırakabilirsiniz (cihaz kaybı durumunda).</p>
+            <p class="danger-zone-description">Sie können den 2FA-Schutz des Benutzers deaktivieren (bei Geräteverlust).</p>
             <button type="button" class="btn btn-warning" @click="adminDisable2FA(editUserId)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                 <line x1="9" y1="16" x2="15" y2="16"/>
               </svg>
-              2FA'yı Devre Dışı Bırak
+              2FA deaktivieren
             </button>
           </div>
 
           <!-- Delete User -->
           <div class="danger-zone-section">
-            <p class="danger-zone-description">Bu kullanıcıyı kalıcı olarak silebilirsiniz. Bu işlem geri alınamaz.</p>
+            <p class="danger-zone-description">Sie können diesen Benutzer dauerhaft löschen. Diese Aktion kann nicht rückgängig gemacht werden.</p>
             <button type="button" class="btn btn-danger" @click="openDeleteConfirm(users.find(u => u.id === editUserId))">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="3 6 5 6 21 6"/>
@@ -816,7 +816,7 @@ onUnmounted(() => {
                 <line x1="10" y1="11" x2="10" y2="17"/>
                 <line x1="14" y1="11" x2="14" y2="17"/>
               </svg>
-              Kullanıcıyı Sil
+              Benutzer löschen
             </button>
           </div>
         </div>
@@ -833,13 +833,13 @@ onUnmounted(() => {
             <line x1="12" y1="17" x2="12.01" y2="17"/>
           </svg>
         </div>
-        <h3>Kullanıcıyı Sil</h3>
+        <h3>Benutzer löschen</h3>
         <p class="delete-warning">
-          <strong>{{ deleteUserName }}</strong> kullanıcısını silmek üzeresiniz.
-          Bu işlem geri alınamaz ve kullanıcının tüm verileri silinecektir.
+          Sie sind dabei, den Benutzer <strong>{{ deleteUserName }}</strong> zu löschen.
+          Diese Aktion kann nicht rückgängig gemacht werden und alle Daten des Benutzers werden gelöscht.
         </p>
         <div class="modal-actions">
-          <button type="button" class="btn btn-secondary" @click="closeDeleteConfirm">İptal</button>
+          <button type="button" class="btn btn-secondary" @click="closeDeleteConfirm">Abbrechen</button>
           <button type="button" class="btn btn-danger" @click="confirmDelete">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="3 6 5 6 21 6"/>
@@ -847,7 +847,7 @@ onUnmounted(() => {
               <line x1="10" y1="11" x2="10" y2="17"/>
               <line x1="14" y1="11" x2="14" y2="17"/>
             </svg>
-            Evet, Sil
+            Ja, löschen
           </button>
         </div>
       </div>
@@ -856,20 +856,20 @@ onUnmounted(() => {
     <!-- Şifre Sıfırla Modal -->
     <div v-if="showReset" class="modal-backdrop">
       <div class="modal">
-        <h3>Şifre Sıfırla</h3>
+        <h3>Passwort zurücksetzen</h3>
         <div v-if="err" style="color:#ef4444; margin-top:8px">{{ err }}</div>
         <form @submit.prevent="confirmReset" class="stack" style="margin-top:8px">
-          <input class="input" v-model="resetPass" type="password" placeholder="Yeni şifre" required autocomplete="new-password" />
-          <div class="muted">Kurallar:</div>
+          <input class="input" v-model="resetPass" type="password" placeholder="Neues Passwort" required autocomplete="new-password" />
+          <div class="muted">Regeln:</div>
           <div class="row" style="flex-wrap:wrap; gap:6px">
-            <span class="badge" :style="{color: passValid.long? '#16a34a':'#ef4444'}">En az 8 karakter</span>
-            <span class="badge" :style="{color: passValid.hasNum? '#16a34a':'#ef4444'}">Rakam</span>
-            <span class="badge" :style="{color: passValid.hasUpper? '#16a34a':'#ef4444'}">Büyük harf</span>
-            <span class="badge" :style="{color: passValid.hasLower? '#16a34a':'#ef4444'}">Küçük harf</span>
+            <span class="badge" :style="{color: passValid.long? '#16a34a':'#ef4444'}">Mindestens 8 Zeichen</span>
+            <span class="badge" :style="{color: passValid.hasNum? '#16a34a':'#ef4444'}">Zahl</span>
+            <span class="badge" :style="{color: passValid.hasUpper? '#16a34a':'#ef4444'}">Großbuchstabe</span>
+            <span class="badge" :style="{color: passValid.hasLower? '#16a34a':'#ef4444'}">Kleinbuchstabe</span>
           </div>
           <div class="row" style="justify-content:flex-end; gap:8px">
-            <button type="button" class="btn" @click="closeReset">İptal</button>
-            <button type="submit" class="btn" :disabled="!passValid.ok">Onayla</button>
+            <button type="button" class="btn" @click="closeReset">Abbrechen</button>
+            <button type="submit" class="btn" :disabled="!passValid.ok">Bestätigen</button>
           </div>
         </form>
       </div>

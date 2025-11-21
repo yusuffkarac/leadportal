@@ -11,7 +11,7 @@ const requireAdmin = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.replace('Bearer ', '')
     if (!token) {
-      return res.status(401).json({ message: 'Token gerekli' })
+      return res.status(401).json({ message: 'Token erforderlich' })
     }
 
     const jwt = await import('jsonwebtoken')
@@ -22,14 +22,14 @@ const requireAdmin = async (req, res, next) => {
     })
 
     if (!user || (user.userTypeId !== 'ADMIN' && user.userTypeId !== 'SUPERADMIN')) {
-      return res.status(403).json({ message: 'Admin yetkisi gerekli' })
+      return res.status(403).json({ message: 'Admin-Berechtigung erforderlich' })
     }
 
     req.user = user
     next()
   } catch (error) {
     console.error('Admin check error:', error)
-    res.status(500).json({ message: 'Sunucu hatası' })
+    res.status(500).json({ message: 'Serverfehler' })
   }
 }
 
@@ -37,9 +37,9 @@ const requireAdmin = async (req, res, next) => {
 const defaultEmailTemplates = [
   {
     type: 'bidReceived',
-    name: 'Teklif Alındı',
-    description: 'Kullanıcı bir lead\'e teklif verdiğinde gönderilen email',
-    subject: 'Teklifiniz alındı: {{leadTitle}}',
+    name: 'Gebot erhalten',
+    description: 'E-Mail, die gesendet wird, wenn ein Benutzer ein Gebot für einen Lead abgibt',
+    subject: 'Ihr Gebot wurde erhalten: {{leadTitle}}',
     htmlContent: `<div style="background:#f6f8fb;padding:24px;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111827;">
   <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
     <tr>
@@ -49,12 +49,12 @@ const defaultEmailTemplates = [
     </tr>
     <tr>
       <td style="padding:24px;">
-        <h1 style="margin:0 0 12px 0;font-size:20px;color:#111827;">Teklifiniz alındı</h1>
+        <h1 style="margin:0 0 12px 0;font-size:20px;color:#111827;">Ihr Gebot wurde erhalten</h1>
         <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">
-          <strong style="color:#111827;">{{leadTitle}}</strong> ilanına <strong style="color:#111827;">{{amount}} {{currency}}</strong> teklif verdiniz.
+          Sie haben für die Anzeige <strong style="color:#111827;">{{leadTitle}}</strong> ein Gebot von <strong style="color:#111827;">{{amount}} {{currency}}</strong> abgegeben.
         </p>
-        <a href="{{leadUrl}}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;">İlanı Gör</a>
-        <p style="margin:16px 0 0 0;color:#6b7280;font-size:12px;">Bu e-posta otomatik olarak gönderildi. Lütfen yanıtlamayınız.</p>
+        <a href="{{leadUrl}}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;">Anzeige ansehen</a>
+        <p style="margin:16px 0 0 0;color:#6b7280;font-size:12px;">Diese E-Mail wurde automatisch gesendet. Bitte antworten Sie nicht.</p>
       </td>
     </tr>
     <tr>
@@ -64,14 +64,14 @@ const defaultEmailTemplates = [
     </tr>
   </table>
 </div>`,
-    textContent: 'Teklifiniz alındı\n\n{{leadTitle}} ilanına {{amount}} {{currency}} teklif verdiniz.\n\nİlanı Gör: {{leadUrl}}\n\n{{companyName}}',
+    textContent: 'Ihr Gebot wurde erhalten\n\nSie haben für die Anzeige {{leadTitle}} ein Gebot von {{amount}} {{currency}} abgegeben.\n\nAnzeige ansehen: {{leadUrl}}\n\n{{companyName}}',
     variables: ['companyName', 'leadTitle', 'amount', 'currency', 'leadUrl', 'year']
   },
   {
     type: 'outbid',
-    name: 'Teklif Geçildi',
-    description: 'Kullanıcının teklifi başka bir teklif tarafından geçildiğinde gönderilen email',
-    subject: 'Daha yüksek teklif verildi: {{leadTitle}}',
+    name: 'Gebot überboten',
+    description: 'E-Mail, die gesendet wird, wenn das Gebot des Benutzers von einem anderen Gebot überboten wurde',
+    subject: 'Höheres Gebot abgegeben: {{leadTitle}}',
     htmlContent: `<div style="background:#f6f8fb;padding:24px;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111827;">
   <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
     <tr>
@@ -81,12 +81,12 @@ const defaultEmailTemplates = [
     </tr>
     <tr>
       <td style="padding:24px;">
-        <h1 style="margin:0 0 12px 0;font-size:20px;color:#111827;">Teklifiniz geçildi</h1>
+        <h1 style="margin:0 0 12px 0;font-size:20px;color:#111827;">Ihr Gebot wurde überboten</h1>
         <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">
-          <strong>{{leadTitle}}</strong> ilanında sizden daha yüksek bir teklif verildi: <strong>{{newAmount}} {{currency}}</strong>.
+          Für die Anzeige <strong>{{leadTitle}}</strong> wurde ein höheres Gebot abgegeben als Ihres: <strong>{{newAmount}} {{currency}}</strong>.
         </p>
-        <a href="{{leadUrl}}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;">İlanı Gör ve Teklif Ver</a>
-        <p style="margin:16px 0 0 0;color:#6b7280;font-size:12px;">Bu e-posta otomatik gönderildi.</p>
+        <a href="{{leadUrl}}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;">Anzeige ansehen und bieten</a>
+        <p style="margin:16px 0 0 0;color:#6b7280;font-size:12px;">Diese E-Mail wurde automatisch gesendet.</p>
       </td>
     </tr>
     <tr>
@@ -96,14 +96,14 @@ const defaultEmailTemplates = [
     </tr>
   </table>
 </div>`,
-    textContent: 'Teklifiniz geçildi\n\n{{leadTitle}} ilanında yeni teklif: {{newAmount}} {{currency}}.\n\nİlan: {{leadUrl}}\n\n{{companyName}}',
+    textContent: 'Ihr Gebot wurde überboten\n\nNeues Gebot für {{leadTitle}}: {{newAmount}} {{currency}}.\n\nAnzeige: {{leadUrl}}\n\n{{companyName}}',
     variables: ['companyName', 'leadTitle', 'newAmount', 'currency', 'leadUrl', 'year']
   },
   {
     type: 'leadWon',
-    name: 'İhalayı Kazandınız',
-    description: 'Kullanıcı bir ihaleyi kazandığında gönderilen email',
-    subject: 'Tebrikler! İhaleyi kazandınız: {{leadTitle}}',
+    name: 'Auktion gewonnen',
+    description: 'E-Mail, die gesendet wird, wenn ein Benutzer eine Auktion gewinnt',
+    subject: 'Glückwunsch! Sie haben die Auktion gewonnen: {{leadTitle}}',
     htmlContent: `<div style="background:#f6f8fb;padding:24px;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111827;">
   <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
     <tr>
@@ -113,12 +113,12 @@ const defaultEmailTemplates = [
     </tr>
     <tr>
       <td style="padding:24px;">
-        <h1 style="margin:0 0 12px 0;font-size:20px;color:#111827;">🎉 Tebrikler!</h1>
+        <h1 style="margin:0 0 12px 0;font-size:20px;color:#111827;">🎉 Glückwunsch!</h1>
         <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">
-          <strong>{{leadTitle}}</strong> ihalasını <strong>{{amount}} {{currency}}</strong> bedel ile kazandınız!
+          Sie haben die Auktion für <strong>{{leadTitle}}</strong> für <strong>{{amount}} {{currency}}</strong> gewonnen!
         </p>
-        <a href="{{leadUrl}}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;">Lead Detaylarını Gör</a>
-        <p style="margin:16px 0 0 0;color:#6b7280;font-size:12px;">Bu e-posta otomatik gönderildi.</p>
+        <a href="{{leadUrl}}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;">Lead-Details ansehen</a>
+        <p style="margin:16px 0 0 0;color:#6b7280;font-size:12px;">Diese E-Mail wurde automatisch gesendet.</p>
       </td>
     </tr>
     <tr>
@@ -128,14 +128,14 @@ const defaultEmailTemplates = [
     </tr>
   </table>
 </div>`,
-    textContent: 'Tebrikler!\n\n{{leadTitle}} ihalasını {{amount}} {{currency}} bedel ile kazandınız!\n\nLead Detayları: {{leadUrl}}\n\n{{companyName}}',
+    textContent: 'Glückwunsch!\n\nSie haben die Auktion für {{leadTitle}} für {{amount}} {{currency}} gewonnen!\n\nLead-Details: {{leadUrl}}\n\n{{companyName}}',
     variables: ['companyName', 'leadTitle', 'amount', 'currency', 'leadUrl', 'year']
   },
   {
     type: 'leadExpired',
-    name: 'İhale Süresi Doldu',
-    description: 'Takip edilen bir ihalenin süresi dolduğunda gönderilen email',
-    subject: 'İhale süresi doldu: {{leadTitle}}',
+    name: 'Auktion abgelaufen',
+    description: 'E-Mail, die gesendet wird, wenn eine verfolgte Auktion abgelaufen ist',
+    subject: 'Auktion abgelaufen: {{leadTitle}}',
     htmlContent: `<div style="background:#f6f8fb;padding:24px;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111827;">
   <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
     <tr>
@@ -145,12 +145,12 @@ const defaultEmailTemplates = [
     </tr>
     <tr>
       <td style="padding:24px;">
-        <h1 style="margin:0 0 12px 0;font-size:20px;color:#111827;">İhale Süresi Doldu</h1>
+        <h1 style="margin:0 0 12px 0;font-size:20px;color:#111827;">Auktion abgelaufen</h1>
         <p style="margin:0 0 16px 0;line-height:1.6;color:#374151;">
-          <strong>{{leadTitle}}</strong> ihalesi sona erdi.
+          Die Auktion für <strong>{{leadTitle}}</strong> ist beendet.
         </p>
-        <a href="{{leadUrl}}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;">Yeni İhalelere Göz At</a>
-        <p style="margin:16px 0 0 0;color:#6b7280;font-size:12px;">Bu e-posta otomatik gönderildi.</p>
+        <a href="{{leadUrl}}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;">Neue Auktionen ansehen</a>
+        <p style="margin:16px 0 0 0;color:#6b7280;font-size:12px;">Diese E-Mail wurde automatisch gesendet.</p>
       </td>
     </tr>
     <tr>
@@ -160,7 +160,7 @@ const defaultEmailTemplates = [
     </tr>
   </table>
 </div>`,
-    textContent: 'İhale Süresi Doldu\n\n{{leadTitle}} ihalesi sona erdi.\n\nYeni İhaleler: {{leadUrl}}\n\n{{companyName}}',
+    textContent: 'Auktion abgelaufen\n\nDie Auktion für {{leadTitle}} ist beendet.\n\nNeue Auktionen: {{leadUrl}}\n\n{{companyName}}',
     variables: ['companyName', 'leadTitle', 'leadUrl', 'year']
   }
 ]
@@ -168,30 +168,30 @@ const defaultEmailTemplates = [
 const defaultSMSTemplates = [
   {
     type: 'bidReceived',
-    name: 'Teklif Alındı',
-    description: 'Kullanıcı bir lead\'e teklif verdiğinde gönderilen SMS',
-    content: '{{leadTitle}} ilanina {{amount}} {{currency}} teklif verdiniz. {{companyName}}',
+    name: 'Gebot erhalten',
+    description: 'SMS, die gesendet wird, wenn ein Benutzer ein Gebot für einen Lead abgibt',
+    content: 'Sie haben für {{leadTitle}} ein Gebot von {{amount}} {{currency}} abgegeben. {{companyName}}',
     variables: ['leadTitle', 'amount', 'currency', 'companyName']
   },
   {
     type: 'outbid',
-    name: 'Teklif Geçildi',
-    description: 'Kullanıcının teklifi geçildiğinde gönderilen SMS',
-    content: '{{leadTitle}} ilaninda teklifiniz gecildi. Yeni teklif: {{newAmount}} {{currency}}. {{companyName}}',
+    name: 'Gebot überboten',
+    description: 'SMS, die gesendet wird, wenn das Gebot des Benutzers überboten wurde',
+    content: 'Ihr Gebot für {{leadTitle}} wurde überboten. Neues Gebot: {{newAmount}} {{currency}}. {{companyName}}',
     variables: ['leadTitle', 'newAmount', 'currency', 'companyName']
   },
   {
     type: 'leadWon',
-    name: 'İhaleyi Kazandınız',
-    description: 'Kullanıcı bir ihaleyi kazandığında gönderilen SMS',
-    content: 'Tebrikler! {{leadTitle}} ihalesini {{amount}} {{currency}} bedel ile kazandiniz. {{companyName}}',
+    name: 'Auktion gewonnen',
+    description: 'SMS, die gesendet wird, wenn ein Benutzer eine Auktion gewinnt',
+    content: 'Glückwunsch! Sie haben die Auktion für {{leadTitle}} für {{amount}} {{currency}} gewonnen. {{companyName}}',
     variables: ['leadTitle', 'amount', 'currency', 'companyName']
   },
   {
     type: 'leadExpired',
-    name: 'İhale Süresi Doldu',
-    description: 'Takip edilen bir ihalenin süresi dolduğunda gönderilen SMS',
-    content: '{{leadTitle}} ihalesi sona erdi. {{companyName}}',
+    name: 'Auktion abgelaufen',
+    description: 'SMS, die gesendet wird, wenn eine verfolgte Auktion abgelaufen ist',
+    content: 'Die Auktion für {{leadTitle}} ist beendet. {{companyName}}',
     variables: ['leadTitle', 'companyName']
   }
 ]
@@ -218,7 +218,7 @@ router.get('/email-templates', requireAdmin, async (req, res) => {
     res.json(templates)
   } catch (error) {
     console.error('Email templates get error:', error)
-    res.status(500).json({ message: 'Email template\'leri alınamadı' })
+    res.status(500).json({ message: 'E-Mail-Vorlagen konnten nicht abgerufen werden' })
   }
 })
 
@@ -230,13 +230,13 @@ router.get('/email-templates/:id', requireAdmin, async (req, res) => {
     })
     
     if (!template) {
-      return res.status(404).json({ message: 'Email template bulunamadı' })
+      return res.status(404).json({ message: 'E-Mail-Vorlage nicht gefunden' })
     }
     
     res.json(template)
   } catch (error) {
     console.error('Email template get error:', error)
-    res.status(500).json({ message: 'Email template alınamadı' })
+    res.status(500).json({ message: 'E-Mail-Vorlage konnte nicht abgerufen werden' })
   }
 })
 
@@ -247,7 +247,7 @@ router.post('/email-templates', requireAdmin, async (req, res) => {
     
     // Validation
     if (!type || !name || !subject || !htmlContent) {
-      return res.status(400).json({ message: 'Zorunlu alanlar: type, name, subject, htmlContent' })
+      return res.status(400).json({ message: 'Pflichtfelder: type, name, subject, htmlContent' })
     }
     
     // Aynı type'ta template var mı kontrol et
@@ -275,7 +275,7 @@ router.post('/email-templates', requireAdmin, async (req, res) => {
     res.status(201).json(template)
   } catch (error) {
     console.error('Email template create error:', error)
-    res.status(500).json({ message: 'Email template oluşturulamadı' })
+    res.status(500).json({ message: 'E-Mail-Vorlage konnte nicht erstellt werden' })
   }
 })
 
@@ -300,7 +300,7 @@ router.put('/email-templates/:id', requireAdmin, async (req, res) => {
     res.json(template)
   } catch (error) {
     console.error('Email template update error:', error)
-    res.status(500).json({ message: 'Email template güncellenemedi' })
+    res.status(500).json({ message: 'E-Mail-Vorlage konnte nicht aktualisiert werden' })
   }
 })
 
@@ -311,10 +311,10 @@ router.delete('/email-templates/:id', requireAdmin, async (req, res) => {
       where: { id: req.params.id }
     })
 
-    res.json({ message: 'Email template silindi' })
+    res.json({ message: 'E-Mail-Vorlage gelöscht' })
   } catch (error) {
     console.error('Email template delete error:', error)
-    res.status(500).json({ message: 'Email template silinemedi' })
+    res.status(500).json({ message: 'E-Mail-Vorlage konnte nicht gelöscht werden' })
   }
 })
 
@@ -326,7 +326,7 @@ router.post('/email-templates/:id/preview', requireAdmin, async (req, res) => {
     })
 
     if (!template) {
-      return res.status(404).json({ message: 'Email template bulunamadı' })
+      return res.status(404).json({ message: 'E-Mail-Vorlage nicht gefunden' })
     }
 
     // Örnek değişkenleri oluştur
@@ -353,7 +353,7 @@ router.post('/email-templates/:id/preview', requireAdmin, async (req, res) => {
     })
   } catch (error) {
     console.error('Email template preview error:', error)
-    res.status(500).json({ message: 'Email template önizlenemedi' })
+    res.status(500).json({ message: 'E-Mail-Vorlage konnte nicht in der Vorschau angezeigt werden' })
   }
 })
 
@@ -363,7 +363,7 @@ router.post('/email-templates/:id/send-test', requireAdmin, async (req, res) => 
     const { testEmail, leadId } = req.body
 
     if (!testEmail) {
-      return res.status(400).json({ message: 'Test email adresi gerekli' })
+      return res.status(400).json({ message: 'Test-E-Mail-Adresse erforderlich' })
     }
 
     const template = await prisma.emailTemplate.findUnique({
@@ -371,7 +371,7 @@ router.post('/email-templates/:id/send-test', requireAdmin, async (req, res) => 
     })
 
     if (!template) {
-      return res.status(404).json({ message: 'Email template bulunamadı' })
+      return res.status(404).json({ message: 'E-Mail-Vorlage nicht gefunden' })
     }
 
     // Ayarlar ve lead verilerini al
@@ -436,7 +436,7 @@ router.post('/email-templates/:id/send-test', requireAdmin, async (req, res) => 
     })
 
     res.json({
-      message: 'Test email gönderildi',
+      message: 'Test-E-Mail gesendet',
       sentTo: testEmail,
       subject: rendered.subject,
       usedVariables: variables
@@ -447,12 +447,12 @@ router.post('/email-templates/:id/send-test', requireAdmin, async (req, res) => 
     // SMTP ayarları olmadığında veya bağlantı hatası olduğunda
     if (error.message.includes('SMTP') || error.message.includes('connect')) {
       return res.status(400).json({
-        message: 'SMTP ayarları yapılandırılmamış. Lütfen admin panelinde email ayarlarını kontrol edin.',
+        message: 'SMTP-Einstellungen nicht konfiguriert. Bitte überprüfen Sie die E-Mail-Einstellungen im Admin-Panel.',
         error: error.message
       })
     }
 
-    res.status(500).json({ message: 'Test email gönderilemedi', error: error.message })
+    res.status(500).json({ message: 'Test-E-Mail konnte nicht gesendet werden', error: error.message })
   }
 })
 
@@ -481,7 +481,7 @@ router.get('/leads-for-test', requireAdmin, async (req, res) => {
     res.json(leads)
   } catch (error) {
     console.error('Error fetching leads for test:', error)
-    res.status(500).json({ message: 'Lead\'ler yüklenemedi' })
+    res.status(500).json({ message: 'Leads konnten nicht geladen werden' })
   }
 })
 
@@ -507,7 +507,7 @@ router.get('/sms-templates', requireAdmin, async (req, res) => {
     res.json(templates)
   } catch (error) {
     console.error('SMS templates get error:', error)
-    res.status(500).json({ message: 'SMS template\'leri alınamadı' })
+    res.status(500).json({ message: 'SMS-Vorlagen konnten nicht abgerufen werden' })
   }
 })
 
@@ -519,13 +519,13 @@ router.get('/sms-templates/:id', requireAdmin, async (req, res) => {
     })
     
     if (!template) {
-      return res.status(404).json({ message: 'SMS template bulunamadı' })
+      return res.status(404).json({ message: 'SMS-Vorlage nicht gefunden' })
     }
     
     res.json(template)
   } catch (error) {
     console.error('SMS template get error:', error)
-    res.status(500).json({ message: 'SMS template alınamadı' })
+    res.status(500).json({ message: 'SMS-Vorlage konnte nicht abgerufen werden' })
   }
 })
 
@@ -536,7 +536,7 @@ router.post('/sms-templates', requireAdmin, async (req, res) => {
     
     // Validation
     if (!type || !name || !content) {
-      return res.status(400).json({ message: 'Zorunlu alanlar: type, name, content' })
+      return res.status(400).json({ message: 'Pflichtfelder: type, name, content' })
     }
     
     // Aynı type'ta template var mı kontrol et
@@ -545,7 +545,7 @@ router.post('/sms-templates', requireAdmin, async (req, res) => {
     })
     
     if (existingTemplate) {
-      return res.status(400).json({ message: 'Bu tipte bir template zaten mevcut' })
+      return res.status(400).json({ message: 'Eine Vorlage dieses Typs existiert bereits' })
     }
     
     const template = await prisma.sMSTemplate.create({
@@ -562,7 +562,7 @@ router.post('/sms-templates', requireAdmin, async (req, res) => {
     res.status(201).json(template)
   } catch (error) {
     console.error('SMS template create error:', error)
-    res.status(500).json({ message: 'SMS template oluşturulamadı' })
+    res.status(500).json({ message: 'SMS-Vorlage konnte nicht erstellt werden' })
   }
 })
 
@@ -585,7 +585,7 @@ router.put('/sms-templates/:id', requireAdmin, async (req, res) => {
     res.json(template)
   } catch (error) {
     console.error('SMS template update error:', error)
-    res.status(500).json({ message: 'SMS template güncellenemedi' })
+    res.status(500).json({ message: 'SMS-Vorlage konnte nicht aktualisiert werden' })
   }
 })
 
@@ -596,10 +596,10 @@ router.delete('/sms-templates/:id', requireAdmin, async (req, res) => {
       where: { id: req.params.id }
     })
     
-    res.json({ message: 'SMS template silindi' })
+    res.json({ message: 'SMS-Vorlage gelöscht' })
   } catch (error) {
     console.error('SMS template delete error:', error)
-    res.status(500).json({ message: 'SMS template silinemedi' })
+    res.status(500).json({ message: 'SMS-Vorlage konnte nicht gelöscht werden' })
   }
 })
 
@@ -624,13 +624,13 @@ router.post('/reset-defaults', requireAdmin, async (req, res) => {
     )
     
     res.json({ 
-      message: 'Default template\'ler yeniden oluşturuldu',
+      message: 'Standard-Vorlagen wurden neu erstellt',
       emailTemplates,
       smsTemplates
     })
   } catch (error) {
     console.error('Reset defaults error:', error)
-    res.status(500).json({ message: 'Default template\'ler oluşturulamadı' })
+    res.status(500).json({ message: 'Standard-Vorlagen konnten nicht erstellt werden' })
   }
 })
 

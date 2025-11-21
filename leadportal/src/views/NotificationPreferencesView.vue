@@ -19,28 +19,28 @@ const groupedPreferences = ref({
 
 const categoryLabels = {
   BID: {
-    name: 'Teklif Bildirimleri',
-    description: 'Teklif verme ve alma ile ilgili bildirimler',
+    name: 'Gebotsbenachrichtigungen',
+    description: 'Benachrichtigungen zu Geboten und Käufen',
     icon: 'mdi:gavel'
   },
   LEAD: {
-    name: 'Lead Bildirimleri',
-    description: 'Lead durumu ve satış bildirimleri',
+    name: 'Lead-Benachrichtigungen',
+    description: 'Benachrichtigungen zu Lead-Status und Verkäufen',
     icon: 'mdi:briefcase-outline'
   },
   PAYMENT: {
-    name: 'Ödeme Bildirimleri',
-    description: 'Bakiye ve ödeme işlemleri hakkında bildirimler',
+    name: 'Zahlungsbenachrichtigungen',
+    description: 'Benachrichtigungen zu Guthaben und Zahlungsvorgängen',
     icon: 'mdi:wallet-outline'
   },
   ADMIN: {
-    name: 'Admin Bildirimleri',
-    description: 'Yönetim ve sistem bildirimleri',
+    name: 'Admin-Benachrichtigungen',
+    description: 'Verwaltungs- und Systembenachrichtigungen',
     icon: 'mdi:shield-account-outline'
   },
   FEEDBACK: {
-    name: 'Geri Bildirim Bildirimleri',
-    description: 'Geri bildirim ve konuşmalarla ilgili bildirimler',
+    name: 'Feedback-Benachrichtigungen',
+    description: 'Benachrichtigungen zu Feedback und Gesprächen',
     icon: 'mdi:chat-bubble-outline'
   }
 }
@@ -71,8 +71,8 @@ async function loadPreferences() {
       })
     }
   } catch (error) {
-    console.error('Tercihler yüklenirken hata:', error)
-    showMessage('error', 'Tercihler yüklenirken bir hata oluştu')
+    console.error('Fehler beim Laden der Einstellungen:', error)
+    showMessage('error', 'Beim Laden der Einstellungen ist ein Fehler aufgetreten')
   } finally {
     isLoading.value = false
   }
@@ -88,11 +88,11 @@ async function updatePreference(notificationTypeId, emailEnabled, inAppEnabled) 
     })
 
     if (response.data.success) {
-      showMessage('success', 'Tercihler güncellendi')
+      showMessage('success', 'Einstellungen aktualisiert')
     }
   } catch (error) {
-    console.error('Tercih güncellenirken hata:', error)
-    showMessage('error', 'Tercih güncellenirken bir hata oluştu')
+    console.error('Fehler beim Aktualisieren der Einstellungen:', error)
+    showMessage('error', 'Beim Aktualisieren der Einstellungen ist ein Fehler aufgetreten')
   } finally {
     isSaving.value = false
   }
@@ -155,9 +155,9 @@ onMounted(() => {
       <div class="section-header">
         <h1>
           <Icon icon="mdi:bell-cog-outline" width="32" height="32" />
-          Bildirim Tercihleri
+          Benachrichtigungseinstellungen
         </h1>
-        <p>Hangi bildirimleri almak istediğinizi seçin</p>
+        <p>Wählen Sie aus, welche Benachrichtigungen Sie erhalten möchten</p>
       </div>
     </div>
 
@@ -176,7 +176,7 @@ onMounted(() => {
     <!-- Loading State -->
     <div v-if="isLoading" class="loading-state">
       <div class="spinner"></div>
-      <p>Tercihler yükleniyor...</p>
+      <p>Einstellungen werden geladen...</p>
     </div>
 
     <!-- Preferences Content -->
@@ -184,10 +184,10 @@ onMounted(() => {
       <div class="info-box">
         <Icon icon="mdi:information-outline" width="20" height="20" />
         <div>
-          <strong>Bildirim kanalları:</strong>
+          <strong>Benachrichtigungskanäle:</strong>
           <p>
-            <strong>In-App:</strong> Platform içinde göreceğiniz bildirimler<br>
-            <strong>Email:</strong> E-posta adresinize gönderilecek bildirimler
+            <strong>In-App:</strong> Benachrichtigungen, die Sie in der Plattform sehen<br>
+            <strong>E-Mail:</strong> Benachrichtigungen, die an Ihre E-Mail-Adresse gesendet werden
           </p>
         </div>
       </div>
@@ -212,18 +212,18 @@ onMounted(() => {
             <button
               @click="toggleAllInCategory(category, 'email', true)"
               class="btn-small"
-              title="Tüm email bildirimlerini aç"
+              title="Alle E-Mail-Benachrichtigungen aktivieren"
             >
               <Icon icon="mdi:email-check" width="16" height="16" />
-              Tümünü Aç (Email)
+              Alle aktivieren (E-Mail)
             </button>
             <button
               @click="toggleAllInCategory(category, 'email', false)"
               class="btn-small"
-              title="Tüm email bildirimlerini kapat"
+              title="Alle E-Mail-Benachrichtigungen deaktivieren"
             >
               <Icon icon="mdi:email-off" width="16" height="16" />
-              Tümünü Kapat (Email)
+              Alle deaktivieren (E-Mail)
             </button>
           </div>
         </div>
@@ -244,7 +244,7 @@ onMounted(() => {
               <p>{{ preference.notificationType.description }}</p>
               <span v-if="!preference.canReceive" class="permission-warning">
                 <Icon icon="mdi:lock" width="14" height="14" />
-                Rol izniniz bu bildirimi almaya yetmiyor
+                Ihre Rollenberechtigung reicht nicht aus, um diese Benachrichtigung zu erhalten
               </span>
             </div>
 
@@ -267,7 +267,7 @@ onMounted(() => {
               <label class="toggle-wrapper">
                 <span class="toggle-label">
                   <Icon icon="mdi:email-outline" width="16" height="16" />
-                  Email
+                  E-Mail
                 </span>
                 <input
                   type="checkbox"

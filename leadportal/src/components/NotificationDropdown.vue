@@ -68,7 +68,7 @@ async function loadNotifications() {
       hasMore.value = response.data.currentPage < response.data.totalPages
     }
   } catch (error) {
-    console.error('Bildirimler yüklenirken hata:', error)
+    console.error('Fehler beim Laden der Benachrichtigungen:', error)
   } finally {
     isLoading.value = false
   }
@@ -82,7 +82,7 @@ async function loadUnreadCount() {
       unreadCount.value = response.data.count
     }
   } catch (error) {
-    console.error('Okunmamış bildirim sayısı yüklenirken hata:', error)
+    console.error('Fehler beim Laden der Anzahl ungelesener Benachrichtigungen:', error)
   }
 }
 
@@ -103,7 +103,7 @@ async function markAsRead(notificationId) {
       }
     }
   } catch (error) {
-    console.error('Bildirim okundu olarak işaretlenirken hata:', error)
+    console.error('Fehler beim Markieren der Benachrichtigung als gelesen:', error)
   }
 }
 
@@ -120,7 +120,7 @@ async function markAllAsRead() {
       unreadCount.value = 0
     }
   } catch (error) {
-    console.error('Tüm bildirimler okundu olarak işaretlenirken hata:', error)
+    console.error('Fehler beim Markieren aller Benachrichtigungen als gelesen:', error)
   }
 }
 
@@ -140,7 +140,7 @@ async function deleteNotification(notificationId) {
       }
     }
   } catch (error) {
-    console.error('Bildirim silinirken hata:', error)
+    console.error('Fehler beim Löschen der Benachrichtigung:', error)
   }
 }
 
@@ -180,17 +180,17 @@ function formatRelativeTime(date) {
   const diffDays = Math.floor(diffHours / 24)
 
   if (diffSeconds < 60) {
-    return 'Az önce'
+    return 'Gerade eben'
   } else if (diffMinutes < 60) {
-    return `${diffMinutes} dakika önce`
+    return `vor ${diffMinutes} ${diffMinutes === 1 ? 'Minute' : 'Minuten'}`
   } else if (diffHours < 24) {
-    return `${diffHours} saat önce`
+    return `vor ${diffHours} ${diffHours === 1 ? 'Stunde' : 'Stunden'}`
   } else if (diffDays === 1) {
-    return 'Dün'
+    return 'Gestern'
   } else if (diffDays < 7) {
-    return `${diffDays} gün önce`
+    return `vor ${diffDays} ${diffDays === 1 ? 'Tag' : 'Tagen'}`
   } else {
-    return notifDate.toLocaleDateString('tr-TR', {
+    return notifDate.toLocaleDateString('de-DE', {
       day: 'numeric',
       month: 'short',
       year: notifDate.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
@@ -243,7 +243,7 @@ onUnmounted(() => {
       @click="toggleDropdown"
       @mouseenter="openDropdown"
       @mouseleave="closeDropdown"
-      :aria-label="`${unreadCount} okunmamış bildirim`"
+      :aria-label="`${unreadCount} ungelesene Benachrichtigungen`"
     >
       <Icon icon="mdi:bell-outline" width="20" height="20" />
       <span v-if="unreadCount > 0" class="badge">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
@@ -252,25 +252,25 @@ onUnmounted(() => {
     <transition name="dropdown">
       <div v-if="isOpen" class="dropdown-menu" @click.stop @mouseenter="openDropdown" @mouseleave="closeDropdown">
         <div class="dropdown-header">
-          <h3>Bildirimler</h3>
+          <h3>Benachrichtigungen</h3>
           <button
             v-if="notifications.length > 0 && unreadCount > 0"
             @click="markAllAsRead"
             class="mark-all-read"
           >
-            Tümünü okundu işaretle
+            Alle als gelesen markieren
           </button>
         </div>
 
         <div class="notifications-list">
           <div v-if="isLoading && notifications.length === 0" class="loading">
             <div class="spinner-small"></div>
-            <span>Yükleniyor...</span>
+            <span>Wird geladen...</span>
           </div>
 
           <div v-else-if="notifications.length === 0" class="empty-state">
             <Icon icon="mdi:bell-off-outline" width="48" height="48" />
-            <p>Henüz bildiriminiz yok</p>
+            <p>Sie haben noch keine Benachrichtigungen</p>
           </div>
 
           <div
@@ -290,7 +290,7 @@ onUnmounted(() => {
                 <button
                   @click.stop="deleteNotification(notification.id)"
                   class="delete-btn"
-                  aria-label="Bildirimi sil"
+                  aria-label="Benachrichtigung löschen"
                 >
                   <Icon icon="mdi:close" width="16" height="16" />
                 </button>
@@ -307,7 +307,7 @@ onUnmounted(() => {
             @click="loadMore"
             class="load-more"
           >
-            Daha fazla yükle
+            Mehr laden
           </button>
 
           <div v-if="isLoading && notifications.length > 0" class="loading-more">
@@ -317,7 +317,7 @@ onUnmounted(() => {
 
         <div class="dropdown-footer">
           <router-link to="/profile/notifications" @click="isOpen = false">
-            Bildirim Ayarları
+            Benachrichtigungseinstellungen
           </router-link>
         </div>
       </div>

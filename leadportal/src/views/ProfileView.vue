@@ -2,8 +2,8 @@
   <div class="profile-page">
     <div class="profile-container">
       <div class="profile-header">
-        <h1>Profil Ayarları</h1>
-        <p>Kişisel bilgilerinizi ve hesap ayarlarınızı yönetin</p>
+        <h1>Profileinstellungen</h1>
+        <p>Verwalten Sie Ihre persönlichen Informationen und Kontoeinstellungen</p>
       </div>
 
       <div class="profile-content">
@@ -11,7 +11,7 @@
         <!-- Kişisel Bilgiler -->
         <div class="profile-section">
           <div class="section-header">
-            <h2>Kişisel Bilgiler</h2>
+            <h2>Persönliche Informationen</h2>
           </div>
           <!-- Profil Fotoğrafı satır içi -->
           <div class="profile-photo-inline">
@@ -39,7 +39,7 @@
                   <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
                   <circle cx="12" cy="13" r="3"/>
                 </svg>
-                Fotoğraf Değiştir
+                Foto ändern
               </button>
               <button 
                 v-if="user.profileImage" 
@@ -51,7 +51,7 @@
                   <polyline points="3,6 5,6 21,6"/>
                   <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0 1 2,2v2"/>
                 </svg>
-                Kaldır
+                Entfernen
               </button>
             </div>
           </div>
@@ -59,54 +59,54 @@
           <form @submit.prevent="updateProfile" class="profile-form">
             <div class="form-row">
               <div class="form-group">
-                <label for="firstName">Ad</label>
+                <label for="firstName">Vorname</label>
                 <input 
                   type="text" 
                   id="firstName" 
                   v-model="form.firstName" 
                   class="form-input"
-                  placeholder="Adınızı girin"
+                  placeholder="Geben Sie Ihren Vornamen ein"
                 />
               </div>
               <div class="form-group">
-                <label for="lastName">Soyad</label>
+                <label for="lastName">Nachname</label>
                 <input 
                   type="text" 
                   id="lastName" 
                   v-model="form.lastName" 
                   class="form-input"
-                  placeholder="Soyadınızı girin"
+                  placeholder="Geben Sie Ihren Nachnamen ein"
                 />
               </div>
             </div>
             
             <div class="form-group">
-              <label for="username">Kullanıcı Adı</label>
+              <label for="username">Benutzername</label>
               <input 
                 type="text" 
                 id="username" 
                 v-model="form.username" 
                 class="form-input"
-                placeholder="Kullanıcı adınızı girin"
+                placeholder="Geben Sie Ihren Benutzernamen ein"
               />
             </div>
             
             <div class="form-group">
-              <label for="email">E-posta</label>
+              <label for="email">E-Mail</label>
               <input 
                 type="email" 
                 id="email" 
                 v-model="form.email" 
                 class="form-input"
-                placeholder="E-posta adresinizi girin"
+                placeholder="Geben Sie Ihre E-Mail-Adresse ein"
                 required
               />
             </div>
 
             <div class="form-actions">
               <button type="submit" class="btn btn-primary" :disabled="isLoading">
-                <span v-if="isLoading">Kaydediliyor...</span>
-                <span v-else>Bilgileri Güncelle</span>
+                <span v-if="isLoading">Wird gespeichert...</span>
+                <span v-else>Informationen aktualisieren</span>
               </button>
             </div>
           </form>
@@ -115,42 +115,42 @@
         <!-- Şifre Değiştirme -->
         <div class="profile-section">
           <div class="section-header">
-            <h2>Şifre Değiştir</h2>
+            <h2>Passwort ändern</h2>
           </div>
           <form @submit.prevent="changePassword" class="profile-form">
             <div class="form-group">
-              <label for="currentPassword">Mevcut Şifre</label>
+              <label for="currentPassword">Aktuelles Passwort</label>
               <input 
                 type="password" 
                 id="currentPassword" 
                 v-model="passwordForm.currentPassword" 
                 class="form-input"
-                placeholder="Mevcut şifrenizi girin"
+                placeholder="Geben Sie Ihr aktuelles Passwort ein"
                 required
               />
             </div>
             
             <div class="form-group">
-              <label for="newPassword">Yeni Şifre</label>
+              <label for="newPassword">Neues Passwort</label>
               <input 
                 type="password" 
                 id="newPassword" 
                 v-model="passwordForm.newPassword" 
                 class="form-input"
-                placeholder="Yeni şifrenizi girin"
+                placeholder="Geben Sie Ihr neues Passwort ein"
                 required
                 minlength="6"
               />
             </div>
             
             <div class="form-group">
-              <label for="confirmPassword">Yeni Şifre Tekrar</label>
+              <label for="confirmPassword">Neues Passwort bestätigen</label>
               <input 
                 type="password" 
                 id="confirmPassword" 
                 v-model="passwordForm.confirmPassword" 
                 class="form-input"
-                placeholder="Yeni şifrenizi tekrar girin"
+                placeholder="Geben Sie Ihr neues Passwort erneut ein"
                 required
                 minlength="6"
               />
@@ -158,8 +158,8 @@
 
             <div class="form-actions">
               <button type="submit" class="btn btn-primary" :disabled="isPasswordLoading">
-                <span v-if="isPasswordLoading">Güncelleniyor...</span>
-                <span v-else>Şifreyi Değiştir</span>
+                <span v-if="isPasswordLoading">Wird aktualisiert...</span>
+                <span v-else>Passwort ändern</span>
               </button>
             </div>
           </form>
@@ -170,9 +170,9 @@
         <!-- IBAN Bilgileri -->
         <div class="profile-section">
           <div class="section-header">
-            <h2>IBAN Bilgileri</h2>
+            <h2>IBAN-Informationen</h2>
             <p class="section-description">
-              SEPA-Lastschrift: Satın alımlarınız için otomatik ödeme yöntemi
+              SEPA-Lastschrift: Automatische Zahlungsmethode für Ihre Käufe
             </p>
           </div>
 
@@ -180,7 +180,7 @@
           <div v-if="ibanData.hasIban && !isEditingIban" class="iban-summary">
             <div class="iban-info-grid">
               <div class="iban-info-item">
-                <label>Hesap Sahibi</label>
+                <label>Kontoinhaber</label>
                 <span>{{ ibanData.ibanAccountHolder }}</span>
               </div>
               <div class="iban-info-item">
@@ -188,36 +188,36 @@
                 <span class="iban-masked">{{ ibanData.ibanNumber }}</span>
               </div>
               <div class="iban-info-item" v-if="ibanData.ibanBic">
-                <label>BIC (opsiyonel)</label>
+                <label>BIC (optional)</label>
                 <span>{{ ibanData.ibanBic }}</span>
               </div>
               <div class="iban-info-item">
-                <label>Adres</label>
+                <label>Adresse</label>
                 <span>{{ ibanData.ibanAddress }}</span>
               </div>
               <div class="iban-info-item">
-                <label>Posta Kodu</label>
+                <label>Postleitzahl</label>
                 <span>{{ ibanData.ibanPostalCode }}</span>
               </div>
               <div class="iban-info-item">
-                <label>Şehir</label>
+                <label>Stadt</label>
                 <span>{{ ibanData.ibanCity }}</span>
               </div>
             </div>
             <div class="iban-actions">
               <button class="btn btn-secondary" @click="startEditIban" :disabled="isLoadingIban">
                 <Icon icon="mdi:pencil" width="18" />
-                Düzenle
+                Bearbeiten
               </button>
               <button class="btn btn-danger" @click="confirmDeleteIban" :disabled="isLoadingIban">
                 <Icon icon="mdi:delete" width="18" />
-                Sil
+                Löschen
               </button>
             </div>
 
             <div class="iban-consent">
               <Icon icon="mdi:information-outline" width="20" />
-              <p>SEPA-Lastschrift için onay verdiniz. Satın alımlarınız otomatik olarak hesabınızdan çekilecektir.</p>
+              <p>Sie haben der SEPA-Lastschrift zugestimmt. Ihre Käufe werden automatisch von Ihrem Konto abgebucht.</p>
             </div>
           </div>
 
@@ -225,13 +225,13 @@
           <form v-else @submit.prevent="saveIban" class="profile-form">
             <div class="form-row">
               <div class="form-group">
-                <label for="ibanAccountHolder">Hesap Sahibi *</label>
+                <label for="ibanAccountHolder">Kontoinhaber *</label>
                 <input
                   type="text"
                   id="ibanAccountHolder"
                   v-model="ibanForm.ibanAccountHolder"
                   class="form-input"
-                  placeholder="Ad Soyad"
+                  placeholder="Vor- und Nachname"
                   required
                 />
               </div>
@@ -251,7 +251,7 @@
             </div>
 
             <div class="form-group">
-              <label for="ibanBic">BIC (opsiyonel)</label>
+              <label for="ibanBic">BIC (optional)</label>
               <input
                 type="text"
                 id="ibanBic"
@@ -262,7 +262,7 @@
             </div>
 
             <div class="form-group">
-              <label for="ibanAddress">Adres *</label>
+              <label for="ibanAddress">Adresse *</label>
               <input
                 type="text"
                 id="ibanAddress"
@@ -275,7 +275,7 @@
 
             <div class="form-row">
               <div class="form-group">
-                <label for="ibanPostalCode">Posta Kodu *</label>
+                <label for="ibanPostalCode">Postleitzahl *</label>
                 <input
                   type="text"
                   id="ibanPostalCode"
@@ -286,7 +286,7 @@
                 />
               </div>
               <div class="form-group">
-                <label for="ibanCity">Şehir *</label>
+                <label for="ibanCity">Stadt *</label>
                 <input
                   type="text"
                   id="ibanCity"
@@ -306,19 +306,19 @@
                 required
               />
               <label for="ibanConsent">
-                SEPA-Lastschrift için Einzugsermächtigung'u kabul ediyorum ve
-                <a href="#" class="consent-link">Geschäftsbedingungen</a>'e uygun hareket edeceğimi onaylıyorum.
+                Ich akzeptiere die Einzugsermächtigung für SEPA-Lastschrift und bestätige, dass ich gemäß den
+                <a href="#" class="consent-link">Geschäftsbedingungen</a> handeln werde.
               </label>
             </div>
 
             <div class="form-actions">
               <button type="button" class="btn btn-secondary" @click="cancelEditIban" v-if="ibanData.hasIban">
-                İptal
+                Abbrechen
               </button>
               <button type="submit" class="btn btn-primary" :disabled="isLoadingIban || !ibanConsent">
                 <Icon icon="mdi:content-save" width="18" />
-                <span v-if="isLoadingIban">Kaydediliyor...</span>
-                <span v-else>{{ ibanData.hasIban ? 'Güncelle' : 'IBAN Bilgilerini Kaydet' }}</span>
+                <span v-if="isLoadingIban">Wird gespeichert...</span>
+                <span v-else>{{ ibanData.hasIban ? 'Aktualisieren' : 'IBAN-Informationen speichern' }}</span>
               </button>
             </div>
           </form>
@@ -327,9 +327,9 @@
         <!-- Ödeme Ayarları -->
         <div v-if="user.balanceEnabled" class="profile-section">
           <div class="section-header">
-            <h2>Ödeme Ayarları</h2>
+            <h2>Zahlungseinstellungen</h2>
             <p class="section-description">
-              Varsayılan ödeme yönteminizi seçin
+              Wählen Sie Ihre Standard-Zahlungsmethode
             </p>
           </div>
           <form @submit.prevent="updatePaymentMethod" class="profile-form">
@@ -345,13 +345,13 @@
                 <div class="option-content">
                   <Icon icon="mdi:wallet-outline" width="24" />
                   <div>
-                    <div class="option-title">Bakiyemden Düş</div>
-                    <div class="option-description">Satın alımlar otomatik olarak bakiyenizden düşülür</div>
+                    <div class="option-title">Von meinem Guthaben abziehen</div>
+                    <div class="option-description">Käufe werden automatisch von Ihrem Guthaben abgezogen</div>
                   </div>
                 </div>
               </label>
 
-              <label class="payment-option" :class="{ selected: form.paymentMethod === 'iban' }" :title="ibanData.hasIban ? '' : 'Önce IBAN bilgilerinizi ekleyin'">
+              <label class="payment-option" :class="{ selected: form.paymentMethod === 'iban' }" :title="ibanData.hasIban ? '' : 'Bitte fügen Sie zuerst Ihre IBAN-Informationen hinzu'">
                 <input
                   type="radio"
                   name="paymentMethod"
@@ -364,10 +364,10 @@
                   <Icon icon="mdi:bank-outline" width="24" />
                   <div>
                     <div class="option-title">
-                      IBAN'dan Çek
-                      <span v-if="!ibanData.hasIban" class="coming-soon">IBAN Ekleyin</span>
+                      Von IBAN abbuchen
+                      <span v-if="!ibanData.hasIban" class="coming-soon">IBAN hinzufügen</span>
                     </div>
-                    <div class="option-description">IBAN ile manuel ödeme yapın</div>
+                    <div class="option-description">Manuelle Zahlung mit IBAN</div>
                   </div>
                 </div>
               </label>
@@ -375,7 +375,7 @@
 
             <div class="balance-display">
               <Icon icon="mdi:cash-multiple" width="20" />
-              <span>Mevcut Bakiye:</span>
+              <span>Aktuelles Guthaben:</span>
               <strong>{{ formatCurrency(user.balance || 0) }}</strong>
             </div>
 

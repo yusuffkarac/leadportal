@@ -37,9 +37,9 @@ router.get('/', async (req, res) => {
 
     res.json(designSettings);
   } catch (error) {
-    console.error('Tasarım ayarları getirme hatası:', error);
+    console.error('Fehler beim Abrufen der Designeinstellungen:', error);
     res.status(500).json({ 
-      message: 'Tasarım ayarları getirilemedi',
+      message: 'Designeinstellungen konnten nicht abgerufen werden',
       error: error.message 
     });
   }
@@ -96,14 +96,14 @@ router.post('/', requireAuth, async (req, res) => {
     });
 
     res.json({
-      message: 'Tasarım ayarları başarıyla kaydedildi',
+      message: 'Designeinstellungen erfolgreich gespeichert',
       data: designSettings
     });
 
   } catch (error) {
-    console.error('Tasarım ayarları kaydetme hatası:', error);
+    console.error('Fehler beim Speichern der Designeinstellungen:', error);
     res.status(500).json({ 
-      message: 'Tasarım ayarları kaydedilemedi',
+      message: 'Designeinstellungen konnten nicht gespeichert werden',
       error: error.message 
     });
   }
@@ -131,14 +131,14 @@ router.post('/reset', requireAuth, async (req, res) => {
     });
 
     res.json({
-      message: 'Tasarım ayarları varsayılan değerlere sıfırlandı',
+      message: 'Designeinstellungen auf Standardwerte zurückgesetzt',
       data: designSettings
     });
 
   } catch (error) {
-    console.error('Tasarım ayarları sıfırlama hatası:', error);
+    console.error('Fehler beim Zurücksetzen der Designeinstellungen:', error);
     res.status(500).json({ 
-      message: 'Tasarım ayarları sıfırlanamadı',
+      message: 'Designeinstellungen konnten nicht zurückgesetzt werden',
       error: error.message 
     });
   }
@@ -182,9 +182,9 @@ export default function(prismaInstance) {
 
         res.json(designSettings);
       } catch (error) {
-        console.error('Tasarım ayarları getirme hatası:', error);
+        console.error('Fehler beim Abrufen der Designeinstellungen:', error);
         res.status(500).json({ 
-          message: 'Tasarım ayarları getirilemedi',
+          message: 'Designeinstellungen konnten nicht abgerufen werden',
           error: error.message 
         });
       }
@@ -241,7 +241,7 @@ export default function(prismaInstance) {
         });
 
         res.json({
-          message: 'Tasarım ayarları başarıyla kaydedildi',
+          message: 'Designeinstellungen erfolgreich gespeichert',
           data: designSettings
         });
 
@@ -276,7 +276,7 @@ export default function(prismaInstance) {
         });
 
         res.json({
-          message: 'Tasarım ayarları varsayılan değerlere sıfırlandı',
+          message: 'Designeinstellungen auf Standardwerte zurückgesetzt',
           data: designSettings
         });
 

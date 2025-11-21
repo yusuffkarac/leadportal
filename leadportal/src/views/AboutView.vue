@@ -4,14 +4,14 @@
       <!-- Hero Section -->
       <div v-if="loading" class="loading-section">
         <div class="loading-spinner"></div>
-        <p>Sayfa yükleniyor...</p>
+        <p>Seite wird geladen...</p>
       </div>
       <div v-else class="about-hero">
         <div class="hero-content">
           <div class="hero-text">
-            <h1 class="hero-title">{{ getSectionTitle('hero', 'LeadPortal Hakkında') }}</h1>
+            <h1 class="hero-title">{{ getSectionTitle('hero', 'Über LeadPortal') }}</h1>
             <p class="hero-description">
-              {{ getSectionContent('hero', 'Almanya\'nın önde gelen lead pazar yeri. Sigorta brokerleri için profesyonel açık artırma platformu.') }}
+              {{ getSectionContent('hero', 'Deutschlands führender Lead-Marktplatz. Professionelle Auktionsplattform für Versicherungsmakler.') }}
             </p>
             <div class="hero-stats" v-if="getSectionData('stats', 'stats')">
               <div class="stat-item" v-for="stat in getSectionData('stats', 'stats')" :key="stat.label">
@@ -22,15 +22,15 @@
             <div v-else class="hero-stats">
               <div class="stat-item">
                 <span class="stat-number">500+</span>
-                <span class="stat-label">Aktif Broker</span>
+                <span class="stat-label">Aktive Makler</span>
               </div>
               <div class="stat-item">
                 <span class="stat-number">10,000+</span>
-                <span class="stat-label">Başarılı Lead</span>
+                <span class="stat-label">Erfolgreiche Leads</span>
               </div>
               <div class="stat-item">
                 <span class="stat-number">€2M+</span>
-                <span class="stat-label">Toplam Ciro</span>
+                <span class="stat-label">Gesamtumsatz</span>
               </div>
             </div>
           </div>
@@ -44,15 +44,15 @@
       <div class="features-section">
         <div class="features-background"></div>
         <div class="features-content">
-          <h2 class="section-title">Neden LeadPortal?</h2>
+          <h2 class="section-title">Warum LeadPortal?</h2>
           <div class="features-grid">
           <div class="feature-card">
             <div class="feature-icon">
               <Icon icon="mdi:gavel" width="48" height="48" />
             </div>
-            <h3 class="feature-title">Adil Açık Artırmalar</h3>
+            <h3 class="feature-title">Faire Auktionen</h3>
             <p class="feature-description">
-              Maksimum esneklik için üç farklı açık artırma modeli ile şeffaf müzayedeler
+              Transparente Auktionen mit drei verschiedenen Auktionsmodellen für maximale Flexibilität
             </p>
           </div>
 
@@ -60,9 +60,9 @@
             <div class="feature-icon">
               <Icon icon="mdi:shield-check" width="48" height="48" />
             </div>
-            <h3 class="feature-title">Kontrollü Kalite</h3>
+            <h3 class="feature-title">Geprüfte Qualität</h3>
             <p class="feature-description">
-              Tüm lead'ler yayınlanmadan önce kalite ve eksiksizlik açısından kontrol edilir
+              Alle Leads werden vor der Veröffentlichung auf Qualität und Vollständigkeit geprüft
             </p>
           </div>
 
@@ -70,9 +70,9 @@
             <div class="feature-icon">
               <Icon icon="mdi:account-group" width="48" height="48" />
             </div>
-            <h3 class="feature-title">Güvenilir</h3>
+            <h3 class="feature-title">Vertrauenswürdig</h3>
             <p class="feature-description">
-              Maksimum güvenlik için değerlendirme sistemi ve tüm katılımcıların doğrulanması
+              Bewertungssystem und Verifizierung aller Teilnehmer für maximale Sicherheit
             </p>
           </div>
           </div>
@@ -83,23 +83,23 @@
       <div class="stats-section">
         <div class="stats-background"></div>
         <div class="stats-content">
-          <h2 class="section-title">Sayılara Güvenin</h2>
+          <h2 class="section-title">Vertrauen Sie den Zahlen</h2>
           <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-value">2,500+</div>
-            <div class="stat-label">Aktif Broker</div>
+            <div class="stat-label">Aktive Makler</div>
           </div>
           <div class="stat-card">
             <div class="stat-value">15,000+</div>
-            <div class="stat-label">Satılan Lead</div>
+            <div class="stat-label">Verkaufte Leads</div>
           </div>
           <div class="stat-card">
             <div class="stat-value">98%</div>
-            <div class="stat-label">Memnuniyet Oranı</div>
+            <div class="stat-label">Zufriedenheitsrate</div>
           </div>
           <div class="stat-card">
             <div class="stat-value">€2.1M</div>
-            <div class="stat-label">Toplam Ciro</div>
+            <div class="stat-label">Gesamtumsatz</div>
           </div>
           </div>
         </div>
@@ -107,28 +107,28 @@
 
       <!-- How It Works Section -->
       <div class="how-it-works-section">
-        <h2 class="section-title">Nasıl Çalışır?</h2>
+        <h2 class="section-title">Wie funktioniert es?</h2>
         <div class="how-it-works-content">
           <div class="steps-grid">
           <div class="step-card">
             <div class="step-number">1</div>
-            <h3 class="step-title">Lead Oluştur</h3>
+            <h3 class="step-title">Lead erstellen</h3>
             <p class="step-description">
-              Sigorta brokerleri kaliteli lead'lerini platforma yükler ve açık artırmaya çıkarır
+              Versicherungsmakler laden ihre qualitativ hochwertigen Leads auf die Plattform hoch und stellen sie zur Auktion
             </p>
           </div>
           <div class="step-card">
             <div class="step-number">2</div>
-            <h3 class="step-title">Teklif Ver</h3>
+            <h3 class="step-title">Gebot abgeben</h3>
             <p class="step-description">
-              Diğer brokerler lead'ler için teklif verir ve en yüksek teklifi veren kazanır
+              Andere Makler bieten auf Leads und der Höchstbietende gewinnt
             </p>
           </div>
           <div class="step-card">
             <div class="step-number">3</div>
-            <h3 class="step-title">Lead'i Al</h3>
+            <h3 class="step-title">Lead erhalten</h3>
             <p class="step-description">
-              Kazanan broker lead bilgilerini alır ve müşteri ile iletişime geçer
+              Der gewinnende Makler erhält die Lead-Informationen und kontaktiert den Kunden
             </p>
           </div>
           </div>
@@ -140,13 +140,13 @@
 
       <!-- CTA Section -->
       <div class="cta-section">
-        <h2 class="cta-title">Hemen Başlayın</h2>
+        <h2 class="cta-title">Jetzt loslegen</h2>
         <p class="cta-description">
-          LeadPortal'a katılın ve sigorta brokerliği işinizi büyütün
+          Treten Sie LeadPortal bei und erweitern Sie Ihr Versicherungsmaklergeschäft
         </p>
         <div class="cta-buttons">
-          <router-link to="/" class="btn btn-primary">Kayıt Ol</router-link>
-          <router-link to="/" class="btn btn-secondary">Canlı Müzayedeleri İzle</router-link>
+          <router-link to="/" class="btn btn-primary">Registrieren</router-link>
+          <router-link to="/" class="btn btn-secondary">Live-Auktionen ansehen</router-link>
         </div>
       </div>
     </div>
@@ -568,7 +568,7 @@ async function loadAboutSections() {
     const response = await axios.get('about')
     aboutSections.value = response.data
   } catch (error) {
-    console.error('Hakkında bölümleri yüklenemedi:', error)
+    console.error('Über-Uns-Bereiche konnten nicht geladen werden:', error)
     // Fallback to empty object if API fails
     aboutSections.value = {}
   } finally {

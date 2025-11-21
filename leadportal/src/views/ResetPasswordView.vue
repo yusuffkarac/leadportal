@@ -5,14 +5,14 @@
         <img alt="Logo" class="logo" :src="companyLogoUrl || defaultLogo" width="36" height="36" />
         <div class="brand-text">
           <h1>{{ companyName }}</h1>
-          <p>Yeni şifre belirleyin</p>
+          <p>Neues Passwort festlegen</p>
         </div>
       </div>
 
       <!-- Loading State -->
       <div v-if="verifying" class="loading-state">
         <div class="spinner large"></div>
-        <p>Token doğrulanıyor...</p>
+        <p>Token wird verifiziert...</p>
       </div>
 
       <!-- Invalid Token -->
@@ -20,10 +20,10 @@
         <div class="error-icon">
           <Icon icon="mdi:alert-circle" width="48" height="48" />
         </div>
-        <h3>Geçersiz Link</h3>
+        <h3>Ungültiger Link</h3>
         <p>{{ tokenError }}</p>
         <router-link to="/forgot-password" class="btn primary">
-          Yeni Link İste
+          Neuen Link anfordern
         </router-link>
       </div>
 
@@ -32,10 +32,10 @@
         <div class="success-icon">
           <Icon icon="mdi:check-circle" width="48" height="48" />
         </div>
-        <h3>Şifreniz Değiştirildi!</h3>
+        <h3>Ihr Passwort wurde geändert!</h3>
         <p>{{ success }}</p>
         <router-link to="/login" class="btn primary">
-          Giriş Yap
+          Anmelden
         </router-link>
       </div>
 
@@ -43,7 +43,7 @@
       <div v-else>
         <div v-if="userEmail" class="info-box">
           <Icon icon="mdi:information" width="18" height="18" />
-          <span>Şifre sıfırlama: <strong>{{ userEmail }}</strong></span>
+          <span>Passwort zurücksetzen: <strong>{{ userEmail }}</strong></span>
         </div>
 
         <div v-if="error" class="alert">
@@ -53,7 +53,7 @@
 
         <form class="form" @submit.prevent="submit">
           <label class="field">
-            <span class="label">Yeni Şifre</span>
+            <span class="label">Neues Passwort</span>
             <div class="control">
               <span class="icon" aria-hidden="true">
                 <Icon icon="mdi:lock" width="18" height="18" />
@@ -73,7 +73,7 @@
                 type="button"
                 @click="showPassword = !showPassword"
                 :aria-pressed="showPassword"
-                :title="showPassword ? 'Gizle' : 'Göster'"
+                :title="showPassword ? 'Ausblenden' : 'Anzeigen'"
               >
                 <Icon v-if="showPassword" icon="mdi:eye" width="18" height="18" />
                 <Icon v-else icon="mdi:eye-off" width="18" height="18" />
@@ -83,7 +83,7 @@
           </label>
 
           <label class="field">
-            <span class="label">Yeni Şifre (Tekrar)</span>
+            <span class="label">Neues Passwort (Wiederholung)</span>
             <div class="control">
               <span class="icon" aria-hidden="true">
                 <Icon icon="mdi:lock" width="18" height="18" />
@@ -103,7 +103,7 @@
                 type="button"
                 @click="showConfirmPassword = !showConfirmPassword"
                 :aria-pressed="showConfirmPassword"
-                :title="showConfirmPassword ? 'Gizle' : 'Göster'"
+                :title="showConfirmPassword ? 'Ausblenden' : 'Anzeigen'"
               >
                 <Icon v-if="showConfirmPassword" icon="mdi:eye" width="18" height="18" />
                 <Icon v-else icon="mdi:eye-off" width="18" height="18" />
@@ -113,15 +113,15 @@
           </label>
 
           <div class="password-rules">
-            <p class="rules-title">Şifre Gereksinimleri:</p>
+            <p class="rules-title">Passwortanforderungen:</p>
             <ul>
-              <li :class="{ valid: password.length >= 6 }">En az 6 karakter</li>
+              <li :class="{ valid: password.length >= 6 }">Mindestens 6 Zeichen</li>
             </ul>
           </div>
 
           <button class="btn primary" type="submit" :disabled="!canSubmit">
             <span v-if="loading" class="spinner" aria-hidden="true"></span>
-            <span>{{ loading ? 'Kaydediliyor...' : 'Şifreyi Değiştir' }}</span>
+            <span>{{ loading ? 'Wird gespeichert...' : 'Passwort ändern' }}</span>
           </button>
         </form>
       </div>
@@ -176,12 +176,12 @@ function validate() {
   confirmPasswordError.value = ''
 
   if (password.value.length < 6) {
-    passwordError.value = 'Şifre en az 6 karakter olmalıdır'
+    passwordError.value = 'Das Passwort muss mindestens 6 Zeichen lang sein'
     return false
   }
 
   if (password.value !== confirmPassword.value) {
-    confirmPasswordError.value = 'Şifreler eşleşmiyor'
+    confirmPasswordError.value = 'Die Passwörter stimmen nicht überein'
     return false
   }
 
@@ -200,7 +200,7 @@ async function verifyToken() {
     }
   } catch (e) {
     const errorMessage = e.response?.data?.error
-    tokenError.value = errorMessage || 'Bu şifre sıfırlama linki geçersiz veya süresi dolmuş.'
+    tokenError.value = errorMessage || 'Dieser Passwort-Zurücksetzungs-Link ist ungültig oder abgelaufen.'
   } finally {
     verifying.value = false
   }
@@ -219,12 +219,12 @@ async function submit() {
       newPassword: password.value
     })
 
-    success.value = data.message || 'Şifreniz başarıyla değiştirildi!'
+    success.value = data.message || 'Ihr Passwort wurde erfolgreich geändert!'
     password.value = ''
     confirmPassword.value = ''
   } catch (e) {
     const errorMessage = e.response?.data?.error
-    error.value = errorMessage || 'Şifre değiştirilemedi. Lütfen tekrar deneyin.'
+    error.value = errorMessage || 'Das Passwort konnte nicht geändert werden. Bitte versuchen Sie es erneut.'
   } finally {
     loading.value = false
   }
@@ -238,7 +238,7 @@ onMounted(() => {
   token.value = route.query.token || ''
 
   if (!token.value) {
-    tokenError.value = 'Şifre sıfırlama token\'ı bulunamadı.'
+    tokenError.value = 'Passwort-Zurücksetzungs-Token nicht gefunden.'
     verifying.value = false
   } else {
     verifyToken()

@@ -71,7 +71,7 @@ async function loadSettings() {
     const response = await axios.get('/api/settings', { headers: authHeaders() })
     settings.value = response.data
   } catch (error) {
-    console.error('Ayarlar yüklenemedi:', error)
+    console.error('Einstellungen konnten nicht geladen werden:', error)
   }
 }
 
@@ -132,7 +132,7 @@ const canBidNow = computed(() => {
 const biddingHoursMessage = computed(() => {
   if (!settings.value.enableBiddingHours) return ''
   if (canBidNow.value) return ''
-  return `Teklif verme saatleri ${settings.value.biddingStartHour} - ${settings.value.biddingEndHour} arasındadır. Lütfen bu saatler arasında tekrar deneyin.`
+  return `Gebotszeiten sind zwischen ${settings.value.biddingStartHour} - ${settings.value.biddingEndHour}. Bitte versuchen Sie es zu diesen Zeiten erneut.`
 })
 
 function authHeaders() {
@@ -142,7 +142,7 @@ function authHeaders() {
 
 function shareLead() {
   const url = window.location.href
-  const text = `${lead.value.title} - LeadPortal'da açık artırmaya çıkarıldı!`
+  const text = `${lead.value.title} - bei LeadPortal versteigert!`
   
   if (navigator.share) {
     // Native share API (mobil cihazlarda)
@@ -150,14 +150,14 @@ function shareLead() {
       title: lead.value.title,
       text: text,
       url: url
-    }).catch(err => console.log('Paylaşım iptal edildi:', err))
+    }).catch(err => console.log('Teilen abgebrochen:', err))
   } else {
     // Fallback: URL'yi panoya kopyala
     navigator.clipboard.writeText(url).then(() => {
-      alert('Lead linki panoya kopyalandı!')
+      alert('Lead-Link in die Zwischenablage kopiert!')
     }).catch(() => {
       // Fallback: prompt ile göster
-      prompt('Lead linkini kopyalayın:', url)
+      prompt('Lead-Link kopieren:', url)
     })
   }
 }
@@ -167,7 +167,7 @@ function openInstantBuyModal() {
   if (lead.value.leadType === 'SOFORT_KAUF') {
     showInstantBuyModal.value = true
   } else if (!lead.value.instantBuyPrice) {
-    errorMessage.value = 'Bu lead için anında satın alma fiyatı belirlenmemiş'
+    errorMessage.value = 'Für diesen Lead wurde kein Sofortkaufpreis festgelegt'
     return
   } else {
     showInstantBuyModal.value = true
@@ -195,7 +195,7 @@ async function placeBid() {
   successMessage.value = ''
   const numeric = Number(maxBid.value)
   if (!numeric || Number.isNaN(numeric)) {
-    errorMessage.value = 'Lütfen geçerli bir sayı girin.'
+    errorMessage.value = 'Bitte geben Sie eine gültige Zahl ein.'
     return
   }
   const current = lead.value?.bids?.[0]?.amount ?? lead.value?.startPrice ?? 0
@@ -223,7 +223,7 @@ async function placeBid() {
     // Reload lead to get updated bids
     await loadLead()
   } catch (e) {
-    const msg = e?.response?.data?.error || 'Teklif verilemedi'
+    const msg = e?.response?.data?.error || 'Gebot konnte nicht abgegeben werden'
     errorMessage.value = msg
     error(msg)
   } finally {
@@ -258,7 +258,7 @@ onMounted(async () => {
 
     // Show reserve price notification if needed
     if (payload.reserveMet === false) {
-      error('Not: Rezerv fiyat henüz karşılanmadı.')
+      error('Hinweis: Der Mindestpreis wurde noch nicht erreicht.')
     }
   })
 
@@ -302,15 +302,15 @@ onUnmounted(() => {
           <div class="lead-title-section">
             <div class="lead-status">
               <span class="status-indicator" :class="lead.isActive ? 'active' : 'inactive'"></span>
-              <span class="status-text">{{ lead.isActive ? 'Aktif Artırma' : 'Tamamlandı' }}</span>
+              <span class="status-text">{{ lead.isActive ? 'Aktive Auktion' : 'Abgeschlossen' }}</span>
             </div>
             <h1 class="lead-title">{{ lead.title }}</h1>
-            <p class="lead-description">{{ lead.description || 'Açıklama bulunmuyor' }}</p>
+            <p class="lead-description">{{ lead.description || 'Keine Beschreibung verfügbar' }}</p>
             <div v-if="lead.insuranceType" class="insurance-type-badge">
-              <span class="insurance-label">Sigorta Türü:</span>
+              <span class="insurance-label">Versicherungstyp:</span>
               <span class="insurance-value">{{ lead.insuranceType }}</span>
             </div>
-            <button class="watch-btn" :class="{ active: watching }" @click="toggleWatch" title="Teklif bildirimlerini {{ watching ? 'kapat' : 'aç' }}">
+            <button class="watch-btn" :class="{ active: watching }" @click="toggleWatch" title="Gebotsbenachrichtigungen {{ watching ? 'deaktivieren' : 'aktivieren' }}">
               <svg v-if="!watching" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M15 17h5l-1.405-1.405C18.21 14.79 18 13.918 18 13V8a6 6 0 10-12 0v5c0 .918-.21 1.79-.595 2.595L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
               </svg>
@@ -319,7 +319,7 @@ onUnmounted(() => {
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
                 <path d="M2 2l20 20"/>
               </svg>
-              <span>{{ watching ? 'Bildirim Açık' : 'Bildirim Kapalı' }}</span>
+              <span>{{ watching ? 'Benachrichtigung aktiv' : 'Benachrichtigung deaktiviert' }}</span>
             </button>
           </div>
           
@@ -328,7 +328,7 @@ onUnmounted(() => {
             <template v-if="lead.leadType === 'SOFORT_KAUF'">
               <div class="current-bid-card">
                 <div class="bid-amount">{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</div>
-                <div class="bid-label">Sabit Fiyat</div>
+                <div class="bid-label">Fester Preis</div>
               </div>
 
               <button
@@ -337,7 +337,7 @@ onUnmounted(() => {
                 @click="openInstantBuyModal"
               >
                 <Icon icon="mdi:flash" width="24" height="24" />
-                <span>Satın Al</span>
+                <span>Kaufen</span>
                 <span class="price">{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
               </button>
             </template>
@@ -346,23 +346,23 @@ onUnmounted(() => {
             <template v-else>
               <div class="current-bid-card">
                 <div class="bid-amount">{{ formatPrice(lead.bids?.[0]?.amount || lead.startPrice, settings.defaultCurrency) }}</div>
-                <div class="bid-label">Güncel Teklif</div>
+                <div class="bid-label">Aktuelles Gebot</div>
               </div>
 
               <div class="stats-row">
                 <div class="stat-card">
                   <div class="stat-value">{{ lead.bids?.length || 0 }}</div>
-                  <div class="stat-label">Teklif</div>
+                  <div class="stat-label">Gebot{{ (lead.bids?.length || 0) !== 1 ? 'e' : '' }}</div>
                 </div>
                 <div class="stat-card">
                   <div class="stat-value">{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement }}</div>
-                  <div class="stat-label">Min Artış</div>
+                  <div class="stat-label">Mindesterhöhung</div>
                 </div>
               </div>
             </template>
             <!-- Özel Detaylar: sadece satın alan/sahip/admin görür; backend null döndürürse gizli kalır -->
             <div v-if="lead.privateDetails" class="private-details">
-              <div class="private-title">Satın Alanlara Özel Detaylar</div>
+              <div class="private-title">Private Details für Käufer</div>
               <pre class="private-content">{{ lead.privateDetails }}</pre>
             </div>
             <button class="share-btn-large" @click="shareLead" title="Paylaş">
@@ -373,7 +373,7 @@ onUnmounted(() => {
                 <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
                 <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
               </svg>
-              <span>Paylaş</span>
+              <span>Teilen</span>
             </button>
           </div>
         </div>
@@ -383,8 +383,8 @@ onUnmounted(() => {
       <div v-if="lead.leadType !== 'SOFORT_KAUF'" class="bid-form-section">
         <div class="bid-form-panel">
           <div class="form-header">
-            <h2>Teklif Ver</h2>
-            <p>Maksimum tutarınızı girin - sistem sizin için otomatik olarak artırır!</p>
+            <h2>Gebot abgeben</h2>
+            <p>Geben Sie Ihren Maximalbetrag ein - das System erhöht automatisch für Sie!</p>
 
             <!-- Teklif verme saatleri uyarısı -->
             <div v-if="biddingHoursMessage" class="bidding-hours-warning">
@@ -397,14 +397,14 @@ onUnmounted(() => {
 
             <div v-if="myMaxBid" class="my-bid-info" role="status" aria-live="polite">
               <div class="my-bid-left">
-                <span class="my-max-label">Maksimum teklifiniz</span>
+                <span class="my-max-label">Ihr Maximalgebot</span>
                 <span class="my-max-value">{{ formatPrice(myMaxBid, settings.defaultCurrency) }}</span>
               </div>
               <div v-if="amILeader" class="leader-badge" title="Şu an en yüksek teklif sizde">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M20 6L9 17l-5-5"/>
                 </svg>
-                <span>Şu an siz öndesiniz</span>
+                <span>Sie sind derzeit führend</span>
               </div>
             </div>
           </div>
@@ -415,11 +415,11 @@ onUnmounted(() => {
                 <circle cx="12" cy="12" r="10"/>
                 <path d="M12 16v-4M12 8h.01"/>
               </svg>
-              <span>Maksimum tutarınızı girin. Sistem, lider olmanız için gerekli minimum tutarı otomatik olarak teklif eder. Başkaları sizi geçmeye çalışırsa, maksimumunuza kadar otomatik olarak artırır.</span>
+              <span>Geben Sie Ihren Maximalbetrag ein. Das System bietet automatisch den Mindestbetrag, um führend zu sein. Wenn andere versuchen, Sie zu überbieten, wird automatisch bis zu Ihrem Maximum erhöht.</span>
             </div>
 
             <div class="input-group">
-              <label class="input-label">Maksimum Teklifiniz</label>
+              <label class="input-label">Ihr Maximalgebot</label>
               <div class="amount-input">
                 <span class="currency">{{ getCurrencySymbol(settings.defaultCurrency) }}</span>
                 <input
@@ -437,7 +437,7 @@ onUnmounted(() => {
             
             <!-- Hızlı Teklif Butonları -->
             <div class="quick-bid-section">
-              <label class="quick-bid-label">Hızlı Teklif</label>
+              <label class="quick-bid-label">Schnellgebot</label>
               <div class="quick-bid-buttons">
                 <button
                   class="quick-bid-btn"
@@ -477,10 +477,10 @@ onUnmounted(() => {
                 @click="placeBid"
               >
 
-                <span v-if="!lead.isActive">Artırma Bitti</span>
-                <span v-else-if="!canBidNow">Teklif Saati Dışı</span>
-                <span v-else-if="isSubmitting">Gönderiliyor...</span>
-                <span v-else>Teklif Ver</span>
+                <span v-if="!lead.isActive">Auktion beendet</span>
+                <span v-else-if="!canBidNow">Außerhalb der Gebotszeiten</span>
+                <span v-else-if="isSubmitting">Wird gesendet...</span>
+                <span v-else>Gebot abgeben</span>
                  <Icon icon="mdi:gavel" width="20" height="20" />
               </button>
               
@@ -491,7 +491,7 @@ onUnmounted(() => {
                 :disabled="isSubmitting"
               >
               <svg class="icon-fastbuy" width="16" height="16" viewBox="0 0 24 24"></svg>
-                <span>Anında Satın Al</span>
+                <span>Sofort kaufen</span>
                 <span class="instant-price">{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</span>
               </button>
             </div>
@@ -512,8 +512,8 @@ onUnmounted(() => {
       <div v-if="lead.leadType !== 'SOFORT_KAUF'" class="bids-section">
         <div class="bids-panel">
           <div class="panel-header">
-            <h2>Teklif Geçmişi</h2>
-            <span class="bid-count">{{ lead.bids?.length || 0 }} teklif</span>
+            <h2>Gebotsverlauf</h2>
+            <span class="bid-count">{{ lead.bids?.length || 0 }} Gebot{{ (lead.bids?.length || 0) !== 1 ? 'e' : '' }}</span>
           </div>
           
           <div v-if="!lead.bids?.length" class="empty-state">
@@ -522,8 +522,8 @@ onUnmounted(() => {
                 <path d="M9 11H5a2 2 0 0 0-2 2v3c0 1.1.9 2 2 2h4m0-7v7m0-7l3-3m-3 3l-3-3m8 3h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2m0-7v7m0-7l3-3m-3 3l-3-3"/>
               </svg>
             </div>
-            <h3>Henüz teklif yok</h3>
-            <p>İlk teklifi siz verin ve bu artırmayı başlatın!</p>
+            <h3>Noch keine Gebote</h3>
+            <p>Geben Sie das erste Gebot ab und starten Sie diese Auktion!</p>
           </div>
           
           <div v-else class="bids-timeline">
@@ -534,7 +534,7 @@ onUnmounted(() => {
               </div>
               <div class="bid-info">
                 <div class="bid-amount">{{ formatPrice(bid.amount, settings.defaultCurrency) }}</div>
-                <div class="bid-user">{{ bid.user?.email || 'Anonim' }}</div>
+                <div class="bid-user">{{ bid.user?.email || 'Anonym' }}</div>
                <!-- <div v-if="index === 0" class="winning-indicator">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20 6L9 17l-5-5"/>
@@ -543,8 +543,8 @@ onUnmounted(() => {
                 </div> -->
               </div>
               <div class="bid-time">
-                <div class="time-text">{{ new Date(bid.createdAt).toLocaleDateString('tr-TR') }}</div>
-                <div class="time-detail">{{ new Date(bid.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) }}</div>
+                <div class="time-text">{{ new Date(bid.createdAt).toLocaleDateString('de-DE') }}</div>
+                <div class="time-detail">{{ new Date(bid.createdAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) }}</div>
               </div>
             </div>
           </div>
@@ -555,7 +555,7 @@ onUnmounted(() => {
   
   <div v-else class="loading-container">
     <div class="loading-spinner"></div>
-    <p>Lead bilgileri yükleniyor...</p>
+    <p>Lead-Informationen werden geladen...</p>
   </div>
 
   <!-- Instant Buy Modal -->

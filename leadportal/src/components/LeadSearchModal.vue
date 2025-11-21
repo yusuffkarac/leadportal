@@ -56,7 +56,7 @@ async function performSearch(query) {
 
     searchResults.value = filtered
   } catch (error) {
-    console.error('Arama hatası:', error)
+    console.error('Suchfehler:', error)
     searchResults.value = []
   } finally {
     isSearching.value = false
@@ -86,7 +86,7 @@ function formatPrice(price) {
 }
 
 function getLeadTypeLabel(leadType) {
-  return leadType === 'AUCTION' ? 'Açık Artırma' : 'Hemen Al'
+  return leadType === 'AUCTION' ? 'Auktion' : 'Sofortkauf'
 }
 
 function getCurrentPrice(lead) {
@@ -105,7 +105,7 @@ function getCurrentPrice(lead) {
           <div class="modal-header-icon">
             <Icon icon="mdi:magnify" width="32" height="32" />
           </div>
-          <h2 class="modal-title">Lead Ara</h2>
+          <h2 class="modal-title">Lead suchen</h2>
           <button class="modal-close-btn" @click="close">
             <Icon icon="mdi:close" width="24" height="24" />
           </button>
@@ -118,7 +118,7 @@ function getCurrentPrice(lead) {
               v-model="searchQuery"
               type="text"
               class="search-input"
-              placeholder="Lead ID veya Başlık ara..."
+              placeholder="Nach Lead-ID oder Titel suchen..."
               autofocus
             />
             <Icon
@@ -134,17 +134,17 @@ function getCurrentPrice(lead) {
           <div class="search-content">
             <div v-if="isSearching" class="search-status">
               <Icon icon="mdi:loading" width="24" height="24" class="spinner" />
-              <span>Aranıyor...</span>
+              <span>Wird gesucht...</span>
             </div>
 
             <div v-else-if="hasSearched && searchResults.length === 0" class="search-status">
               <Icon icon="mdi:alert-circle-outline" width="24" height="24" />
-              <span>Sonuç bulunamadı</span>
+              <span>Keine Ergebnisse gefunden</span>
             </div>
 
             <div v-else-if="searchResults.length > 0" class="search-results">
               <div class="results-header">
-                <span>{{ searchResults.length }} sonuç bulundu</span>
+                <span>{{ searchResults.length }} Ergebnisse gefunden</span>
               </div>
               <div
                 v-for="lead in searchResults"
@@ -165,7 +165,7 @@ function getCurrentPrice(lead) {
                 <div class="result-footer">
                   <div class="result-info">
                     <Icon icon="mdi:shield-check" width="16" height="16" />
-                    <span>{{ lead.insuranceType || 'Belirtilmemiş' }}</span>
+                    <span>{{ lead.insuranceType || 'Nicht angegeben' }}</span>
                   </div>
                   <div class="result-price">
                     {{ formatPrice(getCurrentPrice(lead)) }}
@@ -176,7 +176,7 @@ function getCurrentPrice(lead) {
 
             <div v-else class="search-prompt">
               <Icon icon="mdi:text-search" width="48" height="48" />
-              <p>Lead ID veya başlık ile arama yapın</p>
+              <p>Suchen Sie nach Lead-ID oder Titel</p>
             </div>
           </div>
         </div>

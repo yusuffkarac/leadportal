@@ -4,8 +4,8 @@
       <div class="page-header">
         <div class="header-content">
           <div>
-            <h1>Ayarlar</h1>
-            <p class="page-subtitle">Sistem, firma ve iletişim ayarlarını buradan yönetin</p>
+            <h1>Einstellungen</h1>
+            <p class="page-subtitle">System-, Firmen- und Kommunikationseinstellungen hier verwalten</p>
           </div>
           <div class="header-actions">
             <button 
@@ -18,7 +18,7 @@
                 <polyline points="7 10 12 15 17 10"/>
                 <line x1="12" y1="15" x2="12" y2="3"/>
               </svg>
-              <span v-if="isExporting">Export ediliyor...</span>
+              <span v-if="isExporting">Wird exportiert...</span>
               <span v-else>Export</span>
             </button>
             <button 
@@ -31,7 +31,7 @@
                 <polyline points="17 8 12 3 7 8"/>
                 <line x1="12" y1="3" x2="12" y2="15"/>
               </svg>
-              <span v-if="isImporting">Import ediliyor...</span>
+              <span v-if="isImporting">Wird importiert...</span>
               <span v-else>Import</span>
             </button>
           </div>
@@ -63,15 +63,15 @@
             <section class="card">
               <header class="card-header">
                 <div>
-                  <h2>Marka</h2>
-                  <p>Logo ve firma adı ayarları</p>
+                  <h2>Marke</h2>
+                  <p>Logo- und Firmennameinstellungen</p>
                 </div>
               </header>
 
               <div class="card-body">
                 <div class="field">
-                  <label>Firma Adı</label>
-                  <input v-model="companyName" type="text" class="input" placeholder="Örnek: LeadPortal">
+                  <label>Firmenname</label>
+                  <input v-model="companyName" type="text" class="input" placeholder="z.B.: LeadPortal">
                 </div>
 
                 <div class="field">
@@ -83,18 +83,18 @@
                     :disabled="logoUploadedViaFile"
                     placeholder="https://.../logo.png"
                   >
-                  <small class="help">Boş bırakılırsa varsayılan logo kullanılır</small>
+                  <small class="help">Wenn leer gelassen, wird das Standard-Logo verwendet</small>
                 </div>
 
                 <div class="field">
-                  <label>Logo Yükle</label>
+                  <label>Logo hochladen</label>
                   <div class="upload">
                     <input id="company-logo-file" class="file" type="file" accept="image/*" @change="onLogoFileChange">
                     <label for="company-logo-file" class="btn btn-outline">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 5v14M5 12h14"/>
                       </svg>
-                      Dosya Seç
+                      Datei auswählen
                     </label>
                     <span class="file-name" v-if="logoFileName">{{ logoFileName }}</span>
                     <span class="file-name muted" v-else>Seçilmedi</span>
@@ -103,13 +103,13 @@
                         <line x1="18" y1="6" x2="6" y2="18"/>
                         <line x1="6" y1="6" x2="18" y2="18"/>
                       </svg>
-                      Kaldır
+                      Entfernen
                     </button>
                   </div>
                 </div>
 
                 <div class="field" v-if="companyLogoUrl">
-                  <label>Logo Önizleme</label>
+                  <label>Logo-Vorschau</label>
                   <div class="preview">
                     <img :src="companyLogoUrl" alt="Logo Preview" />
                   </div>
@@ -124,18 +124,18 @@
                     :disabled="faviconUploadedViaFile"
                     placeholder="https://.../favicon.ico"
                   >
-                  <small class="help">Boş bırakılırsa varsayılan favicon kullanılır</small>
+                  <small class="help">Wenn leer gelassen, wird das Standard-Favicon verwendet</small>
                 </div>
 
                 <div class="field">
-                  <label>Favicon Yükle</label>
+                  <label>Favicon hochladen</label>
                   <div class="upload">
                     <input id="favicon-file" class="file" type="file" accept="image/*,.ico" @change="onFaviconFileChange">
                     <label for="favicon-file" class="btn btn-outline">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 5v14M5 12h14"/>
                       </svg>
-                      Favicon Seç
+                      Favicon auswählen
                     </label>
                     <span class="file-name" v-if="faviconFileName">{{ faviconFileName }}</span>
                     <span class="file-name muted" v-else>Seçilmedi</span>
@@ -144,13 +144,13 @@
                         <line x1="18" y1="6" x2="6" y2="18"/>
                         <line x1="6" y1="6" x2="18" y2="18"/>
                       </svg>
-                      Kaldır
+                      Entfernen
                     </button>
                   </div>
                 </div>
 
                 <div class="field" v-if="faviconUrl || faviconUrlInput">
-                  <label>Favicon Önizleme</label>
+                  <label>Favicon-Vorschau</label>
                   <div class="preview favicon-preview">
                     <img :src="faviconUrlInput || faviconUrl" alt="Favicon Preview" />
                   </div>
@@ -160,7 +160,7 @@
               <footer class="card-footer">
                 <button class="btn btn-primary" @click="saveBranding" :disabled="savingBranding">
                   <span v-if="savingBranding" class="spinner-sm"></span>
-                  <span v-else>Kaydet</span>
+                  <span v-else>Speichern</span>
                 </button>
               </footer>
             </section>
@@ -169,25 +169,25 @@
             <section class="card">
               <header class="card-header">
                 <div>
-                  <h2>Footer Ayarları</h2>
-                  <p>İletişim, linkler ve yasal bilgiler</p>
+                  <h2>Footer-Einstellungen</h2>
+                  <p>Kontakt, Links und rechtliche Informationen</p>
                 </div>
               </header>
 
               <div class="card-body">
                 <!-- Marka Bilgileri -->
                 <div class="section-group">
-                  <h3>Marka Bilgileri</h3>
+                  <h3>Markeninformationen</h3>
                   <div class="field">
-                    <label>Firma Açıklaması</label>
-                    <textarea v-model="footerDescription" class="textarea" rows="3" placeholder="Almanya'nın önde gelen lead pazar yeri..."></textarea>
+                    <label>Firmenbeschreibung</label>
+                    <textarea v-model="footerDescription" class="textarea" rows="3" placeholder="Deutschlands führender Lead-Marktplatz..."></textarea>
                   </div>
                   <div class="field">
                     <label>Telefon</label>
-                    <input v-model="footerPhone" type="text" class="input" placeholder="+90 (212) 123 45 67">
+                    <input v-model="footerPhone" type="text" class="input" placeholder="+49 (0) 123 456 789">
                   </div>
                   <div class="field">
-                    <label>E-posta</label>
+                    <label>E-Mail</label>
                     <input v-model="footerEmail" type="email" class="input" placeholder="info@example.com">
                   </div>
                 </div>
@@ -195,12 +195,12 @@
                 <!-- Footer Bölümleri (Dinamik) -->
                 <div class="section-group">
                   <div class="footer-sections-header">
-                    <h3>Footer Bölümleri</h3>
+                    <h3>Footer-Bereiche</h3>
                     <button type="button" class="btn btn-outline btn-sm" @click="addFooterSection">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 5v14M5 12h14"/>
                       </svg>
-                      Yeni Bölüm Ekle
+                      Neuen Bereich hinzufügen
                     </button>
                   </div>
                   
@@ -211,7 +211,7 @@
                           v-model="section.title" 
                           type="text" 
                           class="input section-title-input" 
-                          placeholder="Bölüm Başlığı"
+                          placeholder="Bereichstitel"
                         >
                         <button 
                           type="button" 
@@ -223,13 +223,13 @@
                             <line x1="18" y1="6" x2="6" y2="18"/>
                             <line x1="6" y1="6" x2="18" y2="18"/>
                           </svg>
-                          Bölümü Sil
+                          Bereich löschen
                         </button>
                       </div>
                       
                       <div class="links-container">
                         <div v-for="(link, linkIndex) in section.links" :key="linkIndex" class="link-item">
-                          <input v-model="link.text" type="text" class="input" placeholder="Link metni">
+                          <input v-model="link.text" type="text" class="input" placeholder="Link-Text">
                           <input v-model="link.url" type="text" class="input" placeholder="URL">
                           <button type="button" class="btn btn-danger btn-sm" @click="removeLinkFromSection(sectionIndex, linkIndex)">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -242,7 +242,7 @@
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 5v14M5 12h14"/>
                           </svg>
-                          Link Ekle
+                          Link hinzufügen
                         </button>
                       </div>
                     </div>
@@ -251,7 +251,7 @@
 
                 <!-- Sosyal Medya -->
                 <div class="section-group">
-                  <h3>Sosyal Medya</h3>
+                  <h3>Soziale Medien</h3>
                   <div class="field">
                     <label>Facebook URL</label>
                     <input v-model="socialMedia.facebook" type="url" class="input" placeholder="https://facebook.com/yourpage">
@@ -272,14 +272,14 @@
 
                 <!-- Alt Bilgi -->
                 <div class="section-group">
-                  <h3>Alt Bilgi</h3>
+                  <h3>Fußzeile</h3>
                   <div class="field">
-                    <label>Telif Hakkı Notu</label>
-                    <input v-model="footerNote" type="text" class="input" placeholder="© 2024 Firma. Tüm hakları saklıdır.">
+                    <label>Copyright-Hinweis</label>
+                    <input v-model="footerNote" type="text" class="input" placeholder="© 2024 Firma. Alle Rechte vorbehalten.">
                   </div>
                   <div class="field">
-                    <label>Ticaret Sicil No</label>
-                    <input v-model="tradeRegisterNumber" type="text" class="input" placeholder="İstanbul Ticaret Sicil No: 12345">
+                    <label>Handelsregisternummer</label>
+                    <input v-model="tradeRegisterNumber" type="text" class="input" placeholder="Handelsregister: HRB 12345">
                   </div>
                 </div>
               </div>
@@ -287,7 +287,7 @@
               <footer class="card-footer">
                 <button class="btn btn-primary" @click="saveFooter" :disabled="savingFooter">
                   <span v-if="savingFooter" class="spinner-sm"></span>
-                  <span v-else>Footer'ı Kaydet</span>
+                  <span v-else>Footer speichern</span>
                 </button>
               </footer>
             </section>
@@ -302,22 +302,22 @@
               <!-- Genel Ayarlar -->
               <div class="settings-section">
                 <div class="section-header-main">
-                  <h2>Genel Ayarlar</h2>
-                  <p>Diğer sistem ayarları</p>
+                  <h2>Allgemeine Einstellungen</h2>
+                  <p>Weitere Systemeinstellungen</p>
                 </div>
 
                 <div class="settings-content">
                   <div class="setting-group">
-                    <label class="setting-label">Varsayılan Para Birimi</label>
+                    <label class="setting-label">Standardwährung</label>
                     <select v-model="settings.defaultCurrency" class="form-select" @change="updateSettings">
                       <option value="EUR">Euro (€)</option>
-                      <option value="TRY">Türk Lirası (₺)</option>
-                      <option value="USD">Amerikan Doları ($)</option>
+                      <option value="TRY">Türkische Lira (₺)</option>
+                      <option value="USD">US-Dollar ($)</option>
                     </select>
                   </div>
 
                   <div class="setting-group">
-                    <label class="setting-label">Varsayılan Açık Artırma Süresi (Gün)</label>
+                    <label class="setting-label">Standard-Auktionsdauer (Tage)</label>
                     <input
                       v-model.number="settings.defaultAuctionDays"
                       type="number"
@@ -329,7 +329,7 @@
                   </div>
 
                   <div class="setting-group">
-                    <label class="setting-label">Varsayılan Minimum Artış</label>
+                    <label class="setting-label">Standard-Mindesterhöhung</label>
                     <input
                       v-model.number="settings.defaultMinIncrement"
                       type="number"
@@ -342,7 +342,7 @@
 
                   <!-- Oturum Zaman Aşımı (Genel Ayarlar içine taşındı) -->
                   <div class="setting-group">
-                    <label class="setting-label">Oturum Zaman Aşımı Süresi (dakika)</label>
+                    <label class="setting-label">Session-Timeout-Dauer (Minuten)</label>
                     <input
                       v-model.number="settings.sessionTimeoutMinutes"
                       type="number"
@@ -351,21 +351,21 @@
                       placeholder="120"
                       class="form-input"
                     />
-                    <small class="form-help">1-10080 dakika arası değer girin (1 dakika - 7 gün)</small>
+                    <small class="form-help">Wert zwischen 1-10080 Minuten eingeben (1 Minute - 7 Tage)</small>
                   </div>
                   <div class="setting-group">
-                    <label class="setting-label">Logout Mesajı</label>
+                    <label class="setting-label">Abmeldungsnachricht</label>
                     <textarea
                       v-model="settings.sessionTimeoutMessage"
-                      placeholder="Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız."
+                      placeholder="Ihre Sitzung wurde aufgrund von Inaktivität beendet. Bitte melden Sie sich erneut an."
                       rows="4"
                       class="form-textarea"
                     ></textarea>
-                    <small class="form-help">Kullanıcı logout olduktan sonra login sayfasında gösterilecek mesaj</small>
+                    <small class="form-help">Nachricht, die nach der Abmeldung auf der Anmeldeseite angezeigt wird</small>
                   </div>
 
                   <div class="setting-group">
-                    <label class="setting-label">Admin Menü Stili</label>
+                    <label class="setting-label">Admin-Menü-Stil</label>
                     <div class="toggle-container">
                       <label class="toggle-switch">
                         <input
@@ -376,16 +376,16 @@
                         <span class="toggle-slider"></span>
                       </label>
                       <span class="toggle-label">
-                        {{ adminMenuStyle ? 'Sol Sidebar Menü' : 'Üst Dropdown Menü (Varsayılan)' }}
+                        {{ adminMenuStyle ? 'Linke Sidebar' : 'Oberes Dropdown-Menü (Standard)' }}
                       </span>
                     </div>
                     <small class="form-help">
-                      Admin menüsünün görünüm stilini seçin
+                      Erscheinungsbild des Admin-Menüs auswählen
                     </small>
                   </div>
 
                   <div class="setting-group">
-                    <label class="setting-label">Teklif Verme Saatleri Kısıtlaması</label>
+                    <label class="setting-label">Gebotszeiten-Beschränkung</label>
                     <div class="toggle-container">
                       <label class="toggle-switch">
                         <input
@@ -396,16 +396,16 @@
                         <span class="toggle-slider"></span>
                       </label>
                       <span class="toggle-label">
-                        {{ settings.enableBiddingHours ? 'Açık' : 'Kapalı' }}
+                        {{ settings.enableBiddingHours ? 'Aktiv' : 'Inaktiv' }}
                       </span>
                     </div>
                     <small class="form-help">
-                      Teklif verme saatlerini kısıtlamak için bu seçeneği aktif edin
+                      Aktivieren Sie diese Option, um Gebotszeiten einzuschränken
                     </small>
                   </div>
 
                   <div v-if="settings.enableBiddingHours" class="setting-group">
-                    <label class="setting-label">Teklif Verme Başlangıç Saati</label>
+                    <label class="setting-label">Gebotsstartzeit</label>
                     <input
                       v-model="settings.biddingStartHour"
                       type="time"
@@ -413,12 +413,12 @@
                       @input="updateSettings"
                     >
                     <small class="form-help">
-                      Kullanıcılar bu saatten itibaren teklif verebilir
+                      Benutzer können ab dieser Zeit Gebote abgeben
                     </small>
                   </div>
 
                   <div v-if="settings.enableBiddingHours" class="setting-group">
-                    <label class="setting-label">Teklif Verme Bitiş Saati</label>
+                    <label class="setting-label">Gebotsendzeit</label>
                     <input
                       v-model="settings.biddingEndHour"
                       type="time"
@@ -426,12 +426,12 @@
                       @input="updateSettings"
                     >
                     <small class="form-help">
-                      Kullanıcılar bu saate kadar teklif verebilir
+                      Benutzer können bis zu dieser Zeit Gebote abgeben
                     </small>
                   </div>
 
                   <div class="setting-group">
-                    <label class="setting-label">Bakım Modu</label>
+                    <label class="setting-label">Wartungsmodus</label>
                     <div class="toggle-container">
                       <label class="toggle-switch">
                         <input
@@ -442,30 +442,30 @@
                         <span class="toggle-slider"></span>
                       </label>
                       <span class="toggle-label">
-                        {{ settings.maintenanceMode ? 'Açık' : 'Kapalı' }}
+                        {{ settings.maintenanceMode ? 'Aktiv' : 'Inaktiv' }}
                       </span>
                     </div>
                     <small class="form-help">
-                      Bakım modu açıkken sadece admin kullanıcıları sisteme erişebilir
+                      Im Wartungsmodus können nur Admin-Benutzer auf das System zugreifen
                     </small>
                   </div>
 
                   <div v-if="settings.maintenanceMode" class="setting-group">
-                    <label class="setting-label">Bakım Mesajı</label>
+                    <label class="setting-label">Wartungsnachricht</label>
                     <textarea
                       v-model="settings.maintenanceMessage"
                       class="form-textarea"
                       rows="3"
-                      placeholder="Kullanıcılara gösterilecek bakım mesajı"
+                      placeholder="Wartungsnachricht für Benutzer"
                       @input="updateSettings"
                     ></textarea>
                     <small class="form-help">
-                      Bu mesaj bakım modu sırasında kullanıcılara gösterilir
+                      Diese Nachricht wird Benutzern während des Wartungsmodus angezeigt
                     </small>
                   </div>
 
                   <div class="setting-group">
-                    <label class="setting-label">Kayıt Onayı Gerekli</label>
+                    <label class="setting-label">Registrierungsbestätigung erforderlich</label>
                     <div class="toggle-container">
                       <label class="toggle-switch">
                         <input
@@ -476,16 +476,16 @@
                         <span class="toggle-slider"></span>
                       </label>
                       <span class="toggle-label">
-                        {{ settings.requireRegistrationApproval ? 'Açık' : 'Kapalı' }}
+                        {{ settings.requireRegistrationApproval ? 'Aktiv' : 'Inaktiv' }}
                       </span>
                     </div>
                     <small class="form-help">
-                      Açık olursa yeni kullanıcı kayıtları admin onayı bekleyecektir. Kapalı olursa kullanıcılar doğrudan giriş yapabilecektir.
+                      Wenn aktiv, warten neue Benutzerregistrierungen auf Admin-Bestätigung. Wenn inaktiv, können Benutzer sich direkt anmelden.
                     </small>
                   </div>
 
                   <div v-if="settings.requireRegistrationApproval" class="setting-group">
-                    <label class="setting-label">Kayıt Onay Bildirim E-posta Adresi</label>
+                    <label class="setting-label">E-Mail-Adresse für Registrierungsbenachrichtigungen</label>
                     <input
                       v-model="settings.registrationApprovalEmail"
                       type="email"
@@ -494,12 +494,12 @@
                       @input="updateSettings"
                     >
                     <small class="form-help">
-                      Yeni kayıt talepleri bu e-posta adresine bildirilecektir (opsiyonel)
+                      Neue Registrierungsanfragen werden an diese E-Mail-Adresse gesendet (optional)
                     </small>
                   </div>
 
                   <div class="setting-group">
-                    <label class="setting-label">Süresi Dolmuş/Satılmış Leadları Göster</label>
+                    <label class="setting-label">Abgelaufene/Verkaufte Leads anzeigen</label>
                     <div class="toggle-container">
                       <label class="toggle-switch">
                         <input
@@ -510,18 +510,18 @@
                         <span class="toggle-slider"></span>
                       </label>
                       <span class="toggle-label">
-                        {{ settings.showExpiredLeads ? 'Açık' : 'Kapalı' }}
+                        {{ settings.showExpiredLeads ? 'Aktiv' : 'Inaktiv' }}
                       </span>
                     </div>
                     <small class="form-help">
-                      Açık olursa müşteriler süresi dolmuş veya satılmış leadları (pasif olarak) görebilecektir
+                      Wenn aktiv, können Kunden abgelaufene oder verkaufte Leads (als inaktiv) sehen
                     </small>
                   </div>
 
                   <div class="save-section" style="justify-content:flex-end;">
                     <button class="btn btn-primary" @click="saveGeneralSettings" :disabled="savingGeneral">
                       <span v-if="savingGeneral" class="spinner-sm"></span>
-                      <span v-else>Genel Ayarları Kaydet</span>
+                      <span v-else>Allgemeine Einstellungen speichern</span>
                     </button>
                   </div>
                 </div>
@@ -530,12 +530,12 @@
               <!-- SMTP Ayarları -->
               <div class="settings-section">
                 <div class="section-header-main">
-                  <h2>SMTP Ayarları</h2>
-                  <p>Uygulamanın e-posta gönderebilmesi için sunucu bilgileri</p>
+                  <h2>SMTP-Einstellungen</h2>
+                  <p>Serverinformationen für E-Mail-Versand der Anwendung</p>
                 </div>
                 <div class="settings-content">
                   <div class="setting-group">
-                    <label class="setting-label">SMTP Sunucu</label>
+                    <label class="setting-label">SMTP-Server</label>
                     <input v-model="settings.smtpHost" type="text" placeholder="smtp.example.com" />
                   </div>
                   <div class="setting-group">
@@ -543,33 +543,33 @@
                     <input v-model.number="settings.smtpPort" type="number" min="1" />
                   </div>
                   <div class="setting-group">
-                    <label class="setting-label">Kullanıcı Adı</label>
+                    <label class="setting-label">Benutzername</label>
                     <input v-model="settings.smtpUser" type="text" placeholder="user@example.com" />
                   </div>
                   <div class="setting-group">
-                    <label class="setting-label">Parola</label>
+                    <label class="setting-label">Passwort</label>
                     <input v-model="settings.smtpPass" type="password" />
                   </div>
                   <div class="setting-group">
-                    <label class="setting-label">Gönderen Adı</label>
+                    <label class="setting-label">Absendername</label>
                     <input v-model="settings.smtpFromName" type="text" placeholder="LeadPortal" />
                   </div>
                   <div class="setting-group">
                     <div class="toggle-container">
-                      <label class="setting-label">TLS kullan</label>
+                      <label class="setting-label">TLS verwenden</label>
                       <input type="checkbox" v-model="settings.smtpUseTLS" />
                     </div>
                   </div>
                   <div class="setting-group">
                     <div class="toggle-container">
-                      <label class="setting-label">SSL kullan</label>
+                      <label class="setting-label">SSL verwenden</label>
                       <input type="checkbox" v-model="settings.smtpUseSSL" />
                     </div>
                   </div>
                   <div>
                     <button class="btn btn-primary" @click="saveGeneralSettings" :disabled="savingGeneral">
                       <span v-if="savingGeneral" class="spinner-sm"></span>
-                      <span v-else>SMTP Kaydet</span>
+                      <span v-else>SMTP speichern</span>
                     </button>
                   </div>
                 </div>
@@ -581,8 +581,8 @@
               <!-- Lead ID Format -->
               <div class="settings-section">
               <div class="section-header-main">
-                <h2>Lead ID Formatı</h2>
-                <p>Lead'lerin nasıl numaralandırılacağını belirleyin</p>
+                <h2>Lead-ID-Format</h2>
+                <p>Bestimmen Sie, wie Leads nummeriert werden</p>
               </div>
               
               <div class="settings-content">
@@ -597,8 +597,8 @@
                         @change="updateSettings"
                       >
                       <div class="option-content">
-                        <div class="option-title">Sayısal (1, 2, 3...)</div>
-                        <div class="option-preview">Örnek: 1, 2, 3, 1001</div>
+                        <div class="option-title">Numerisch (1, 2, 3...)</div>
+                        <div class="option-preview">Beispiel: 1, 2, 3, 1001</div>
                       </div>
                     </label>
 
@@ -610,8 +610,8 @@
                         @change="updateSettings"
                       >
                       <div class="option-content">
-                        <div class="option-title">Ön Ekli Sayısal (LEAD-1, LEAD-2...)</div>
-                        <div class="option-preview">Örnek: LEAD-1, LEAD-2, LEAD-1001</div>
+                        <div class="option-title">Mit Präfix (LEAD-1, LEAD-2...)</div>
+                        <div class="option-preview">Beispiel: LEAD-1, LEAD-2, LEAD-1001</div>
                       </div>
                     </label>
 
@@ -623,15 +623,15 @@
                         @change="updateSettings"
                       >
                       <div class="option-content">
-                        <div class="option-title">Tarihli Sayısal (20241201-1, 20241201-2...)</div>
-                        <div class="option-preview">Örnek: 20241201-1, 20241201-2</div>
+                        <div class="option-title">Mit Datum (20241201-1, 20241201-2...)</div>
+                        <div class="option-preview">Beispiel: 20241201-1, 20241201-2</div>
                       </div>
                     </label>
                   </div>
                 </div>
 
                 <div v-if="settings.leadIdFormat === 'prefixed-numeric'" class="setting-group">
-                  <label class="setting-label">Ön Ek</label>
+                  <label class="setting-label">Präfix</label>
                   <input 
                     v-model="settings.leadPrefix" 
                     type="text" 
@@ -642,7 +642,7 @@
                 </div>
 
                 <div class="setting-group">
-                  <label class="setting-label">Başlangıç Numarası</label>
+                  <label class="setting-label">Startnummer</label>
                   
                   <input 
                     v-model.number="settings.startingNumber" 
@@ -652,11 +652,11 @@
                     @input="updateSettings"
                   >
                   
-                  <small class="form-help">Yeni lead'ler bu numaradan başlayacak</small>
+                  <small class="form-help">Neue Leads beginnen mit dieser Nummer</small>
                 </div>
 
                 <div class="setting-group">
-                  <label class="setting-label">Önizleme</label>
+                  <label class="setting-label">Vorschau</label>
                   <div class="preview-box">
                     <div class="preview-item" v-for="i in 3" :key="i">
                       {{ generatePreviewId(i) }}
@@ -667,7 +667,7 @@
                 <div class="save-section" style="justify-content:flex-end;">
                   <button class="btn btn-primary" @click="saveLeadIdSettings" :disabled="savingLeadId">
                     <span v-if="savingLeadId" class="spinner-sm"></span>
-                    <span v-else>Lead ID Ayarlarını Kaydet</span>
+                    <span v-else>Lead-ID-Einstellungen speichern</span>
                   </button>
                 </div>
               </div>
@@ -676,13 +676,13 @@
             <!-- Insurance Types -->
             <div class="settings-section">
               <div class="section-header-main">
-                <h2>Sigorta Türleri</h2>
-                <p>Lead'lerde kullanılacak sigorta türlerini yönetin</p>
+                <h2>Versicherungstypen</h2>
+                <p>Versicherungstypen für Leads verwalten</p>
               </div>
               
               <div class="settings-content">
                 <div class="setting-group">
-                  <label class="setting-label">Mevcut Sigorta Türleri</label>
+                  <label class="setting-label">Vorhandene Versicherungstypen</label>
                   <div class="insurance-types-list">
                     <div v-for="(type, index) in settings.insuranceTypes" :key="index" class="insurance-type-item-with-icon">
                       <div class="icon-preview" :style="{ backgroundColor: settings.insuranceTypes[index].color || '#f3f4f6' }">
@@ -697,12 +697,12 @@
                         v-model="settings.insuranceTypes[index].name"
                         type="text"
                         class="insurance-type-input"
-                        placeholder="Tür Adı"
+                        placeholder="Typname"
                       />
                       <div class="icon-picker">
                         <button type="button" class="icon-picker-trigger" @click="toggleIconPicker(index)">
                           <Icon :icon="settings.insuranceTypes[index].icon || 'mdi:file'" width="18" height="18" />
-                          <span>{{ settings.insuranceTypes[index].icon || 'İkon seçin' }}</span>
+                          <span>{{ settings.insuranceTypes[index].icon || 'Icon auswählen' }}</span>
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="6 9 12 15 18 9"></polyline>
                           </svg>
@@ -717,12 +717,12 @@
                       </Teleport>
                       <div class="color-picker-wrapper">
                         <label class="color-picker-label" :title="`Renk: ${settings.insuranceTypes[index].color || '#f3f4f6'}`">
-                          <span>Renk</span>
+                          <span>Farbe</span>
                           <input
                             v-model="settings.insuranceTypes[index].color"
                             type="color"
                             class="color-picker-input"
-                            :title="`Rengi seçin`"
+                            :title="`Farbe auswählen`"
                           />
                         </label>
                       </div>
@@ -739,14 +739,14 @@
                       <line x1="12" y1="5" x2="12" y2="19"></line>
                       <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
-                    Yeni Sigorta Türü Ekle
+                    Neuen Versicherungstyp hinzufügen
                   </button>
                 </div>
                 
                 <div class="setting-actions">
                   <button class="btn btn-primary" @click="saveInsuranceTypes" :disabled="savingInsuranceTypes">
                     <span v-if="savingInsuranceTypes" class="spinner-sm"></span>
-                    <span v-else>Sigorta Türlerini Kaydet</span>
+                    <span v-else>Versicherungstypen speichern</span>
                   </button>
                 </div>
               </div>
@@ -786,8 +786,8 @@ const SettingsIcon = () => h('svg', { width: 20, height: 20, viewBox: '0 0 24 24
 ])
 
 const tabs = [
-  { id: 'company', label: 'Firma Ayarları', icon: BuildingIcon },
-  { id: 'application', label: 'Uygulama Ayarları', icon: SettingsIcon }
+  { id: 'company', label: 'Firmeneinstellungen', icon: BuildingIcon },
+  { id: 'application', label: 'Anwendungseinstellungen', icon: SettingsIcon }
 ]
 
 const activeTab = ref('company')
@@ -848,15 +848,15 @@ const settings = ref({
   defaultAuctionDays: 7,
   defaultMinIncrement: 10,
   insuranceTypes: [
-    { name: 'Hayvan', icon: 'mdi:paw', color: '#8b5cf6' },
-    { name: 'Araba', icon: 'mdi:car', color: '#0ea5e9' },
-    { name: 'Sağlık', icon: 'mdi:heart', color: '#10b981' }
+    { name: 'Tier', icon: 'mdi:paw', color: '#8b5cf6' },
+    { name: 'Auto', icon: 'mdi:car', color: '#0ea5e9' },
+    { name: 'Gesundheit', icon: 'mdi:heart', color: '#10b981' }
   ],
   enableBiddingHours: false,
   biddingStartHour: '08:00',
   biddingEndHour: '20:00',
   maintenanceMode: false,
-  maintenanceMessage: 'Sistem bakımda. Lütfen daha sonra tekrar deneyin.',
+  maintenanceMessage: 'Das System wird gewartet. Bitte versuchen Sie es später erneut.',
   smtpHost: '',
   smtpPort: 465,
   smtpUser: '',
@@ -865,7 +865,7 @@ const settings = ref({
   smtpUseTLS: false,
   smtpUseSSL: true,
   sessionTimeoutMinutes: 120,
-  sessionTimeoutMessage: 'Oturumunuz hareketsizlik nedeniyle sonlandırılmıştır. Lütfen tekrar giriş yapınız.',
+  sessionTimeoutMessage: 'Ihre Sitzung wurde aufgrund von Inaktivität beendet. Bitte melden Sie sich erneut an.',
   requireRegistrationApproval: true,
   registrationApprovalEmail: '',
   showExpiredLeads: false
@@ -928,7 +928,7 @@ async function loadFromStorage() {
       socialMedia.value = brandingSettings.socialMedia || { facebook: '', twitter: '', linkedin: '', instagram: '' }
     }
   } catch (error) {
-    console.error('Ayarlar yüklenemedi:', error)
+    console.error('Einstellungen konnten nicht geladen werden:', error)
   }
 }
 
@@ -946,9 +946,9 @@ async function loadSettings() {
         if (typeof firstItem === 'string') {
           // String array formatında, yeni (Iconify) formata çevir
           const defaultIcons = {
-            'Hayvan': 'mdi:paw',
-            'Araba': 'mdi:car',
-            'Sağlık': 'mdi:heart'
+            'Tier': 'mdi:paw',
+            'Auto': 'mdi:car',
+            'Gesundheit': 'mdi:heart'
           }
           const defaultColors = ['#dc2626', '#f97316', '#8b5cf6', '#0ea5e9', '#10b981', '#f59e0b', '#6366f1', '#ec4899']
           settings.value.insuranceTypes = settings.value.insuranceTypes.map((name, idx) => ({
@@ -988,7 +988,7 @@ async function loadSettings() {
       }
     }
   } catch (error) {
-    console.error('Ayarlar yüklenemedi:', error)
+    console.error('Einstellungen konnten nicht geladen werden:', error)
   }
 }
 
@@ -1056,7 +1056,7 @@ function addFooterSection() {
   const newId = `section-${Date.now()}`
   footerSections.value.push({
     id: newId,
-    title: 'Yeni Bölüm',
+    title: 'Neuer Bereich',
     links: []
   })
 }
@@ -1139,7 +1139,7 @@ function updateFavicon(url) {
     
     setFaviconLink(url)
   } catch (error) {
-    console.error('Favicon güncellenirken hata:', error)
+    console.error('Fehler beim Aktualisieren des Favicons:', error)
   }
 }
 
@@ -1188,7 +1188,7 @@ async function saveBranding() {
       const sizeInMB = sizeInBytes / (1024 * 1024)
       
       if (sizeInMB > 2) {
-        const errorMsg = 'Favicon çok büyük, lütfen daha küçük bir resim seçin (max 2MB)'
+        const errorMsg = 'Favicon ist zu groß, bitte wählen Sie ein kleineres Bild (max. 2MB)'
         error(errorMsg)
         message.value = errorMsg
         messageType.value = 'error'
@@ -1212,11 +1212,11 @@ async function saveBranding() {
     }
     
     window.dispatchEvent(new Event('settings-change'))
-    success('Marka ayarları başarıyla kaydedildi!')
-    message.value = 'Marka ayarları kaydedildi!'
+    success('Markeneinstellungen erfolgreich gespeichert!')
+    message.value = 'Markeneinstellungen gespeichert!'
     messageType.value = 'success'
   } catch (e) {
-    const errorMsg = 'Marka ayarları kaydedilemedi'
+    const errorMsg = 'Markeneinstellungen konnten nicht gespeichert werden'
     error(errorMsg)
     message.value = errorMsg
     messageType.value = 'error'
@@ -1251,11 +1251,11 @@ async function saveFooter() {
     }
     
     window.dispatchEvent(new Event('settings-change'))
-    success('Footer ayarları başarıyla kaydedildi!')
-    message.value = 'Footer ayarları kaydedildi!'
+    success('Footer-Einstellungen erfolgreich gespeichert!')
+    message.value = 'Footer-Einstellungen gespeichert!'
     messageType.value = 'success'
   } catch (e) {
-    const errorMsg = 'Footer ayarları kaydedilemedi'
+    const errorMsg = 'Footer-Einstellungen konnten nicht gespeichert werden'
     error(errorMsg)
     message.value = errorMsg
     messageType.value = 'error'
@@ -1291,7 +1291,7 @@ function updateAdminMenuStyle() {
   localStorage.setItem('adminMenuStyle', adminMenuStyle.value ? 'sidebar' : 'dropdown')
   // Event dispatch et ki App.vue güncellensin
   window.dispatchEvent(new Event('admin-menu-style-change'))
-  success('Menü stili güncellendi!')
+  success('Menüstil aktualisiert!')
 }
 
 async function updateSettings() {
@@ -1304,11 +1304,11 @@ async function saveGeneralSettings() {
     savingGeneral.value = true
     message.value = ''
     await api.post('/settings', settings.value)
-    success('Genel ayarlar başarıyla kaydedildi!')
-    message.value = 'Genel ayarlar kaydedildi!'
+    success('Allgemeine Einstellungen erfolgreich gespeichert!')
+    message.value = 'Allgemeine Einstellungen gespeichert!'
     messageType.value = 'success'
   } catch (err) {
-    const errorMsg = err.response?.data?.message || 'Genel ayarlar kaydedilemedi'
+    const errorMsg = err.response?.data?.message || 'Allgemeine Einstellungen konnten nicht gespeichert werden'
     error(errorMsg)
     message.value = errorMsg
     messageType.value = 'error'
@@ -1322,11 +1322,11 @@ async function saveLeadIdSettings() {
     savingLeadId.value = true
     message.value = ''
     await api.post('/settings', settings.value)
-    success('Lead ID ayarları başarıyla kaydedildi!')
-    message.value = 'Lead ID ayarları kaydedildi!'
+    success('Lead-ID-Einstellungen erfolgreich gespeichert!')
+    message.value = 'Lead-ID-Einstellungen gespeichert!'
     messageType.value = 'success'
   } catch (err) {
-    const errorMsg = err.response?.data?.message || 'Lead ID ayarları kaydedilemedi'
+    const errorMsg = err.response?.data?.message || 'Lead-ID-Einstellungen konnten nicht gespeichert werden'
     error(errorMsg)
     message.value = errorMsg
     messageType.value = 'error'
@@ -1361,8 +1361,8 @@ async function saveInsuranceTypes() {
     )
     
     if (filteredTypes.length === 0) {
-      error('En az bir sigorta türü olmalıdır')
-      message.value = 'En az bir sigorta türü olmalıdır'
+      error('Mindestens ein Versicherungstyp ist erforderlich')
+      message.value = 'Mindestens ein Versicherungstyp ist erforderlich'
       messageType.value = 'error'
       return
     }
@@ -1380,11 +1380,11 @@ async function saveInsuranceTypes() {
     
     settings.value.insuranceTypes = filteredTypes
     await api.post('/settings', settings.value)
-    success('Sigorta türleri başarıyla kaydedildi!')
-    message.value = 'Sigorta türleri kaydedildi!'
+    success('Versicherungstypen erfolgreich gespeichert!')
+    message.value = 'Versicherungstypen gespeichert!'
     messageType.value = 'success'
   } catch (err) {
-    const errorMessage = err.response?.data?.message || 'Sigorta türleri kaydedilemedi'
+    const errorMessage = err.response?.data?.message || 'Versicherungstypen konnten nicht gespeichert werden'
     error(errorMessage)
     message.value = errorMessage
     messageType.value = 'error'
@@ -1428,7 +1428,7 @@ async function getAllSettingsData() {
       application: settingsData
     }
   } catch (err) {
-    console.error('Ayarlar alınırken hata:', err)
+    console.error('Fehler beim Abrufen der Einstellungen:', err)
     // Fallback: mevcut state'ten al
     return {
       version: '1.0',
@@ -1458,7 +1458,7 @@ async function setAllSettingsData(data) {
   try {
     // Validate
     if (!data || typeof data !== 'object') {
-      throw new Error('Geçersiz veri formatı')
+      throw new Error('Ungültiges Datenformat')
     }
 
     // Branding ayarlarını yükle
@@ -1532,9 +1532,9 @@ async function setAllSettingsData(data) {
         
         if (typeof firstItem === 'string') {
           const defaultIcons = {
-            'Hayvan': 'mdi:paw',
-            'Araba': 'mdi:car',
-            'Sağlık': 'mdi:heart'
+            'Tier': 'mdi:paw',
+            'Auto': 'mdi:car',
+            'Gesundheit': 'mdi:heart'
           }
           const defaultColors = ['#dc2626', '#f97316', '#8b5cf6', '#0ea5e9', '#10b981', '#f59e0b', '#6366f1', '#ec4899']
           settings.value.insuranceTypes = settings.value.insuranceTypes.map((name, idx) => ({
@@ -1583,18 +1583,18 @@ async function setAllSettingsData(data) {
     await loadFromStorage()
     await loadSettings()
   } catch (err) {
-    console.error('Ayarlar yüklenirken hata:', err)
+    console.error('Fehler beim Laden der Einstellungen:', err)
     throw err
   }
 }
 
 function validateSettingsData(data) {
   if (!data || typeof data !== 'object') {
-    return 'Geçersiz veri formatı'
+    return 'Ungültiges Datenformat'
   }
   
   if (!data.version) {
-    return 'Eksik versiyon bilgisi'
+    return 'Fehlende Versionsinformation'
   }
   
   return true
@@ -1629,34 +1629,34 @@ onMounted(async () => {
       footerSections.value = [
         {
           id: 'services',
-          title: 'Hizmetler',
+          title: 'Dienstleistungen',
           links: [
-            { text: 'Canlı Müzayede', url: '#' },
-            { text: 'Yaklaşan açık artırmalar', url: '#' },
-            { text: 'Doğrudan satın alma', url: '#' },
-            { text: 'Gösterge Paneli', url: '#' },
-            { text: 'Potansiyel Müşteri Yönetimi', url: '#' }
+            { text: 'Live-Auktion', url: '#' },
+            { text: 'Bevorstehende Auktionen', url: '#' },
+            { text: 'Sofortkauf', url: '#' },
+            { text: 'Dashboard', url: '#' },
+            { text: 'Lead-Management', url: '#' }
           ]
         },
         {
           id: 'support',
-          title: 'Destek',
+          title: 'Support',
           links: [
-            { text: 'SSS', url: '#' },
-            { text: 'Temas etmek', url: '#' },
-            { text: 'Yardım Merkezi', url: '#' },
-            { text: 'Sistem Durumu', url: '#' }
+            { text: 'FAQ', url: '#' },
+            { text: 'Kontakt', url: '#' },
+            { text: 'Hilfezentrum', url: '#' },
+            { text: 'Systemstatus', url: '#' }
           ]
         },
         {
           id: 'legal',
-          title: 'Yasal',
+          title: 'Rechtliches',
           links: [
-            { text: 'Baskı', url: '#' },
-            { text: 'Gizlilik Politikası', url: '#' },
-            { text: 'Şartlar ve koşullar', url: '#' },
-            { text: 'Cayma hakkı', url: '#' },
-            { text: 'Çerez Politikası', url: '#' }
+            { text: 'Impressum', url: '#' },
+            { text: 'Datenschutzerklärung', url: '#' },
+            { text: 'AGB', url: '#' },
+            { text: 'Widerrufsrecht', url: '#' },
+            { text: 'Cookie-Richtlinie', url: '#' }
           ]
         }
       ]

@@ -28,7 +28,7 @@ export default function aboutRouter(prisma) {
       res.json(groupedSections)
     } catch (error) {
       console.error('Error fetching About sections:', error)
-      res.status(500).json({ message: 'Hakkında bölümleri alınamadı' })
+      res.status(500).json({ message: 'Über-Abschnitte konnten nicht abgerufen werden' })
     }
   })
 
@@ -45,7 +45,7 @@ export default function aboutRouter(prisma) {
       res.json(sections)
     } catch (error) {
       console.error('Error fetching admin About sections:', error)
-      res.status(500).json({ message: 'Hakkında bölümleri alınamadı' })
+      res.status(500).json({ message: 'Über-Abschnitte konnten nicht abgerufen werden' })
     }
   })
 
@@ -57,13 +57,13 @@ export default function aboutRouter(prisma) {
       })
       
       if (!section) {
-        return res.status(404).json({ message: 'Bölüm bulunamadı' })
+        return res.status(404).json({ message: 'Abschnitt nicht gefunden' })
       }
       
       res.json(section)
     } catch (error) {
       console.error('Error fetching About section:', error)
-      res.status(500).json({ message: 'Bölüm alınamadı' })
+      res.status(500).json({ message: 'Abschnitt konnte nicht abgerufen werden' })
     }
   })
 
@@ -73,7 +73,7 @@ export default function aboutRouter(prisma) {
       const { section, title, subtitle, content, imageUrl, data, isActive, sortOrder } = req.body
 
       if (!section) {
-        return res.status(400).json({ message: 'Bölüm adı gerekli' })
+        return res.status(400).json({ message: 'Abschnittsname ist erforderlich' })
       }
 
       const aboutSection = await prisma.about.create({
@@ -89,10 +89,10 @@ export default function aboutRouter(prisma) {
         }
       })
 
-      res.json({ message: 'Hakkında bölümü başarıyla oluşturuldu', section: aboutSection })
+      res.json({ message: 'Über-Abschnitt erfolgreich erstellt', section: aboutSection })
     } catch (error) {
       console.error('Error creating About section:', error)
-      res.status(500).json({ message: 'Hakkında bölümü oluşturulamadı' })
+      res.status(500).json({ message: 'Über-Abschnitt konnte nicht erstellt werden' })
     }
   })
 
@@ -116,13 +116,13 @@ export default function aboutRouter(prisma) {
         }
       })
 
-      res.json({ message: 'Hakkında bölümü başarıyla güncellendi', section: aboutSection })
+      res.json({ message: 'Über-Abschnitt erfolgreich aktualisiert', section: aboutSection })
     } catch (error) {
       console.error('Error updating About section:', error)
       if (error.code === 'P2025') {
         res.status(404).json({ message: 'Bölüm bulunamadı' })
       } else {
-        res.status(500).json({ message: 'Hakkında bölümü güncellenemedi' })
+        res.status(500).json({ message: 'Über-Abschnitt konnte nicht aktualisiert werden' })
       }
     }
   })
@@ -136,13 +136,13 @@ export default function aboutRouter(prisma) {
         where: { id }
       })
 
-      res.json({ message: 'Hakkında bölümü başarıyla silindi' })
+      res.json({ message: 'Über-Abschnitt erfolgreich gelöscht' })
     } catch (error) {
       console.error('Error deleting About section:', error)
       if (error.code === 'P2025') {
         res.status(404).json({ message: 'Bölüm bulunamadı' })
       } else {
-        res.status(500).json({ message: 'Hakkında bölümü silinemedi' })
+        res.status(500).json({ message: 'Über-Abschnitt konnte nicht gelöscht werden' })
       }
     }
   })
@@ -157,38 +157,38 @@ export default function aboutRouter(prisma) {
       const defaultSections = [
         {
           section: 'hero',
-          title: 'LeadPortal Hakkında',
-          subtitle: 'Potansiyel müşteri yönetiminde yeni nesil çözüm',
-          content: 'LeadPortal, işletmelerin potansiyel müşterilerini etkili bir şekilde yönetmelerine ve açık artırma sistemi ile satış süreçlerini optimize etmelerine olanak tanıyan yenilikçi bir platformdur.',
+          title: 'Über LeadPortal',
+          subtitle: 'Next-Generation-Lösung für Lead-Management',
+          content: 'LeadPortal ist eine innovative Plattform, die es Unternehmen ermöglicht, ihre potenziellen Kunden effektiv zu verwalten und ihre Verkaufsprozesse durch ein Auktionssystem zu optimieren.',
           imageUrl: '/images/about-hero-team.jpg',
           isActive: true,
           sortOrder: 1
         },
         {
           section: 'mission',
-          title: 'Misyonumuz',
-          subtitle: 'Satış süreçlerini dönüştürüyoruz',
-          content: 'Müşteri kazanımı süreçlerini dijitalleştirerek, işletmelerin daha verimli ve karlı satış operasyonları yürütmelerine yardımcı olmak. Açık artırma sistemi ile adil ve şeffaf bir pazar yeri oluşturmak.',
+          title: 'Unsere Mission',
+          subtitle: 'Wir transformieren Verkaufsprozesse',
+          content: 'Durch die Digitalisierung von Kundenakquisitionsprozessen helfen wir Unternehmen, effizientere und profitablere Verkaufsoperationen durchzuführen. Schaffung eines fairen und transparenten Marktplatzes durch ein Auktionssystem.',
           isActive: true,
           sortOrder: 1
         },
         {
           section: 'vision',
-          title: 'Vizyonumuz',
-          subtitle: 'Geleceğin satış platformu',
-          content: 'Lead yönetiminde küresel standart haline gelmek ve tüm sektörlerde işletmelerin tercih ettiği platform olmak. Teknoloji ile satış süreçlerini kolaylaştıran lider çözüm sağlayıcısı olmak.',
+          title: 'Unsere Vision',
+          subtitle: 'Die Verkaufsplattform der Zukunft',
+          content: 'Der globale Standard im Lead-Management zu werden und die bevorzugte Plattform für Unternehmen in allen Branchen zu sein. Der führende Lösungsanbieter zu sein, der Verkaufsprozesse durch Technologie vereinfacht.',
           isActive: true,
           sortOrder: 2
         },
         {
           section: 'stats',
-          title: 'Rakamlarla LeadPortal',
+          title: 'LeadPortal in Zahlen',
           data: {
             stats: [
-              { number: '500+', label: 'Aktif Kullanıcı' },
-              { number: '1000+', label: 'Başarılı Açık Artırma' },
-              { number: '50+', label: 'Farklı Sektör' },
-              { number: '24/7', label: 'Destek Hizmeti' }
+              { number: '500+', label: 'Aktive Benutzer' },
+              { number: '1000+', label: 'Erfolgreiche Auktionen' },
+              { number: '50+', label: 'Verschiedene Branchen' },
+              { number: '24/7', label: 'Support-Service' }
             ]
           },
           isActive: true,
@@ -196,36 +196,36 @@ export default function aboutRouter(prisma) {
         },
         {
           section: 'team',
-          title: 'Ekibimiz',
-          subtitle: 'Deneyimli ve tutkulu profesyoneller',
-          content: 'LeadPortal ekibi, satış, pazarlama ve teknoloji alanlarında uzman profesyonellerden oluşmaktadır. Müşteri memnuniyetini ön planda tutarak, sürekli gelişim ve yenilik anlayışı ile çalışmaktayız.',
+          title: 'Unser Team',
+          subtitle: 'Erfahrene und leidenschaftliche Profis',
+          content: 'Das LeadPortal-Team besteht aus Experten in den Bereichen Vertrieb, Marketing und Technologie. Wir arbeiten mit einem kontinuierlichen Entwicklungs- und Innovationsansatz und stellen die Kundenzufriedenheit in den Vordergrund.',
           imageUrl: '/images/about-hero-team.jpg',
           isActive: true,
           sortOrder: 1
         },
         {
           section: 'features',
-          title: 'Özelliklerimiz',
+          title: 'Unsere Funktionen',
           data: {
             features: [
               {
-                title: 'Açık Artırma Sistemi',
-                description: 'Şeffaf ve adil fiyatlandırma ile lead satışı',
+                title: 'Auktionssystem',
+                description: 'Lead-Verkauf mit transparenter und fairer Preisgestaltung',
                 icon: 'auction'
               },
               {
-                title: 'Gerçek Zamanlı Takip',
-                description: 'Anlık bildirimler ve durum güncellemeleri',
+                title: 'Echtzeit-Verfolgung',
+                description: 'Sofortige Benachrichtigungen und Status-Updates',
                 icon: 'realtime'
               },
               {
-                title: 'Güvenli Ödeme',
-                description: 'SSL şifreleme ile korumalı ödeme sistemi',
+                title: 'Sichere Zahlung',
+                description: 'Geschütztes Zahlungssystem mit SSL-Verschlüsselung',
                 icon: 'security'
               },
               {
-                title: 'Detaylı Raporlama',
-                description: 'Kapsamlı analitik ve performans raporları',
+                title: 'Detaillierte Berichterstattung',
+                description: 'Umfassende Analysen und Leistungsberichte',
                 icon: 'analytics'
               }
             ]
@@ -240,12 +240,12 @@ export default function aboutRouter(prisma) {
       })
 
       res.json({ 
-        message: 'Varsayılan Hakkında bölümleri başarıyla yüklendi',
+        message: 'Standard-Über-Abschnitte erfolgreich geladen',
         count: defaultSections.length
       })
     } catch (error) {
       console.error('Error resetting About sections:', error)
-      res.status(500).json({ message: 'Varsayılan Hakkında bölümleri yüklenemedi' })
+      res.status(500).json({ message: 'Standard-Über-Abschnitte konnten nicht geladen werden' })
     }
   })
 

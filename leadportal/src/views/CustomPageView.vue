@@ -3,14 +3,14 @@
     <div class="page-content">
       <div v-if="loading" class="loading-section">
         <div class="loading-spinner"></div>
-        <p>Sayfa yükleniyor...</p>
+        <p>Seite wird geladen...</p>
       </div>
       
       <div v-else-if="error" class="error-section">
         <Icon icon="mdi:alert-circle" width="64" height="64" />
-        <h2>Sayfa Bulunamadı</h2>
+        <h2>Seite nicht gefunden</h2>
         <p>{{ error }}</p>
-        <router-link to="/" class="btn btn-primary">Ana Sayfaya Dön</router-link>
+        <router-link to="/" class="btn btn-primary">Zur Startseite</router-link>
       </div>
       
       <div v-else-if="page" class="page-content-wrapper">
@@ -24,7 +24,7 @@
             :key="index"
             class="page-image-item"
           >
-            <img :src="image" :alt="`${page.title} - Image ${index + 1}`" />
+            <img :src="image" :alt="`${page.title} - Bild ${index + 1}`" />
           </div>
         </div>
         
@@ -35,7 +35,7 @@
         ></div>
         
         <div v-else class="no-content">
-          <p>Bu sayfada henüz içerik bulunmamaktadır.</p>
+          <p>Auf dieser Seite ist noch kein Inhalt verfügbar.</p>
         </div>
       </div>
     </div>
@@ -63,12 +63,12 @@ async function loadPage() {
     const response = await axios.get(`custom-pages/${slug}`)
     page.value = response.data
   } catch (err) {
-    console.error('Sayfa yüklenemedi:', err)
+    console.error('Seite konnte nicht geladen werden:', err)
     if (err.response?.status === 404) {
       // 404 durumunda forbidden sayfasına yönlendir
       router.replace({ name: 'forbidden' })
     } else {
-      error.value = 'Sayfa yüklenirken bir hata oluştu.'
+      error.value = 'Beim Laden der Seite ist ein Fehler aufgetreten.'
     }
   } finally {
     loading.value = false

@@ -50,25 +50,25 @@ function validate() {
   const usernameVal = username.value.trim()
 
   if (!emailVal) {
-    emailError.value = 'Email adresi zorunlu'
+    emailError.value = 'E-Mail-Adresse ist erforderlich'
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
-    emailError.value = 'Geçerli bir email adresi giriniz'
+    emailError.value = 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
   }
 
   if (!pwdVal) {
-    passwordError.value = 'Şifre zorunlu'
+    passwordError.value = 'Passwort ist erforderlich'
   } else if (pwdVal.length < 6) {
-    passwordError.value = 'En az 6 karakter olmalı'
+    passwordError.value = 'Mindestens 6 Zeichen erforderlich'
   }
 
   if (!confirmPwdVal) {
-    confirmPasswordError.value = 'Şifre tekrarı zorunlu'
+    confirmPasswordError.value = 'Passwortbestätigung ist erforderlich'
   } else if (pwdVal !== confirmPwdVal) {
-    confirmPasswordError.value = 'Şifreler eşleşmiyor'
+    confirmPasswordError.value = 'Passwörter stimmen nicht überein'
   }
 
-  if (!firstNameVal) firstNameError.value = 'Ad zorunlu'
-  if (!lastNameVal) lastNameError.value = 'Soyadı zorunlu'
+  if (!firstNameVal) firstNameError.value = 'Vorname ist erforderlich'
+  if (!lastNameVal) lastNameError.value = 'Nachname ist erforderlich'
 
   return !emailError.value && !passwordError.value && !confirmPasswordError.value &&
          !firstNameError.value && !lastNameError.value
@@ -114,12 +114,12 @@ async function submit() {
     }
   } catch (e) {
     if (e.response?.status === 409) {
-      error.value = 'Bu email adresi zaten kullanılıyor'
-      emailError.value = 'Email zaten kayıtlı'
+      error.value = 'Diese E-Mail-Adresse wird bereits verwendet'
+      emailError.value = 'E-Mail bereits registriert'
     } else if (e.response?.data?.error) {
       error.value = e.response.data.error
     } else {
-      error.value = 'Kayıt başarısız. Lütfen daha sonra tekrar deneyin.'
+      error.value = 'Registrierung fehlgeschlagen. Bitte versuchen Sie es später erneut.'
     }
   } finally {
     loading.value = false
@@ -147,7 +147,7 @@ onUnmounted(() => {
         <img alt="Logo" class="logo" :src="companyLogoUrl || defaultLogo" width="36" height="36" />
         <div class="brand-text">
           <h1>{{ companyName }}</h1>
-          <p>Yeni bir hesap oluşturun</p>
+          <p>Erstellen Sie ein neues Konto</p>
         </div>
       </div>
 
@@ -157,10 +157,10 @@ onUnmounted(() => {
           <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
         </svg>
         <div>
-          <strong>Kaydınız başarıyla alındı!</strong>
-          <p>Admin onayı bekleniyor. Onaylandıktan sonra giriş yapabileceksiniz. Bu genellikle 24 saat içinde tamamlanır.</p>
+          <strong>Ihre Registrierung wurde erfolgreich entgegengenommen!</strong>
+          <p>Die Admin-Genehmigung steht noch aus. Nach der Genehmigung können Sie sich anmelden. Dies wird normalerweise innerhalb von 24 Stunden abgeschlossen.</p>
           <button class="btn primary" @click="goToLogin" style="margin-top: 12px; width: 100%;">
-            Giriş Sayfasına Dön
+            Zur Anmeldeseite zurückkehren
           </button>
         </div>
       </div>
@@ -177,61 +177,61 @@ onUnmounted(() => {
       <form v-if="!registrationSuccess" class="form" @submit.prevent="submit">
         <!-- Ad -->
         <label class="field">
-          <span class="label">Ad *</span>
+          <span class="label">Vorname *</span>
           <div class="control">
             <span class="icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
             </span>
-            <input class="input" v-model="firstName" type="text" placeholder="Adınız" required @blur="() => { if (!firstName.trim()) firstNameError = 'Ad zorunlu' }" />
+            <input class="input" v-model="firstName" type="text" placeholder="Ihr Vorname" required @blur="() => { if (!firstName.trim()) firstNameError = 'Vorname ist erforderlich' }" />
           </div>
           <div v-if="firstNameError" class="field-error">{{ firstNameError }}</div>
         </label>
 
         <!-- Soyadı -->
         <label class="field">
-          <span class="label">Soyadı *</span>
+          <span class="label">Nachname *</span>
           <div class="control">
             <span class="icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
             </span>
-            <input class="input" v-model="lastName" type="text" placeholder="Soyadınız" required @blur="() => { if (!lastName.trim()) lastNameError = 'Soyadı zorunlu' }" />
+            <input class="input" v-model="lastName" type="text" placeholder="Ihr Nachname" required @blur="() => { if (!lastName.trim()) lastNameError = 'Nachname ist erforderlich' }" />
           </div>
           <div v-if="lastNameError" class="field-error">{{ lastNameError }}</div>
         </label>
 
         <!-- Kullanıcı Adı (Opsiyonel) -->
         <label class="field">
-          <span class="label">Kullanıcı Adı (Opsiyonel)</span>
+          <span class="label">Benutzername (Optional)</span>
           <div class="control">
             <span class="icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
             </span>
-            <input class="input" v-model="username" type="text" placeholder="Kullanıcı adı" />
+            <input class="input" v-model="username" type="text" placeholder="Benutzername" />
           </div>
           <div v-if="usernameError" class="field-error">{{ usernameError }}</div>
         </label>
 
         <!-- Email -->
         <label class="field">
-          <span class="label">Email Adresi *</span>
+          <span class="label">E-Mail-Adresse *</span>
           <div class="control">
             <span class="icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
             </span>
-            <input class="input" v-model="email" type="email" placeholder="ornek@site.com" required @blur="validate" />
+            <input class="input" v-model="email" type="email" placeholder="beispiel@site.com" required @blur="validate" />
           </div>
           <div v-if="emailError" class="field-error">{{ emailError }}</div>
         </label>
 
         <!-- Şifre -->
         <label class="field">
-          <span class="label">Şifre *</span>
+          <span class="label">Passwort *</span>
           <div class="control">
             <span class="icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M17 8V7a5 5 0 0 0-10 0v1H5v12h14V8h-2Zm-8 0V7a3 3 0 0 1 6 0v1H9Zm3 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/></svg>
             </span>
             <input class="input" :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="••••••••" required @blur="validate" />
-            <button class="icon-btn" type="button" @click="showPassword = !showPassword" :aria-pressed="showPassword" :title="showPassword ? 'Gizle' : 'Göster'">
+            <button class="icon-btn" type="button" @click="showPassword = !showPassword" :aria-pressed="showPassword" :title="showPassword ? 'Verbergen' : 'Anzeigen'">
               <svg v-if="showPassword" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0-5C7 3 2.73 6.11 1 12c1.73 5.89 6 9 11 9s9.27-3.11 11-9c-1.73-5.89-6-9-11-9Z"/></svg>
               <svg v-else viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M2 5.27 3.28 4 20 20.72 18.73 22l-2.4-2.4A12.52 12.52 0 0 1 12 21C7 21 2.73 17.89 1 12a18.46 18.46 0 0 1 5.14-7.11L2 5.27Zm9.77 4.9 2.06 2.06A3 3 0 0 0 11 12a3 3 0 0 0 .77-1.83ZM12 7a5 5 0 0 1 5 5c0 .63-.12 1.22-.34 1.77l4.11 4.11A15.54 15.54 0 0 0 23 12C21.27 6.11 17 3 12 3a11.55 11.55 0 0 0-3.73.63l2.2 2.2C10.96 5.3 11.47 5.25 12 5.25Z"/></svg>
             </button>
@@ -241,7 +241,7 @@ onUnmounted(() => {
 
         <!-- Şifre Tekrarı -->
         <label class="field">
-          <span class="label">Şifre Tekrarı *</span>
+          <span class="label">Passwort bestätigen *</span>
           <div class="control">
             <span class="icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M17 8V7a5 5 0 0 0-10 0v1H5v12h14V8h-2Zm-8 0V7a3 3 0 0 1 6 0v1H9Zm3 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/></svg>
@@ -257,15 +257,15 @@ onUnmounted(() => {
 
         <!-- Giriş Sayfasına Link -->
         <label class="row small">
-          <span>Zaten bir hesabınız var mı?</span>
+          <span>Haben Sie bereits ein Konto?</span>
           <span style="margin-left:auto"></span>
-          <router-link to="/login" class="muted">Giriş yapın</router-link>
+          <router-link to="/login" class="muted">Anmelden</router-link>
         </label>
 
         <!-- Kayıt Butonu -->
         <button class="btn primary" type="submit" :disabled="!canSubmit">
           <span v-if="loading" class="spinner" aria-hidden="true"></span>
-          <span>{{ loading ? 'Kaydediliyor...' : 'Kayıt Ol' }}</span>
+            <span>{{ loading ? 'Wird gespeichert...' : 'Registrieren' }}</span>
         </button>
       </form>
     </div>

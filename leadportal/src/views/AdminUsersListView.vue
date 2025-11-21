@@ -63,8 +63,8 @@ async function loadUsers() {
     const response = await api.get('/users')
     users.value = response.data
   } catch (err) {
-    console.error('Kullanıcılar yüklenemedi:', err)
-    error.value = 'Kullanıcılar yüklenirken bir hata oluştu.'
+    console.error('Benutzer konnten nicht geladen werden:', err)
+    error.value = 'Beim Laden der Benutzer ist ein Fehler aufgetreten.'
   } finally {
     isLoading.value = false
   }
@@ -75,14 +75,14 @@ async function loadPendingCount() {
     const response = await api.get('/users/pending-registrations/list')
     pendingCount.value = response.data.length
   } catch (err) {
-    console.error('Onay bekleyen kullanıcı sayısı yüklenemedi:', err)
+    console.error('Anzahl der wartenden Benutzer konnte nicht geladen werden:', err)
     pendingCount.value = 0
   }
 }
 
 function formatDate(date) {
-  if (!date) return 'Hiç'
-  return new Date(date).toLocaleString('tr-TR', {
+  if (!date) return 'Nie'
+  return new Date(date).toLocaleString('de-DE', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -92,7 +92,7 @@ function formatDate(date) {
 }
 
 function formatTimeAgo(date) {
-  if (!date) return 'Hiç'
+  if (!date) return 'Nie'
 
   const now = new Date()
   const diff = now - new Date(date)
@@ -100,10 +100,10 @@ function formatTimeAgo(date) {
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
 
-  if (minutes < 1) return 'Şimdi'
-  if (minutes < 60) return `${minutes} dk önce`
-  if (hours < 24) return `${hours} saat önce`
-  return `${days} gün önce`
+  if (minutes < 1) return 'Jetzt'
+  if (minutes < 60) return `vor ${minutes} Min.`
+  if (hours < 24) return `vor ${hours} Std.`
+  return `vor ${days} Tagen`
 }
 
 function createUser() {
@@ -138,8 +138,8 @@ onUnmounted(() => {
   <div class="admin-users-list">
     <div class="page-header">
       <div class="header-left">
-        <h1>Kullanıcı Yönetimi</h1>
-        <p class="subtitle">Tüm kullanıcıları görüntüle ve yönet</p>
+        <h1>Benutzerverwaltung</h1>
+        <p class="subtitle">Alle Benutzer anzeigen und verwalten</p>
       </div>
       <div class="header-buttons">
         <button class="pending-btn" @click="goToPendingUsers">
@@ -147,7 +147,7 @@ onUnmounted(() => {
             <circle cx="11" cy="11" r="8"/>
             <path d="m21 21-4.35-4.35"/>
           </svg>
-          Onay Bekleyen
+          Ausstehend
           <span v-if="pendingCount > 0" class="pending-badge">{{ pendingCount }}</span>
         </button>
         <button class="create-btn" @click="createUser">
@@ -155,7 +155,7 @@ onUnmounted(() => {
             <line x1="12" y1="5" x2="12" y2="19"/>
             <line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
-          Yeni Kullanıcı
+          Neuer Benutzer
         </button>
       </div>
     </div>
@@ -170,19 +170,19 @@ onUnmounted(() => {
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Kullanıcı ara (isim, email, kullanıcı adı)..."
+            placeholder="Benutzer suchen (Name, E-Mail, Benutzername)..."
           />
         </div>
 
         <select v-model="selectedUserType" class="filter-select">
-          <option value="">Tüm Tipler</option>
+          <option value="">Alle Typen</option>
           <option v-for="type in userTypes" :key="type" :value="type">{{ type }}</option>
         </select>
 
         <select v-model="onlineFilter" class="filter-select">
-          <option value="all">Tüm Kullanıcılar</option>
-          <option value="online">Sadece Online</option>
-          <option value="offline">Sadece Offline</option>
+          <option value="all">Alle Benutzer</option>
+          <option value="online">Nur Online</option>
+          <option value="offline">Nur Offline</option>
         </select>
 
         <button class="refresh-btn-small" @click="loadUsers" :disabled="isLoading">
@@ -194,7 +194,7 @@ onUnmounted(() => {
 
       <div class="stats-row">
         <div class="stat-badge">
-          <span class="stat-label">Toplam Kullanıcı:</span>
+          <span class="stat-label">Gesamt Benutzer:</span>
           <span class="stat-value">{{ users.length }}</span>
         </div>
         <div class="stat-badge online">
@@ -203,7 +203,7 @@ onUnmounted(() => {
           <span class="stat-value">{{ onlineCount }}</span>
         </div>
         <div class="stat-badge">
-          <span class="stat-label">Filtrelenmiş:</span>
+          <span class="stat-label">Gefiltert:</span>
           <span class="stat-value">{{ filteredUsers.length }}</span>
         </div>
       </div>
@@ -211,7 +211,7 @@ onUnmounted(() => {
 
     <div v-if="isLoading" class="loading-state">
       <div class="spinner"></div>
-      <p>Kullanıcılar yükleniyor...</p>
+      <p>Benutzer werden geladen...</p>
     </div>
 
     <div v-else-if="error" class="error-state">
@@ -221,7 +221,7 @@ onUnmounted(() => {
         <line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
       <p>{{ error }}</p>
-      <button @click="loadUsers" class="retry-btn">Tekrar Dene</button>
+      <button @click="loadUsers" class="retry-btn">Erneut versuchen</button>
     </div>
 
     <div v-else class="users-content">
@@ -232,19 +232,19 @@ onUnmounted(() => {
           <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
           <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
         </svg>
-        <p>{{ searchQuery || selectedUserType || onlineFilter !== 'all' ? 'Filtreye uygun kullanıcı bulunamadı.' : 'Henüz kullanıcı bulunmuyor.' }}</p>
+        <p>{{ searchQuery || selectedUserType || onlineFilter !== 'all' ? 'Keine Benutzer entsprechen den Filtern.' : 'Noch keine Benutzer vorhanden.' }}</p>
       </div>
 
       <div v-else class="users-table">
         <table>
           <thead>
             <tr>
-              <th>Durum</th>
-              <th>Kullanıcı</th>
-              <th>Email</th>
-              <th>Kullanıcı Tipi</th>
-              <th>Son Aktivite</th>
-              <th>Kayıt Tarihi</th>
+              <th>Status</th>
+              <th>Benutzer</th>
+              <th>E-Mail</th>
+              <th>Benutzertyp</th>
+              <th>Letzte Aktivität</th>
+              <th>Registrierungsdatum</th>
             </tr>
           </thead>
           <tbody>
@@ -259,7 +259,7 @@ onUnmounted(() => {
               <td>
                 <div class="user-info">
                   <span class="user-name">
-                    {{ user.firstName || user.username || 'İsimsiz' }}
+                    {{ user.firstName || user.username || 'Unbenannt' }}
                     {{ user.lastName || '' }}
                   </span>
                   <span v-if="user.username" class="username">@{{ user.username }}</span>
@@ -270,7 +270,7 @@ onUnmounted(() => {
               </td>
               <td>
                 <span class="user-type-badge" :class="`type-${user.userType?.id?.toLowerCase() || 'default'}`">
-                  {{ user.userType?.name || 'Bilinmeyen' }}
+                  {{ user.userType?.name || 'Unbekannt' }}
                 </span>
               </td>
               <td>

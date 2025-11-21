@@ -84,7 +84,7 @@ async function searchPostalCodes(query) {
     
     postalCodeResults.value = filtered
   } catch (error) {
-    console.error('Posta kodu arama hatası:', error)
+    console.error('Fehler bei der Postleitzahl-Suche:', error)
     postalCodeResults.value = []
   }
 }
@@ -195,7 +195,7 @@ function handleClickOutside(event) {
 // Formleadport'tan form verilerini çek
 async function fetchFormleadportData() {
   if (!formleadportFormId.value.trim()) {
-    formleadportError.value = 'Lütfen form numarası girin'
+    formleadportError.value = 'Bitte geben Sie eine Formularnummer ein'
     return
   }
   
@@ -211,20 +211,20 @@ async function fetchFormleadportData() {
       formleadportData.value = data.data
       showFormPreview.value = true
     } else {
-      formleadportError.value = data.error || 'Form verileri alınamadı'
+      formleadportError.value = data.error || 'Formulardaten konnten nicht abgerufen werden'
     }
   } catch (e) {
     const status = e?.response?.status
     const data = e?.response?.data
     
     if (status === 404) {
-      formleadportError.value = 'Bu form numarası bulunamadı'
+      formleadportError.value = 'Diese Formularnummer wurde nicht gefunden'
     } else if (status === 401) {
-      formleadportError.value = 'Yetkilendirme hatası'
+      formleadportError.value = 'Autorisierungsfehler'
     } else if (status === 429) {
-      formleadportError.value = 'Çok fazla istek gönderildi, lütfen bekleyin'
+      formleadportError.value = 'Zu viele Anfragen, bitte warten Sie'
     } else {
-      formleadportError.value = data?.error || 'Form verileri alınamadı'
+      formleadportError.value = data?.error || 'Formulardaten konnten nicht abgerufen werden'
     }
   } finally {
     isLoadingFormData.value = false
@@ -239,7 +239,7 @@ function useFormleadportData() {
   
   // Formleadport verilerini lead formuna map et
   leadForm.value.title = `${formData.firma_adi} - ${formData.musteri_isim} ${formData.musteri_soyisim}`
-  leadForm.value.description = `Müşteri: ${formData.musteri_isim} ${formData.musteri_soyisim}\nFirma: ${formData.firma_adi}\nTelefon: ${formData.telefon || 'Belirtilmemiş'}\nEmail: ${formData.email || 'Belirtilmemiş'}`
+  leadForm.value.description = `Kunde: ${formData.musteri_isim} ${formData.musteri_soyisim}\nFirma: ${formData.firma_adi}\nTelefon: ${formData.telefon || 'Nicht angegeben'}\nE-Mail: ${formData.email || 'Nicht angegeben'}`
   leadForm.value.postalCode = formData.posta_kodu || ''
   postalCodeSearch.value = formData.posta_kodu || ''
   
@@ -254,25 +254,25 @@ function useFormleadportData() {
   }
   
   // Private details'e detaylı bilgileri ekle
-  leadForm.value.privateDetails = `FORMLEADPORT VERİLERİ:
-Form ID: ${formData.form_id}
-Müşteri: ${formData.musteri_isim} ${formData.musteri_soyisim}
-Cinsiyet: ${formData.musteri_cinsiyet || 'Belirtilmemiş'}
-Doğum Tarihi: ${formData.musteri_dogum_tarihi || 'Belirtilmemiş'}
-Email: ${formData.email || 'Belirtilmemiş'}
-Telefon: ${formData.telefon || 'Belirtilmemiş'}
-Sabit Telefon: ${formData.sabit_telefon || 'Belirtilmemiş'}
+  leadForm.value.privateDetails = `FORMLEADPORT-DATEN:
+Formular-ID: ${formData.form_id}
+Kunde: ${formData.musteri_isim} ${formData.musteri_soyisim}
+Geschlecht: ${formData.musteri_cinsiyet || 'Nicht angegeben'}
+Geburtsdatum: ${formData.musteri_dogum_tarihi || 'Nicht angegeben'}
+E-Mail: ${formData.email || 'Nicht angegeben'}
+Telefon: ${formData.telefon || 'Nicht angegeben'}
+Festnetz: ${formData.sabit_telefon || 'Nicht angegeben'}
 Firma: ${formData.firma_adi}
-Adres: ${formData.adres || 'Belirtilmemiş'}
-Şehir: ${formData.sehir || 'Belirtilmemiş'}
-Medeni Durum: ${formData.medeni_durum || 'Belirtilmemiş'}
-Çalışma Durumu: ${formData.calisma_durumu || 'Belirtilmemiş'}
-Sigorta: ${formData.sigorta || 'Belirtilmemiş'}
-Sigorta Şirketi: ${formData.sigorta_sirket || 'Belirtilmemiş'}
-Randevu Tarihi: ${formData.randevu_tarihi || 'Belirtilmemiş'}
-Randevu Tipi: ${formData.randevu_tipi || 'Belirtilmemiş'}
+Adresse: ${formData.adres || 'Nicht angegeben'}
+Stadt: ${formData.sehir || 'Nicht angegeben'}
+Familienstand: ${formData.medeni_durum || 'Nicht angegeben'}
+Beschäftigungsstatus: ${formData.calisma_durumu || 'Nicht angegeben'}
+Versicherung: ${formData.sigorta || 'Nicht angegeben'}
+Versicherungsgesellschaft: ${formData.sigorta_sirket || 'Nicht angegeben'}
+Termindatum: ${formData.randevu_tarihi || 'Nicht angegeben'}
+Termintyp: ${formData.randevu_tipi || 'Nicht angegeben'}
 
-ORİJİNAL FORMLAADPORT VERİLERİ:
+ORIGINALE FORMLEADPORT-DATEN:
 ${JSON.stringify(formData, null, 2)}`
   
   // Modal'ı kapat
@@ -342,7 +342,7 @@ async function loadSettings() {
       }
     }
   } catch (error) {
-    console.error('Ayarlar yüklenemedi:', error)
+    console.error('Einstellungen konnten nicht geladen werden:', error)
     insuranceTypes.value = [
       { name: 'Hayvan', icon: 'fa-paw' },
       { name: 'Araba', icon: 'fa-car' },
@@ -488,19 +488,19 @@ async function saveLead() {
 
     // Validation
     if (!leadForm.value.title.trim()) {
-      errorMessage.value = 'Başlık gerekli'
+      errorMessage.value = 'Titel ist erforderlich'
       return
     }
     if (!leadForm.value.startPrice || parseFloat(leadForm.value.startPrice) <= 0) {
-      errorMessage.value = 'Geçerli başlangıç fiyatı girin'
+      errorMessage.value = 'Geben Sie einen gültigen Startpreis ein'
       return
     }
     if (!leadForm.value.minIncrement || parseFloat(leadForm.value.minIncrement) <= 0) {
-      errorMessage.value = 'Geçerli minimum artış girin'
+      errorMessage.value = 'Geben Sie eine gültige Mindesterhöhung ein'
       return
     }
     if (!leadForm.value.endsAt) {
-      errorMessage.value = 'Bitiş tarihi gerekli'
+      errorMessage.value = 'Enddatum ist erforderlich'
       return
     }
 
@@ -509,7 +509,7 @@ async function saveLead() {
       const start = new Date(leadForm.value.startsAt)
       const end = new Date(leadForm.value.endsAt)
       if (start >= end) {
-        errorMessage.value = 'Başlangıç tarihi bitiş tarihinden önce olmalıdır.'
+        errorMessage.value = 'Das Startdatum muss vor dem Enddatum liegen.'
         return
       }
     }
@@ -535,11 +535,11 @@ async function saveLead() {
     if (modalMode.value === 'new') {
       // Yeni lead oluştur
       await axios.post('/api/leads', leadData, { headers: authHeaders() })
-      successMessage.value = 'Lead başarıyla oluşturuldu!'
+      successMessage.value = 'Lead erfolgreich erstellt!'
     } else {
       // Mevcut lead'i güncelle
       await axios.put(`/api/leads/${editingLead.value.id}`, leadData, { headers: authHeaders() })
-      successMessage.value = 'Lead başarıyla güncellendi!'
+      successMessage.value = 'Lead erfolgreich aktualisiert!'
     }
 
     await fetchMine()
@@ -568,8 +568,8 @@ async function saveLead() {
     }
 
     errorMessage.value = backendMessage
-      ? `Lead ${modalMode.value === 'new' ? 'oluşturulamadı' : 'güncellenemedi'}: ${backendMessage}`
-      : `Lead ${modalMode.value === 'new' ? 'oluşturulamadı' : 'güncellenemedi'}`
+      ? `Lead konnte nicht ${modalMode.value === 'new' ? 'erstellt' : 'aktualisiert'} werden: ${backendMessage}`
+      : `Lead konnte nicht ${modalMode.value === 'new' ? 'erstellt' : 'aktualisiert'} werden`
   }
 }
 
@@ -717,25 +717,25 @@ watch(showMap, (newValue) => {
     <div class="page-content">
       <div class="page-header">
         <div class="section-header">
-          <h1>Tüm Leadler</h1>
-          <p class="page-subtitle">Lead yönetimi ve düzenleme</p>
+          <h1>Alle Leads</h1>
+          <p class="page-subtitle">Lead-Verwaltung und Bearbeitung</p>
         </div>
         <div class="header-actions">
-          <button class="view-toggle-btn" @click="toggleMapVisibility" :title="showMap ? 'Haritayı Gizle' : 'Haritayı Göster'">
+          <button class="view-toggle-btn" @click="toggleMapVisibility" :title="showMap ? 'Karte ausblenden' : 'Karte anzeigen'">
             <Icon v-if="showMap" icon="mdi:map-marker" width="20" height="20" />
             <Icon v-else icon="mdi:map-marker-off" width="20" height="20" />
           </button>
-          <button class="view-toggle-btn" @click="toggleViewMode" :title="viewMode === 'grid' ? 'Tablo Görünümü' : 'Kart Görünümü'">
+          <button class="view-toggle-btn" @click="toggleViewMode" :title="viewMode === 'grid' ? 'Tabellenansicht' : 'Kartenansicht'">
             <Icon v-if="viewMode === 'grid'" icon="mdi:view-list" width="20" height="20" />
             <Icon v-else icon="mdi:view-grid" width="20" height="20" />
           </button>
           <button class="btn btn-outline" @click="toggleFilters">
             <Icon icon="mdi:filter" width="20" height="20" />
-            Filtreler
+            Filter
           </button>
           <button class="btn btn-primary btn-large" @click="openLeadModal('new')">
             <Icon icon="mdi:plus" width="20" height="20" />
-            Yeni Lead
+            Neuer Lead
           </button>
         </div>
       </div>
@@ -745,13 +745,13 @@ watch(showMap, (newValue) => {
         <div class="alert-content">
           <Icon icon="mdi:clock-alert-outline" width="24" />
           <div>
-            <strong>{{ pendingPaymentsCount }} bekleyen IBAN ödemesi var!</strong>
-            <p>IBAN ile yapılan ödemeler admin onayı bekliyor.</p>
+            <strong>{{ pendingPaymentsCount }} ausstehende IBAN-Zahlungen!</strong>
+            <p>IBAN-Zahlungen warten auf Admin-Genehmigung.</p>
           </div>
         </div>
         <router-link to="/admin/pending-payments" class="alert-button">
           <Icon icon="mdi:eye" width="18" />
-          Ödemeleri Görüntüle
+          Zahlungen anzeigen
         </router-link>
       </div>
     
@@ -760,27 +760,27 @@ watch(showMap, (newValue) => {
       <div v-if="showFilters" class="filters-panel">
         <div class="filters-content">
           <div class="filter-group">
-          <label>Arama</label>
+          <label>Suche</label>
           <input 
             v-model="filters.search" 
             type="text" 
-            placeholder="Başlık, açıklama veya sahip ara..."
+            placeholder="Titel, Beschreibung oder Besitzer suchen..."
             class="filter-input"
           />
         </div>
         
         <div class="filter-group">
-          <label>Durum</label>
+          <label>Status</label>
           <select v-model="filters.status" class="filter-select">
-            <option value="all">Tümü</option>
-            <option value="active">Aktif</option>
-            <option value="inactive">Pasif</option>
-            <option value="sold">Satılmış</option>
+            <option value="all">Alle</option>
+            <option value="active">Aktiv</option>
+            <option value="inactive">Inaktiv</option>
+            <option value="sold">Verkauft</option>
           </select>
         </div>
         
         <div class="filter-group">
-          <label>Fiyat Aralığı ({{ getCurrencySymbol(settings.defaultCurrency) }})</label>
+          <label>Preisspanne ({{ getCurrencySymbol(settings.defaultCurrency) }})</label>
           <div class="price-range">
             <input 
               v-model="filters.priceRange.min" 
@@ -799,7 +799,7 @@ watch(showMap, (newValue) => {
         </div>
         
         <div class="filter-group">
-          <label>Tarih Aralığı</label>
+          <label>Datumsbereich</label>
           <div class="date-range">
             <input 
               v-model="filters.dateRange.start" 
@@ -816,8 +816,8 @@ watch(showMap, (newValue) => {
         </div>
         
         <div class="filter-actions">
-          <button class="btn btn-outline" @click="clearFilters">Temizle</button>
-          <button class="btn btn-primary" @click="applyFilters">Uygula</button>
+          <button class="btn btn-outline" @click="clearFilters">Zurücksetzen</button>
+          <button class="btn btn-primary" @click="applyFilters">Anwenden</button>
         </div>
         </div>
       </div>
@@ -830,19 +830,19 @@ watch(showMap, (newValue) => {
 
     <!-- Sonuç sayısı -->
     <div v-if="leads.length" class="results-info">
-      <span>{{ filteredLeads.length }} / {{ leads.length }} lead gösteriliyor</span>
+      <span>{{ filteredLeads.length }} / {{ leads.length }} Leads angezeigt</span>
     </div>
 
     <div v-if="!leads.length" class="empty-state">
       <div class="empty-icon">📋</div>
-      <h3>Henüz lead yok</h3>
-      <p>İlk lead'inizi oluşturmak için "Yeni Lead" butonuna tıklayın</p>
+      <h3>Noch keine Leads vorhanden</h3>
+      <p>Klicken Sie auf "Neuer Lead", um Ihren ersten Lead zu erstellen</p>
     </div>
     
     <div v-else-if="!filteredLeads.length" class="empty-state">
       <div class="empty-icon">🔍</div>
-      <h3>Filtreye uygun lead bulunamadı</h3>
-      <p>Filtreleri değiştirerek tekrar deneyin</p>
+      <h3>Keine Leads gefunden, die den Filtern entsprechen</h3>
+      <p>Versuchen Sie es erneut, indem Sie die Filter ändern</p>
     </div>
     
     <!-- Tablo Görünümü -->
@@ -851,14 +851,14 @@ watch(showMap, (newValue) => {
         <thead>
           <tr>
             <th>Lead</th>
-            <th>Sigorta Tipi</th>
-            <th>Başlangıç Fiyatı</th>
-            <th>Güncel Teklif</th>
-            <th>Anında Al</th>
-            <th>Teklif Sayısı</th>
-            <th>Durum</th>
-            <th>Sahip</th>
-            <th>İşlemler</th>
+            <th>Versicherungstyp</th>
+            <th>Startpreis</th>
+            <th>Aktuelles Gebot</th>
+            <th>Sofortkauf</th>
+            <th>Gebotsanzahl</th>
+            <th>Status</th>
+            <th>Besitzer</th>
+            <th>Aktionen</th>
           </tr>
         </thead>
         <tbody>
@@ -897,19 +897,19 @@ watch(showMap, (newValue) => {
             </td>
             <td>
               <span class="status-badge-table" :class="lead.sale ? 'sold' : (lead.isActive ? 'active' : 'inactive')">
-                {{ lead.sale ? 'Satıldı' : (lead.isActive ? 'Aktif' : 'Pasif') }}
+                {{ lead.sale ? 'Verkauft' : (lead.isActive ? 'Aktiv' : 'Inaktiv') }}
               </span>
             </td>
             <td>
-              <span class="owner-text">{{ lead.owner?.email || 'Sahip yok' }}</span>
+              <span class="owner-text">{{ lead.owner?.email || 'Kein Besitzer' }}</span>
             </td>
             <td>
               <div class="table-actions">
                 <button class="table-btn primary" @click="viewLeadDetails(lead.id)">
-                  Detay
+                  Details
                 </button>
                 <button v-if="!lead.sale" class="table-btn secondary" @click="openLeadModal('edit', lead)">
-                  Düzenle
+                  Bearbeiten
                 </button>
               </div>
             </td>
@@ -931,11 +931,11 @@ watch(showMap, (newValue) => {
           <div class="lead-actions">
             <button class="btn btn-primary" @click="viewLeadDetails(lead.id)">
               <Icon icon="mdi:eye" width="14" height="14" />
-              Detay
+              Details
             </button>
             <button v-if="!lead.sale" class="btn btn-secondary" @click="openLeadModal('edit', lead)">
               <Icon icon="mdi:pencil" width="14" height="14" />
-              Düzenle
+              Bearbeiten
             </button>
           </div>
         </div>
@@ -943,22 +943,22 @@ watch(showMap, (newValue) => {
         <div class="lead-meta-compact">
           <div class="meta-row">
             <div class="meta-item">
-              <span class="meta-label">Başlangıç:</span>
+              <span class="meta-label">Start:</span>
               <span class="meta-value">{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
             </div>
             <div v-if="lead.insuranceType" class="meta-item">
-              <span class="meta-label">Sigorta:</span>
+              <span class="meta-label">Versicherung:</span>
               <span class="meta-value">{{ lead.insuranceType }}</span>
             </div>
             <div class="meta-item">
-              <span class="meta-label">Teklif:</span>
+              <span class="meta-label">Gebote:</span>
               <span class="meta-value">{{ lead.bids?.length || 0 }}</span>
             </div>
           </div>
           <div class="meta-row">
             <div class="meta-item full-width">
-              <span class="meta-label">Sahip:</span>
-              <span class="meta-value">{{ lead.owner?.email || 'Sahip yok' }}</span>
+              <span class="meta-label">Besitzer:</span>
+              <span class="meta-value">{{ lead.owner?.email || 'Kein Besitzer' }}</span>
             </div>
           </div>
         </div>
@@ -966,20 +966,20 @@ watch(showMap, (newValue) => {
         <!-- Teklifler (hem satılmış hem satılmamış lead'ler için) -->
         <div v-if="lead.bids?.length > 0" class="bids-preview">
           <div class="bids-header">
-            <span class="bids-title">Teklifler:</span>
+            <span class="bids-title">Gebote:</span>
           </div>
           <div class="bids-list">
             <div v-for="(bid, index) in (expandedBids.has(lead.id) ? lead.bids : lead.bids.slice(0, 3))" :key="bid.id" class="bid-item">
               <span class="bid-rank">{{ index + 1 }}.</span>
               <span class="bid-amount">{{ formatPrice(bid.amount, settings.defaultCurrency) }}</span>
-              <span class="bid-user">{{ bid.user?.email || 'Anonim' }}</span>
+              <span class="bid-user">{{ bid.user?.email || 'Anonym' }}</span>
             </div>
             <div v-if="lead.bids.length > 3" class="bid-more" @click="toggleBidsExpansion(lead.id)">
               <span v-if="!expandedBids.has(lead.id)">
-                +{{ lead.bids.length - 3 }} teklif daha
+                +{{ lead.bids.length - 3 }} weitere Gebote
               </span>
               <span v-else>
-                Daha az göster
+                Weniger anzeigen
               </span>
             </div>
           </div>
@@ -990,15 +990,15 @@ watch(showMap, (newValue) => {
           <div class="sale-summary">
             <span class="sale-price">{{ formatPrice(lead.sale.amount, settings.defaultCurrency) }}</span>
             <span class="sale-buyer">{{ lead.sale.buyer?.email || 'Bilinmiyor' }}</span>
-            <span class="sale-date">{{ new Date(lead.sale.soldAt).toLocaleDateString('tr-TR') }}</span>
+            <span class="sale-date">{{ new Date(lead.sale.soldAt).toLocaleDateString('de-DE') }}</span>
           </div>
           <div class="sale-payment-info">
             <span class="payment-method-badge" :class="lead.sale.paymentMethod">
-              {{ lead.sale.paymentMethod === 'balance' ? 'Bakiye' : 'IBAN' }}
+              {{ lead.sale.paymentMethod === 'balance' ? 'Guthaben' : 'IBAN' }}
             </span>
             <div v-if="lead.sale.paymentMethod === 'balance' && lead.sale.balanceBefore !== null && lead.sale.balanceAfter !== null" class="balance-info">
-              <span class="balance-before">Öncesi: {{ formatPrice(lead.sale.balanceBefore, settings.defaultCurrency) }}</span>
-              <span class="balance-after">Sonrası: {{ formatPrice(lead.sale.balanceAfter, settings.defaultCurrency) }}</span>
+              <span class="balance-before">Vorher: {{ formatPrice(lead.sale.balanceBefore, settings.defaultCurrency) }}</span>
+              <span class="balance-after">Nachher: {{ formatPrice(lead.sale.balanceAfter, settings.defaultCurrency) }}</span>
             </div>
           </div>
         </div>
@@ -1007,15 +1007,15 @@ watch(showMap, (newValue) => {
         <div v-else class="lead-stats">
           <div class="stat-item">
             <div class="stat-value">{{ formatPrice(lead.bids?.[0]?.amount || lead.startPrice, settings.defaultCurrency) }}</div>
-            <div class="stat-label">Güncel Teklif</div>
+            <div class="stat-label">Aktuelles Gebot</div>
           </div>
           <div class="stat-item">
             <div class="stat-value">+{{ getCurrencySymbol(settings.defaultCurrency) }}{{ lead.minIncrement }}</div>
-            <div class="stat-label">Min Artış</div>
+            <div class="stat-label">Mindesterhöhung</div>
           </div>
           <div v-if="lead.instantBuyPrice" class="stat-item buy-now">
             <div class="stat-value">{{ formatPrice(lead.instantBuyPrice, settings.defaultCurrency) }}</div>
-            <div class="stat-label">Anında Satın Al</div>
+            <div class="stat-label">Sofortkauf</div>
           </div>
         </div>
       </div>
@@ -1026,20 +1026,20 @@ watch(showMap, (newValue) => {
     <div v-if="showLeadModal" class="modal-backdrop" @click="closeLeadModal">
       <div class="modal" @click.stop>
         <div class="modal-header">
-          <h3>{{ modalMode === 'new' ? 'Yeni Lead Oluştur' : 'Lead Düzenle' }}</h3>
+          <h3>{{ modalMode === 'new' ? 'Neuen Lead erstellen' : 'Lead bearbeiten' }}</h3>
           <button class="modal-close" @click="closeLeadModal">×</button>
         </div>
 
         <div class="modal-body">
           <!-- Formleadport Entegrasyonu -->
           <div class="form-group full-width" style="background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
-            <label style="margin-bottom: 8px; font-weight: 600; color: #1e293b;">Formleadport Form Numarası (Opsiyonel)</label>
+            <label style="margin-bottom: 8px; font-weight: 600; color: #1e293b;">Formleadport Formularnummer (Optional)</label>
             <div style="display: flex; gap: 8px; align-items: end;">
               <input 
                 v-model="formleadportFormId" 
                 type="text" 
                 class="form-input" 
-                placeholder="Örn: 123456" 
+                placeholder="z.B.: 123456" 
                 maxlength="6"
                 @keyup.enter="fetchFormleadportData"
                 style="flex: 1;"
@@ -1051,7 +1051,7 @@ watch(showMap, (newValue) => {
                 :disabled="isLoadingFormData"
                 style="background: #3b82f6; color: white; white-space: nowrap; padding: 8px 16px;"
               >
-                {{ isLoadingFormData ? 'Yükleniyor...' : 'Getir' }}
+                {{ isLoadingFormData ? 'Wird geladen...' : 'Abrufen' }}
               </button>
             </div>
             <div v-if="formleadportError" style="color: #ef4444; font-size: 0.875rem; margin-top: 8px;">
@@ -1061,34 +1061,34 @@ watch(showMap, (newValue) => {
 
           <!-- Tek sütun: Başlık -->
           <div class="form-group full-width">
-            <label>Başlık *</label>
-            <input v-model="leadForm.title" type="text" class="form-input" placeholder="Lead başlığı" required />
+            <label>Titel *</label>
+            <input v-model="leadForm.title" type="text" class="form-input" placeholder="Lead-Titel" required />
           </div>
 
           <!-- Tek sütun: Açıklama -->
           <div class="form-group full-width">
-            <label>Açıklama *</label>
-            <textarea v-model="leadForm.description" class="form-textarea" placeholder="Lead açıklaması" rows="3" required></textarea>
+            <label>Beschreibung *</label>
+            <textarea v-model="leadForm.description" class="form-textarea" placeholder="Lead-Beschreibung" rows="3" required></textarea>
           </div>
 
           <!-- Sigorta Türü -->
           <div class="form-group full-width">
-            <label>Sigorta Türü</label>
+            <label>Versicherungstyp</label>
             <select v-model="leadForm.insuranceType" class="form-input">
-              <option value="">Sigorta türü seçin</option>
+              <option value="">Versicherungstyp auswählen</option>
               <option v-for="type in insuranceTypes" :key="type.name" :value="type.name">{{ type.name }}</option>
             </select>
           </div>
 
           <!-- Posta Kodu -->
           <div class="form-group full-width">
-            <label>Posta Kodu</label>
+            <label>Postleitzahl</label>
             <div class="postal-code-container">
               <input
                 v-model="postalCodeSearch"
                 type="text"
                 class="form-input"
-                placeholder="Posta kodu veya şehir adı yazın..."
+                placeholder="Postleitzahl oder Stadtname eingeben..."
                 @input="onPostalCodeInput"
                 @focus="onPostalCodeFocus"
                 @blur="onPostalCodeBlur"
@@ -1110,84 +1110,84 @@ watch(showMap, (newValue) => {
           <!-- İki sütun: Lead Tipi ve Fiyat -->
           <div class="form-row">
             <div class="form-group">
-              <label>{{ leadForm.leadType === 'SOFORT_KAUF' ? 'Satış Fiyatı' : 'Başlangıç Fiyatı' }} ({{ getCurrencySymbol(settings.defaultCurrency) }}) *</label>
+              <label>{{ leadForm.leadType === 'SOFORT_KAUF' ? 'Verkaufspreis' : 'Startpreis' }} ({{ getCurrencySymbol(settings.defaultCurrency) }}) *</label>
               <input v-model="leadForm.startPrice" type="number" class="form-input" placeholder="0" min="0" step="1" required />
             </div>
             <div class="form-group">
-              <label>Lead Tipi *</label>
+              <label>Lead-Typ *</label>
               <select v-model="leadForm.leadType" class="form-input">
-                <option value="AUCTION">Açık Artırma</option>
-                <option value="SOFORT_KAUF">Sofort Kauf (Anında Satın Alma)</option>
+                <option value="AUCTION">Auktion</option>
+                <option value="SOFORT_KAUF">Sofortkauf (Sofortiger Kauf)</option>
               </select>
               <small style="color: #6b7280; font-size: 0.875rem; display: block; margin-top: 4px;">
-                {{ leadForm.leadType === 'AUCTION' ? 'Açık artırma ile satılacak' : 'Sabit fiyattan anında satın alınabilir' }}
+                {{ leadForm.leadType === 'AUCTION' ? 'Wird per Auktion verkauft' : 'Kann sofort zu einem festen Preis gekauft werden' }}
               </small>
             </div>
           </div>
 
           <!-- Tek sütun: Private Details -->
           <div class="form-group full-width">
-            <label>Lead Detayları (Sadece Satın Alan Görür)</label>
-            <textarea v-model="leadForm.privateDetails" class="form-textarea" placeholder="Satın alan kişinin göreceği detay bilgileri girin" rows="4"></textarea>
-            <small class="form-help">Bu alan sadece leadi satın alan kişi, lead sahibi ve adminler tarafından görülebilir.</small>
+            <label>Lead-Details (Nur für Käufer sichtbar)</label>
+            <textarea v-model="leadForm.privateDetails" class="form-textarea" placeholder="Geben Sie Detailinformationen ein, die der Käufer sehen wird" rows="4"></textarea>
+            <small class="form-help">Dieses Feld ist nur für den Käufer des Leads, den Lead-Besitzer und Administratoren sichtbar.</small>
           </div>
 
           <!-- İki sütun: Minimum Artış ve Anında Satın Alma Fiyatı (Sadece Auction için) -->
           <div class="form-row" v-if="leadForm.leadType === 'AUCTION'">
             <div class="form-group">
-              <label>Minimum Artış ({{ getCurrencySymbol(settings.defaultCurrency) }}) *</label>
+              <label>Mindesterhöhung ({{ getCurrencySymbol(settings.defaultCurrency) }}) *</label>
               <input v-model="leadForm.minIncrement" type="number" class="form-input" placeholder="0" min="0" step="1" required />
             </div>
             <div class="form-group">
-              <label>Anında Satın Alma Fiyatı ({{ getCurrencySymbol(settings.defaultCurrency) }})</label>
-              <input v-model="leadForm.buyNowPrice" type="number" class="form-input" placeholder="Opsiyonel" min="0" step="1" />
-              <small class="form-help">Anında satın alma fiyatı</small>
+              <label>Sofortkaufpreis ({{ getCurrencySymbol(settings.defaultCurrency) }})</label>
+              <input v-model="leadForm.buyNowPrice" type="number" class="form-input" placeholder="Optional" min="0" step="1" />
+              <small class="form-help">Sofortkaufpreis</small>
             </div>
           </div>
 
           <!-- Başlangıç Tarihi -->
           <div class="form-group full-width" v-if="leadForm.leadType === 'AUCTION'">
-            <label>Başlangıç Tarihi (Opsiyonel)</label>
+            <label>Startdatum (Optional)</label>
             <input v-model="leadForm.startsAt" type="datetime-local" class="form-input" />
-            <small class="form-help">Boş bırakırsanız lead hemen aktif olur</small>
+            <small class="form-help">Wenn leer gelassen, wird der Lead sofort aktiv</small>
           </div>
 
           <!-- Başlangıç Tarihi (Sofort Kauf için) -->
           <div class="form-group full-width" v-if="leadForm.leadType === 'SOFORT_KAUF'">
-            <label>Başlangıç Tarihi (Opsiyonel)</label>
+            <label>Startdatum (Optional)</label>
             <input v-model="leadForm.startsAt" type="datetime-local" class="form-input" />
-            <small class="form-help">Boş bırakırsanız lead hemen aktif olur</small>
+            <small class="form-help">Wenn leer gelassen, wird der Lead sofort aktiv</small>
           </div>
 
           <!-- Tek sütun: Bitiş Tarihi -->
           <div class="form-group full-width">
-            <label>Bitiş Tarihi *</label>
+            <label>Enddatum *</label>
             <input v-model="leadForm.endsAt" type="datetime-local" class="form-input" required />
           </div>
 
           <!-- Vitrine Ekle ve Premium'a Ekle - Yan yana -->
           <div class="form-row">
             <div class="form-group toggle-field">
-              <label>Vitrine Ekle</label>
+              <label>Zu Showcase hinzufügen</label>
               <div class="toggle-container">
                 <label class="toggle-switch">
                   <input type="checkbox" v-model="leadForm.isShowcase" />
                   <span class="toggle-slider"></span>
                 </label>
-                <span class="toggle-label">{{ leadForm.isShowcase ? 'Açık' : 'Kapalı' }}</span>
+                <span class="toggle-label">{{ leadForm.isShowcase ? 'Aktiv' : 'Inaktiv' }}</span>
               </div>
-              <small class="toggle-help">Vitrine alınan leadler ana sayfanın vitrin bölümünde öne çıkarılır.</small>
+              <small class="toggle-help">Leads im Showcase werden im Showcase-Bereich der Startseite hervorgehoben.</small>
             </div>
             <div class="form-group toggle-field">
-              <label>Premium'a Ekle</label>
+              <label>Zu Premium hinzufügen</label>
               <div class="toggle-container">
                 <label class="toggle-switch">
                   <input type="checkbox" v-model="leadForm.isPremium" />
                   <span class="toggle-slider"></span>
                 </label>
-                <span class="toggle-label">{{ leadForm.isPremium ? 'Açık' : 'Kapalı' }}</span>
+                <span class="toggle-label">{{ leadForm.isPremium ? 'Aktiv' : 'Inaktiv' }}</span>
               </div>
-              <small class="toggle-help">Premium'a alınan leadler pazaryeri sayfasındaki premium bölümünde gösterilir.</small>
+              <small class="toggle-help">Premium-Leads werden im Premium-Bereich der Marktplatzseite angezeigt.</small>
             </div>
           </div>
 
@@ -1196,9 +1196,9 @@ watch(showMap, (newValue) => {
         </div>
 
         <div class="modal-footer">
-          <button class="btn btn-secondary" @click="closeLeadModal">İptal</button>
+          <button class="btn btn-secondary" @click="closeLeadModal">Abbrechen</button>
           <button class="btn btn-primary" @click="saveLead">
-            {{ modalMode === 'new' ? 'Oluştur' : 'Güncelle' }}
+            {{ modalMode === 'new' ? 'Erstellen' : 'Aktualisieren' }}
           </button>
         </div>
       </div>
@@ -1208,67 +1208,67 @@ watch(showMap, (newValue) => {
     <div v-if="showFormPreview" class="modal-backdrop" @click="closeFormPreview">
       <div class="modal" @click.stop style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
         <div class="modal-header">
-          <h3>📋 Formleadport Verileri Önizleme</h3>
+          <h3>📋 Formleadport-Datenvorschau</h3>
           <button @click="closeFormPreview" class="modal-close">&times;</button>
         </div>
         
         <div class="modal-body" v-if="formleadportData">
           <div class="form-preview">
             <div class="preview-section">
-              <h4>👤 Müşteri Bilgileri</h4>
+              <h4>👤 Kundeninformationen</h4>
               <div class="preview-grid">
-                <div><strong>Ad Soyad:</strong> {{ formleadportData.musteri_isim }} {{ formleadportData.musteri_soyisim }}</div>
-                <div><strong>Cinsiyet:</strong> {{ formleadportData.musteri_cinsiyet || 'Belirtilmemiş' }}</div>
-                <div><strong>Doğum Tarihi:</strong> {{ formleadportData.musteri_dogum_tarihi || 'Belirtilmemiş' }}</div>
-                <div><strong>Email:</strong> {{ formleadportData.email || 'Belirtilmemiş' }}</div>
-                <div><strong>Telefon:</strong> {{ formleadportData.telefon || 'Belirtilmemiş' }}</div>
-                <div><strong>Sabit Telefon:</strong> {{ formleadportData.sabit_telefon || 'Belirtilmemiş' }}</div>
+                <div><strong>Vor- und Nachname:</strong> {{ formleadportData.musteri_isim }} {{ formleadportData.musteri_soyisim }}</div>
+                <div><strong>Geschlecht:</strong> {{ formleadportData.musteri_cinsiyet || 'Nicht angegeben' }}</div>
+                <div><strong>Geburtsdatum:</strong> {{ formleadportData.musteri_dogum_tarihi || 'Nicht angegeben' }}</div>
+                <div><strong>E-Mail:</strong> {{ formleadportData.email || 'Nicht angegeben' }}</div>
+                <div><strong>Telefon:</strong> {{ formleadportData.telefon || 'Nicht angegeben' }}</div>
+                <div><strong>Festnetz:</strong> {{ formleadportData.sabit_telefon || 'Nicht angegeben' }}</div>
               </div>
             </div>
             
             <div class="preview-section">
-              <h4>🏢 Firma Bilgileri</h4>
+              <h4>🏢 Firmeninformationen</h4>
               <div class="preview-grid">
-                <div><strong>Firma Adı:</strong> {{ formleadportData.firma_adi }}</div>
-                <div><strong>Adres:</strong> {{ formleadportData.adres || 'Belirtilmemiş' }}</div>
-                <div><strong>Şehir:</strong> {{ formleadportData.sehir || 'Belirtilmemiş' }}</div>
-                <div><strong>Posta Kodu:</strong> {{ formleadportData.posta_kodu || 'Belirtilmemiş' }}</div>
+                <div><strong>Firmenname:</strong> {{ formleadportData.firma_adi }}</div>
+                <div><strong>Adresse:</strong> {{ formleadportData.adres || 'Nicht angegeben' }}</div>
+                <div><strong>Stadt:</strong> {{ formleadportData.sehir || 'Nicht angegeben' }}</div>
+                <div><strong>Postleitzahl:</strong> {{ formleadportData.posta_kodu || 'Nicht angegeben' }}</div>
               </div>
             </div>
             
             <div class="preview-section">
-              <h4>📅 Randevu Bilgileri</h4>
+              <h4>📅 Termininformationen</h4>
               <div class="preview-grid">
-                <div><strong>Randevu Tarihi:</strong> {{ formleadportData.randevu_tarihi || 'Belirtilmemiş' }}</div>
-                <div><strong>Randevu Tipi:</strong> {{ formleadportData.randevu_tipi || 'Belirtilmemiş' }}</div>
+                <div><strong>Termindatum:</strong> {{ formleadportData.randevu_tarihi || 'Nicht angegeben' }}</div>
+                <div><strong>Termintyp:</strong> {{ formleadportData.randevu_tipi || 'Nicht angegeben' }}</div>
               </div>
             </div>
             
             <div class="preview-section">
-              <h4>🏥 Sigorta Bilgileri</h4>
+              <h4>🏥 Versicherungsinformationen</h4>
               <div class="preview-grid">
-                <div><strong>Sigorta Türü:</strong> {{ formleadportData.sigorta || 'Belirtilmemiş' }}</div>
-                <div><strong>Sigorta Şirketi:</strong> {{ formleadportData.sigorta_sirket || 'Belirtilmemiş' }}</div>
-                <div><strong>Sigorta Başlangıç:</strong> {{ formleadportData.sigorta_baslangic_tarihi || 'Belirtilmemiş' }}</div>
-                <div><strong>Katkı Payı:</strong> {{ formleadportData.sigorta_katki_payi || 'Belirtilmemiş' }}</div>
+                <div><strong>Versicherungstyp:</strong> {{ formleadportData.sigorta || 'Nicht angegeben' }}</div>
+                <div><strong>Versicherungsgesellschaft:</strong> {{ formleadportData.sigorta_sirket || 'Nicht angegeben' }}</div>
+                <div><strong>Versicherungsbeginn:</strong> {{ formleadportData.sigorta_baslangic_tarihi || 'Nicht angegeben' }}</div>
+                <div><strong>Selbstbeteiligung:</strong> {{ formleadportData.sigorta_katki_payi || 'Nicht angegeben' }}</div>
               </div>
             </div>
             
             <div class="preview-section">
-              <h4>👨‍👩‍👧‍👦 Kişisel Bilgiler</h4>
+              <h4>👨‍👩‍👧‍👦 Persönliche Informationen</h4>
               <div class="preview-grid">
-                <div><strong>Medeni Durum:</strong> {{ formleadportData.medeni_durum || 'Belirtilmemiş' }}</div>
-                <div><strong>Çalışma Durumu:</strong> {{ formleadportData.calisma_durumu || 'Belirtilmemiş' }}</div>
-                <div><strong>Çocuk Sayısı:</strong> {{ formleadportData.aile_cocuk_sayisi || 'Belirtilmemiş' }}</div>
-                <div><strong>Eş Yaşı:</strong> {{ formleadportData.es_yasi || 'Belirtilmemiş' }}</div>
+                <div><strong>Familienstand:</strong> {{ formleadportData.medeni_durum || 'Nicht angegeben' }}</div>
+                <div><strong>Beschäftigungsstatus:</strong> {{ formleadportData.calisma_durumu || 'Nicht angegeben' }}</div>
+                <div><strong>Anzahl der Kinder:</strong> {{ formleadportData.aile_cocuk_sayisi || 'Nicht angegeben' }}</div>
+                <div><strong>Alter des Partners:</strong> {{ formleadportData.es_yasi || 'Nicht angegeben' }}</div>
               </div>
             </div>
           </div>
         </div>
         
         <div class="modal-footer">
-          <button @click="closeFormPreview" class="btn btn-secondary">İptal</button>
-          <button @click="useFormleadportData" class="btn btn-primary">Bu Verileri Kullan</button>
+          <button @click="closeFormPreview" class="btn btn-secondary">Abbrechen</button>
+          <button @click="useFormleadportData" class="btn btn-primary">Diese Daten verwenden</button>
         </div>
       </div>
     </div>

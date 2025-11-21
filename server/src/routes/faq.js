@@ -28,7 +28,7 @@ export default function faqRouter(prisma) {
       res.json(groupedFAQs)
     } catch (error) {
       console.error('Error fetching FAQs:', error)
-      res.status(500).json({ message: 'FAQ\'lar alınamadı' })
+      res.status(500).json({ message: 'FAQs konnten nicht abgerufen werden' })
     }
   })
 
@@ -45,7 +45,7 @@ export default function faqRouter(prisma) {
       res.json(faqs)
     } catch (error) {
       console.error('Error fetching admin FAQs:', error)
-      res.status(500).json({ message: 'FAQ\'lar alınamadı' })
+      res.status(500).json({ message: 'FAQs konnten nicht abgerufen werden' })
     }
   })
 
@@ -57,13 +57,13 @@ export default function faqRouter(prisma) {
       })
       
       if (!faq) {
-        return res.status(404).json({ message: 'FAQ bulunamadı' })
+        return res.status(404).json({ message: 'FAQ nicht gefunden' })
       }
       
       res.json(faq)
     } catch (error) {
       console.error('Error fetching FAQ:', error)
-      res.status(500).json({ message: 'FAQ alınamadı' })
+      res.status(500).json({ message: 'FAQ konnte nicht abgerufen werden' })
     }
   })
 
@@ -73,7 +73,7 @@ export default function faqRouter(prisma) {
       const { question, answer, category, isActive, sortOrder } = req.body
 
       if (!question || !answer || !category) {
-        return res.status(400).json({ message: 'Soru, cevap ve kategori gerekli' })
+        return res.status(400).json({ message: 'Frage, Antwort und Kategorie sind erforderlich' })
       }
 
       const faq = await prisma.fAQ.create({
@@ -86,10 +86,10 @@ export default function faqRouter(prisma) {
         }
       })
 
-      res.json({ message: 'FAQ başarıyla oluşturuldu', faq })
+      res.json({ message: 'FAQ erfolgreich erstellt', faq })
     } catch (error) {
       console.error('Error creating FAQ:', error)
-      res.status(500).json({ message: 'FAQ oluşturulamadı' })
+      res.status(500).json({ message: 'FAQ konnte nicht erstellt werden' })
     }
   })
 
@@ -110,13 +110,13 @@ export default function faqRouter(prisma) {
         }
       })
 
-      res.json({ message: 'FAQ başarıyla güncellendi', faq })
+      res.json({ message: 'FAQ erfolgreich aktualisiert', faq })
     } catch (error) {
       console.error('Error updating FAQ:', error)
       if (error.code === 'P2025') {
-        res.status(404).json({ message: 'FAQ bulunamadı' })
+        res.status(404).json({ message: 'FAQ nicht gefunden' })
       } else {
-        res.status(500).json({ message: 'FAQ güncellenemedi' })
+        res.status(500).json({ message: 'FAQ konnte nicht aktualisiert werden' })
       }
     }
   })
@@ -130,13 +130,13 @@ export default function faqRouter(prisma) {
         where: { id }
       })
 
-      res.json({ message: 'FAQ başarıyla silindi' })
+      res.json({ message: 'FAQ erfolgreich gelöscht' })
     } catch (error) {
       console.error('Error deleting FAQ:', error)
       if (error.code === 'P2025') {
         res.status(404).json({ message: 'FAQ bulunamadı' })
       } else {
-        res.status(500).json({ message: 'FAQ silinemedi' })
+        res.status(500).json({ message: 'FAQ konnte nicht gelöscht werden' })
       }
     }
   })
@@ -160,7 +160,7 @@ export default function faqRouter(prisma) {
       res.json(categoryList)
     } catch (error) {
       console.error('Error fetching categories:', error)
-      res.status(500).json({ message: 'Kategoriler alınamadı' })
+      res.status(500).json({ message: 'Kategorien konnten nicht abgerufen werden' })
     }
   })
 
@@ -173,113 +173,113 @@ export default function faqRouter(prisma) {
       // Insert default FAQs
       const defaultFAQs = [
         {
-          question: 'LeadPortal nedir?',
-          answer: 'LeadPortal, potansiyel müşteri yönetimi ve açık artırma platformudur. İşletmeler burada potansiyel müşterilerini açık artırma yöntemiyle satabilir ve alıcılar da rekabetçi fiyatlarla kaliteli lead\'ler satın alabilir.',
+          question: 'Was ist LeadPortal?',
+          answer: 'LeadPortal ist eine Plattform für Lead-Management und Auktionen. Unternehmen können hier ihre potenziellen Kunden über ein Auktionssystem verkaufen, und Käufer können qualitativ hochwertige Leads zu wettbewerbsfähigen Preisen erwerben.',
           category: 'general',
           isActive: true,
           sortOrder: 1
         },
         {
-          question: 'Platform nasıl çalışır?',
-          answer: 'Satıcılar potansiyel müşteri bilgilerini platforma yükler, alıcılar bu lead\'ler için teklif verir. En yüksek teklifi veren alıcı, lead bilgilerine erişim hakkı kazanır.',
+          question: 'Wie funktioniert die Plattform?',
+          answer: 'Verkäufer laden potenzielle Kundendaten auf die Plattform hoch, Käufer bieten auf diese Leads. Der Käufer mit dem höchsten Gebot erhält Zugriff auf die Lead-Informationen.',
           category: 'general',
           isActive: true,
           sortOrder: 2
         },
         {
-          question: 'Platform ücretsiz mi?',
-          answer: 'Temel özellikler ücretsizdir. Premium özellikler ve gelişmiş analitikler için ücretli planlarımız bulunmaktadır.',
+          question: 'Ist die Plattform kostenlos?',
+          answer: 'Die Grundfunktionen sind kostenlos. Für Premium-Funktionen und erweiterte Analysen stehen kostenpflichtige Pläne zur Verfügung.',
           category: 'general',
           isActive: true,
           sortOrder: 3
         },
         {
-          question: 'Hangi sektörlerde hizmet veriyorsunuz?',
-          answer: 'Emlak, finans, e-ticaret, sağlık, eğitim ve daha birçok sektörde hizmet vermekteyiz. Platformumuz tüm sektörlere uygun esnek yapıya sahiptir.',
+          question: 'In welchen Branchen sind Sie tätig?',
+          answer: 'Wir sind in Immobilien, Finanzen, E-Commerce, Gesundheit, Bildung und vielen weiteren Branchen tätig. Unsere Plattform verfügt über eine flexible Struktur, die für alle Branchen geeignet ist.',
           category: 'general',
           isActive: true,
           sortOrder: 4
         },
         {
-          question: 'Nasıl teklif verebilirim?',
-          answer: 'Üye olduktan sonra istediğiniz lead için \'Teklif Ver\' butonuna tıklayarak teklifinizi girebilirsiniz. Minimum teklif miktarı her lead için belirtilmiştir.',
+          question: 'Wie kann ich ein Gebot abgeben?',
+          answer: 'Nach der Registrierung können Sie auf den gewünschten Lead klicken und über die Schaltfläche "Gebot abgeben" Ihr Gebot eingeben. Der Mindestgebotsbetrag ist für jeden Lead angegeben.',
           category: 'bidding',
           isActive: true,
           sortOrder: 1
         },
         {
-          question: 'Teklif verme süresi ne kadar?',
-          answer: 'Her açık artırmanın belirli bir süresi vardır. Bu süre lead detay sayfasında görüntülenir. Süre dolduğunda en yüksek teklifi veren kazanır.',
+          question: 'Wie lange dauert die Gebotsabgabe?',
+          answer: 'Jede Auktion hat eine bestimmte Dauer. Diese wird auf der Lead-Detailseite angezeigt. Wenn die Zeit abläuft, gewinnt der Bieter mit dem höchsten Gebot.',
           category: 'bidding',
           isActive: true,
           sortOrder: 2
         },
         {
-          question: 'Teklifimi geri çekebilir miyim?',
-          answer: 'Evet, açık artırma süresi dolmadan önce teklifinizi geri çekebilirsiniz. Ancak bu işlem için belirli koşullar geçerlidir.',
+          question: 'Kann ich mein Gebot zurückziehen?',
+          answer: 'Ja, Sie können Ihr Gebot vor Ablauf der Auktionszeit zurückziehen. Für diesen Vorgang gelten jedoch bestimmte Bedingungen.',
           category: 'bidding',
           isActive: true,
           sortOrder: 3
         },
         {
-          question: 'Minimum teklif artışı nedir?',
-          answer: 'Her lead için minimum teklif artışı belirlenmiştir. Bu miktar lead detay sayfasında \'Min. Artış\' olarak gösterilir.',
+          question: 'Was ist die Mindestgebotserhöhung?',
+          answer: 'Für jeden Lead ist eine Mindestgebotserhöhung festgelegt. Dieser Betrag wird auf der Lead-Detailseite als "Min. Erhöhung" angezeigt.',
           category: 'bidding',
           isActive: true,
           sortOrder: 4
         },
         {
-          question: 'Hesabımı nasıl oluştururum?',
-          answer: 'Ana sayfadaki \'Kayıt Ol\' butonuna tıklayarak e-posta adresiniz ve şifrenizle hesap oluşturabilirsiniz. E-posta doğrulaması gereklidir.',
+          question: 'Wie erstelle ich ein Konto?',
+          answer: 'Sie können ein Konto erstellen, indem Sie auf der Startseite auf die Schaltfläche "Registrieren" klicken und Ihre E-Mail-Adresse und Ihr Passwort eingeben. Eine E-Mail-Verifizierung ist erforderlich.',
           category: 'account',
           isActive: true,
           sortOrder: 1
         },
         {
-          question: 'Şifremi unuttum, ne yapmalıyım?',
-          answer: 'Giriş sayfasında \'Şifremi Unuttum\' linkine tıklayarak e-posta adresinize şifre sıfırlama bağlantısı gönderebilirsiniz.',
+          question: 'Ich habe mein Passwort vergessen, was soll ich tun?',
+          answer: 'Sie können auf der Anmeldeseite auf den Link "Passwort vergessen" klicken, um einen Passwort-Reset-Link an Ihre E-Mail-Adresse zu senden.',
           category: 'account',
           isActive: true,
           sortOrder: 2
         },
         {
-          question: 'Hesap bilgilerimi nasıl güncelleyebilirim?',
-          answer: 'Hesap ayarları sayfasından kişisel bilgilerinizi, iletişim bilgilerinizi ve güvenlik ayarlarınızı güncelleyebilirsiniz.',
+          question: 'Wie kann ich meine Kontoinformationen aktualisieren?',
+          answer: 'Sie können Ihre persönlichen Informationen, Kontaktdaten und Sicherheitseinstellungen auf der Kontoeinstellungsseite aktualisieren.',
           category: 'account',
           isActive: true,
           sortOrder: 3
         },
         {
-          question: 'Hesabımı nasıl silebilirim?',
-          answer: 'Hesap ayarları sayfasından hesap silme işlemini başlatabilirsiniz. Bu işlem geri alınamaz ve tüm verileriniz silinir.',
+          question: 'Wie kann ich mein Konto löschen?',
+          answer: 'Sie können den Kontolöschungsvorgang auf der Kontoeinstellungsseite starten. Dieser Vorgang kann nicht rückgängig gemacht werden und alle Ihre Daten werden gelöscht.',
           category: 'account',
           isActive: true,
           sortOrder: 4
         },
         {
-          question: 'Hangi ödeme yöntemlerini kabul ediyorsunuz?',
-          answer: 'Kredi kartı, banka kartı, havale/EFT ve dijital cüzdan ödemelerini kabul ediyoruz. Tüm ödemeler güvenli SSL şifreleme ile korunur.',
+          question: 'Welche Zahlungsmethoden akzeptieren Sie?',
+          answer: 'Wir akzeptieren Kreditkarten, Bankkarten, Überweisungen/SEPA-Überweisungen und digitale Geldbörsen. Alle Zahlungen sind durch sichere SSL-Verschlüsselung geschützt.',
           category: 'payment',
           isActive: true,
           sortOrder: 1
         },
         {
-          question: 'Ödeme ne zaman alınır?',
-          answer: 'Kazandığınız bir açık artırmada ödeme hemen alınır. Ödeme işlemi tamamlandıktan sonra lead bilgilerine erişim sağlanır.',
+          question: 'Wann wird die Zahlung abgebucht?',
+          answer: 'Bei einer gewonnenen Auktion wird die Zahlung sofort abgebucht. Nach Abschluss der Zahlung erhalten Sie Zugriff auf die Lead-Informationen.',
           category: 'payment',
           isActive: true,
           sortOrder: 2
         },
         {
-          question: 'İade politikası nedir?',
-          answer: 'Lead bilgileri teslim edildikten sonra iade yapılmaz. Ancak teknik sorunlar durumunda 24 saat içinde iade işlemi gerçekleştirilir.',
+          question: 'Wie ist die Rückerstattungsrichtlinie?',
+          answer: 'Nach der Übergabe der Lead-Informationen erfolgt keine Rückerstattung. Bei technischen Problemen wird jedoch innerhalb von 24 Stunden eine Rückerstattung vorgenommen.',
           category: 'payment',
           isActive: true,
           sortOrder: 3
         },
         {
-          question: 'Fatura alabilir miyim?',
-          answer: 'Evet, tüm ödemeler için fatura alabilirsiniz. Fatura bilgilerinizi hesap ayarlarından güncelleyebilirsiniz.',
+          question: 'Kann ich eine Rechnung erhalten?',
+          answer: 'Ja, Sie können für alle Zahlungen eine Rechnung erhalten. Sie können Ihre Rechnungsinformationen in den Kontoeinstellungen aktualisieren.',
           category: 'payment',
           isActive: true,
           sortOrder: 4
@@ -291,12 +291,12 @@ export default function faqRouter(prisma) {
       })
 
       res.json({ 
-        message: 'Varsayılan FAQ\'lar başarıyla yüklendi',
+        message: 'Standard-FAQs erfolgreich geladen',
         count: defaultFAQs.length
       })
     } catch (error) {
       console.error('Error resetting FAQs:', error)
-      res.status(500).json({ message: 'Varsayılan FAQ\'lar yüklenemedi' })
+      res.status(500).json({ message: 'Standard-FAQs konnten nicht geladen werden' })
     }
   })
 

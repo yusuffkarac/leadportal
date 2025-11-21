@@ -2,7 +2,7 @@
   <div class="admin-about-page">
     <div class="page-content">
       <div class="page-header">
-        <h1>Hakkında Sayfası Yönetimi</h1>
+        <h1>Über-Seiten-Verwaltung</h1>
         <div class="header-actions">
           <button 
             class="btn btn-outline" 
@@ -14,7 +14,7 @@
               <polyline points="7 10 12 15 17 10"/>
               <line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
-            <span v-if="isExporting">Export ediliyor...</span>
+            <span v-if="isExporting">Wird exportiert...</span>
             <span v-else>Export</span>
           </button>
           <button 
@@ -27,16 +27,16 @@
               <polyline points="17 8 12 3 7 8"/>
               <line x1="12" y1="3" x2="12" y2="15"/>
             </svg>
-            <span v-if="isImporting">Import ediliyor...</span>
+            <span v-if="isImporting">Wird importiert...</span>
             <span v-else>Import</span>
           </button>
           <button class="btn btn-secondary" @click="showResetModal = true">
             <Icon icon="mdi:refresh" width="20" height="20" />
-            Varsayılana Sıfırla
+            Auf Standard zurücksetzen
           </button>
           <button class="btn btn-primary" style="display: none!important;" @click="showCreateModal = true">
             <Icon icon="mdi:plus" width="20" height="20" />
-            Yeni Bölüm Ekle
+            Neuen Abschnitt hinzufügen
           </button>
         </div>
       </div>
@@ -44,38 +44,38 @@
       <!-- Filters -->
       <div class="filters">
         <div class="filter-group">
-          <label>Bölüm:</label>
+          <label>Abschnitt:</label>
           <select v-model="selectedSection" @change="filterSections">
-            <option value="">Tüm Bölümler</option>
+            <option value="">Alle Abschnitte</option>
             <option v-for="section in sections" :key="section" :value="section">
               {{ getSectionDisplayName(section) }}
             </option>
           </select>
         </div>
         <div class="filter-group">
-          <label>Durum:</label>
+          <label>Status:</label>
           <select v-model="selectedStatus" @change="filterSections">
-            <option value="">Tümü</option>
-            <option value="active">Aktif</option>
-            <option value="inactive">Pasif</option>
+            <option value="">Alle</option>
+            <option value="active">Aktiv</option>
+            <option value="inactive">Inaktiv</option>
           </select>
         </div>
         <div class="filter-group">
-          <label>Arama:</label>
+          <label>Suche:</label>
           <input 
             type="text" 
             v-model="searchQuery" 
             @input="filterSections"
-            placeholder="Başlık veya içerik ara..."
+            placeholder="Titel oder Inhalt suchen..."
           />
         </div>
       </div>
 
       <!-- About Sections List -->
       <div class="sections-list">
-        <div v-if="loading" class="loading">Yükleniyor...</div>
+        <div v-if="loading" class="loading">Wird geladen...</div>
         <div v-else-if="filteredSections.length === 0" class="no-data">
-          Hiç bölüm bulunamadı.
+          Keine Abschnitte gefunden.
         </div>
         <div v-else>
           <div class="section-item" v-for="section in filteredSections" :key="section.id">
@@ -85,18 +85,18 @@
                   {{ getSectionDisplayName(section.section) }}
                 </span>
                 <span class="status-badge" :class="{ active: section.isActive, inactive: !section.isActive }">
-                  {{ section.isActive ? 'Aktif' : 'Pasif' }}
+                  {{ section.isActive ? 'Aktiv' : 'Inaktiv' }}
                 </span>
-                <span class="sort-order">Sıra: {{ section.sortOrder }}</span>
+                <span class="sort-order">Reihenfolge: {{ section.sortOrder }}</span>
               </div>
               <div class="section-actions">
                 <button class="btn btn-sm btn-secondary" @click="editSection(section)">
                   <Icon icon="mdi:pencil" width="16" height="16" />
-                  Düzenle
+                  Bearbeiten
                 </button>
                 <button class="btn btn-sm btn-danger" @click="deleteSection(section)">
                   <Icon icon="mdi:delete" width="16" height="16" />
-                  Sil
+                  Löschen
                 </button>
               </div>
             </div>
@@ -108,14 +108,14 @@
                 <img :src="section.imageUrl" :alt="section.title" />
               </div>
               <div v-if="section.data" class="data-preview">
-                <strong>Özel Veri:</strong>
+                <strong>Benutzerdefinierte Daten:</strong>
                 <pre>{{ JSON.stringify(section.data, null, 2) }}</pre>
               </div>
             </div>
             <div class="section-meta">
-              <span>Oluşturulma: {{ formatDate(section.createdAt) }}</span>
+              <span>Erstellt: {{ formatDate(section.createdAt) }}</span>
               <span v-if="section.updatedAt !== section.createdAt">
-                Güncelleme: {{ formatDate(section.updatedAt) }}
+                Aktualisiert: {{ formatDate(section.updatedAt) }}
               </span>
             </div>
           </div>
@@ -127,61 +127,61 @@
     <div v-if="showCreateModal || showEditModal" class="modal-overlay" @click="closeModal">
       <div class="modal" @click.stop>
         <div class="modal-header">
-          <h2>{{ showCreateModal ? 'Yeni Bölüm Ekle' : 'Bölüm Düzenle' }}</h2>
+          <h2>{{ showCreateModal ? 'Neuen Abschnitt hinzufügen' : 'Abschnitt bearbeiten' }}</h2>
           <button class="close-btn" @click="closeModal">×</button>
         </div>
         <div class="modal-body">
           <form @submit.prevent="saveSection">
             <div class="form-group">
-              <label>Bölüm Türü *</label>
+              <label>Abschnittstyp *</label>
               <select v-model="formData.section" required>
-                <option value="">Bölüm Seçin</option>
-                <option value="hero">Hero (Ana Başlık)</option>
-                <option value="mission">Misyon</option>
-                <option value="vision">Vizyon</option>
-                <option value="team">Ekip</option>
-                <option value="stats">İstatistikler</option>
-                <option value="features">Özellikler</option>
-                <option value="values">Değerler</option>
-                <option value="history">Tarihçe</option>
+                <option value="">Abschnitt auswählen</option>
+                <option value="hero">Hero (Haupttitel)</option>
+                <option value="mission">Mission</option>
+                <option value="vision">Vision</option>
+                <option value="team">Team</option>
+                <option value="stats">Statistiken</option>
+                <option value="features">Funktionen</option>
+                <option value="values">Werte</option>
+                <option value="history">Geschichte</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Başlık</label>
+              <label>Titel</label>
               <input type="text" v-model="formData.title" />
             </div>
             <div class="form-group">
-              <label>Alt Başlık</label>
+              <label>Untertitel</label>
               <input type="text" v-model="formData.subtitle" />
             </div>
             <div class="form-group">
-              <label>İçerik</label> 
+              <label>Inhalt</label> 
               <textarea v-model="formData.content" rows="4"></textarea>
             </div>
             <div class="form-group">
-              <label>Resim URL'si</label>
+              <label>Bild-URL</label>
               <input v-model="formData.imageUrl" placeholder="https://example.com/image.jpg" />
             </div>
             <div class="form-group">
-              <label>Özel Veri (JSON)</label>
+              <label>Benutzerdefinierte Daten (JSON)</label>
               <textarea v-model="formData.dataString" rows="6" placeholder='{"key": "value"}'></textarea>
-              <small>İstatistikler, özellikler gibi yapılandırılmış veriler için JSON formatında</small>
+              <small>Für strukturierte Daten wie Statistiken, Funktionen im JSON-Format</small>
             </div>
             <div class="form-group">
-              <label>Sıra Numarası</label>
+              <label>Reihenfolge</label>
               <input type="number" v-model.number="formData.sortOrder" min="0" />
             </div>
             <div class="form-group">
               <label class="checkbox-label">
                 <input type="checkbox" v-model="formData.isActive" />
                 <span class="checkmark"></span>
-                Aktif
+                Aktiv
               </label>
             </div>
             <div class="form-actions">
-              <button type="button" class="btn btn-secondary" @click="closeModal">İptal</button>
+              <button type="button" class="btn btn-secondary" @click="closeModal">Abbrechen</button>
               <button type="submit" class="btn btn-primary" :disabled="saving">
-                {{ saving ? 'Kaydediliyor...' : (showCreateModal ? 'Oluştur' : 'Güncelle') }}
+                {{ saving ? 'Wird gespeichert...' : (showCreateModal ? 'Erstellen' : 'Aktualisieren') }}
               </button>
             </div>
           </form>
@@ -193,16 +193,16 @@
     <div v-if="showDeleteModal" class="modal-overlay" @click="showDeleteModal = false">
       <div class="modal" @click.stop>
         <div class="modal-header">
-          <h2>Bölüm Sil</h2>
+          <h2>Abschnitt löschen</h2>
           <button class="close-btn" @click="showDeleteModal = false">×</button>
         </div>
         <div class="modal-body">
-          <p>Bu bölümü silmek istediğinizden emin misiniz?</p>
+          <p>Möchten Sie diesen Abschnitt wirklich löschen?</p>
           <p><strong>{{ sectionToDelete?.title || getSectionDisplayName(sectionToDelete?.section) }}</strong></p>
           <div class="form-actions">
-            <button class="btn btn-secondary" @click="showDeleteModal = false">İptal</button>
+            <button class="btn btn-secondary" @click="showDeleteModal = false">Abbrechen</button>
             <button class="btn btn-danger" @click="confirmDelete" :disabled="deleting">
-              {{ deleting ? 'Siliniyor...' : 'Sil' }}
+              {{ deleting ? 'Wird gelöscht...' : 'Löschen' }}
             </button>
           </div>
         </div>
@@ -213,34 +213,34 @@
     <div v-if="showResetModal" class="modal-overlay" @click="showResetModal = false">
       <div class="modal" @click.stop>
         <div class="modal-header">
-          <h2>Varsayılana Sıfırla</h2>
+          <h2>Auf Standard zurücksetzen</h2>
           <button class="close-btn" @click="showResetModal = false">×</button>
         </div>
         <div class="modal-body">
           <div class="warning-message">
             <Icon icon="mdi:alert-triangle" width="48" height="48" />
             <div>
-              <h3>Dikkat!</h3>
-              <p>Bu işlem <strong>tüm mevcut bölümleri silecek</strong> ve varsayılan bölümleri yükleyecektir.</p>
-              <p>Bu işlem <strong>geri alınamaz</strong>. Devam etmek istediğinizden emin misiniz?</p>
+              <h3>Achtung!</h3>
+              <p>Diese Aktion <strong>löscht alle vorhandenen Abschnitte</strong> und lädt die Standard-Abschnitte.</p>
+              <p>Diese Aktion <strong>kann nicht rückgängig gemacht werden</strong>. Möchten Sie wirklich fortfahren?</p>
             </div>
           </div>
           <div class="default-sections-info">
-            <h4>Yüklenecek varsayılan bölümler:</h4>
+            <h4>Zu ladende Standard-Abschnitte:</h4>
             <ul>
-              <li><strong>Hero:</strong> Ana başlık ve tanıtım</li>
-              <li><strong>Misyon:</strong> Şirket misyonu</li>
-              <li><strong>Vizyon:</strong> Şirket vizyonu</li>
-              <li><strong>İstatistikler:</strong> Rakamlarla başarı</li>
-              <li><strong>Ekip:</strong> Takım tanıtımı</li>
-              <li><strong>Özellikler:</strong> Platform özellikleri</li>
+              <li><strong>Hero:</strong> Haupttitel und Einführung</li>
+              <li><strong>Mission:</strong> Unternehmensmission</li>
+              <li><strong>Vision:</strong> Unternehmensvision</li>
+              <li><strong>Statistiken:</strong> Erfolg in Zahlen</li>
+              <li><strong>Team:</strong> Teamvorstellung</li>
+              <li><strong>Funktionen:</strong> Plattformfunktionen</li>
             </ul>
-            <p class="total-count">Toplam: <strong>6 Bölüm</strong></p>
+            <p class="total-count">Gesamt: <strong>6 Abschnitte</strong></p>
           </div>
           <div class="form-actions">
-            <button class="btn btn-secondary" @click="showResetModal = false">İptal</button>
+            <button class="btn btn-secondary" @click="showResetModal = false">Abbrechen</button>
             <button class="btn btn-danger" @click="resetToDefaults" :disabled="resetting">
-              {{ resetting ? 'Sıfırlanıyor...' : 'Evet, Sıfırla' }}
+              {{ resetting ? 'Wird zurückgesetzt...' : 'Ja, zurücksetzen' }}
             </button>
           </div>
         </div>
@@ -301,8 +301,8 @@ async function loadSections() {
     
     filterSections()
   } catch (error) {
-    console.error('Bölümler yüklenemedi:', error)
-    alert('Bölümler yüklenemedi')
+    console.error('Abschnitte konnten nicht geladen werden:', error)
+    alert('Abschnitte konnten nicht geladen werden')
   } finally {
     loading.value = false
   }
@@ -337,14 +337,14 @@ function filterSections() {
 
 function getSectionDisplayName(section) {
   const names = {
-    hero: 'Hero (Ana Başlık)',
-    mission: 'Misyon',
-    vision: 'Vizyon',
-    team: 'Ekip',
-    stats: 'İstatistikler',
-    features: 'Özellikler',
-    values: 'Değerler',
-    history: 'Tarihçe'
+    hero: 'Hero (Haupttitel)',
+    mission: 'Mission',
+    vision: 'Vision',
+    team: 'Team',
+    stats: 'Statistiken',
+    features: 'Funktionen',
+    values: 'Werte',
+    history: 'Geschichte'
   }
   return names[section] || section
 }
@@ -383,7 +383,7 @@ async function saveSection() {
       try {
         parsedData = JSON.parse(formData.value.dataString)
       } catch (e) {
-        alert('Geçersiz JSON formatı')
+        alert('Ungültiges JSON-Format')
         return
       }
     }
@@ -403,8 +403,8 @@ async function saveSection() {
     await loadSections()
     closeModal()
   } catch (error) {
-    console.error('Bölüm kaydedilemedi:', error)
-    alert('Bölüm kaydedilemedi')
+    console.error('Abschnitt konnte nicht gespeichert werden:', error)
+    alert('Abschnitt konnte nicht gespeichert werden')
   } finally {
     saving.value = false
   }
@@ -418,8 +418,8 @@ async function confirmDelete() {
     showDeleteModal.value = false
     sectionToDelete.value = null
   } catch (error) {
-    console.error('Bölüm silinemedi:', error)
-    alert('Bölüm silinemedi')
+    console.error('Abschnitt konnte nicht gelöscht werden:', error)
+    alert('Abschnitt konnte nicht gelöscht werden')
   } finally {
     deleting.value = false
   }
@@ -431,10 +431,10 @@ async function resetToDefaults() {
     const response = await axios.post('about/admin/reset-defaults')
     await loadSections()
     showResetModal.value = false
-    alert(`Başarılı! ${response.data.count} varsayılan bölüm yüklendi.`)
+    alert(`Erfolgreich! ${response.data.count} Standard-Abschnitte geladen.`)
   } catch (error) {
-    console.error('Varsayılan bölümler yüklenemedi:', error)
-    alert('Varsayılan bölümler yüklenemedi')
+    console.error('Standard-Abschnitte konnten nicht geladen werden:', error)
+    alert('Standard-Abschnitte konnten nicht geladen werden')
   } finally {
     resetting.value = false
   }
@@ -457,7 +457,7 @@ function closeModal() {
 }
 
 function formatDate(dateString) {
-  return new Date(dateString).toLocaleString('tr-TR')
+  return new Date(dateString).toLocaleString('de-DE')
 }
 
 // Export/Import Functions
@@ -470,7 +470,7 @@ async function getAllAboutData() {
       sections: response.data || []
     }
   } catch (err) {
-    console.error('Bölümler alınırken hata:', err)
+    console.error('Fehler beim Abrufen der Abschnitte:', err)
     return {
       version: '1.0',
       exportDate: new Date().toISOString(),
@@ -482,7 +482,7 @@ async function getAllAboutData() {
 async function setAllAboutData(data) {
   try {
     if (!data || typeof data !== 'object') {
-      throw new Error('Geçersiz veri formatı')
+      throw new Error('Ungültiges Datenformat')
     }
 
     // Bölümleri yükle
@@ -499,18 +499,18 @@ async function setAllAboutData(data) {
     // Sayfayı yeniden yükle
     await loadSections()
   } catch (err) {
-    console.error('Bölümler yüklenirken hata:', err)
+    console.error('Fehler beim Laden der Abschnitte:', err)
     throw err
   }
 }
 
 function validateAboutData(data) {
   if (!data || typeof data !== 'object') {
-    return 'Geçersiz veri formatı'
+    return 'Ungültiges Datenformat'
   }
   
   if (!data.version) {
-    return 'Eksik versiyon bilgisi'
+    return 'Fehlende Versionsinformation'
   }
   
   return true

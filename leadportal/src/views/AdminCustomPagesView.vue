@@ -3,8 +3,8 @@
     <div class="page-content">
       <div class="page-header">
         <div>
-          <h1>Sayfa Yönetimi</h1>
-          <p class="page-subtitle">Dinamik sayfalar oluşturun ve yönetin</p>
+          <h1>Seitenverwaltung</h1>
+          <p class="page-subtitle">Erstellen und verwalten Sie dynamische Seiten</p>
         </div>
         <div class="header-actions">
           <button 
@@ -17,7 +17,7 @@
               <polyline points="7 10 12 15 17 10"/>
               <line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
-            <span v-if="isExporting">Export ediliyor...</span>
+            <span v-if="isExporting">Wird exportiert...</span>
             <span v-else>Export</span>
           </button>
           <button 
@@ -30,12 +30,12 @@
               <polyline points="17 8 12 3 7 8"/>
               <line x1="12" y1="3" x2="12" y2="15"/>
             </svg>
-            <span v-if="isImporting">Import ediliyor...</span>
+            <span v-if="isImporting">Wird importiert...</span>
             <span v-else>Import</span>
           </button>
           <button class="btn btn-primary" @click="addNewPage">
             <Icon icon="mdi:plus" width="20" height="20" />
-            Yeni Sayfa Ekle
+            Neue Seite hinzufügen
           </button>
         </div>
       </div>
@@ -50,7 +50,7 @@
             :class="{ active: activeTabIndex === index }"
             @click="activeTabIndex = index"
           >
-            <span>{{ page.title || 'Yeni Sayfa' }}</span>
+            <span>{{ page.title || 'Neue Seite' }}</span>
             <button
               class="tab-close-btn"
               @click.stop="deletePage(page.id, index)"
@@ -66,12 +66,12 @@
           <div v-if="activePage" class="page-form">
             <div class="form-section">
               <div class="field">
-                <label>Başlık *</label>
+                <label>Titel *</label>
                 <input
                   v-model="activePage.title"
                   type="text"
                   class="input"
-                  placeholder="Örn: Hizmet Şartları"
+                  placeholder="z.B.: Nutzungsbedingungen"
                   @input="generateSlug"
                 />
               </div>
@@ -82,19 +82,19 @@
                   v-model="activePage.slug"
                   type="text"
                   class="input"
-                  placeholder="hizmet-sartlari"
+                  placeholder="nutzungsbedingungen"
                 />
-                <small class="help">URL-friendly format: küçük harf, rakam ve tire</small>
+                <small class="help">URL-freundliches Format: Kleinbuchstaben, Zahlen und Bindestriche</small>
               </div>
 
               <div class="field">
-                <label>İçerik</label>
+                <label>Inhalt</label>
                 <div ref="editorContainer" class="editor-container"></div>
-                <small class="help">Zengin metin editörü ile içeriğinizi düzenleyin</small>
+                <small class="help">Bearbeiten Sie Ihren Inhalt mit dem Rich-Text-Editor</small>
               </div>
 
               <div class="field">
-                <label>Fotoğraflar</label>
+                <label>Fotos</label>
                 <div class="image-upload-area">
                   <input
                     type="file"
@@ -111,7 +111,7 @@
                     :disabled="uploadingImages"
                   >
                     <Icon icon="mdi:image-plus" width="16" height="16" />
-                    {{ uploadingImages ? 'Yükleniyor...' : 'Fotoğraf Ekle' }}
+                    {{ uploadingImages ? 'Wird hochgeladen...' : 'Foto hinzufügen' }}
                   </button>
                   <div v-if="activePage.images && activePage.images.length > 0" class="image-gallery">
                     <div
@@ -138,7 +138,7 @@
                     type="checkbox"
                     v-model="activePage.isActive"
                   />
-                  <span>Sayfa aktif</span>
+                  <span>Seite aktiv</span>
                 </label>
               </div>
 
@@ -147,10 +147,10 @@
                   class="btn btn-outline"
                   @click="goToPage"
                   :disabled="!activePage.slug || activePage.id?.startsWith('new-')"
-                  title="Sayfayı görüntüle"
+                  title="Seite anzeigen"
                 >
                   <Icon icon="mdi:open-in-new" width="16" height="16" />
-                  Yönlendir
+                  Weiterleiten
                 </button>
                 <button
                   class="btn btn-primary"
@@ -158,7 +158,7 @@
                   :disabled="saving || !activePage.title || !activePage.slug"
                 >
                   <span v-if="saving" class="spinner-sm"></span>
-                  <span v-else>Kaydet</span>
+                  <span v-else>Speichern</span>
                 </button>
               </div>
             </div>
@@ -169,8 +169,8 @@
       <!-- Empty State -->
       <div v-else class="empty-state">
         <Icon icon="mdi:file-document-outline" width="64" height="64" />
-        <h2>Henüz sayfa yok</h2>
-        <p>Yeni bir sayfa eklemek için yukarıdaki butona tıklayın</p>
+        <h2>Noch keine Seiten vorhanden</h2>
+        <p>Klicken Sie auf die Schaltfläche oben, um eine neue Seite hinzuzufügen</p>
       </div>
     </div>
 
@@ -178,16 +178,16 @@
     <div v-if="showDeleteModal" class="modal-overlay" @click="showDeleteModal = false">
       <div class="modal" @click.stop>
         <div class="modal-header">
-          <h2>Sayfa Sil</h2>
+          <h2>Seite löschen</h2>
           <button class="close-btn" @click="showDeleteModal = false">×</button>
         </div>
         <div class="modal-body">
-          <p>Bu sayfayı silmek istediğinizden emin misiniz?</p>
+          <p>Möchten Sie diese Seite wirklich löschen?</p>
           <p><strong>{{ pageToDelete?.title }}</strong></p>
           <div class="form-actions">
-            <button class="btn btn-secondary" @click="showDeleteModal = false">İptal</button>
+            <button class="btn btn-secondary" @click="showDeleteModal = false">Abbrechen</button>
             <button class="btn btn-danger" @click="confirmDelete" :disabled="deleting">
-              {{ deleting ? 'Siliniyor...' : 'Sil' }}
+              {{ deleting ? 'Wird gelöscht...' : 'Löschen' }}
             </button>
           </div>
         </div>
@@ -247,8 +247,8 @@ async function loadPages() {
       setActivePage(0)
     }
   } catch (error) {
-    console.error('Sayfalar yüklenemedi:', error)
-    showError('Sayfalar yüklenemedi')
+    console.error('Seiten konnten nicht geladen werden:', error)
+    showError('Seiten konnten nicht geladen werden')
   } finally {
     loading.value = false
   }
@@ -338,8 +338,8 @@ async function handleImageUpload(event) {
       activePage.value.images = [...activePage.value.images, ...response.data.images]
     }
   } catch (error) {
-    console.error('Fotoğraf yükleme hatası:', error)
-    showError('Fotoğraflar yüklenemedi')
+    console.error('Fehler beim Hochladen des Fotos:', error)
+    showError('Fotos konnten nicht hochgeladen werden')
   } finally {
     uploadingImages.value = false
     if (event.target) {
@@ -386,8 +386,8 @@ async function confirmDelete() {
     showDeleteModal.value = false
     pageToDelete.value = null
   } catch (error) {
-    console.error('Sayfa silinemedi:', error)
-    showError('Sayfa silinemedi')
+    console.error('Seite konnte nicht gelöscht werden:', error)
+    showError('Seite konnte nicht gelöscht werden')
   } finally {
     deleting.value = false
   }
@@ -395,7 +395,7 @@ async function confirmDelete() {
 
 async function savePage() {
   if (!activePage.value || !activePage.value.title || !activePage.value.slug) {
-    showError('Başlık ve slug zorunludur')
+    showError('Titel und Slug sind erforderlich')
     return
   }
 
@@ -427,10 +427,10 @@ async function savePage() {
     }
 
     await loadPages()
-    success('Sayfa başarıyla kaydedildi')
+    success('Seite erfolgreich gespeichert')
   } catch (error) {
-    console.error('Sayfa kaydedilemedi:', error)
-    const errorMsg = error.response?.data?.message || 'Sayfa kaydedilemedi'
+    console.error('Seite konnte nicht gespeichert werden:', error)
+    const errorMsg = error.response?.data?.message || 'Seite konnte nicht gespeichert werden'
     showError(errorMsg)
   } finally {
     saving.value = false
@@ -439,11 +439,11 @@ async function savePage() {
 
 function goToPage() {
   if (!activePage.value || !activePage.value.slug) {
-    showError('Sayfa slug\'ı bulunamadı')
+    showError('Seiten-Slug nicht gefunden')
     return
   }
   
-  // Yeni sekmede aç
+  // In neuem Tab öffnen
   const url = `/${activePage.value.slug}`
   window.open(url, '_blank')
 }
@@ -463,7 +463,7 @@ async function getAllPagesData() {
       pages: response.data || []
     }
   } catch (err) {
-    console.error('Sayfalar alınırken hata:', err)
+    console.error('Fehler beim Abrufen der Seiten:', err)
     return {
       version: '1.0',
       exportDate: new Date().toISOString(),
@@ -475,10 +475,10 @@ async function getAllPagesData() {
 async function setAllPagesData(data) {
   try {
     if (!data || typeof data !== 'object') {
-      throw new Error('Geçersiz veri formatı')
+      throw new Error('Ungültiges Datenformat')
     }
 
-    // Sayfaları yükle
+    // Seiten laden
     if (data.pages && Array.isArray(data.pages)) {
       for (const page of data.pages) {
         const payload = {
@@ -490,34 +490,34 @@ async function setAllPagesData(data) {
         }
 
         if (page.id && !page.id.startsWith('new-')) {
-          // Mevcut sayfayı güncelle
+          // Aktuelle Seite aktualisieren
           await axios.put(`custom-pages/${page.id}`, payload)
         } else {
-          // Yeni sayfa oluştur
+          // Neue Seite erstellen
           await axios.post('custom-pages', payload)
         }
       }
     }
 
-    // Sayfayı yeniden yükle
+    // Seite neu laden
     await loadPages()
   } catch (err) {
-    console.error('Sayfalar yüklenirken hata:', err)
+    console.error('Fehler beim Laden der Seiten:', err)
     throw err
   }
 }
 
 function validatePagesData(data) {
   if (!data || typeof data !== 'object') {
-    return 'Geçersiz veri formatı'
+    return 'Ungültiges Datenformat'
   }
   
   if (!data.version) {
-    return 'Eksik versiyon bilgisi'
+    return 'Fehlende Versionsinformation'
   }
   
   if (!data.pages || !Array.isArray(data.pages)) {
-    return 'Geçersiz sayfalar formatı'
+    return 'Ungültiges Seitenformat'
   }
   
   return true

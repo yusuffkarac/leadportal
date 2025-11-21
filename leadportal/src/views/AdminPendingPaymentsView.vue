@@ -4,9 +4,9 @@
       <div>
         <h1>
           <Icon icon="mdi:credit-card-outline" width="24" />
-          IBAN Ödemeleri
+          IBAN-Zahlungen
         </h1>
-        <p>IBAN ile yapılan ödemeleri görüntüleyin ve yönetin</p>
+        <p>IBAN-Zahlungen anzeigen und verwalten</p>
       </div>
       <!-- Statistics Cards -->
       <div class="stats-cards">
@@ -18,7 +18,7 @@
           <Icon icon="mdi:clock-outline" width="24" />
           <div>
             <div class="stat-value">{{ pendingPayments.length }}</div>
-            <div class="stat-label">Bekleyen</div>
+            <div class="stat-label">Ausstehend</div>
           </div>
         </button>
         <button 
@@ -29,7 +29,7 @@
           <Icon icon="mdi:check-circle-outline" width="24" />
           <div>
             <div class="stat-value">{{ completedPayments.length }}</div>
-            <div class="stat-label">Onaylanmış</div>
+            <div class="stat-label">Bestätigt</div>
           </div>
         </button>
         <button 
@@ -40,7 +40,7 @@
           <Icon icon="mdi:close-circle-outline" width="24" />
           <div>
             <div class="stat-value">{{ rejectedPayments.length }}</div>
-            <div class="stat-label">Reddedilmiş</div>
+            <div class="stat-label">Abgelehnt</div>
           </div>
         </button>
       </div>
@@ -55,7 +55,7 @@
           @click="switchTab('pending')"
         >
           <Icon icon="mdi:clock-alert-outline" width="18" />
-          <span class="tab-text">Bekleyen ({{ pendingPayments.length }})</span>
+          <span class="tab-text">Ausstehend ({{ pendingPayments.length }})</span>
         </button>
         <button
           class="tab-button"
@@ -63,7 +63,7 @@
           @click="switchTab('completed')"
         >
           <Icon icon="mdi:check-circle" width="18" />
-          <span class="tab-text">Onaylanmış ({{ completedPayments.length }})</span>
+          <span class="tab-text">Bestätigt ({{ completedPayments.length }})</span>
         </button>
         <button
           class="tab-button"
@@ -71,7 +71,7 @@
           @click="switchTab('rejected')"
         >
           <Icon icon="mdi:close-circle" width="18" />
-          <span class="tab-text">Reddedilmiş ({{ rejectedPayments.length }})</span>
+          <span class="tab-text">Abgelehnt ({{ rejectedPayments.length }})</span>
         </button>
       </div>
     </div>
@@ -83,7 +83,7 @@
         <input
           v-model="searchQuery"
           type="text"
-          placeholder="Lead ara (isim, email, Lead ID)..."
+          placeholder="Lead suchen (Name, E-Mail, Lead-ID)..."
           class="search-input"
         />
       </div>
@@ -101,7 +101,7 @@
     <!-- Filter Options -->
     <div v-if="showFilters" class="filters-panel">
       <div class="filter-group">
-        <label>Miktar Aralığı</label>
+        <label>Betragsbereich</label>
         <div class="amount-filter">
           <input
             v-model.number="minAmount"
@@ -120,7 +120,7 @@
       </div>
 
       <div class="filter-group">
-        <label>Tarih Aralığı</label>
+        <label>Datumsbereich</label>
         <div class="date-filter">
           <input
             v-model="startDate"
@@ -138,14 +138,14 @@
 
       <button class="btn-reset-filters" @click="resetFilters">
         <Icon icon="mdi:refresh" width="16" />
-        Filtreleri Sıfırla
+        Filter zurücksetzen
       </button>
     </div>
 
     <!-- Loading State -->
     <div v-if="isLoading" class="loading-state">
       <Icon icon="mdi:loading" class="spin" width="48" />
-      <p>Yükleniyor...</p>
+      <p>Wird geladen...</p>
     </div>
 
     <!-- Empty State -->
@@ -154,13 +154,13 @@
       <Icon v-else-if="activeTab === 'completed'" icon="mdi:file-document-outline" width="64" />
       <Icon v-else icon="mdi:shield-check-outline" width="64" />
 
-      <h3 v-if="activeTab === 'pending'">Harika! Bekleyen ödeme yok</h3>
-      <h3 v-else-if="activeTab === 'completed'">Henüz onaylanmış IBAN ödemesi yok</h3>
-      <h3 v-else>Harika! Reddedilmiş ödeme yok</h3>
+      <h3 v-if="activeTab === 'pending'">Großartig! Keine ausstehenden Zahlungen</h3>
+      <h3 v-else-if="activeTab === 'completed'">Noch keine bestätigten IBAN-Zahlungen</h3>
+      <h3 v-else>Großartig! Keine abgelehnten Zahlungen</h3>
 
-      <p v-if="activeTab === 'pending'">Tüm IBAN ödemeleri onaylanmış durumda</p>
-      <p v-else-if="activeTab === 'completed'">IBAN ödemeleri onaylandıkça burada görünecek</p>
-      <p v-else>Reddedilen ödemeler burada görünecek</p>
+      <p v-if="activeTab === 'pending'">Alle IBAN-Zahlungen sind bestätigt</p>
+      <p v-else-if="activeTab === 'completed'">IBAN-Zahlungen werden hier angezeigt, sobald sie bestätigt sind</p>
+      <p v-else>Abgelehnte Zahlungen werden hier angezeigt</p>
     </div>
 
     <!-- Payments List -->
@@ -189,9 +189,9 @@
           </div>
           <div class="payment-amount-mobile">
             <span class="amount-mobile">{{ formatCurrency(payment.amount) }}</span>
-            <span v-if="activeTab === 'pending'" class="badge-mobile pending-badge">Beklemede</span>
-            <span v-else-if="activeTab === 'completed'" class="badge-mobile completed-badge">Onaylanmış</span>
-            <span v-else class="badge-mobile rejected-badge">Reddedilmiş</span>
+            <span v-if="activeTab === 'pending'" class="badge-mobile pending-badge">Ausstehend</span>
+            <span v-else-if="activeTab === 'completed'" class="badge-mobile completed-badge">Bestätigt</span>
+            <span v-else class="badge-mobile rejected-badge">Abgelehnt</span>
             <Icon 
               :icon="isCardExpanded(payment.id) ? 'mdi:chevron-up' : 'mdi:chevron-down'" 
               width="20" 
@@ -211,9 +211,9 @@
           </div>
           <div class="payment-amount">
             <span class="amount">{{ formatCurrency(payment.amount) }}</span>
-            <span v-if="activeTab === 'pending'" class="badge pending-badge">Beklemede</span>
-            <span v-else-if="activeTab === 'completed'" class="badge completed-badge">Onaylanmış</span>
-            <span v-else class="badge rejected-badge">Reddedilmiş</span>
+            <span v-if="activeTab === 'pending'" class="badge pending-badge">Ausstehend</span>
+            <span v-else-if="activeTab === 'completed'" class="badge completed-badge">Bestätigt</span>
+            <span v-else class="badge rejected-badge">Abgelehnt</span>
           </div>
         </div>
 
@@ -233,7 +233,7 @@
           <!-- IBAN Details -->
           <div class="iban-details">
             <div class="iban-row">
-              <span class="iban-label">Hesap:</span>
+              <span class="iban-label">Konto:</span>
               <span class="iban-value">{{ payment.buyer.ibanAccountHolder || '-' }}</span>
             </div>
             <div class="iban-row">
@@ -246,7 +246,7 @@
           <div v-if="activeTab === 'pending'" class="admin-notes-section">
             <textarea
               v-model="payment.adminNotes"
-              placeholder="Admin notu..."
+              placeholder="Admin-Notiz..."
               rows="2"
               class="notes-input"
             ></textarea>
@@ -262,7 +262,7 @@
           <div class="lead-navigation">
             <button class="btn-view-lead" @click.stop="goToLead(payment.leadId)">
               <Icon icon="mdi:arrow-right-circle" width="14" />
-              Leade Git
+              Zum Lead
             </button>
           </div>
         </div>
@@ -275,7 +275,7 @@
             :disabled="payment.isConfirming || payment.isRejecting"
           >
             <Icon icon="mdi:check-circle" width="18" />
-            {{ payment.isConfirming ? 'Onaylanıyor...' : 'Onayla' }}
+            {{ payment.isConfirming ? 'Wird bestätigt...' : 'Bestätigen' }}
           </button>
           <button
             class="btn-reject"
@@ -283,7 +283,7 @@
             :disabled="payment.isConfirming || payment.isRejecting"
           >
             <Icon icon="mdi:close-circle" width="18" />
-            {{ payment.isRejecting ? 'Reddediliyor...' : 'Reddet' }}
+            {{ payment.isRejecting ? 'Wird abgelehnt...' : 'Ablehnen' }}
           </button>
         </div>
       </div>
@@ -300,8 +300,8 @@
           <p>{{ modalMessage }}</p>
         </div>
         <div class="modal-footer">
-          <button class="modal-btn cancel" @click="showConfirmModal = false">İptal</button>
-          <button class="modal-btn confirm" @click="confirmPayment">Onayla</button>
+          <button class="modal-btn cancel" @click="showConfirmModal = false">Abbrechen</button>
+          <button class="modal-btn confirm" @click="confirmPayment">Bestätigen</button>
         </div>
       </div>
     </div>
@@ -315,23 +315,23 @@
         </div>
         <div class="modal-body">
           <p>{{ modalMessage }}</p>
-          <label class="modal-label">Red nedeni (zorunlu):</label>
+          <label class="modal-label">Ablehnungsgrund (erforderlich):</label>
           <textarea
             v-model="rejectReason"
-            placeholder="Red nedeninizi buraya yazın..."
+            placeholder="Geben Sie hier den Ablehnungsgrund ein..."
             rows="3"
             class="modal-textarea"
             @keydown.enter.prevent
           ></textarea>
         </div>
         <div class="modal-footer">
-          <button class="modal-btn cancel" @click="showRejectModal = false">İptal</button>
+          <button class="modal-btn cancel" @click="showRejectModal = false">Abbrechen</button>
           <button
             class="modal-btn reject"
             @click="rejectPayment"
             :disabled="!rejectReason.trim()"
           >
-            Reddet
+            Ablehnen
           </button>
         </div>
       </div>
@@ -352,7 +352,7 @@
           <p>{{ modalMessage }}</p>
         </div>
         <div class="modal-footer">
-          <button class="modal-btn confirm" @click="showErrorModal = false">Tamam</button>
+          <button class="modal-btn confirm" @click="showErrorModal = false">OK</button>
         </div>
       </div>
     </div>
@@ -460,7 +460,7 @@ const formatDate = (dateString) => {
 }
 
 const formatDateShort = (dateString) => {
-  return new Intl.DateTimeFormat('tr-TR', {
+  return new Intl.DateTimeFormat('de-DE', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -481,7 +481,7 @@ const fetchPendingPayments = async () => {
     }))
   } catch (error) {
     console.error('Error fetching pending payments:', error)
-    alert('Bekleyen ödemeler yüklenirken bir hata oluştu')
+    alert('Fehler beim Laden der ausstehenden Zahlungen')
   } finally {
     isLoading.value = false
   }
@@ -497,8 +497,8 @@ const fetchCompletedPayments = async () => {
     )
   } catch (error) {
     console.error('Error fetching completed payments:', error)
-    modalTitle.value = 'Hata!'
-    modalMessage.value = 'Onaylanmış ödemeler yüklenirken bir hata oluştu'
+    modalTitle.value = 'Fehler!'
+    modalMessage.value = 'Fehler beim Laden der bestätigten Zahlungen'
     showErrorModal.value = true
   } finally {
     isLoading.value = false
@@ -515,8 +515,8 @@ const fetchRejectedPayments = async () => {
     )
   } catch (error) {
     console.error('Error fetching rejected payments:', error)
-    modalTitle.value = 'Hata!'
-    modalMessage.value = 'Reddedilmiş ödemeler yüklenirken bir hata oluştu'
+    modalTitle.value = 'Fehler!'
+    modalMessage.value = 'Fehler beim Laden der abgelehnten Zahlungen'
     showErrorModal.value = true
   } finally {
     isLoading.value = false
@@ -525,8 +525,8 @@ const fetchRejectedPayments = async () => {
 
 const openConfirmModal = (payment) => {
   selectedPayment.value = payment
-  modalTitle.value = 'Ödemeyi Onayla'
-  modalMessage.value = `${payment.lead.title} için ${formatCurrency(payment.amount)} tutarındaki ödemeyi onaylamak istediğinize emin misiniz?`
+  modalTitle.value = 'Zahlung bestätigen'
+  modalMessage.value = `Sind Sie sicher, dass Sie die Zahlung in Höhe von ${formatCurrency(payment.amount)} für ${payment.lead.title} bestätigen möchten?`
   showConfirmModal.value = true
 }
 
@@ -542,8 +542,8 @@ const confirmPayment = async () => {
       adminNotes: payment.adminNotes || null
     })
 
-    modalTitle.value = 'Başarılı!'
-    modalMessage.value = 'Ödeme başarıyla onaylandı! Alıcı ve satıcıya bildirim gönderildi.'
+    modalTitle.value = 'Erfolgreich!'
+    modalMessage.value = 'Zahlung erfolgreich bestätigt! Benachrichtigungen wurden an Käufer und Verkäufer gesendet.'
     showErrorModal.value = true
 
     // Remove from pending list
@@ -558,8 +558,8 @@ const confirmPayment = async () => {
     completedPayments.value = [updatedPayment, ...completedPayments.value]
   } catch (error) {
     console.error('Error confirming payment:', error)
-    modalTitle.value = 'Hata!'
-    modalMessage.value = 'Ödeme onaylanırken bir hata oluştu: ' + (error.response?.data?.error || error.message)
+    modalTitle.value = 'Fehler!'
+    modalMessage.value = 'Fehler beim Bestätigen der Zahlung: ' + (error.response?.data?.error || error.message)
     showErrorModal.value = true
   } finally {
     payment.isConfirming = false
@@ -569,8 +569,8 @@ const confirmPayment = async () => {
 const openRejectModal = (payment) => {
   selectedPayment.value = payment
   rejectReason.value = ''
-  modalTitle.value = 'Ödemeyi Reddet'
-  modalMessage.value = `${payment.lead.title} ödemesini reddetmek üzeresiniz. Lead tekrar satışa çıkacak.`
+  modalTitle.value = 'Zahlung ablehnen'
+  modalMessage.value = `Sie sind dabei, die Zahlung für ${payment.lead.title} abzulehnen. Der Lead wird wieder zum Verkauf angeboten.`
   showRejectModal.value = true
 }
 
@@ -590,8 +590,8 @@ const rejectPayment = async () => {
       adminNotes: rejectReason.value
     })
 
-    modalTitle.value = 'Başarılı!'
-    modalMessage.value = 'Ödeme reddedildi ve lead tekrar satışa çıkarıldı.'
+    modalTitle.value = 'Erfolgreich!'
+    modalMessage.value = 'Zahlung abgelehnt und Lead wieder zum Verkauf angeboten.'
     showErrorModal.value = true
 
     // Remove from pending list
@@ -607,8 +607,8 @@ const rejectPayment = async () => {
     rejectedPayments.value = [updatedPayment, ...rejectedPayments.value]
   } catch (error) {
     console.error('Error rejecting payment:', error)
-    modalTitle.value = 'Hata!'
-    modalMessage.value = 'Ödeme reddedilirken bir hata oluştu: ' + (error.response?.data?.error || error.message)
+    modalTitle.value = 'Fehler!'
+    modalMessage.value = 'Fehler beim Ablehnen der Zahlung: ' + (error.response?.data?.error || error.message)
     showErrorModal.value = true
   } finally {
     payment.isRejecting = false

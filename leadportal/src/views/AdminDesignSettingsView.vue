@@ -2,21 +2,21 @@
   <div class="admin-design-settings-page">
     <div class="page-content">
       <div class="page-header">
-        <h1>Tasarım Ayarları</h1>
-        <p class="page-subtitle">Uygulamanın görsel temasını ve renklerini özelleştirin</p>
+        <h1>Designeinstellungen</h1>
+        <p class="page-subtitle">Passen Sie das visuelle Theme und die Farben der Anwendung an</p>
       </div>
 
       <!-- Color Settings Section -->
       <div class="settings-section">
         <div class="section-header">
-          <h2>Renk Ayarları</h2>
-          <p>Ana renk paletini özelleştirin</p>
+          <h2>Farbeinstellungen</h2>
+          <p>Passen Sie die Hauptfarbpalette an</p>
         </div>
         
         <div class="settings-content">
           <div class="color-grid">
             <div class="color-group">
-              <label class="setting-label">Arka Plan Rengi</label>
+              <label class="setting-label">Hintergrundfarbe</label>
               <div class="color-input-group">
                 <input 
                   type="color" 
@@ -35,7 +35,7 @@
             </div>
 
             <div class="color-group">
-              <label class="setting-label">Panel Rengi</label>
+              <label class="setting-label">Panel-Farbe</label>
               <div class="color-input-group">
                 <input 
                   type="color" 
@@ -54,7 +54,7 @@
             </div>
 
             <div class="color-group">
-              <label class="setting-label">Metin Rengi</label>
+              <label class="setting-label">Textfarbe</label>
               <div class="color-input-group">
                 <input 
                   type="color" 
@@ -73,7 +73,7 @@
             </div>
 
             <div class="color-group">
-              <label class="setting-label">İkincil Metin Rengi</label>
+              <label class="setting-label">Sekundäre Textfarbe</label>
               <div class="color-input-group">
                 <input 
                   type="color" 
@@ -92,7 +92,7 @@
             </div>
 
             <div class="color-group">
-              <label class="setting-label">Ana Renk</label>
+              <label class="setting-label">Primärfarbe</label>
               <div class="color-input-group">
                 <input 
                   type="color" 
@@ -111,7 +111,7 @@
             </div>
 
             <div class="color-group">
-              <label class="setting-label">Başarı Rengi</label>
+              <label class="setting-label">Erfolgsfarbe</label>
               <div class="color-input-group">
                 <input 
                   type="color" 
@@ -130,7 +130,7 @@
             </div>
 
             <div class="color-group">
-              <label class="setting-label">Uyarı Rengi</label>
+              <label class="setting-label">Warnfarbe</label>
               <div class="color-input-group">
                 <input 
                   type="color" 
@@ -149,7 +149,7 @@
             </div>
 
             <div class="color-group">
-              <label class="setting-label">Hata Rengi</label>
+              <label class="setting-label">Fehlerfarbe</label>
               <div class="color-input-group">
                 <input 
                   type="color" 
@@ -168,7 +168,7 @@
             </div>
 
             <div class="color-group">
-              <label class="setting-label">Kenarlık Rengi</label>
+              <label class="setting-label">Rahmenfarbe</label>
               <div class="color-input-group">
                 <input 
                   type="color" 
@@ -189,17 +189,17 @@
 
           <!-- Preview Section -->
           <div class="preview-section">
-            <h3>Önizleme</h3>
+            <h3>Vorschau</h3>
             <div class="preview-container" :style="previewStyles">
               <div class="preview-panel">
-                <h4>Örnek Panel</h4>
-                <p class="preview-text">Bu bir örnek metindir.</p>
-                <p class="preview-muted">Bu ikincil bir metindir.</p>
+                <h4>Beispiel-Panel</h4>
+                <p class="preview-text">Dies ist ein Beispieltext.</p>
+                <p class="preview-muted">Dies ist ein sekundärer Text.</p>
                 <div class="preview-buttons">
-                  <button class="preview-btn primary">Ana Buton</button>
-                  <button class="preview-btn success">Başarı</button>
-                  <button class="preview-btn warning">Uyarı</button>
-                  <button class="preview-btn danger">Hata</button>
+                  <button class="preview-btn primary">Primär-Button</button>
+                  <button class="preview-btn success">Erfolg</button>
+                  <button class="preview-btn warning">Warnung</button>
+                  <button class="preview-btn danger">Fehler</button>
                 </div>
               </div>
             </div>
@@ -207,7 +207,7 @@
 
           <!-- Preset Themes -->
           <div class="preset-section">
-            <h3>Hazır Temalar</h3>
+            <h3>Vordefinierte Themes</h3>
             <div class="preset-grid">
               <div 
                 class="preset-card" 
@@ -234,13 +234,13 @@
           <!-- Action Buttons -->
           <div class="action-buttons">
             <button class="btn btn-secondary" @click="resetToDefaults">
-              Varsayılana Sıfırla
+              Auf Standard zurücksetzen
             </button>
             <button class="btn btn-primary" @click="saveDesignSettings" :disabled="saving">
               <svg v-if="saving" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 12a9 9 0 11-6.219-8.56"/>
               </svg>
-              {{ saving ? 'Kaydediliyor...' : 'Kaydet' }}
+              {{ saving ? 'Wird gespeichert...' : 'Speichern' }}
             </button>
           </div>
         </div>
@@ -279,7 +279,7 @@ const messageType = ref('')
 // Hazır temalar
 const presets = ref([
   {
-    name: 'Varsayılan',
+    name: 'Standard',
     colors: ['#f8fafc', '#ffffff', '#1e293b', '#059669'],
     theme: {
       bg: '#f8fafc',
@@ -294,7 +294,7 @@ const presets = ref([
     }
   },
   {
-    name: 'Koyu Tema',
+    name: 'Dunkles Theme',
     colors: ['#1f2937', '#374151', '#60a5fa', '#34d399'],
     theme: {
       bg: '#1f2937',
@@ -309,7 +309,7 @@ const presets = ref([
     }
   },
   {
-    name: 'Yeşil Tema',
+    name: 'Grünes Theme',
     colors: ['#f0fdf4', '#ffffff', '#16a34a', '#059669'],
     theme: {
       bg: '#f0fdf4',
@@ -324,7 +324,7 @@ const presets = ref([
     }
   },
   {
-    name: 'Mor Tema',
+    name: 'Lila Theme',
     colors: ['#faf5ff', '#ffffff', '#8b5cf6', '#a855f7'],
     theme: {
       bg: '#faf5ff',
@@ -365,7 +365,7 @@ async function loadDesignSettings() {
       designSettings.value = response.data
     }
   } catch (error) {
-    console.error('Tasarım ayarları yüklenemedi:', error)
+    console.error('Designeinstellungen konnten nicht geladen werden:', error)
     // Varsayılan değerleri kullan
   }
 }
@@ -399,7 +399,7 @@ async function saveDesignSettings() {
     
     await api.post('/settings/design', designSettings.value)
     
-    message.value = 'Tasarım ayarları başarıyla kaydedildi!'
+    message.value = 'Designeinstellungen erfolgreich gespeichert!'
     messageType.value = 'success'
     
     // CSS değişkenlerini kalıcı olarak güncelle
@@ -413,7 +413,7 @@ async function saveDesignSettings() {
     }, 3000)
     
   } catch (error) {
-    message.value = error.response?.data?.message || 'Tasarım ayarları kaydedilemedi'
+    message.value = error.response?.data?.message || 'Designeinstellungen konnten nicht gespeichert werden'
     messageType.value = 'error'
   } finally {
     saving.value = false

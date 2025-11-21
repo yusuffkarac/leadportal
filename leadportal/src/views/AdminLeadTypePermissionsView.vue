@@ -37,8 +37,8 @@ async function loadUserTypePermissions() {
     leadTypes.value = response.data.leadTypes
     userTypes.value = response.data.userTypes
   } catch (error) {
-    console.error('Lead tipi yetkileri yüklenemedi:', error)
-    showAlert('Lead tipi yetkileri yüklenemedi', 'error')
+    console.error('Lead-Typ-Berechtigungen konnten nicht geladen werden:', error)
+    showAlert('Lead-Typ-Berechtigungen konnten nicht geladen werden', 'error')
   } finally {
     loading.value = false
   }
@@ -51,10 +51,10 @@ async function saveUserTypePermissions() {
       permissions: userTypePermissions.value
     }, { headers: authHeaders() })
     
-    showAlert('Kullanıcı tipi yetkileri başarıyla kaydedildi', 'success')
+    showAlert('Benutzertyp-Berechtigungen erfolgreich gespeichert', 'success')
   } catch (error) {
-    console.error('Yetkilendirmeler kaydedilemedi:', error)
-    showAlert('Yetkilendirmeler kaydedilemedi', 'error')
+    console.error('Berechtigungen konnten nicht gespeichert werden:', error)
+    showAlert('Berechtigungen konnten nicht gespeichert werden', 'error')
   } finally {
     saving.value = false
   }
@@ -65,8 +65,8 @@ async function loadUsers() {
     const response = await axios.get('/api/users', { headers: authHeaders() })
     users.value = response.data
   } catch (error) {
-    console.error('Kullanıcılar yüklenemedi:', error)
-    showAlert('Kullanıcılar yüklenemedi', 'error')
+    console.error('Benutzer konnten nicht geladen werden:', error)
+    showAlert('Benutzer konnten nicht geladen werden', 'error')
   }
 }
 
@@ -80,8 +80,8 @@ async function loadUserPermissions(userId) {
     userPermissions.value = response.data.permissions
     selectedUser.value = response.data.user
   } catch (error) {
-    console.error('Kullanıcı yetkileri yüklenemedi:', error)
-    showAlert('Kullanıcı yetkileri yüklenemedi', 'error')
+    console.error('Benutzerberechtigungen konnten nicht geladen werden:', error)
+    showAlert('Benutzerberechtigungen konnten nicht geladen werden', 'error')
   } finally {
     loadingUserPermissions.value = false
   }
@@ -96,10 +96,10 @@ async function saveUserPermissions() {
       permissions: userPermissions.value
     }, { headers: authHeaders() })
     
-    showAlert('Kullanıcı yetkileri başarıyla kaydedildi', 'success')
+    showAlert('Benutzerberechtigungen erfolgreich gespeichert', 'success')
   } catch (error) {
-    console.error('Kullanıcı yetkileri kaydedilemedi:', error)
-    showAlert('Kullanıcı yetkileri kaydedilemedi', 'error')
+    console.error('Benutzerberechtigungen konnten nicht gespeichert werden:', error)
+    showAlert('Benutzerberechtigungen konnten nicht gespeichert werden', 'error')
   } finally {
     saving.value = false
   }
@@ -177,8 +177,8 @@ onMounted(async () => {
     <div class="page-content">
       <div class="page-header">
         <div class="section-header">
-          <h1>Lead Tipi Yetkilendirmeleri</h1>
-          <p class="page-subtitle">Kullanıcı ve kullanıcı tipi bazında lead tipi görünürlüğünü ayarlayın</p>
+          <h1>Lead-Typ-Berechtigungen</h1>
+          <p class="page-subtitle">Legen Sie die Sichtbarkeit von Lead-Typen nach Benutzer und Benutzertyp fest</p>
         </div>
       </div>
 
@@ -191,7 +191,7 @@ onMounted(async () => {
             @click="activeTab = 'userTypes'"
           >
             <Icon icon="mdi:account-group" width="20" height="20" />
-            Kullanıcı Tipi Bazlı
+            Nach Benutzertyp
           </button>
           <button 
             class="tab-button" 
@@ -199,7 +199,7 @@ onMounted(async () => {
             @click="activeTab = 'users'"
           >
             <Icon icon="mdi:account" width="20" height="20" />
-            Kullanıcı Bazlı
+            Nach Benutzer
           </button>
         </div>
       </div>
@@ -211,21 +211,21 @@ onMounted(async () => {
         <div class="info-box">
           <Icon icon="mdi:information" width="20" height="20" />
           <div>
-            <strong>Varsayılan Davranış:</strong> Tüm lead tipleri tüm kullanıcı tiplerine açıktır.
+            <strong>Standardverhalten:</strong> Alle Lead-Typen sind für alle Benutzertypen verfügbar.
             <br>
-            Sadece erişimi kısıtlamak istediğiniz lead tiplerini kapatın.
+            Schließen Sie nur die Lead-Typen, deren Zugriff Sie einschränken möchten.
           </div>
         </div>
 
         <div v-if="loading" class="loading-state">
           <div class="spinner"></div>
-          <p>Yükleniyor...</p>
+          <p>Wird geladen...</p>
         </div>
 
         <div v-else-if="leadTypes.length === 0" class="empty-state">
           <Icon icon="mdi:file-document-outline" width="48" height="48" />
-          <h3>Henüz lead tipi tanımlanmamış</h3>
-          <p>Ayarlar bölümünden lead tipleri (sigorta türleri) ekleyin</p>
+          <h3>Noch keine Lead-Typen definiert</h3>
+          <p>Fügen Sie Lead-Typen (Versicherungsarten) im Einstellungsbereich hinzu</p>
         </div>
 
         <div v-else class="permissions-grid">
@@ -239,21 +239,21 @@ onMounted(async () => {
                 <h3>{{ userType.name }}</h3>
                 <p v-if="userType.description">{{ userType.description }}</p>
                 <span class="permission-count">
-                  {{ getPermissionCount(userType.id) }} / {{ leadTypes.length }} erişilebilir
+                  {{ getPermissionCount(userType.id) }} / {{ leadTypes.length }} verfügbar
                 </span>
               </div>
               <div class="quick-actions">
                 <button 
                   class="btn-quick" 
                   @click="toggleAllForUserType(userType.id, true)"
-                  title="Tümünü aç"
+                  title="Alle aktivieren"
                 >
                   <Icon icon="mdi:check" width="16" height="16" />
                 </button>
                 <button 
                   class="btn-quick" 
                   @click="toggleAllForUserType(userType.id, false)"
-                  title="Tümünü kapat"
+                  title="Alle deaktivieren"
                 >
                   <Icon icon="mdi:close" width="16" height="16" />
                 </button>
@@ -291,30 +291,30 @@ onMounted(async () => {
           >
             <Icon v-if="!saving" icon="mdi:content-save" width="20" height="20" />
             <div v-else class="spinner-small"></div>
-            {{ saving ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet' }}
+            {{ saving ? 'Wird gespeichert...' : 'Änderungen speichern' }}
           </button>
         </div>
       </div>
 
-        <!-- Kullanıcı Bazlı Yetkilendirmeler -->
+        <!-- Benutzerbasierte Berechtigungen -->
         <div v-if="activeTab === 'users'" class="tab-panel">
         <div class="info-box">
           <Icon icon="mdi:information" width="20" height="20" />
           <div>
-            <strong>Kullanıcı Özel İzinler:</strong> Bu izinler, kullanıcı tipi izinlerini geçersiz kılar.
+            <strong>Benutzerspezifische Berechtigungen:</strong> Diese Berechtigungen überschreiben die Benutzertyp-Berechtigungen.
             <br>
-            Varsayılan kullan seçeneği, kullanıcı tipinin iznini kullanır.
+            Die Option "Standard verwenden" nutzt die Berechtigung des Benutzertyps.
           </div>
         </div>
 
         <div class="user-select-section">
-          <label for="userSelect">Kullanıcı Seçin:</label>
+          <label for="userSelect">Benutzer auswählen:</label>
           <select 
             id="userSelect"
             @change="onUserSelect"
             class="user-select"
           >
-            <option value="">Kullanıcı Seçin</option>
+            <option value="">Benutzer auswählen</option>
             <option 
               v-for="user in filteredUsers" 
               :key="user.id"
@@ -327,7 +327,7 @@ onMounted(async () => {
 
         <div v-if="loadingUserPermissions" class="loading-state">
           <div class="spinner"></div>
-          <p>Yükleniyor...</p>
+          <p>Wird geladen...</p>
         </div>
 
         <div v-else-if="selectedUser" class="user-permissions-section">
@@ -356,7 +356,7 @@ onMounted(async () => {
                     class="radio-input"
                   />
                   <span class="radio-custom"></span>
-                  <span>Varsayılan Kullan</span>
+                  <span>Standard verwenden</span>
                 </label>
                 <label class="radio-label">
                   <input 
@@ -367,7 +367,7 @@ onMounted(async () => {
                     class="radio-input"
                   />
                   <span class="radio-custom"></span>
-                  <span>İzin Ver</span>
+                  <span>Erlauben</span>
                 </label>
                 <label class="radio-label">
                   <input 
@@ -378,7 +378,7 @@ onMounted(async () => {
                     class="radio-input"
                   />
                   <span class="radio-custom"></span>
-                  <span>Reddet</span>
+                  <span>Ablehnen</span>
                 </label>
               </div>
             </div>
@@ -392,15 +392,15 @@ onMounted(async () => {
             >
               <Icon v-if="!saving" icon="mdi:content-save" width="20" height="20" />
               <div v-else class="spinner-small"></div>
-              {{ saving ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet' }}
+              {{ saving ? 'Wird gespeichert...' : 'Änderungen speichern' }}
             </button>
           </div>
         </div>
 
         <div v-else class="empty-state">
           <Icon icon="mdi:account" width="48" height="48" />
-          <h3>Kullanıcı seçilmedi</h3>
-          <p>Yukarıdan bir kullanıcı seçerek başlayın</p>
+          <h3>Kein Benutzer ausgewählt</h3>
+          <p>Wählen Sie oben einen Benutzer aus, um zu beginnen</p>
         </div>
         </div>
       </div>

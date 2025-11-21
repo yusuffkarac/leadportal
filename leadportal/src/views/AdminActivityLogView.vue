@@ -24,49 +24,49 @@ const pageSize = ref(50)
 
 // Aktivite tip çevirileri
 const actionTranslations = {
-  LOGIN: 'Giriş Yaptı',
-  LOGOUT: 'Çıkış Yaptı',
-  VIEW_LEAD: 'Lead Görüntüledi',
-  ADD_BALANCE: 'Bakiye Eklendi',
-  TOGGLE_BALANCE: 'Bakiye Ayarı Değiştirildi',
-  CREATE_LEAD: 'Lead Oluşturdu',
-  EDIT_LEAD: 'Lead Düzenledi',
-  DELETE_LEAD: 'Lead Sildi',
-  PUBLISH_LEAD: 'Lead Yayınladı',
-  UNPUBLISH_LEAD: 'Lead Yayından Kaldırdı',
-  CREATE_BID: 'Teklif Verdi',
-  UPDATE_BID: 'Teklif Güncelledi',
-  DELETE_BID: 'Teklif Sildi',
-  PURCHASE_LEAD: 'Lead Satın Aldı',
-  INSTANT_BUY: 'Hemen Al ile Satın Aldı',
-  ADD_WATCH: 'İzlemeye Ekledi',
-  REMOVE_WATCH: 'İzlemeden Çıkardı',
-  CREATE_USER: 'Kullanıcı Oluşturdu',
-  EDIT_USER: 'Kullanıcı Düzenledi',
-  DELETE_USER: 'Kullanıcı Sildi',
-  RESET_PASSWORD: 'Şifre Sıfırladı',
-  CHANGE_SETTINGS: 'Ayarları Değiştirdi',
-  CHANGE_DESIGN: 'Tasarım Değiştirdi',
-  CHANGE_BRANDING: 'Firma Ayarlarını Değiştirdi',
-  CHANGE_EMAIL_SETTINGS: 'Email Ayarlarını Değiştirdi',
-  VIEW_STATISTICS: 'İstatistikleri Görüntüledi',
-  VIEW_USERS: 'Kullanıcıları Görüntüledi',
-  VIEW_ACTIVITY_LOG: 'Aktivite Loglarını Görüntüledi',
-  CHANGE_PERMISSIONS: 'İzinleri Değiştirdi',
-  CREATE_FAQ: 'SSS Oluşturdu',
-  EDIT_FAQ: 'SSS Düzenledi',
-  DELETE_FAQ: 'SSS Sildi',
-  EDIT_ABOUT: 'Hakkında Düzenledi',
-  PASSWORD_RESET : 'Şifre Sıfırlandı',
-  DEACTIVATE_USER	 : 'Kullanıcı Deaktif Edildi',
-  DISABLE_2FA : '2FA Deaktif Edildi',
-  ADMIN_DISABLE_2FA : 'ADMIN - 2FA Deaktif Etti',
-  INITIATE_2FA : '2FA Ayarlandı',
-  ENABLE_2FA	 : '2FA Aktif Edildi',
-  MARK_NOTIFICATION_READ : 'Bildirimler okundu işaretlendi',
-  MARK_ALL_NOTIFICATIONS_READ : 'Tüm Bildirimler okundu işaretlendi',
-  CONFIRM_IBAN_PAYMENT : 'IBAN Ödemesi Onaylandı',
-  REJECT_IBAN_PAYMENT : 'IBAN Ödemesi Reddedildi'
+  LOGIN: 'Angemeldet',
+  LOGOUT: 'Abgemeldet',
+  VIEW_LEAD: 'Lead angezeigt',
+  ADD_BALANCE: 'Guthaben hinzugefügt',
+  TOGGLE_BALANCE: 'Guthaben-Einstellung geändert',
+  CREATE_LEAD: 'Lead erstellt',
+  EDIT_LEAD: 'Lead bearbeitet',
+  DELETE_LEAD: 'Lead gelöscht',
+  PUBLISH_LEAD: 'Lead veröffentlicht',
+  UNPUBLISH_LEAD: 'Lead zurückgezogen',
+  CREATE_BID: 'Gebot abgegeben',
+  UPDATE_BID: 'Gebot aktualisiert',
+  DELETE_BID: 'Gebot gelöscht',
+  PURCHASE_LEAD: 'Lead gekauft',
+  INSTANT_BUY: 'Sofortkauf',
+  ADD_WATCH: 'Zur Beobachtungsliste hinzugefügt',
+  REMOVE_WATCH: 'Von Beobachtungsliste entfernt',
+  CREATE_USER: 'Benutzer erstellt',
+  EDIT_USER: 'Benutzer bearbeitet',
+  DELETE_USER: 'Benutzer gelöscht',
+  RESET_PASSWORD: 'Passwort zurückgesetzt',
+  CHANGE_SETTINGS: 'Einstellungen geändert',
+  CHANGE_DESIGN: 'Design geändert',
+  CHANGE_BRANDING: 'Firmeneinstellungen geändert',
+  CHANGE_EMAIL_SETTINGS: 'E-Mail-Einstellungen geändert',
+  VIEW_STATISTICS: 'Statistiken angezeigt',
+  VIEW_USERS: 'Benutzer angezeigt',
+  VIEW_ACTIVITY_LOG: 'Aktivitätsprotokolle angezeigt',
+  CHANGE_PERMISSIONS: 'Berechtigungen geändert',
+  CREATE_FAQ: 'FAQ erstellt',
+  EDIT_FAQ: 'FAQ bearbeitet',
+  DELETE_FAQ: 'FAQ gelöscht',
+  EDIT_ABOUT: 'Über-Seite bearbeitet',
+  PASSWORD_RESET : 'Passwort zurückgesetzt',
+  DEACTIVATE_USER	 : 'Benutzer deaktiviert',
+  DISABLE_2FA : '2FA deaktiviert',
+  ADMIN_DISABLE_2FA : 'ADMIN - 2FA deaktiviert',
+  INITIATE_2FA : '2FA eingerichtet',
+  ENABLE_2FA	 : '2FA aktiviert',
+  MARK_NOTIFICATION_READ : 'Benachrichtigungen als gelesen markiert',
+  MARK_ALL_NOTIFICATIONS_READ : 'Alle Benachrichtigungen als gelesen markiert',
+  CONFIRM_IBAN_PAYMENT : 'IBAN-Zahlung bestätigt',
+  REJECT_IBAN_PAYMENT : 'IBAN-Zahlung abgelehnt'
 
 
 
@@ -107,8 +107,8 @@ async function loadLogs() {
     totalPages.value = response.data.pagination.totalPages
     totalLogs.value = response.data.pagination.total
   } catch (err) {
-    console.error('Loglar yüklenemedi:', err)
-    error.value = 'Aktivite logları yüklenirken bir hata oluştu.'
+    console.error('Protokolle konnten nicht geladen werden:', err)
+    error.value = 'Beim Laden der Aktivitätsprotokolle ist ein Fehler aufgetreten.'
   } finally {
     isLoading.value = false
   }
@@ -119,7 +119,7 @@ async function loadStats() {
     const response = await api.get('/activity-log/stats')
     stats.value = response.data
   } catch (err) {
-    console.error('İstatistikler yüklenemedi:', err)
+    console.error('Statistiken konnten nicht geladen werden:', err)
   }
 }
 
@@ -128,12 +128,12 @@ async function loadActions() {
     const response = await api.get('/activity-log/actions')
     actions.value = response.data
   } catch (err) {
-    console.error('Aktivite tipleri yüklenemedi:', err)
+    console.error('Aktivitätstypen konnten nicht geladen werden:', err)
   }
 }
 
 function formatDate(date) {
-  return new Date(date).toLocaleString('tr-TR', {
+  return new Date(date).toLocaleString('de-DE', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -150,15 +150,15 @@ function formatTimeAgo(date) {
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
 
-  if (minutes < 1) return 'Şimdi'
-  if (minutes < 60) return `${minutes} dk önce`
-  if (hours < 24) return `${hours} saat önce`
-  return `${days} gün önce`
+  if (minutes < 1) return 'Jetzt'
+  if (minutes < 60) return `vor ${minutes} Min.`
+  if (hours < 24) return `vor ${hours} Std.`
+  return `vor ${days} Tagen`
 }
 
 function getUserName(log) {
   const user = log.user
-  if (!user) return 'Bilinmeyen Kullanıcı'
+  if (!user) return 'Unbekannter Benutzer'
   if (user.firstName) return `${user.firstName} ${user.lastName || ''}`.trim()
   if (user.username) return user.username
   return user.email
@@ -195,12 +195,12 @@ onMounted(() => {
   <div class="admin-activity-log">
     <div class="page-header">
       <div class="header-left">
-        <h1>Aktivite Geçmişi</h1>
-        <p class="subtitle">Tüm kullanıcı aktivitelerini izleyin</p>
+        <h1>Aktivitätsverlauf</h1>
+        <p class="subtitle">Alle Benutzeraktivitäten überwachen</p>
       </div>
       <button class="refresh-btn" @click="loadLogs" :disabled="isLoading">
         <Icon icon="mdi:refresh" width="18" height="18" />
-        Yenile
+        Aktualisieren
       </button>
     </div>
 
@@ -211,7 +211,7 @@ onMounted(() => {
           <Icon icon="mdi:chart-line" width="24" height="24" />
         </div>
         <div class="stat-content">
-          <span class="stat-label">Toplam Aktivite</span>
+          <span class="stat-label">Gesamt Aktivitäten</span>
           <span class="stat-value">{{ stats.total.toLocaleString() }}</span>
         </div>
       </div>
@@ -221,7 +221,7 @@ onMounted(() => {
           <Icon icon="mdi:clock-outline" width="24" height="24" />
         </div>
         <div class="stat-content">
-          <span class="stat-label">Son 24 Saat</span>
+          <span class="stat-label">Letzte 24 Stunden</span>
           <span class="stat-value">{{ stats.last24h.toLocaleString() }}</span>
         </div>
       </div>
@@ -231,7 +231,7 @@ onMounted(() => {
           <Icon icon="mdi:calendar" width="24" height="24" />
         </div>
         <div class="stat-content">
-          <span class="stat-label">Son 7 Gün</span>
+          <span class="stat-label">Letzte 7 Tage</span>
           <span class="stat-value">{{ stats.last7Days.toLocaleString() }}</span>
         </div>
       </div>
@@ -241,7 +241,7 @@ onMounted(() => {
           <Icon icon="mdi:message-text" width="24" height="24" />
         </div>
         <div class="stat-content">
-          <span class="stat-label">Son 30 Gün</span>
+          <span class="stat-label">Letzte 30 Tage</span>
           <span class="stat-value">{{ stats.last30Days.toLocaleString() }}</span>
         </div>
       </div>
@@ -255,13 +255,13 @@ onMounted(() => {
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Kullanıcı ara (isim, email)..."
+            placeholder="Benutzer suchen (Name, E-Mail)..."
           />
         </div>
 
         <div class="filter-group">
           <select v-model="selectedAction" class="filter-select">
-            <option value="">Tüm Aktiviteler</option>
+            <option value="">Alle Aktivitäten</option>
             <option v-for="action in actions" :key="action.action" :value="action.action">
               {{ translateAction(action.action) }} ({{ action._count.action }})
             </option>
@@ -270,18 +270,18 @@ onMounted(() => {
 
         <div class="date-group">
           <div class="date-input-wrapper">
-            <label class="date-label">Başlangıç</label>
+            <label class="date-label">Start</label>
             <input v-model="startDate" type="date" class="filter-input date-input">
           </div>
           <div class="date-input-wrapper">
-            <label class="date-label">Bitiş</label>
+            <label class="date-label">Ende</label>
             <input v-model="endDate" type="date" class="filter-input date-input">
           </div>
         </div>
 
         <button class="reset-btn" @click="resetFilters">
           <Icon icon="mdi:refresh" width="16" height="16" />
-          Sıfırla
+          Zurücksetzen
         </button>
       </div>
 
@@ -290,30 +290,30 @@ onMounted(() => {
 
     <div v-if="isLoading" class="loading-state">
       <div class="spinner"></div>
-      <p>Aktivite logları yükleniyor...</p>
+      <p>Aktivitätsprotokolle werden geladen...</p>
     </div>
 
     <div v-else-if="error" class="error-state">
       <Icon icon="mdi:alert-circle" width="48" height="48" />
       <p>{{ error }}</p>
-      <button @click="loadLogs" class="retry-btn">Tekrar Dene</button>
+      <button @click="loadLogs" class="retry-btn">Erneut versuchen</button>
     </div>
 
     <div v-else class="logs-content">
       <div v-if="logs.length === 0" class="empty-state">
         <Icon icon="mdi:file-document-outline" width="64" height="64" />
-        <p>Aktivite bulunamadı</p>
+        <p>Keine Aktivität gefunden</p>
       </div>
 
       <div v-else class="logs-table">
         <table>
           <thead>
             <tr>
-              <th>Zaman</th>
-              <th>Kullanıcı</th>
-              <th>Aktivite</th>
-              <th>Detaylar</th>
-              <th>IP Adresi</th>
+              <th>Zeit</th>
+              <th>Benutzer</th>
+              <th>Aktivität</th>
+              <th>Details</th>
+              <th>IP-Adresse</th>
             </tr>
           </thead>
           <tbody>
@@ -358,7 +358,7 @@ onMounted(() => {
           @click="changePage(currentPage - 1)"
         >
           <Icon icon="mdi:chevron-left" width="16" height="16" />
-          Önceki
+          Zurück
         </button>
 
         <div class="page-numbers">
@@ -387,7 +387,7 @@ onMounted(() => {
           :disabled="currentPage === totalPages"
           @click="changePage(currentPage + 1)"
         >
-          Sonraki
+          Weiter
           <Icon icon="mdi:chevron-right" width="16" height="16" />
         </button>
       </div>

@@ -3,8 +3,8 @@
     <div class="page-content">
       <div class="page-header">
         <div class="section-header">
-          <h1>Kullanıcı Tipleri</h1>
-          <p class="page-subtitle">Kullanıcı tiplerini yönetin ve yetkilendirmeleri ayarlayın</p>
+          <h1>Benutzertypen</h1>
+          <p class="page-subtitle">Verwalten Sie Benutzertypen und Berechtigungen</p>
         </div>
         <div class="page-header-actions" v-if="activeTab === 'types'">
           <button class="btn btn-secondary" @click="showAddTypeModal = true">
@@ -12,7 +12,7 @@
               <line x1="12" y1="5" x2="12" y2="19"/>
               <line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
-            Yeni Tip Ekle
+            Neuer Typ hinzufügen
           </button>
         </div>
       </div>
@@ -48,7 +48,7 @@
           <!-- Kullanıcı Tipleri Tab -->
           <div v-if="activeTab === 'types'" class="tab-panel">
             <div class="section-header">
-              <h2>Kullanıcı Tipleri</h2>
+              <h2>Benutzertypen</h2>
             
             </div>
 
@@ -66,7 +66,7 @@
                   <button 
                     class="edit-btn"
                     @click="editUserType(userType)"
-                    title="Düzenle"
+                    title="Bearbeiten"
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -77,11 +77,11 @@
                 
                 <div class="card-stats">
                   <div class="stat">
-                    <span class="stat-label">Kullanıcılar</span>
+                    <span class="stat-label">Benutzer</span>
                     <span class="stat-value">{{ getUserCount(userType.id) }}</span>
                   </div>
                   <div class="stat">
-                    <span class="stat-label">Yetkiler</span>
+                    <span class="stat-label">Berechtigungen</span>
                     <span class="stat-value">{{ getPermissionCount(userType.id) }}</span>
                   </div>
                 </div>
@@ -96,7 +96,7 @@
           <!-- Yetkilendirmeler Tab -->
           <div v-if="activeTab === 'permissions'" class="tab-panel">
             <div class="section-header">
-              <h2>Sayfa Yetkilendirmeleri</h2>
+              <h2>Seitenberechtigungen</h2>
             </div>
 
             <div class="permissions-container">
@@ -121,24 +121,24 @@
                       </svg>
                     </button>
                     <h3>{{ userType.name }}</h3>
-                    <span class="permission-count">{{ getPermissionCount(userType.id) }} yetki</span>
+                    <span class="permission-count">{{ getPermissionCount(userType.id) }} Berechtigungen</span>
                   </div>
                   <div class="group-actions" @click.stop>
                     <button class="btn btn-outline btn-sm" @click="selectAllPermissionsForType(userType.id)">
-                      Tümünü Seç
+                      Alle auswählen
                     </button>
                     <button class="btn btn-outline btn-sm" @click="clearAllPermissionsForType(userType.id)">
-                      Tümünü Temizle
+                      Alle löschen
                     </button>
                     <button 
                       class="btn btn-secondary btn-sm" 
                       @click="toggleAdminPermissions(userType.id)"
-                      :title="hasAdminPermissions(userType.id) ? 'Admin izinlerini kapat' : 'Admin izinlerini aç'"
+                      :title="hasAdminPermissions(userType.id) ? 'Admin-Berechtigungen deaktivieren' : 'Admin-Berechtigungen aktivieren'"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                       </svg>
-                      {{ hasAdminPermissions(userType.id) ? 'Admin Kapat' : 'Admin Aç' }}
+                      {{ hasAdminPermissions(userType.id) ? 'Admin deaktivieren' : 'Admin aktivieren' }}
                     </button>
                     <button 
                       class="btn btn-primary btn-sm" 
@@ -156,7 +156,7 @@
                         <polyline points="17,21 17,13 7,13 7,21"/>
                         <polyline points="7,3 7,8 15,8"/>
                       </svg>
-                      {{ saving ? 'Kaydediliyor...' : 'Kaydet' }}
+                      {{ saving ? 'Wird gespeichert...' : 'Speichern' }}
                     </button>
                   </div>
                 </div>
@@ -195,7 +195,7 @@
     <div v-if="showAddTypeModal" class="modal-overlay" @click="showAddTypeModal = false">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
-          <h3>Yeni Kullanıcı Tipi Ekle</h3>
+          <h3>Neuen Benutzertyp hinzufügen</h3>
           <button class="modal-close" @click="showAddTypeModal = false">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"/>
@@ -214,34 +214,34 @@
               id="newTypeId"
               v-model="newUserType.id" 
               type="text" 
-              placeholder="Örn: PREMIUM"
+              placeholder="z.B.: PREMIUM"
               class="form-input"
             >
           </div>
           <div class="form-group">
-            <label for="newTypeName">İsim *</label>
+            <label for="newTypeName">Name *</label>
             <input 
               id="newTypeName"
               v-model="newUserType.name" 
               type="text" 
-              placeholder="Örn: Premium Kullanıcı"
+              placeholder="z.B.: Premium-Benutzer"
               class="form-input"
             >
           </div>
           <div class="form-group">
-            <label for="newTypeDescription">Açıklama</label>
+            <label for="newTypeDescription">Beschreibung</label>
             <textarea 
               id="newTypeDescription"
               v-model="newUserType.description" 
-              placeholder="Kullanıcı tipi açıklaması"
+              placeholder="Benutzertyp-Beschreibung"
               class="form-textarea"
               rows="3"
             ></textarea>
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-outline" @click="showAddTypeModal = false">İptal</button>
-          <button class="btn btn-primary" @click="addUserType">Ekle</button>
+          <button class="btn btn-outline" @click="showAddTypeModal = false">Abbrechen</button>
+          <button class="btn btn-primary" @click="addUserType">Hinzufügen</button>
         </div>
       </div>
     </div>
@@ -250,7 +250,7 @@
     <div v-if="showEditTypeModal" class="modal-overlay" @click="showEditTypeModal = false">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
-          <h3>Kullanıcı Tipini Düzenle</h3>
+          <h3>Benutzertyp bearbeiten</h3>
           <button class="modal-close" @click="showEditTypeModal = false">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"/>
@@ -273,7 +273,7 @@
             >
           </div>
           <div class="form-group">
-            <label for="editTypeName">İsim *</label>
+            <label for="editTypeName">Name *</label>
             <input 
               id="editTypeName"
               v-model="editingUserType.name" 
@@ -282,7 +282,7 @@
             >
           </div>
           <div class="form-group">
-            <label for="editTypeDescription">Açıklama</label>
+            <label for="editTypeDescription">Beschreibung</label>
             <textarea 
               id="editTypeDescription"
               v-model="editingUserType.description" 
@@ -297,14 +297,14 @@
                 type="checkbox"
                 class="form-checkbox"
               >
-              Aktif
+              Aktiv
             </label>
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-outline" @click="showEditTypeModal = false">İptal</button>
-          <button class="btn btn-danger" @click="showDeleteConfirmation(editingUserType)">Sil</button>
-          <button class="btn btn-primary" @click="updateUserType">Güncelle</button>
+          <button class="btn btn-outline" @click="showEditTypeModal = false">Abbrechen</button>
+          <button class="btn btn-danger" @click="showDeleteConfirmation(editingUserType)">Löschen</button>
+          <button class="btn btn-primary" @click="updateUserType">Aktualisieren</button>
         </div>
       </div>
     </div>
@@ -313,7 +313,7 @@
     <div v-if="showDeleteConfirmModal" class="modal-overlay" @click="cancelDelete">
       <div class="modal-content delete-modal" @click.stop>
         <div class="modal-header">
-          <h3>Kullanıcı Tipini Sil</h3>
+          <h3>Benutzertyp löschen</h3>
           <button class="modal-close" @click="cancelDelete">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"/>
@@ -328,18 +328,18 @@
               <path d="M12 17h.01"/>
               <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
             </svg>
-            <h4>Bu işlem geri alınamaz!</h4>
+            <h4>Diese Aktion kann nicht rückgängig gemacht werden!</h4>
             <p>
-              <strong>{{ userTypeToDelete?.name }}</strong> kullanıcı tipini silmek istediğinizden emin misiniz?
+              Möchten Sie den Benutzertyp <strong>{{ userTypeToDelete?.name }}</strong> wirklich löschen?
             </p>
             <p class="warning-text">
-              Bu kullanıcı tipine ait tüm yetkilendirmeler de silinecektir.
+              Alle Berechtigungen für diesen Benutzertyp werden ebenfalls gelöscht.
             </p>
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-outline" @click="cancelDelete">İptal</button>
-          <button class="btn btn-danger" @click="deleteUserType">Sil</button>
+          <button class="btn btn-outline" @click="cancelDelete">Abbrechen</button>
+          <button class="btn btn-danger" @click="deleteUserType">Löschen</button>
         </div>
       </div>
     </div>
@@ -378,8 +378,8 @@ const expandedUserTypes = ref({})
 
 // Tabs configuration
 const tabs = [
-  { id: 'types', name: 'Kullanıcı Tipleri' },
-  { id: 'permissions', name: 'Yetkilendirmeler' }
+  { id: 'types', name: 'Benutzertypen' },
+  { id: 'permissions', name: 'Berechtigungen' }
 ]
 
 // Auth headers
@@ -408,7 +408,7 @@ const loadData = async () => {
     permissions.value = permissionsResponse.data || {}
   } catch (error) {
     console.error('Error loading data:', error)
-    showMessage('Veriler yüklenirken hata oluştu', 'error')
+    showMessage('Fehler beim Laden der Daten', 'error')
   }
 }
 
@@ -481,10 +481,10 @@ const savePermissionsForType = async (userTypeId) => {
       { permissions: userTypePermissions },
       { headers: authHeaders() }
     )
-    showMessage(`${userTypes.value.find(ut => ut.id === userTypeId)?.name} yetkilendirmeleri başarıyla kaydedildi`, 'success')
+    showMessage(`Berechtigungen für ${userTypes.value.find(ut => ut.id === userTypeId)?.name} erfolgreich gespeichert`, 'success')
   } catch (error) {
     console.error('Error saving permissions:', error)
-    showMessage('Yetkilendirmeler kaydedilirken hata oluştu', 'error')
+    showMessage('Fehler beim Speichern der Berechtigungen', 'error')
   } finally {
     saving.value = false
   }
@@ -504,10 +504,10 @@ const savePermissions = async () => {
       { permissions: permissions.value },
       { headers: authHeaders() }
     )
-    showMessage('Yetkilendirmeler başarıyla kaydedildi', 'success')
+    showMessage('Berechtigungen erfolgreich gespeichert', 'success')
   } catch (error) {
     console.error('Error saving permissions:', error)
-    showMessage('Yetkilendirmeler kaydedilirken hata oluştu', 'error')
+    showMessage('Fehler beim Speichern der Berechtigungen', 'error')
   } finally {
     saving.value = false
   }
@@ -517,13 +517,13 @@ const savePermissions = async () => {
 const addUserType = async () => {
   try {
     if (!newUserType.value.id || !newUserType.value.name) {
-      showModalMessage('ID ve isim alanları zorunludur', 'error')
+      showModalMessage('ID und Name sind erforderlich', 'error')
       return
     }
 
     await api.post('/user-types', newUserType.value, { headers: authHeaders() })
     
-    showModalMessage('Kullanıcı tipi başarıyla eklendi', 'success')
+    showModalMessage('Benutzertyp erfolgreich hinzugefügt', 'success')
     setTimeout(() => {
       showAddTypeModal.value = false
       newUserType.value = { id: '', name: '', description: '' }
@@ -531,7 +531,7 @@ const addUserType = async () => {
     }, 1500)
   } catch (error) {
     console.error('Error adding user type:', error)
-    showModalMessage(error.response?.data?.message || 'Kullanıcı tipi eklenirken hata oluştu', 'error')
+    showModalMessage(error.response?.data?.message || 'Fehler beim Hinzufügen des Benutzertyps', 'error')
   }
 }
 
@@ -539,7 +539,7 @@ const addUserType = async () => {
 const updateUserType = async () => {
   try {
     if (!editingUserType.value.name) {
-      showModalMessage('İsim alanı zorunludur', 'error')
+      showModalMessage('Name ist erforderlich', 'error')
       return
     }
 
@@ -549,7 +549,7 @@ const updateUserType = async () => {
       isActive: editingUserType.value.isActive
     }, { headers: authHeaders() })
     
-    showModalMessage('Kullanıcı tipi başarıyla güncellendi', 'success')
+    showModalMessage('Benutzertyp erfolgreich aktualisiert', 'success')
     setTimeout(() => {
       showEditTypeModal.value = false
       editingUserType.value = {}
@@ -557,7 +557,7 @@ const updateUserType = async () => {
     }, 1500)
   } catch (error) {
     console.error('Error updating user type:', error)
-    showModalMessage(error.response?.data?.message || 'Kullanıcı tipi güncellenirken hata oluştu', 'error')
+    showModalMessage(error.response?.data?.message || 'Fehler beim Aktualisieren des Benutzertyps', 'error')
   }
 }
 
@@ -573,7 +573,7 @@ const deleteUserType = async () => {
 
   try {
     await api.delete(`/user-types/${userTypeToDelete.value.id}`, { headers: authHeaders() })
-    showMessage('Kullanıcı tipi başarıyla silindi', 'success')
+    showMessage('Benutzertyp erfolgreich gelöscht', 'success')
     showEditTypeModal.value = false
     showDeleteConfirmModal.value = false
     editingUserType.value = {}
@@ -581,7 +581,7 @@ const deleteUserType = async () => {
     loadData()
   } catch (error) {
     console.error('Error deleting user type:', error)
-    showMessage(error.response?.data?.message || 'Kullanıcı tipi silinirken hata oluştu', 'error')
+    showMessage(error.response?.data?.message || 'Fehler beim Löschen des Benutzertyps', 'error')
   }
 }
 

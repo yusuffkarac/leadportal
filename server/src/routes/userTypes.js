@@ -23,7 +23,7 @@ export default (prisma) => {
       res.json(userTypes)
     } catch (error) {
       console.error('Error fetching user types:', error)
-      res.status(500).json({ message: 'Kullanıcı tipleri alınamadı' })
+      res.status(500).json({ message: 'Benutzertypen konnten nicht abgerufen werden' })
     }
   })
 
@@ -48,7 +48,7 @@ export default (prisma) => {
       res.json(admins)
     } catch (error) {
       console.error('Error fetching admin users:', error)
-      res.status(500).json({ message: 'Admin kullanıcıları alınamadı' })
+      res.status(500).json({ message: 'Admin-Benutzer konnten nicht abgerufen werden' })
     }
   })
 
@@ -58,7 +58,7 @@ export default (prisma) => {
       const { id, name, description } = req.body
       
       if (!id || !name) {
-        return res.status(400).json({ message: 'ID ve isim gerekli' })
+        return res.status(400).json({ message: 'ID und Name sind erforderlich' })
       }
 
       const userType = await prisma.userType.create({
@@ -70,13 +70,13 @@ export default (prisma) => {
         }
       })
 
-      res.json({ message: 'Kullanıcı tipi başarıyla oluşturuldu', userType })
+      res.json({ message: 'Benutzertyp erfolgreich erstellt', userType })
     } catch (error) {
       console.error('Error creating user type:', error)
       if (error.code === 'P2002') {
-        res.status(400).json({ message: 'Bu ID zaten kullanılıyor' })
+        res.status(400).json({ message: 'Diese ID wird bereits verwendet' })
       } else {
-        res.status(500).json({ message: 'Kullanıcı tipi oluşturulamadı' })
+        res.status(500).json({ message: 'Benutzertyp konnte nicht erstellt werden' })
       }
     }
   })
@@ -96,13 +96,13 @@ export default (prisma) => {
         }
       })
 
-      res.json({ message: 'Kullanıcı tipi başarıyla güncellendi', userType })
+      res.json({ message: 'Benutzertyp erfolgreich aktualisiert', userType })
     } catch (error) {
       console.error('Error updating user type:', error)
       if (error.code === 'P2025') {
-        res.status(404).json({ message: 'Kullanıcı tipi bulunamadı' })
+        res.status(404).json({ message: 'Benutzertyp nicht gefunden' })
       } else {
-        res.status(500).json({ message: 'Kullanıcı tipi güncellenemedi' })
+        res.status(500).json({ message: 'Benutzertyp konnte nicht aktualisiert werden' })
       }
     }
   })
@@ -116,13 +116,13 @@ export default (prisma) => {
         where: { id }
       })
 
-      res.json({ message: 'Kullanıcı tipi başarıyla silindi' })
+      res.json({ message: 'Benutzertyp erfolgreich gelöscht' })
     } catch (error) {
       console.error('Error deleting user type:', error)
       if (error.code === 'P2025') {
-        res.status(404).json({ message: 'Kullanıcı tipi bulunamadı' })
+        res.status(404).json({ message: 'Benutzertyp nicht gefunden' })
       } else {
-        res.status(500).json({ message: 'Kullanıcı tipi silinemedi' })
+        res.status(500).json({ message: 'Benutzertyp konnte nicht gelöscht werden' })
       }
     }
   })
@@ -149,7 +149,7 @@ export default (prisma) => {
       res.json(groupedPermissions)
     } catch (error) {
       console.error('Error fetching user type permissions:', error)
-      res.status(500).json({ message: 'Kullanıcı tipi yetkilendirmeleri alınamadı' })
+      res.status(500).json({ message: 'Benutzertyp-Berechtigungen konnten nicht abgerufen werden' })
     }
   })
 
@@ -158,7 +158,7 @@ export default (prisma) => {
     try {
       const { permissions } = req.body
       if (!permissions || typeof permissions !== 'object') {
-        return res.status(400).json({ message: 'Geçersiz yetkilendirme verisi' })
+        return res.status(400).json({ message: 'Ungültige Berechtigungsdaten' })
       }
 
       // Her kullanıcı tipi için ayrı ayrı işle
@@ -185,10 +185,10 @@ export default (prisma) => {
         }
       }
 
-      res.json({ message: 'Yetkilendirmeler başarıyla kaydedildi' })
+      res.json({ message: 'Berechtigungen erfolgreich gespeichert' })
     } catch (error) {
       console.error('Error updating user type permissions:', error)
-      res.status(500).json({ message: 'Yetkilendirmeler kaydedilemedi' })
+      res.status(500).json({ message: 'Berechtigungen konnten nicht gespeichert werden' })
     }
   })
 
@@ -241,7 +241,7 @@ export default (prisma) => {
       return res.json({ hasAccess: !!hasWildcardAccess })
     } catch (error) {
       console.error('Permission check error:', error)
-      res.status(500).json({ message: 'Yetki kontrolü yapılamadı' })
+      res.status(500).json({ message: 'Berechtigungsprüfung konnte nicht durchgeführt werden' })
     }
   })
 

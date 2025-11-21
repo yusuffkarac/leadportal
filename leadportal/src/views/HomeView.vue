@@ -29,58 +29,58 @@ const showLeftScrollHint = ref(false)
 
 const defaultHomepageContent = {
   hero: {
-    eyebrow: 'Sigorta lead pazaryeri',
-    title: "Almanya'nın önde gelen",
-    highlight: 'sigorta lead',
-    titleSuffix: 'pazaryeri',
-    subtitle: 'LeadPortal, sigorta brokerleri için profesyonel açık artırma altyapısı, doğrulanmış lead kalitesi ve canlı teklif takibi sunar.',
-    primaryText: 'Şimdi kaydol',
+    eyebrow: 'Versicherungs-Lead-Marktplatz',
+    title: "Deutschlands führender",
+    highlight: 'Versicherungs-Lead',
+    titleSuffix: 'Marktplatz',
+    subtitle: 'LeadPortal bietet Versicherungsmaklern professionelle Auktionsinfrastruktur, verifizierte Lead-Qualität und Live-Gebotsverfolgung.',
+    primaryText: 'Jetzt registrieren',
     primaryLink: '/login',
-    secondaryText: 'Canlı açık artırmaları gör',
+    secondaryText: 'Live-Auktionen ansehen',
     secondaryLink: '/leads',
     backgroundImage: '',
     backgroundOpacity: 0.75
   },
-  featureHeading: "LeadPortal'ı neden seçmelisiniz?",
+  featureHeading: "Warum LeadPortal wählen?",
   features: [
     {
       icon: 'mdi:scale-balance',
-      title: 'Adil Açık Artırmalar',
-      description: 'Şeffaf kurallar ve gerçek zamanlı teklifler ile esnek açık artırma modelleri.'
+      title: 'Faire Auktionen',
+      description: 'Transparente Regeln und Echtzeit-Gebote mit flexiblen Auktionsmodellen.'
     },
     {
       icon: 'mdi:shield-check',
-      title: 'Onaylı Kalite',
-      description: 'Her lead yayına alınmadan önce kalite ve doğruluk kontrollerinden geçer.'
+      title: 'Verifizierte Qualität',
+      description: 'Jeder Lead durchläuft Qualitäts- und Verifizierungsprüfungen vor der Veröffentlichung.'
     },
     {
       icon: 'mdi:account-group',
-      title: 'Güvenilir İş Ortağı',
-      description: 'Broker topluluğumuz için doğrulama süreci ve puanlama sistemi.'
+      title: 'Zuverlässiger Partner',
+      description: 'Verifizierungsprozess und Bewertungssystem für unsere Makler-Community.'
     }
   ],
   showcase: {
-    eyebrow: 'Vitrin leadler',
-    title: 'Aktüel açık artırmalar',
-    ctaText: 'Hepsini gör',
+    eyebrow: 'Showcase-Leads',
+    title: 'Aktuelle Auktionen',
+    ctaText: 'Alle anzeigen',
     ctaLink: '/leads'
   },
   statsHeading: {
-    eyebrow: 'Güven veren rakamlar',
-    title: 'Broker topluluğumuz büyümeye devam ediyor'
+    eyebrow: 'Vertrauensvolle Zahlen',
+    title: 'Unsere Makler-Community wächst weiter'
   },
   stats: [
-    { value: '2.500+', label: 'Aktif Broker' },
-    { value: '15.000+', label: 'Satılan Lead' },
-    { value: '98%', label: 'Memnuniyet' },
-    { value: '€2.1M', label: 'Toplam Hacim' }
+    { value: '2.500+', label: 'Aktive Makler' },
+    { value: '15.000+', label: 'Verkaufte Leads' },
+    { value: '98%', label: 'Zufriedenheit' },
+    { value: '€2.1M', label: 'Gesamtvolumen' }
   ],
   cta: {
-    title: 'Başlamak için hazır mısınız?',
-    subtitle: 'LeadPortal topluluğuna katılın, doğrulanmış leadlere erişin ve işinizi güvenle büyütün.',
-    primaryText: 'Ücretsiz kaydol',
+    title: 'Bereit loszulegen?',
+    subtitle: 'Treten Sie der LeadPortal-Community bei, erhalten Sie Zugang zu verifizierten Leads und wachsen Sie Ihr Geschäft sicher.',
+    primaryText: 'Kostenlos registrieren',
     primaryLink: '/login',
-    secondaryText: 'Leadleri incele',
+    secondaryText: 'Leads durchsuchen',
     secondaryLink: '/leads'
   }
 }
@@ -142,7 +142,7 @@ async function loadHomepageSettings() {
       insuranceTypes: normalizeInsuranceTypes(data.insuranceTypes || [])
     }
   } catch (error) {
-    console.error('Ana sayfa ayarları yüklenemedi:', error)
+    console.error('Startseiteneinstellungen konnten nicht geladen werden:', error)
     settings.value = {
       defaultCurrency: 'EUR',
       insuranceTypes: normalizeInsuranceTypes()
@@ -173,8 +173,8 @@ async function loadShowcaseLeads() {
       socket.emit('join-lead', lead.id)
     }
   } catch (error) {
-    console.error('Vitrin leadleri alınamadı:', error)
-    showcaseError.value = 'Vitrin leadleri yüklenirken bir hata oluştu.'
+    console.error('Showcase-Leads konnten nicht abgerufen werden:', error)
+    showcaseError.value = 'Beim Laden der Showcase-Leads ist ein Fehler aufgetreten.'
   } finally {
     isLoadingShowcase.value = false
   }
@@ -564,7 +564,7 @@ onMounted(async () => {
         </a>
       </div>
 
-      <div v-if="isLoadingShowcase" class="showcase-state">Vitrin leadleri yükleniyor…</div>
+      <div v-if="isLoadingShowcase" class="showcase-state">Showcase-Leads werden geladen…</div>
       <div v-else-if="showcaseError" class="showcase-state error">{{ showcaseError }}</div>
       <div v-else-if="hasShowcaseLeads" class="showcase-wrapper">
         <div
@@ -598,7 +598,7 @@ onMounted(async () => {
             class="scroll-indicator scroll-indicator-left"
             @click="scrollShowcaseLeft"
             type="button"
-            aria-label="Sola kaydır"
+            aria-label="Nach links scrollen"
           >
             <Icon icon="mdi:chevron-left" height="32" width="32" />
           </button>
@@ -607,14 +607,14 @@ onMounted(async () => {
             class="scroll-indicator scroll-indicator-right"
             @click="scrollShowcaseRight"
             type="button"
-            aria-label="Sağa kaydır"
+            aria-label="Nach rechts scrollen"
           >
             <Icon icon="mdi:chevron-right" height="32" width="32" />
           </button>
         </div>
     </div>
       <div v-else class="showcase-state">
-        Henüz vitrine alınmış lead bulunmuyor. Yeni fırsatlar eklendikçe burada görünecek.
+        Noch keine Leads im Showcase vorhanden. Neue Angebote werden hier angezeigt, sobald sie hinzugefügt werden.
       </div>
     </section>
 

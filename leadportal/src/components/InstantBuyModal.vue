@@ -57,10 +57,10 @@ async function confirmPurchase() {
     if (response.data.success) {
       // Başarı mesajı göster
       const paymentInfo = response.data.paymentMethod === 'balance'
-        ? `Bakiyenizden ${formatPrice(response.data.sale.amount, props.currency)} düşüldü.`
-        : 'IBAN üzerinden ödeme yapılacaktır.'
+        ? `${formatPrice(response.data.sale.amount, props.currency)} wurde von Ihrem Guthaben abgezogen.`
+        : 'Die Zahlung erfolgt über IBAN.'
 
-      success(`Lead başarıyla satın alındı!\n\n${paymentInfo}`)
+      success(`Lead erfolgreich gekauft!\n\n${paymentInfo}`)
 
       emit('success', response.data)
       emit('close')
@@ -70,16 +70,16 @@ async function confirmPurchase() {
 
     // Hata tipine göre mesaj göster
     if (errorData?.errorType === 'INSUFFICIENT_BALANCE') {
-      error(`Yetersiz bakiye!\n\nGerekli: ${formatPrice(errorData.required, props.currency)}\nMevcut: ${formatPrice(errorData.available, props.currency)}\n\n${errorData.error}`)
+      error(`Unzureichendes Guthaben!\n\nErforderlich: ${formatPrice(errorData.required, props.currency)}\nVerfügbar: ${formatPrice(errorData.available, props.currency)}\n\n${errorData.error}`)
     } else if (errorData?.errorType === 'IBAN_NOT_FOUND') {
-      error(errorData.error + '\n\nProfil sayfanızdan IBAN bilgilerinizi ekleyebilirsiniz.')
+      error(errorData.error + '\n\nSie können Ihre IBAN-Informationen auf Ihrer Profilseite hinzufügen.')
     } else if (errorData?.error) {
       error(errorData.error)
     } else {
-      error('Anında satın alma işlemi başarısız')
+      error('Sofortkauf fehlgeschlagen')
     }
 
-    console.error('Anında satın alma hatası:', errorData?.error)
+    console.error('Sofortkauf-Fehler:', errorData?.error)
 
     // Hata durumunda modal'ı kapat
     setTimeout(() => {

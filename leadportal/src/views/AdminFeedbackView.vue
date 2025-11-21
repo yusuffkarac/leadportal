@@ -2,38 +2,38 @@
   <div class="admin-feedback-page">
     <div class="page-content">
       <div class="page-header">
-        <h1>Geri Bildirimler</h1>
-        <p class="header-subtitle">Müşteri feedback'lerini yönetin</p>
+        <h1>Feedback</h1>
+        <p class="header-subtitle">Kundenfeedback verwalten</p>
       </div>
 
       <!-- Filters Section -->
       <div class="filters-section">
         <div class="filter-group">
           <div class="filter-item">
-            <label>Durum</label>
+            <label>Status</label>
             <select v-model="selectedStatus" class="filter-select">
-              <option value="">Tümü</option>
-              <option value="OPEN">Açık</option>
-              <option value="IN_PROGRESS">İşlemde</option>
-              <option value="RESOLVED">Çözüldü</option>
-              <option value="CLOSED">Kapalı</option>
+              <option value="">Alle</option>
+              <option value="OPEN">Offen</option>
+              <option value="IN_PROGRESS">In Bearbeitung</option>
+              <option value="RESOLVED">Gelöst</option>
+              <option value="CLOSED">Geschlossen</option>
             </select>
           </div>
           <div class="filter-item">
-            <label>Öncelik</label>
+            <label>Priorität</label>
             <select v-model="selectedPriority" class="filter-select">
-              <option value="">Tümü</option>
-              <option value="LOW">Düşük</option>
-              <option value="MEDIUM">Orta</option>
-              <option value="HIGH">Yüksek</option>
-              <option value="URGENT">Acil</option>
+              <option value="">Alle</option>
+              <option value="LOW">Niedrig</option>
+              <option value="MEDIUM">Mittel</option>
+              <option value="HIGH">Hoch</option>
+              <option value="URGENT">Dringend</option>
             </select>
           </div>
           <div class="filter-item">
-            <label>Atanan Kişi</label>
+            <label>Zugewiesen an</label>
             <select v-model="selectedAssignee" class="filter-select">
-              <option value="">Tümü</option>
-              <option value="unassigned">Atanmamış</option>
+              <option value="">Alle</option>
+              <option value="unassigned">Nicht zugewiesen</option>
               <option v-for="admin in adminUsers" :key="admin.id" :value="admin.id">
                 {{ admin.email }}
               </option>
@@ -44,11 +44,11 @@
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="Yorum, e-posta, lead başlığı..."
+              placeholder="Kommentar, E-Mail, Lead-Titel..."
               class="search-input"
             />
           </div>
-          <button class="btn-reset" @click="resetFilters" title="Filtreleri Temizle">
+          <button class="btn-reset" @click="resetFilters" title="Filter zurücksetzen">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
               <path d="M21 3v5h-5"/>
@@ -62,7 +62,7 @@
       <!-- Loading State -->
       <div v-if="loading" class="loading-state">
         <div class="loading-spinner"></div>
-        <p>Geri bildirimler yükleniyor...</p>
+        <p>Feedback wird geladen...</p>
       </div>
 
       <!-- Empty State -->
@@ -72,20 +72,20 @@
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
           </svg>
         </div>
-        <h3>Geri bildirim bulunamadı</h3>
-        <p>Seçilen filtrelerle eşleşen geri bildirim yok.</p>
+        <h3>Kein Feedback gefunden</h3>
+        <p>Kein Feedback entspricht den ausgewählten Filtern.</p>
       </div>
 
       <!-- Feedbacks List -->
       <div v-else class="feedbacks-list">
         <div class="list-header">
-          <div class="list-col col-subject">Konu</div>
-          <div class="list-col col-user">Kullanıcı</div>
-          <div class="list-col col-status">Durum</div>
-          <div class="list-col col-priority">Öncelik</div>
-          <div class="list-col col-rating">Puan</div>
-          <div class="list-col col-replies">Cevap</div>
-          <div class="list-col col-actions">İşlemler</div>
+          <div class="list-col col-subject">Betreff</div>
+          <div class="list-col col-user">Benutzer</div>
+          <div class="list-col col-status">Status</div>
+          <div class="list-col col-priority">Priorität</div>
+          <div class="list-col col-rating">Bewertung</div>
+          <div class="list-col col-replies">Antworten</div>
+          <div class="list-col col-actions">Aktionen</div>
         </div>
         <div
           v-for="feedback in filteredFeedbacks"
@@ -110,7 +110,7 @@
                 <span>{{ feedback.user.email }}</span>
               </div>
               <div v-if="feedback.assignedToUser" class="assigned-user">
-                Atanan: {{ feedback.assignedToUser.email }}
+                Zugewiesen: {{ feedback.assignedToUser.email }}
               </div>
             </div>
             <div class="list-col col-status">
@@ -147,9 +147,9 @@
                   :value="feedback.assignedTo || ''"
                   @change="assignFeedback(feedback.id, $event.target.value)"
                   class="assign-select-small"
-                  title="Ata"
+                  title="Zuweisen"
                 >
-                  <option value="">Atanmamış</option>
+                  <option value="">Nicht zugewiesen</option>
                   <option v-for="admin in adminUsers" :key="admin.id" :value="admin.id">
                     {{ admin.email }}
                   </option>
@@ -158,14 +158,14 @@
                   :value="feedback.status"
                   @change="openStatusChangeModal(feedback.id, $event.target.value)"
                   class="status-select-small"
-                  title="Durum"
+                  title="Status"
                 >
-                  <option value="OPEN">Açık</option>
-                  <option value="IN_PROGRESS">İşlemde</option>
-                  <option value="RESOLVED">Çözüldü</option>
-                  <option value="CLOSED">Kapalı</option>
+                  <option value="OPEN">Offen</option>
+                  <option value="IN_PROGRESS">In Bearbeitung</option>
+                  <option value="RESOLVED">Gelöst</option>
+                  <option value="CLOSED">Geschlossen</option>
                 </select>
-                <button class="btn-action-small btn-details" @click="selectFeedbackForReply(feedback)" title="Detaylar">
+                <button class="btn-action-small btn-details" @click="selectFeedbackForReply(feedback)" title="Details">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                     <polyline points="14 2 14 8 20 8"/>
@@ -174,7 +174,7 @@
                     <polyline points="10 9 9 9 8 9"/>
                   </svg>
                 </button>
-                <button class="btn-action-small btn-history" @click="openStatusHistoryModal(feedback)" title="Durum Geçmişi">
+                <button class="btn-action-small btn-history" @click="openStatusHistoryModal(feedback)" title="Statusverlauf">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M12 2v20M2 12h20"/>
                     <circle cx="12" cy="12" r="3"/>
@@ -200,7 +200,7 @@
     <div v-if="showStatusChangeModal" class="modal-overlay" @click.self="closeStatusChangeModal">
       <div class="status-modal">
         <div class="modal-header">
-          <h3>Durum Değiştir</h3>
+          <h3>Status ändern</h3>
           <button class="close-btn" @click="closeStatusChangeModal">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"/>
@@ -210,12 +210,12 @@
         </div>
         <div class="modal-body">
           <div class="form-group">
-            <label>Yeni Durum</label>
+            <label>Neuer Status</label>
             <select v-model="statusChangeForm.newStatus" class="form-select">
-              <option value="OPEN">Açık</option>
-              <option value="IN_PROGRESS">İşlemde</option>
-              <option value="RESOLVED">Çözüldü</option>
-              <option value="CLOSED">Kapalı</option>
+              <option value="OPEN">Offen</option>
+              <option value="IN_PROGRESS">In Bearbeitung</option>
+              <option value="RESOLVED">Gelöst</option>
+              <option value="CLOSED">Geschlossen</option>
             </select>
           </div>
           <div class="form-group">
@@ -223,24 +223,24 @@
             <textarea
               v-model="statusChangeForm.internalNote"
               class="form-textarea"
-              placeholder="Durum değişikliği için not yazın..."
+              placeholder="Notiz zur Statusänderung schreiben..."
               rows="4"
               required
             ></textarea>
-            <p class="help-text">Bu not zorunludur ve durum geçmişinde görünecektir.</p>
+            <p class="help-text">Diese Notiz ist erforderlich und wird im Statusverlauf angezeigt.</p>
           </div>
           <div v-if="statusChangeError" class="error-message">
             {{ statusChangeError }}
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn-secondary" @click="closeStatusChangeModal">İptal</button>
+          <button class="btn-secondary" @click="closeStatusChangeModal">Abbrechen</button>
           <button
             class="btn-primary"
             @click="confirmStatusChange"
             :disabled="!statusChangeForm.internalNote.trim() || statusChangeLoading"
           >
-            {{ statusChangeLoading ? 'Kaydediliyor...' : 'Kaydet' }}
+            {{ statusChangeLoading ? 'Wird gespeichert...' : 'Speichern' }}
           </button>
         </div>
       </div>
@@ -250,7 +250,7 @@
     <div v-if="showStatusHistoryModal" class="modal-overlay" @click.self="closeStatusHistoryModal">
       <div class="status-history-modal">
         <div class="modal-header">
-          <h3>Durum Geçmişi</h3>
+          <h3>Statusverlauf</h3>
           <button class="close-btn" @click="closeStatusHistoryModal">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"/>
@@ -260,10 +260,10 @@
         </div>
         <div class="modal-body">
           <div v-if="statusHistoryLoading" class="loading-state">
-            <p>Yükleniyor...</p>
+            <p>Wird geladen...</p>
           </div>
           <div v-else-if="statusHistory.length === 0" class="empty-state">
-            <p>Henüz durum değişikliği yok.</p>
+            <p>Noch keine Statusänderungen.</p>
           </div>
           <div v-else class="history-list">
             <div
@@ -274,7 +274,7 @@
               <div class="history-header">
                 <div class="history-status">
                   <span class="status-badge" :class="history.oldStatus?.toLowerCase() || 'initial'">
-                    {{ history.oldStatus ? getStatusLabel(history.oldStatus) : 'İlk Durum' }}
+                    {{ history.oldStatus ? getStatusLabel(history.oldStatus) : 'Anfangsstatus' }}
                   </span>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="9 18 15 12 9 6"/>
@@ -285,11 +285,11 @@
                 </div>
                 <div class="history-meta">
                   <span class="history-date">{{ formatDate(history.createdAt) }}</span>
-                  <span class="history-user">{{ history.changedByUser?.email || history.changedByUser?.firstName || 'Bilinmeyen' }}</span>
+                  <span class="history-user">{{ history.changedByUser?.email || history.changedByUser?.firstName || 'Unbekannt' }}</span>
                 </div>
               </div>
               <div class="history-note">
-                <strong>Not:</strong> {{ history.internalNote }}
+                <strong>Notiz:</strong> {{ history.internalNote }}
               </div>
             </div>
           </div>
@@ -354,7 +354,7 @@ async function fetchFeedbacks() {
     })
     feedbacks.value = response.data
   } catch (error) {
-    console.error('Geri bildirimleri yükleme hatası:', error)
+    console.error('Fehler beim Laden des Feedbacks:', error)
   } finally {
     loading.value = false
   }
@@ -368,7 +368,7 @@ async function fetchAdminUsers() {
     })
     adminUsers.value = response.data
   } catch (error) {
-    console.error('Admin kullanıcıları yükleme hatası:', error)
+    console.error('Fehler beim Laden der Admin-Benutzer:', error)
   }
 }
 
@@ -381,8 +381,8 @@ async function assignFeedback(feedbackId, adminId) {
     )
     await fetchFeedbacks()
   } catch (error) {
-    console.error('Atama hatası:', error)
-    alert('Atama yapılamadı')
+    console.error('Fehler bei der Zuweisung:', error)
+    alert('Zuweisung konnte nicht durchgeführt werden')
   }
 }
 
@@ -417,7 +417,7 @@ function closeStatusChangeModal() {
 // Confirm status change
 async function confirmStatusChange() {
   if (!statusChangeForm.value.internalNote.trim()) {
-    statusChangeError.value = 'Internal note zorunludur'
+    statusChangeError.value = 'Interne Notiz ist erforderlich'
     return
   }
 
@@ -444,8 +444,8 @@ async function confirmStatusChange() {
     
     closeStatusChangeModal()
   } catch (error) {
-    console.error('Durum güncelleme hatası:', error)
-    statusChangeError.value = error.response?.data?.error || 'Durum güncellenemedi'
+    console.error('Fehler beim Aktualisieren des Status:', error)
+    statusChangeError.value = error.response?.data?.error || 'Status konnte nicht aktualisiert werden'
   } finally {
     statusChangeLoading.value = false
   }
@@ -463,7 +463,7 @@ async function openStatusHistoryModal(feedback) {
     )
     statusHistory.value = response.data.statusHistory || []
   } catch (error) {
-    console.error('Durum geçmişi yükleme hatası:', error)
+    console.error('Fehler beim Laden des Statusverlaufs:', error)
     statusHistory.value = []
   } finally {
     statusHistoryLoading.value = false
@@ -495,8 +495,8 @@ async function sendReply() {
     selectedFeedback.value = response.data
     await fetchFeedbacks()
   } catch (error) {
-    console.error('Cevap gönderme hatası:', error)
-    alert('Cevap gönderilemedi')
+    console.error('Fehler beim Senden der Antwort:', error)
+    alert('Antwort konnte nicht gesendet werden')
   } finally {
     replyLoading.value = false
   }
@@ -511,8 +511,8 @@ async function selectFeedbackForReply(feedback) {
     selectedFeedback.value = response.data
     replyMessage.value = ''
   } catch (error) {
-    console.error('Geri bildirim yükleme hatası:', error)
-    alert('Geri bildirim detayları yüklenemedi')
+    console.error('Fehler beim Laden des Feedbacks:', error)
+    alert('Feedback-Details konnten nicht geladen werden')
   }
 }
 
@@ -520,7 +520,7 @@ async function selectFeedbackForReply(feedback) {
 const selectedLeadForModal = computed(() => {
   if (!selectedFeedback.value) return null
   const leadSaleId = selectedFeedback.value.leadSale?.id || selectedFeedback.value.leadSaleId
-  const leadTitle = selectedFeedback.value.leadSale?.lead?.title || selectedFeedback.value.subject || 'Geri Bildirim'
+    const leadTitle = selectedFeedback.value.leadSale?.lead?.title || selectedFeedback.value.subject || 'Feedback'
   return {
     id: leadSaleId,
     feedbackId: selectedFeedback.value.id,
@@ -531,7 +531,7 @@ const selectedLeadForModal = computed(() => {
 // Format date
 function formatDate(dateString) {
   const date = new Date(dateString)
-  return date.toLocaleDateString('tr-TR', {
+  return date.toLocaleDateString('de-DE', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -543,10 +543,10 @@ function formatDate(dateString) {
 // Get status label
 function getStatusLabel(status) {
   const labels = {
-    'OPEN': 'Açık',
-    'IN_PROGRESS': 'İşlemde',
-    'RESOLVED': 'Çözüldü',
-    'CLOSED': 'Kapalı'
+    'OPEN': 'Offen',
+    'IN_PROGRESS': 'In Bearbeitung',
+    'RESOLVED': 'Gelöst',
+    'CLOSED': 'Geschlossen'
   }
   return labels[status] || status
 }
@@ -554,10 +554,10 @@ function getStatusLabel(status) {
 // Get priority label
 function getPriorityLabel(priority) {
   const labels = {
-    'LOW': 'Düşük',
-    'MEDIUM': 'Orta',
-    'HIGH': 'Yüksek',
-    'URGENT': 'Acil'
+    'LOW': 'Niedrig',
+    'MEDIUM': 'Mittel',
+    'HIGH': 'Hoch',
+    'URGENT': 'Dringend'
   }
   return labels[priority] || priority
 }
@@ -589,7 +589,7 @@ async function openFeedbackById(feedbackId) {
     })
     selectedFeedback.value = response.data
   } catch (error) {
-    console.error('Feedback yükleme hatası:', error)
+    console.error('Fehler beim Laden des Feedbacks:', error)
   }
 }
 

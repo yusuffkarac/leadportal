@@ -19,13 +19,13 @@ const leadType = computed(() => {
 
 // Sayfa başlığı ve açıklaması
 const pageTitle = computed(() => {
-  return leadType.value === 'SOFORT_KAUF' ? 'Sofort Kauf' : 'Açık Artırma'
+  return leadType.value === 'SOFORT_KAUF' ? 'Sofort Kauf' : 'Auktion'
 })
 
 const pageDescription = computed(() => {
   return leadType.value === 'SOFORT_KAUF'
-    ? 'Anında satın alınabilir lead\'ler'
-    : 'Teklif vererek kazanabileceğiniz lead\'ler'
+    ? 'Sofort kaufbare Leads'
+    : 'Leads, die Sie durch Gebote gewinnen können'
 })
 
 const pageIcon = computed(() => {
@@ -272,12 +272,12 @@ const showFilters = ref(false)
 // Sıralama state'i
 const sortBy = ref(localStorage.getItem('leadSortBy') || 'timeRemaining')
 const sortOptions = [
-  { value: 'timeRemaining', label: 'Bitmeye yakın' },
-  { value: 'highestPrice', label: 'En yüksek fiyat' },
-  { value: 'lowestPrice', label: 'En düşük fiyat' },
-  { value: 'newest', label: 'En yeni' },
-  { value: 'oldest', label: 'En eski' },
-  { value: 'mostBids', label: 'En çok teklif' }
+  { value: 'timeRemaining', label: 'Bald endend' },
+  { value: 'highestPrice', label: 'Höchster Preis' },
+  { value: 'lowestPrice', label: 'Niedrigster Preis' },
+  { value: 'newest', label: 'Neueste' },
+  { value: 'oldest', label: 'Älteste' },
+  { value: 'mostBids', label: 'Meiste Gebote' }
 ]
 
 // Görünüm tipi (grid veya table)
@@ -365,7 +365,7 @@ function formatTimeRemaining(endsAt) {
   const endTime = new Date(endsAt)
   const diff = endTime - now
 
-  if (diff <= 0) return 'Süresi doldu'
+  if (diff <= 0) return 'Abgelaufen'
 
   const days = Math.floor(diff / (1000 * 60 * 60 * 24))
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
@@ -399,7 +399,7 @@ function formatTimeRemainingCompact(endsAt) {
   const endTime = new Date(endsAt)
   const diff = endTime - now
 
-  if (diff <= 0) return 'Süresi doldu'
+  if (diff <= 0) return 'Abgelaufen'
 
   const totalSeconds = Math.floor(diff / 1000)
   const days = Math.floor(totalSeconds / (3600 * 24))
@@ -483,7 +483,7 @@ async function loadSettings() {
       }
     }
   } catch (error) {
-    console.error('Ayarlar yüklenemedi:', error)
+    console.error('Einstellungen konnten nicht geladen werden:', error)
     settings.value.insuranceTypes = [
       { name: 'Hayvan', icon: 'mdi:paw' },
       { name: 'Araba', icon: 'mdi:car' },
@@ -572,7 +572,7 @@ function loadFilters() {
     try {
       filters.value = JSON.parse(saved)
     } catch (e) {
-      console.error('Filtre yükleme hatası:', e)
+      console.error('Fehler beim Laden der Filter:', e)
     }
   }
 }
@@ -779,7 +779,7 @@ async function fetchPendingPayments() {
     const response = await api.get('/lead-sales/admin/pending', { headers: authHeaders() })
     pendingPaymentsCount.value = response.data?.length || 0
   } catch (error) {
-    console.error('Bekleyen ödemeler yüklenemedi:', error)
+    console.error('Ausstehende Zahlungen konnten nicht geladen werden:', error)
     pendingPaymentsCount.value = 0
   }
 }
@@ -819,10 +819,10 @@ function shareLead(lead, event) {
   } else {
     // Fallback: URL'yi panoya kopyala
     navigator.clipboard.writeText(url).then(() => {
-      success('Lead linki panoya kopyalandı!')
+      success('Lead-Link in die Zwischenablage kopiert!')
     }).catch(() => {
       // Fallback: prompt ile göster
-      prompt('Lead linkini kopyalayın:', url)
+      prompt('Lead-Link kopieren:', url)
     })
   }
 }
@@ -948,7 +948,7 @@ async function searchPostalCodes(query) {
 
     postalCodeResults.value = filtered
   } catch (error) {
-    console.error('Posta kodu arama hatası:', error)
+    console.error('Fehler bei der Postleitzahlensuche:', error)
     postalCodeResults.value = []
   }
 }
@@ -1352,7 +1352,7 @@ async function toggleLeadActiveInline(lead) {
     if (idxShown !== -1) {
       leads.value[idxShown] = { ...leads.value[idxShown], isActive: newStatus }
     }
-    success('Durum güncellendi')
+    success('Status aktualisiert')
   } catch (error) {
     errorMessage.value = error.response?.data?.error || 'Durum güncellenemedi'
   }
@@ -1370,7 +1370,7 @@ async function handleInstantBuySuccess() {
 
 async function submitQuickBid(lead, amount) {
   if (!amount || amount <= 0) {
-    error('Lütfen geçerli bir teklif miktarı girin')
+    error('Bitte geben Sie einen gültigen Gebotsbetrag ein')
     return
   }
 
@@ -1388,7 +1388,7 @@ async function submitQuickBid(lead, amount) {
         const currency = settings.value?.defaultCurrency || 'EUR'
         success(`Tebrikler! Şu anda lidersiniz. Görünür fiyat: ${formatPrice(data.visiblePrice, currency)}`)
       } else {
-        error('Teklifiniz alındı, ancak başka bir kullanıcının maksimumu daha yüksek. Lider olmak için daha yüksek bir maksimum teklif verin.')
+        error('Ihr Gebot wurde angenommen, aber ein anderer Benutzer hat ein höheres Maximum. Bieten Sie ein höheres Maximum, um führend zu sein.')
       }
     }
   } catch (err) {
@@ -1436,7 +1436,7 @@ async function ensureZipcodesLoaded() {
     }
     zipcodeIndex.value = m
   } catch (e) {
-    console.error('Zipcodes yüklenemedi', e)
+    console.error('Postleitzahlen konnten nicht geladen werden', e)
   }
 }
 
@@ -1641,8 +1641,8 @@ onUnmounted(() => {
               <div class="premium-title-glow"></div>
             </div>
             <div class="premium-title-text">
-              <h2>Premium Lead'ler</h2>
-              <p class="premium-subtitle">Özel seçilmiş yüksek kaliteli lead'ler</p>
+              <h2>Premium-Leads</h2>
+              <p class="premium-subtitle">Speziell ausgewählte hochwertige Leads</p>
             </div>
           </div>
           
@@ -1681,7 +1681,7 @@ onUnmounted(() => {
             class="premium-scroll-indicator premium-scroll-indicator-left"
             @click="scrollPremiumLeft"
             type="button"
-            aria-label="Sola kaydır"
+            aria-label="Nach links scrollen"
           >
             <Icon icon="mdi:chevron-left" width="32" height="32" />
           </button>
@@ -1690,7 +1690,7 @@ onUnmounted(() => {
             class="premium-scroll-indicator premium-scroll-indicator-right"
             @click="scrollPremiumRight"
             type="button"
-            aria-label="Sağa kaydır"
+            aria-label="Nach rechts scrollen"
           >
             <Icon icon="mdi:chevron-right" width="32" height="32" />
           </button>
@@ -1717,18 +1717,18 @@ onUnmounted(() => {
             <!-- Bidding Hours Timer -->
             <div v-if="!isBiddingHoursActive && biddingHoursTimeRemaining" class="bidding-hours-alert">
               <Icon icon="mdi:clock-alert-outline" width="16" height="16" />
-              <span>Mesai saatleri dışında, <strong>{{ biddingHoursTimeRemaining }}</strong> sonra açılacak ({{ nextBiddingStartTime }})</span>
+              <span>Außerhalb der Geschäftszeiten, öffnet in <strong>{{ biddingHoursTimeRemaining }}</strong> ({{ nextBiddingStartTime }})</span>
             </div>
           </div>
           <div v-else>
-            <h1>Leadleri Yönet</h1>
+            <h1>Leads verwalten</h1>
           </div>
         </div>
         <div class="header-actions">
           <!-- Yeni Lead Oluştur (Admin için) -->
           <button v-if="isAdmin" class="btn-new-lead" @click="openLeadModal('new')">
             <Icon icon="mdi:plus" width="18" height="18" />
-            Yeni Lead
+            Neuer Lead
           </button>
           <button class="view-toggle-btn" @click="toggleMapVisibility" :title="showMap ? 'Haritayı Gizle' : 'Haritayı Göster'">
             <Icon v-if="showMap" icon="mdi:map-marker-off" width="20" height="20" />
@@ -1759,13 +1759,13 @@ onUnmounted(() => {
         <div class="alert-content">
           <Icon icon="mdi:clock-alert-outline" width="24" />
           <div>
-            <strong>{{ pendingPaymentsCount }} bekleyen IBAN ödemesi var!</strong>
-            <p>IBAN ile yapılan ödemeler admin onayı bekliyor.</p>
+            <strong>{{ pendingPaymentsCount }} ausstehende IBAN-Zahlungen!</strong>
+            <p>IBAN-Zahlungen warten auf Admin-Genehmigung.</p>
           </div>
         </div>
         <router-link to="/admin/pending-payments" class="alert-button">
           <Icon icon="mdi:eye" width="18" />
-          Ödemeleri Görüntüle
+          Zahlungen anzeigen
         </router-link>
       </div>
 
@@ -1774,9 +1774,9 @@ onUnmounted(() => {
         <div class="filters-grid">
           <!-- Satır 1: Lead Tipi ve Fiyat Aralığı -->
           <div class="filter-group">
-            <label class="filter-label">Lead Tipi</label>
+            <label class="filter-label">Lead-Typ</label>
             <select v-model="filters.insuranceType" @change="applyFilters" class="filter-select">
-              <option value="">Tümü</option>
+              <option value="">Alle</option>
               <option v-for="typeName in insuranceTypeNames" :key="typeName" :value="typeName">
                 {{ typeName }}
               </option>
@@ -1784,7 +1784,7 @@ onUnmounted(() => {
           </div>
 
           <div class="filter-group filter-group-inline">
-            <label class="filter-label">Fiyat ({{ getCurrencySymbol(settings.defaultCurrency) }})</label>
+            <label class="filter-label">Preis ({{ getCurrencySymbol(settings.defaultCurrency) }})</label>
             <div class="filter-input-group">
               <input
                 type="number"
@@ -1806,7 +1806,7 @@ onUnmounted(() => {
 
           <!-- Satır 2: Teklif Sayısı ve Kalan Süre -->
           <div class="filter-group filter-group-inline">
-            <label class="filter-label">Teklif Sayısı</label>
+            <label class="filter-label">Anzahl der Gebote</label>
             <div class="filter-input-group">
               <input
                 type="number"
@@ -1827,18 +1827,18 @@ onUnmounted(() => {
           </div>
 
           <div class="filter-group">
-            <label class="filter-label">Kalan Süre</label>
+            <label class="filter-label">Verbleibende Zeit</label>
             <select v-model="filters.timeRemaining" @change="applyFilters" class="filter-select">
-              <option value="">Tümü</option>
-              <option value="lessThan1h">1 saatten az</option>
-              <option value="lessThan6h">6 saatten az</option>
-              <option value="lessThan24h">24 saatten az</option>
+              <option value="">Alle</option>
+              <option value="lessThan1h">Weniger als 1 Stunde</option>
+              <option value="lessThan6h">Weniger als 6 Stunden</option>
+              <option value="lessThan24h">Weniger als 24 Stunden</option>
             </select>
           </div>
 
           <!-- Satır 3: Anında Al ve Süresi Geçmiş Gizle -->
           <div class="filter-group filter-switch-group">
-            <label class="filter-label">Anında Al</label>
+            <label class="filter-label">Sofortkauf</label>
             <label class="filter-switch">
               <input
                 type="checkbox"
@@ -1851,7 +1851,7 @@ onUnmounted(() => {
           </div>
 
           <div class="filter-group filter-switch-group">
-            <label class="filter-label">Aktif Leadler</label>
+            <label class="filter-label">Aktive Leads</label>
             <label class="filter-switch">
               <input
                 type="checkbox"
@@ -1866,21 +1866,21 @@ onUnmounted(() => {
           <div class="filter-group">
             <button class="clear-filters-btn" @click="clearFilters">
               <Icon icon="mdi:close" width="14" height="14" />
-              Temizle
+              Zurücksetzen
             </button>
           </div>
         </div>
 
         <div class="filter-info">
-          <span class="filter-result-text">{{ leads.length }} lead</span>
-          <span v-if="allLeads.length !== leads.length" class="filter-result-total">({{ allLeads.length }} toplam)</span>
+          <span class="filter-result-text">{{ leads.length }} Lead{{ leads.length !== 1 ? 's' : '' }}</span>
+          <span v-if="allLeads.length !== leads.length" class="filter-result-total">({{ allLeads.length }} gesamt)</span>
         </div>
       </div>
       
       <div v-if="!leads.length" class="empty-state">
         <div class="empty-icon">📋</div>
-        <h3>Şu anda görüntülenecek lead yok</h3>
-        <p>Yeni açık artırmalar eklendiğinde burada görünecek</p>
+        <h3>Derzeit keine Leads zum Anzeigen</h3>
+        <p>Neue Auktionen werden hier angezeigt, sobald sie hinzugefügt werden</p>
       </div>
 
       <!-- Tablo Görünümü -->
@@ -1888,15 +1888,15 @@ onUnmounted(() => {
         <table class="leads-table">
           <thead>
             <tr>
-              <th>Lead ID & Başlık</th>
-              <th v-if="leadType === 'SOFORT_KAUF'">Fiyat</th>
-              <th v-else>Fiyat & Teklif</th>
+              <th>Lead-ID & Titel</th>
+              <th v-if="leadType === 'SOFORT_KAUF'">Preis</th>
+              <th v-else>Preis & Gebot</th>
               <th v-if="leadType !== 'SOFORT_KAUF'">
-                <span v-if="isAdmin">Son Teklif Veren</span>
-                <span v-else>Hızlı Teklif</span>
+                <span v-if="isAdmin">Letzter Bieter</span>
+                <span v-else>Schnellgebot</span>
               </th>
-              <th>Kalan Süre</th>
-              <th>İşlemler</th>
+              <th>Verbleibende Zeit</th>
+              <th>Aktionen</th>
             </tr>
           </thead>
           <tbody>
@@ -1930,7 +1930,7 @@ onUnmounted(() => {
                     <span v-if="lead.bids && lead.bids.length">{{ formatPrice(lead.bids[0].amount, settings.defaultCurrency) }}</span>
                     <span v-else>{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
                   </div>
-                  <div class="bid-count-bottom">{{ lead.bids ? lead.bids.length : 0 }} teklif</div>
+                  <div class="bid-count-bottom">{{ lead.bids ? lead.bids.length : 0 }} Gebot{{ (lead.bids ? lead.bids.length : 0) !== 1 ? 'e' : '' }}</div>
                 </div>
               </td>
               <td v-if="lead.leadType !== 'SOFORT_KAUF' || isAdmin">
@@ -1949,7 +1949,7 @@ onUnmounted(() => {
                       @click="submitQuickBid(lead, quickBidAmounts[lead.id])"
                     >
                      
-                      Teklif
+                      Gebot
                        <Icon icon="mdi:gavel" width="14" height="14" />
                     </button>
                     
@@ -1979,7 +1979,7 @@ onUnmounted(() => {
                     class="table-btn success"
                     @click="openInstantBuyModal(lead, $event)"
                     :disabled="lead.isExpired || !lead.isActive || !isBiddingHoursActive"
-                    :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''"
+                    :title="!isBiddingHoursActive ? 'Kauf außerhalb der Geschäftszeiten nicht möglich' : ''"
                     :style="!isBiddingHoursActive ? 'cursor: not-allowed;' : ''"
                   >
                     <Icon icon="mdi:shopping-cart" width="14" height="14" />
@@ -2008,7 +2008,7 @@ onUnmounted(() => {
                      class="table-btn success"
                      @click="openInstantBuyModal(lead, $event)"
                      :disabled="!isBiddingHoursActive"
-                     :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''"
+                     :title="!isBiddingHoursActive ? 'Kauf außerhalb der Geschäftszeiten nicht möglich' : ''"
                      :style="!isBiddingHoursActive ? 'cursor: not-allowed;' : ''"
                    >
                     <Icon icon="mdi:lightning-bolt" width="14" height="14" />
@@ -2033,7 +2033,7 @@ onUnmounted(() => {
                           <span v-if="lead.bids && lead.bids.length">{{ formatPrice(lead.bids[0].amount, settings.defaultCurrency) }}</span>
                           <span v-else>{{ formatPrice(lead.startPrice, settings.defaultCurrency) }}</span>
                         </div>
-                        <div class="bid-count-bottom">{{ lead.bids ? lead.bids.length : 0 }} teklif</div>
+                        <div class="bid-count-bottom">{{ lead.bids ? lead.bids.length : 0 }} Gebot{{ (lead.bids ? lead.bids.length : 0) !== 1 ? 'e' : '' }}</div>
                       </div>
                     </div>
                     <div class="mobile-time-section">
@@ -2050,7 +2050,7 @@ onUnmounted(() => {
                           class="table-btn success"
                           @click="openInstantBuyModal(lead, $event)"
                           :disabled="lead.isExpired || !lead.isActive || !isBiddingHoursActive"
-                          :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''"
+                          :title="!isBiddingHoursActive ? 'Kauf außerhalb der Geschäftszeiten nicht möglich' : ''"
                           :style="!isBiddingHoursActive ? 'cursor: not-allowed;' : ''"
                         >
                           <Icon icon="mdi:shopping-cart" width="14" height="14" />
@@ -2076,7 +2076,7 @@ onUnmounted(() => {
                           class="table-btn success"
                           @click="openInstantBuyModal(lead, $event)"
                           :disabled="!isBiddingHoursActive"
-                          :title="!isBiddingHoursActive ? 'Mesai saatleri dışında satın alma yapılamaz' : ''"
+                          :title="!isBiddingHoursActive ? 'Kauf außerhalb der Geschäftszeiten nicht möglich' : ''"
                           :style="!isBiddingHoursActive ? 'cursor: not-allowed;' : ''"
                         >
                           <Icon icon="mdi:lightning-bolt" width="14" height="14" />
@@ -2105,7 +2105,7 @@ onUnmounted(() => {
                         :disabled="!quickBidAmounts[lead.id] || quickBidAmounts[lead.id] <= 0"
                       >
                         <Icon icon="mdi:gavel" width="12" height="12" />
-                        Teklif
+                        Gebot
                       </button>
                     </div>
                   </div>
@@ -2139,7 +2139,7 @@ onUnmounted(() => {
       <div v-if="leads.length > 0" class="pagination-container">
         <div class="pagination-info">
           <div class="items-per-page-control">
-            <label for="items-per-page">Sayfa başına:</label>
+            <label for="items-per-page">Pro Seite:</label>
             <select id="items-per-page" v-model.number="itemsPerPage" @change="changeItemsPerPage" class="items-per-page-select">
               <option value="10">10</option>
               <option value="15">15</option>
@@ -2149,7 +2149,7 @@ onUnmounted(() => {
             </select>
           </div>
           <span class="pagination-text">
-            {{ (currentPage - 1) * itemsPerPage + 1 }} - {{ Math.min(currentPage * itemsPerPage, leads.length) }} / {{ leads.length }} sonuç
+            {{ (currentPage - 1) * itemsPerPage + 1 }} - {{ Math.min(currentPage * itemsPerPage, leads.length) }} / {{ leads.length }} Ergebnis{{ leads.length !== 1 ? 'se' : '' }}
           </span>
         </div>
 
@@ -2158,10 +2158,10 @@ onUnmounted(() => {
             class="pagination-btn prev"
             @click="previousPage"
             :disabled="currentPage === 1"
-            title="Önceki sayfa"
+            title="Vorherige Seite"
           >
             <Icon icon="mdi:chevron-left" width="20" height="20" />
-            Önceki
+            Zurück
           </button>
 
           <div class="pagination-pages">
@@ -2181,9 +2181,9 @@ onUnmounted(() => {
             class="pagination-btn next"
             @click="nextPage"
             :disabled="currentPage === totalPages"
-            title="Sonraki sayfa"
+            title="Nächste Seite"
           >
-            Sonraki
+            Weiter
             <Icon icon="mdi:chevron-right" width="20" height="20" />
           </button>
         </div>
@@ -2240,7 +2240,7 @@ onUnmounted(() => {
     <div v-if="showLeadModal" class="lead-modal-overlay">
       <div class="lead-modal-content">
         <div class="lead-modal-header">
-          <h2>{{ modalMode === 'edit' ? 'Lead Düzenle' : 'Yeni Lead Oluştur' }}</h2>
+          <h2>{{ modalMode === 'edit' ? 'Lead bearbeiten' : 'Neuen Lead erstellen' }}</h2>
           <button class="close-btn" @click="showLeadModal = false">
             <Icon icon="mdi:close" width="24" height="24" />
           </button>
@@ -2251,13 +2251,13 @@ onUnmounted(() => {
 
           <!-- Formleadport Integration -->
           <div class="form-group">
-            <label>Formleadport Form Numarası (Opsiyonel)</label>
+            <label>Formleadport Formularnummer (Optional)</label>
             <div style="display: flex; gap: 8px;">
               <input
                 v-model="formleadportFormId"
                 type="text"
                 class="form-input"
-                placeholder="Örn: 123456"
+                placeholder="z.B.: 123456"
                 maxlength="6"
                 @keyup.enter="fetchFormleadportData"
                 style="flex: 1;"
@@ -2268,7 +2268,7 @@ onUnmounted(() => {
                 :disabled="isLoadingFormData"
                 style="white-space: nowrap; padding: 10px 16px;"
               >
-                {{ isLoadingFormData ? 'Yükleniyor...' : 'Getir' }}
+                {{ isLoadingFormData ? 'Wird geladen...' : 'Abrufen' }}
               </button>
             </div>
             <div v-if="formleadportError" style="color: #ef4444; font-size: 0.875rem; margin-top: 4px;">
@@ -2277,39 +2277,39 @@ onUnmounted(() => {
           </div>
 
           <div class="form-group">
-            <label>Başlık *</label>
-            <input v-model="leadForm.title" type="text" class="form-input" placeholder="Lead başlığı" />
+            <label>Titel *</label>
+            <input v-model="leadForm.title" type="text" class="form-input" placeholder="Lead-Titel" />
           </div>
 
           <div class="form-group">
-            <label>Açıklama</label>
-            <textarea v-model="leadForm.description" class="form-input" rows="4" placeholder="Lead açıklaması"></textarea>
+            <label>Beschreibung</label>
+            <textarea v-model="leadForm.description" class="form-input" rows="4" placeholder="Lead-Beschreibung"></textarea>
           </div>
 
           <div class="form-group full-width" style="margin-bottom: 20px;">
-            <label style="font-weight: 600; margin-bottom: 8px; display: block; font-size: 1rem;">Lead Tipi *</label>
+            <label style="font-weight: 600; margin-bottom: 8px; display: block; font-size: 1rem;">Lead-Typ *</label>
             <select v-model="leadForm.leadType" class="form-input" style="font-size: 1rem; padding: 12px; border: 2px solid #e2e8f0; border-radius: 6px;">
-              <option value="AUCTION">Açık Artırma</option>
-              <option value="SOFORT_KAUF">Sofort Kauf (Anında Satın Alma)</option>
+              <option value="AUCTION">Auktion</option>
+              <option value="SOFORT_KAUF">Sofort Kauf (Sofortkauf)</option>
             </select>
           
           </div>
 
           <div class="form-group">
-            <label>Sigorta Tipi</label>
+            <label>Versicherungstyp</label>
             <select v-model="leadForm.insuranceType" class="form-input">
-              <option value="">Seçiniz</option>
+              <option value="">Auswählen</option>
               <option v-for="type in insuranceTypeNames" :key="type" :value="type">{{ type }}</option>
             </select>
           </div>
 
           <div class="form-group postal-code-container">
-            <label>Posta Kodu</label>
+            <label>Postleitzahl</label>
             <input
               v-model="postalCodeSearch"
               type="text"
               class="form-input"
-              placeholder="Posta kodu"
+              placeholder="Postleitzahl"
               @focus="onPostalCodeFocus"
               @blur="onPostalCodeBlur"
               @input="onPostalCodeInput"
@@ -2330,47 +2330,47 @@ onUnmounted(() => {
           </div>
 
           <div class="form-group">
-            <label>{{ leadForm.leadType === 'SOFORT_KAUF' ? 'Satış Fiyatı (€) *' : 'Başlangıç Fiyatı (€) *' }}</label>
+            <label>{{ leadForm.leadType === 'SOFORT_KAUF' ? 'Verkaufspreis (€) *' : 'Startpreis (€) *' }}</label>
             <input v-model="leadForm.startPrice" type="number" class="form-input" placeholder="0.00" />
           </div>
 
           <div class="form-row" v-if="leadForm.leadType === 'AUCTION'">
             <div class="form-group">
-              <label>Minimum Artış (€)</label>
+              <label>Mindesterhöhung (€)</label>
               <input v-model="leadForm.minIncrement" type="number" class="form-input" placeholder="0.00" />
             </div>
             <div class="form-group">
-              <label>Anında Satın Alma Fiyatı (€)</label>
+              <label>Sofortkaufpreis (€)</label>
               <input v-model="leadForm.buyNowPrice" type="number" class="form-input" placeholder="0.00" />
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
-              <label>Başlama Tarihi</label>
+              <label>Startdatum</label>
               <input v-model="leadForm.startsAt" type="datetime-local" class="form-input" />
             </div>
             <div class="form-group">
-              <label>Bitiş Tarihi *</label>
+              <label>Enddatum *</label>
               <input v-model="leadForm.endsAt" type="datetime-local" class="form-input" />
             </div>
           </div>
 
           <div class="form-group">
-            <label>Özel Detaylar</label>
-            <textarea v-model="leadForm.privateDetails" class="form-input" rows="3" placeholder="Satın alan kullanıcı için özel detaylar"></textarea>
+            <label>Private Details</label>
+            <textarea v-model="leadForm.privateDetails" class="form-input" rows="3" placeholder="Private Details für den Käufer"></textarea>
           </div>
 
           <div class="form-switches">
             <div class="switch-row">
-              <span>Vitrin</span>
+              <span>Showcase</span>
               <label class="toggle-switch">
                 <input v-model="leadForm.isShowcase" type="checkbox" />
                 <span class="toggle-slider"></span>
               </label>
             </div>
             <div class="switch-row">
-              <span>Premium Lead</span>
+              <span>Premium-Lead</span>
               <label class="toggle-switch">
                 <input v-model="leadForm.isPremium" type="checkbox" />
                 <span class="toggle-slider"></span>
@@ -2383,11 +2383,11 @@ onUnmounted(() => {
           <div style="display: flex; gap: 12px; width: 100%;">
             <button v-if="modalMode === 'edit'" class="btn btn-danger" @click="confirmDelete(editingLead)" >
               <Icon icon="mdi:delete" width="16" height="16" style="margin-right: 6px; vertical-align: middle;" />
-              Sil
+              Löschen
             </button>
             <div style="display: flex; gap: 12px; flex: 1; justify-content: flex-end;">
-              <button class="btn btn-secondary" @click="showLeadModal = false">İptal</button>
-              <button class="btn btn-primary" @click="saveLead">Kaydet</button>
+              <button class="btn btn-secondary" @click="showLeadModal = false">Abbrechen</button>
+              <button class="btn btn-primary" @click="saveLead">Speichern</button>
             </div>
           </div>
         </div>
@@ -2398,29 +2398,29 @@ onUnmounted(() => {
     <div v-if="showDeleteConfirm && leadToDelete" class="lead-modal-overlay" @click.self="showDeleteConfirm = false">
       <div class="lead-modal-content" style="max-width: 400px;">
         <div class="lead-modal-header">
-          <h2>Lead'i Sil</h2>
+          <h2>Lead löschen</h2>
           <button class="close-btn" @click="showDeleteConfirm = false">
             <Icon icon="mdi:close" width="24" height="24" />
           </button>
         </div>
         <div class="lead-modal-body">
           <p style="margin-bottom: 16px;">
-            <strong>{{ leadToDelete.title }}</strong> adlı lead'i silmek istediğinizden emin misiniz?
+            Sind Sie sicher, dass Sie den Lead <strong>{{ leadToDelete.title }}</strong> löschen möchten?
           </p>
           <p style="color: #666; font-size: 0.875rem; margin-bottom: 20px;">
-            Bu işlem geri alınamaz ve tüm veriler silinecektir.
+            Diese Aktion kann nicht rückgängig gemacht werden und alle Daten werden gelöscht.
           </p>
 
           <div class="form-group">
             <label style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-              <span>Silme Sebebi *</span>
+              <span>Löschgrund *</span>
               <span style="font-size: 0.75rem; color: #666;">{{ deletionReason.length }}/10</span>
             </label>
             <textarea
               v-model="deletionReason"
               class="form-input"
               rows="3"
-              placeholder="Lead'i neden silmek istiyorsunuz? (en az 10 karakter)"
+              placeholder="Warum möchten Sie den Lead löschen? (mindestens 10 Zeichen)"
               style="resize: vertical; font-family: inherit;"
             ></textarea>
             <div v-if="deletionReasonError" style="color: #ef4444; font-size: 0.875rem; margin-top: 6px;">
@@ -2429,9 +2429,9 @@ onUnmounted(() => {
           </div>
         </div>
         <div class="lead-modal-footer">
-          <button class="btn btn-secondary" @click="showDeleteConfirm = false" :disabled="isDeleting">İptal</button>
+          <button class="btn btn-secondary" @click="showDeleteConfirm = false" :disabled="isDeleting">Abbrechen</button>
           <button class="btn btn-danger" @click="deleteLead" :disabled="isDeleting">
-            {{ isDeleting ? 'Siliniyor...' : 'Evet, Sil' }}
+            {{ isDeleting ? 'Wird gelöscht...' : 'Ja, löschen' }}
           </button>
         </div>
       </div>
@@ -2445,7 +2445,7 @@ onUnmounted(() => {
         <!-- Preview Header with Close -->
         <div class="preview-header">
           <div class="preview-header-left">
-            <h2> Önizleme</h2>
+            <h2> Vorschau</h2>
           </div>
           <div class="preview-header-right">
             <button class="preview-close-btn" @click="closePreview">
@@ -2477,31 +2477,31 @@ onUnmounted(() => {
               <!-- SOFORT_KAUF tipinde sadece fiyat ve bitiş tarihi -->
               <template v-if="previewLead.leadType === 'SOFORT_KAUF'">
                 <div class="preview-price-item">
-                  <div class="preview-label">Fiyat</div>
+                  <div class="preview-label">Preis</div>
                   <div class="preview-amount">€{{ previewLead.startPrice }}</div>
                 </div>
                 <div class="preview-price-item">
-                  <div class="preview-label">Bitiş Tarihi</div>
-                  <div class="preview-amount">{{ new Date(previewLead.endsAt).toLocaleDateString('tr-TR') }}</div>
+                  <div class="preview-label">Enddatum</div>
+                  <div class="preview-amount">{{ new Date(previewLead.endsAt).toLocaleDateString('de-DE') }}</div>
                 </div>
               </template>
               <!-- AUCTION tipinde tüm fiyat bilgileri -->
               <template v-else>
                 <div class="preview-price-item">
-                  <div class="preview-label">Başlangıç Fiyatı</div>
+                  <div class="preview-label">Startpreis</div>
                   <div class="preview-amount">€{{ previewLead.startPrice }}</div>
                 </div>
                 <div class="preview-price-item">
-                  <div class="preview-label">Min Artış</div>
+                  <div class="preview-label">Mindesterhöhung</div>
                   <div class="preview-amount">€{{ previewLead.minIncrement }}</div>
                 </div>
                 <div v-if="previewLead.instantBuyPrice" class="preview-price-item">
-                  <div class="preview-label">Anında Satın Alma</div>
+                  <div class="preview-label">Sofortkauf</div>
                   <div class="preview-amount preview-sofort">€{{ previewLead.instantBuyPrice }}</div>
                 </div>
                 <div class="preview-price-item">
-                  <div class="preview-label">Bitiş Tarihi</div>
-                  <div class="preview-amount">{{ new Date(previewLead.endsAt).toLocaleDateString('tr-TR') }}</div>
+                  <div class="preview-label">Enddatum</div>
+                  <div class="preview-amount">{{ new Date(previewLead.endsAt).toLocaleDateString('de-DE') }}</div>
                 </div>
               </template>
             </div>
@@ -2509,27 +2509,27 @@ onUnmounted(() => {
 
           <!-- Private Details -->
           <div v-if="previewLead.privateDetails" class="preview-private-section">
-            <strong>Özel Detaylar:</strong>
+            <strong>Private Details:</strong>
             <pre class="preview-private-content">{{ previewLead.privateDetails }}</pre>
           </div>
 
           <!-- Bids Section - Sadece AUCTION tipinde göster -->
           <div v-if="previewLead.leadType !== 'SOFORT_KAUF'" class="preview-bids-section">
-            <h3 class="preview-bids-title">Teklif Geçmişi ({{ previewLead.bids?.length || 0 }})</h3>
+            <h3 class="preview-bids-title">Gebotsverlauf ({{ previewLead.bids?.length || 0 }})</h3>
 
             <div v-if="previewLoadingBids" class="preview-empty-state">
-              Teklifler yükleniyor...
+                        Gebote werden geladen...
             </div>
             <div v-else-if="!previewLead.bids?.length" class="preview-empty-state">
-              Henüz teklif yok
+              Noch keine Gebote
             </div>
             <div v-else class="preview-bids-list">
               <div v-for="(bid, index) in previewLead.bids" :key="bid.id" class="preview-bid-item">
                 <div class="preview-bid-left">
                   <div class="preview-bid-rank">{{ index + 1 }}.</div>
                   <div class="preview-bid-info">
-                    <div class="preview-bid-user">{{ bid.user?.email || 'Anonim' }}</div>
-                    <div class="preview-bid-time">{{ new Date(bid.createdAt).toLocaleString('tr-TR') }}</div>
+                    <div class="preview-bid-user">{{ bid.user?.email || 'Anonym' }}</div>
+                    <div class="preview-bid-time">{{ new Date(bid.createdAt).toLocaleString('de-DE') }}</div>
                   </div>
                 </div>
                 <div class="preview-bid-amount">€{{ bid.amount }}</div>
@@ -2542,9 +2542,9 @@ onUnmounted(() => {
         <div class="preview-footer">
           <button v-if="isAdmin" class="preview-toggle-btn" :class="previewLead.isActive ? 'active' : 'inactive'" @click="toggleLeadActive">
             <Icon :icon="previewLead.isActive ? 'mdi:pause-circle' : 'mdi:play-circle'" width="16" height="16" />
-            {{ previewLead.isActive ? 'Pasif Yap' : 'Aktif Yap' }}
+            {{ previewLead.isActive ? 'Deaktivieren' : 'Aktivieren' }}
           </button>
-          <button class="preview-close-action-btn" @click="closePreview">Kapat</button>
+          <button class="preview-close-action-btn" @click="closePreview">Schließen</button>
         </div>
       </div>
     </div>
@@ -2553,7 +2553,7 @@ onUnmounted(() => {
     <div v-if="showFormPreview" class="lead-modal-overlay" @click.self="closeFormPreview">
       <div class="lead-modal-content" style="max-width: 600px;">
         <div class="lead-modal-header">
-          <h2>Formleadport Form Verileri</h2>
+          <h2>Formleadport Formulardaten</h2>
           <button class="close-btn" @click="closeFormPreview">
             <Icon icon="mdi:close" />
           </button>
@@ -2561,46 +2561,46 @@ onUnmounted(() => {
         <div class="lead-modal-body" style="max-height: 60vh; overflow-y: auto;">
           <div v-if="formleadportData" style="font-size: 0.875rem; line-height: 1.6;">
             <div style="margin-bottom: 12px;">
-              <strong>Müşteri Adı:</strong> {{ formleadportData.musteri_isim }} {{ formleadportData.musteri_soyisim }}
+              <strong>Kundenname:</strong> {{ formleadportData.musteri_isim }} {{ formleadportData.musteri_soyisim }}
             </div>
             <div style="margin-bottom: 12px;">
               <strong>Firma:</strong> {{ formleadportData.firma_adi }}
             </div>
             <div style="margin-bottom: 12px;">
-              <strong>Email:</strong> {{ formleadportData.email || 'Belirtilmemiş' }}
+              <strong>E-Mail:</strong> {{ formleadportData.email || 'Nicht angegeben' }}
             </div>
             <div style="margin-bottom: 12px;">
-              <strong>Telefon:</strong> {{ formleadportData.telefon || 'Belirtilmemiş' }}
+              <strong>Telefon:</strong> {{ formleadportData.telefon || 'Nicht angegeben' }}
             </div>
             <div style="margin-bottom: 12px;">
-              <strong>Adres:</strong> {{ formleadportData.adres || 'Belirtilmemiş' }}
+              <strong>Adresse:</strong> {{ formleadportData.adres || 'Nicht angegeben' }}
             </div>
             <div style="margin-bottom: 12px;">
-              <strong>Şehir:</strong> {{ formleadportData.sehir || 'Belirtilmemiş' }}
+              <strong>Stadt:</strong> {{ formleadportData.sehir || 'Nicht angegeben' }}
             </div>
             <div style="margin-bottom: 12px;">
-              <strong>Posta Kodu:</strong> {{ formleadportData.posta_kodu || 'Belirtilmemiş' }}
+              <strong>Postleitzahl:</strong> {{ formleadportData.posta_kodu || 'Nicht angegeben' }}
             </div>
             <div style="margin-bottom: 12px;">
-              <strong>Sigorta:</strong> {{ formleadportData.sigorta || 'Belirtilmemiş' }}
+              <strong>Versicherung:</strong> {{ formleadportData.sigorta || 'Nicht angegeben' }}
             </div>
             <div style="margin-bottom: 12px;">
-              <strong>Sigorta Şirketi:</strong> {{ formleadportData.sigorta_sirket || 'Belirtilmemiş' }}
+              <strong>Versicherungsgesellschaft:</strong> {{ formleadportData.sigorta_sirket || 'Nicht angegeben' }}
             </div>
             <div style="margin-bottom: 12px;">
-              <strong>Randevu Tarihi:</strong> {{ formleadportData.randevu_tarihi || 'Belirtilmemiş' }}
+              <strong>Termindatum:</strong> {{ formleadportData.randevu_tarihi || 'Nicht angegeben' }}
             </div>
             <div style="margin-bottom: 12px;">
-              <strong>Medeni Durum:</strong> {{ formleadportData.medeni_durum || 'Belirtilmemiş' }}
+              <strong>Familienstand:</strong> {{ formleadportData.medeni_durum || 'Nicht angegeben' }}
             </div>
             <div style="margin-bottom: 12px;">
-              <strong>Çalışma Durumu:</strong> {{ formleadportData.calisma_durumu || 'Belirtilmemiş' }}
+              <strong>Beschäftigungsstatus:</strong> {{ formleadportData.calisma_durumu || 'Nicht angegeben' }}
             </div>
           </div>
         </div>
         <div class="lead-modal-footer">
-          <button class="btn btn-secondary" @click="closeFormPreview">İptal</button>
-          <button class="btn btn-primary" @click="useFormleadportData">Formu Doldur</button>
+          <button class="btn btn-secondary" @click="closeFormPreview">Abbrechen</button>
+          <button class="btn btn-primary" @click="useFormleadportData">Formular ausfüllen</button>
         </div>
       </div>
     </div>

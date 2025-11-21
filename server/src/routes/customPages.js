@@ -31,7 +31,7 @@ export default function customPagesRouter(prisma) {
       if (file.mimetype.startsWith('image/')) {
         cb(null, true)
       } else {
-        cb(new Error('Sadece resim dosyaları kabul edilir'), false)
+        cb(new Error('Nur Bilddateien werden akzeptiert'), false)
       }
     }
   })
@@ -45,7 +45,7 @@ export default function customPagesRouter(prisma) {
       res.json(pages)
     } catch (error) {
       console.error('Error fetching custom pages:', error)
-      res.status(500).json({ message: 'Sayfalar alınamadı' })
+      res.status(500).json({ message: 'Seiten konnten nicht abgerufen werden' })
     }
   })
 
@@ -64,7 +64,7 @@ export default function customPagesRouter(prisma) {
       res.json(pages)
     } catch (error) {
       console.error('Error fetching public custom pages:', error)
-      res.status(500).json({ message: 'Sayfalar alınamadı' })
+      res.status(500).json({ message: 'Seiten konnten nicht abgerufen werden' })
     }
   })
 
@@ -76,17 +76,17 @@ export default function customPagesRouter(prisma) {
       })
       
       if (!page) {
-        return res.status(404).json({ message: 'Sayfa bulunamadı' })
+        return res.status(404).json({ message: 'Seite nicht gefunden' })
       }
       
       if (!page.isActive) {
-        return res.status(404).json({ message: 'Sayfa bulunamadı' })
+        return res.status(404).json({ message: 'Seite nicht gefunden' })
       }
       
       res.json(page)
     } catch (error) {
       console.error('Error fetching custom page:', error)
-      res.status(500).json({ message: 'Sayfa alınamadı' })
+      res.status(500).json({ message: 'Seite konnte nicht abgerufen werden' })
     }
   })
 
@@ -96,13 +96,13 @@ export default function customPagesRouter(prisma) {
       const { title, content, images, slug, isActive } = req.body
 
       if (!title || !slug) {
-        return res.status(400).json({ message: 'Başlık ve slug gerekli' })
+        return res.status(400).json({ message: 'Titel und Slug sind erforderlich' })
       }
 
       // Slug validation
       const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
       if (!slugRegex.test(slug)) {
-        return res.status(400).json({ message: 'Slug sadece küçük harf, rakam ve tire içerebilir' })
+        return res.status(400).json({ message: 'Slug darf nur Kleinbuchstaben, Zahlen und Bindestriche enthalten' })
       }
 
       const page = await prisma.customPage.create({
@@ -115,13 +115,13 @@ export default function customPagesRouter(prisma) {
         }
       })
 
-      res.json({ message: 'Sayfa başarıyla oluşturuldu', page })
+      res.json({ message: 'Seite erfolgreich erstellt', page })
     } catch (error) {
       console.error('Error creating custom page:', error)
       if (error.code === 'P2002') {
-        res.status(400).json({ message: 'Bu slug zaten kullanılıyor' })
+        res.status(400).json({ message: 'Dieser Slug wird bereits verwendet' })
       } else {
-        res.status(500).json({ message: 'Sayfa oluşturulamadı' })
+        res.status(500).json({ message: 'Seite konnte nicht erstellt werden' })
       }
     }
   })
@@ -136,7 +136,7 @@ export default function customPagesRouter(prisma) {
       if (slug) {
         const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
         if (!slugRegex.test(slug)) {
-          return res.status(400).json({ message: 'Slug sadece küçük harf, rakam ve tire içerebilir' })
+          return res.status(400).json({ message: 'Slug darf nur Kleinbuchstaben, Zahlen und Bindestriche enthalten' })
         }
       }
 
@@ -151,15 +151,15 @@ export default function customPagesRouter(prisma) {
         }
       })
 
-      res.json({ message: 'Sayfa başarıyla güncellendi', page })
+      res.json({ message: 'Seite erfolgreich aktualisiert', page })
     } catch (error) {
       console.error('Error updating custom page:', error)
       if (error.code === 'P2025') {
         res.status(404).json({ message: 'Sayfa bulunamadı' })
       } else if (error.code === 'P2002') {
-        res.status(400).json({ message: 'Bu slug zaten kullanılıyor' })
+        res.status(400).json({ message: 'Dieser Slug wird bereits verwendet' })
       } else {
-        res.status(500).json({ message: 'Sayfa güncellenemedi' })
+        res.status(500).json({ message: 'Seite konnte nicht aktualisiert werden' })
       }
     }
   })
@@ -195,13 +195,13 @@ export default function customPagesRouter(prisma) {
         where: { id }
       })
 
-      res.json({ message: 'Sayfa başarıyla silindi' })
+      res.json({ message: 'Seite erfolgreich gelöscht' })
     } catch (error) {
       console.error('Error deleting custom page:', error)
       if (error.code === 'P2025') {
         res.status(404).json({ message: 'Sayfa bulunamadı' })
       } else {
-        res.status(500).json({ message: 'Sayfa silinemedi' })
+        res.status(500).json({ message: 'Seite konnte nicht gelöscht werden' })
       }
     }
   })
@@ -210,18 +210,18 @@ export default function customPagesRouter(prisma) {
   router.post('/upload-image', requireAdmin, uploadPageImages.array('images', 10), async (req, res) => {
     try {
       if (!req.files || req.files.length === 0) {
-        return res.status(400).json({ error: 'Dosya yüklenmedi' })
+        return res.status(400).json({ error: 'Keine Datei hochgeladen' })
       }
       
       const imageUrls = req.files.map(file => `/uploads/custom-pages/${file.filename}`)
       
       res.json({ 
-        message: 'Fotoğraflar başarıyla yüklendi',
+        message: 'Fotos erfolgreich hochgeladen',
         images: imageUrls
       })
     } catch (error) {
-      console.error('Fotoğraf yükleme hatası:', error)
-      res.status(500).json({ error: 'Fotoğraflar yüklenirken hata oluştu' })
+      console.error('Fehler beim Hochladen der Fotos:', error)
+      res.status(500).json({ error: 'Fehler beim Hochladen der Fotos' })
     }
   })
 

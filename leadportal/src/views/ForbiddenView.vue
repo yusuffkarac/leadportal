@@ -52,16 +52,16 @@ function goHome() {
       </div>
       <div class="title">
         <span class="code">403</span>
-        <h2>Erişim reddedildi</h2>
+        <h2>Zugriff verweigert</h2>
       </div>
-      <p class="desc">Bu sayfaya erişim yetkiniz bulunmuyor. Lütfen yetkili bir kullanıcı tipi ile giriş yapın.</p>
+      <p class="desc">Sie haben keine Berechtigung, auf diese Seite zuzugreifen. Bitte melden Sie sich mit einem autorisierten Benutzertyp an.</p>
       <div class="progress" role="progressbar" :aria-valuenow="seconds" :aria-valuemin="0" :aria-valuemax="total">
         <div class="bar" :style="{ width: percent }"></div>
       </div>
-      <p class="meta">{{ seconds }} saniye içinde anasayfaya yönlendirileceksiniz.</p>
+      <p class="meta">Sie werden in {{ seconds }} Sekunden zur Startseite weitergeleitet.</p>
       <div class="actions">
-        <button class="btn" @click="goHome">Anasayfaya dön</button>
-        <router-link class="btn btn-ghost" to="/login">Giriş yap</router-link>
+        <button class="btn" @click="goHome">Zur Startseite</button>
+        <router-link class="btn btn-ghost" to="/login">Anmelden</router-link>
       </div>
     </div>
   </div>

@@ -68,8 +68,8 @@ const companyLogoUrl = ref('')
 const footerPhone = ref('+90 (212) 123 45 67')
 const footerEmail = ref('info@leadportal.com')
 const footerNote = ref('')
-const footerDescription = ref('Almanya\'nın önde gelen lead pazar yeri. Profesyonel açık artırmalar ve lead yönetimi platformu.')
-const tradeRegisterNumber = ref('İstanbul Ticaret Sicil No: 12345')
+const footerDescription = ref('Deutschlands führende Lead-Marktplatz. Professionelle Auktionen und Lead-Management-Plattform.')
+const tradeRegisterNumber = ref('Handelsregister-Nr.: 12345')
 const servicesLinks = ref([])
 const supportLinks = ref([])
 const legalLinks = ref([])
@@ -121,8 +121,8 @@ async function loadBranding() {
     companyName.value = 'LeadPortal'
     footerPhone.value = '+90 (212) 123 45 67'
     footerEmail.value = 'info@leadportal.com'
-    footerDescription.value = 'Almanya\'nın önde gelen lead pazar yeri. Profesyonel açık artırmalar ve lead yönetimi platformu.'
-    tradeRegisterNumber.value = 'İstanbul Ticaret Sicil No: 12345'
+    footerDescription.value = 'Deutschlands führende Lead-Marktplatz. Professionelle Auktionen und Lead-Management-Plattform.'
+    tradeRegisterNumber.value = 'Handelsregister-Nr.: 12345'
   }
 }
 
@@ -132,31 +132,31 @@ function applyBrandingSettings(settings) {
   footerPhone.value = settings.footerPhone || '+90 (212) 123 45 67'
   footerEmail.value = settings.footerEmail || 'info@leadportal.com'
   footerNote.value = settings.footerNote || ''
-  footerDescription.value = settings.footerDescription || 'Almanya\'nın önde gelen lead pazar yeri. Profesyonel açık artırmalar ve lead yönetimi platformu.'
-  tradeRegisterNumber.value = settings.tradeRegisterNumber || 'İstanbul Ticaret Sicil No: 12345'
+  footerDescription.value = settings.footerDescription || 'Deutschlands führende Lead-Marktplatz. Professionelle Auktionen und Lead-Management-Plattform.'
+  tradeRegisterNumber.value = settings.tradeRegisterNumber || 'Handelsregister-Nr.: 12345'
   
   // Load links
   servicesLinks.value = settings.servicesLinks || [
-    { text: 'Canlı Müzayede', url: '#' },
-    { text: 'Yaklaşan açık artırmalar', url: '#' },
-    { text: 'Doğrudan satın alma', url: '#' },
-    { text: 'Gösterge Paneli', url: '#' },
-    { text: 'Potansiyel Müşteri Yönetimi', url: '#' }
+    { text: 'Live-Auktion', url: '#' },
+    { text: 'Bevorstehende Auktionen', url: '#' },
+    { text: 'Sofortkauf', url: '#' },
+    { text: 'Dashboard', url: '#' },
+    { text: 'Lead-Management', url: '#' }
   ]
   
   supportLinks.value = settings.supportLinks || [
-    { text: 'SSS', url: '#' },
-    { text: 'Temas etmek', url: '#' },
-    { text: 'Yardım Merkezi', url: '#' },
-    { text: 'Sistem Durumu', url: '#' }
+    { text: 'FAQ', url: '#' },
+    { text: 'Kontakt', url: '#' },
+    { text: 'Hilfezentrum', url: '#' },
+    { text: 'Systemstatus', url: '#' }
   ]
   
   legalLinks.value = settings.legalLinks || [
-    { text: 'Baskı', url: '#' },
-    { text: 'Gizlilik Politikası', url: '#' },
-    { text: 'Şartlar ve koşullar', url: '#' },
-    { text: 'Cayma hakkı', url: '#' },
-    { text: 'Çerez Politikası', url: '#' }
+    { text: 'Impressum', url: '#' },
+    { text: 'Datenschutzerklärung', url: '#' },
+    { text: 'AGB', url: '#' },
+    { text: 'Widerrufsrecht', url: '#' },
+    { text: 'Cookie-Richtlinie', url: '#' }
   ]
   
   // Load social media
@@ -478,20 +478,20 @@ function closeAdminCategory() {
       <div class="nav-links desktop-nav">
         <RouterLink to="/">
           <Icon icon="mdi:home-outline" width="16" height="16" />
-          <span>Anasayfa</span>
+          <span>Startseite</span>
         </RouterLink>
 
         <!-- Leads Dropdown -->
         <div v-if="isAuthed" class="leads-dropdown" @mouseenter="openLeadsDropdown" @mouseleave="closeLeadsDropdown">
           <RouterLink to="/leads" class="leads-trigger" style="background:none;border:none;display:flex;align-items:center;gap:4px;cursor:pointer;padding:0;">
             <Icon icon="mdi:briefcase-outline" width="16" height="16" />
-            Leadler
+            Leads
             <Icon icon="mdi:chevron-down" width="12" height="12" />
           </RouterLink>
           <div v-if="isLeadsDropdownOpen" class="leads-dropdown-menu">
             <RouterLink to="/leads" class="leads-menu-item">
               <Icon icon="mdi:gavel" width="16" height="16" />
-              Açık Artırma
+              Auktion
             </RouterLink>
             <RouterLink to="/sofort-kauf" class="leads-menu-item">
               <Icon icon="mdi:flash" width="16" height="16" />
@@ -512,16 +512,16 @@ function closeAdminCategory() {
           class="admin-panel-btn"
         >
           <Icon icon="mdi:view-dashboard" width="16" height="16" />
-          <span>Admin Panel</span>
+          <span>Admin-Panel</span>
         </RouterLink>
         
         <RouterLink v-if="!isAuthed" to="/login">
           <Icon icon="mdi:login-variant" width="16" height="16" />
-          <span>Giriş</span>
+          <span>Anmelden</span>
         </RouterLink>
         <RouterLink v-if="!isAuthed" to="/register">
           <Icon icon="mdi:account-plus-outline" width="16" height="16" />
-          <span>Kayıt Ol</span>
+          <span>Registrieren</span>
         </RouterLink>
         
         <!-- Admin Dropdown (sadece dropdown modunda göster) -->
@@ -536,7 +536,7 @@ function closeAdminCategory() {
             <div class="menu-category" @mouseenter="openAdminCategory('management')" @mouseleave="closeAdminCategory">
               <div class="category-trigger">
                 <Icon icon="mdi:view-dashboard-outline" width="16" height="16" />
-                <span>Yönetim</span>
+                <span>Verwaltung</span>
                 <Icon icon="mdi:chevron-right" width="14" height="14" class="category-arrow" />
               </div>
 
@@ -544,31 +544,31 @@ function closeAdminCategory() {
               <div v-if="activeAdminCategory === 'management'" class="category-submenu" @mouseenter="openAdminCategory('management')" @mouseleave="closeAdminCategory">
                 <RouterLink to="/admin/leads" class="submenu-item">
                   <Icon icon="mdi:briefcase-outline" width="16" height="16" />
-                  Leadler
+                  Leads
                 </RouterLink>
                 <RouterLink to="/admin/users" class="submenu-item">
                   <Icon icon="mdi:account-group-outline" width="16" height="16" />
-                  Kullanıcılar
+                  Benutzer
                 </RouterLink>
                 <RouterLink to="/admin/statistics" class="submenu-item">
                   <Icon icon="mdi:chart-line-variant" width="16" height="16" />
-                  İstatistikler
+                  Statistiken
                 </RouterLink>
                 <RouterLink to="/admin/activity-log" class="submenu-item">
                   <Icon icon="mdi:history" width="16" height="16" />
-                  Aktivite Geçmişi
+                  Aktivitätsverlauf
                 </RouterLink>
                 <RouterLink to="/admin/balance" class="submenu-item">
                   <Icon icon="mdi:wallet-outline" width="16" height="16" />
-                  Bakiye Yönetimi
+                  Guthabenverwaltung
                 </RouterLink>
                 <RouterLink to="/admin/pending-payments" class="submenu-item">
                   <Icon icon="mdi:clock-alert-outline" width="16" height="16" />
-                  Bekleyen Ödemeler
+                  Ausstehende Zahlungen
                 </RouterLink>
                 <RouterLink to="/admin/feedback" class="submenu-item">
                   <Icon icon="mdi:comment-multiple-outline" width="16" height="16" />
-                  Geri Bildirimler
+                  Rückmeldungen
                 </RouterLink>
               </div>
             </div>
@@ -577,7 +577,7 @@ function closeAdminCategory() {
             <div class="menu-category" @mouseenter="openAdminCategory('settings')" @mouseleave="closeAdminCategory">
               <div class="category-trigger">
                 <Icon icon="mdi:cog-outline" width="16" height="16" />
-                <span>Ayarlar</span>
+                <span>Einstellungen</span>
                 <Icon icon="mdi:chevron-right" width="14" height="14" class="category-arrow" />
               </div>
 
@@ -585,15 +585,15 @@ function closeAdminCategory() {
               <div v-if="activeAdminCategory === 'settings'" class="category-submenu" @mouseenter="openAdminCategory('settings')" @mouseleave="closeAdminCategory">
                 <RouterLink to="/admin/settings" class="submenu-item">
                   <Icon icon="mdi:cog-outline" width="16" height="16" />
-                  Ayarlar
+                  Einstellungen
                 </RouterLink>
                 <RouterLink to="/admin/email-sms-settings" class="submenu-item">
                   <Icon icon="mdi:email-outline" width="16" height="16" />
-                  Mail/SMS Ayarları
+                  E-Mail/SMS-Einstellungen
                 </RouterLink>
                 <RouterLink to="/admin/notification-settings" class="submenu-item">
                   <Icon icon="mdi:bell-outline" width="16" height="16" />
-                  Bildirim Ayarları
+                  Benachrichtigungseinstellungen
                 </RouterLink>
               </div>
             </div>
@@ -602,7 +602,7 @@ function closeAdminCategory() {
             <div class="menu-category" @mouseenter="openAdminCategory('permissions')" @mouseleave="closeAdminCategory">
               <div class="category-trigger">
                 <Icon icon="mdi:shield-outline" width="16" height="16" />
-                <span>Yetkiler</span>
+                <span>Berechtigungen</span>
                 <Icon icon="mdi:chevron-right" width="14" height="14" class="category-arrow" />
               </div>
 
@@ -610,11 +610,11 @@ function closeAdminCategory() {
               <div v-if="activeAdminCategory === 'permissions'" class="category-submenu" @mouseenter="openAdminCategory('permissions')" @mouseleave="closeAdminCategory">
                 <RouterLink to="/admin/user-types" class="submenu-item">
                   <Icon icon="mdi:account-multiple-outline" width="16" height="16" />
-                  Kullanıcı Tipleri
+                  Benutzertypen
                 </RouterLink>
                 <RouterLink to="/admin/lead-type-permissions" class="submenu-item">
                   <Icon icon="mdi:shield-check-outline" width="16" height="16" />
-                  Lead Tipi Yetkileri
+                  Lead-Typ-Berechtigungen
                 </RouterLink>
               </div>
             </div>
@@ -623,7 +623,7 @@ function closeAdminCategory() {
             <div class="menu-category" @mouseenter="openAdminCategory('content')" @mouseleave="closeAdminCategory">
               <div class="category-trigger">
                 <Icon icon="mdi:file-document-outline" width="16" height="16" />
-                <span>İçerik Yönetimi</span>
+                <span>Inhaltsverwaltung</span>
                 <Icon icon="mdi:chevron-right" width="14" height="14" class="category-arrow" />
               </div>
 
@@ -631,25 +631,25 @@ function closeAdminCategory() {
               <div v-if="activeAdminCategory === 'content'" class="category-submenu" @mouseenter="openAdminCategory('content')" @mouseleave="closeAdminCategory">
                 <RouterLink to="/admin/faq" class="submenu-item">
                   <Icon icon="mdi:help-circle-outline" width="16" height="16" />
-                  FAQ Yönetimi
+                  FAQ-Verwaltung
                 </RouterLink>
                 <RouterLink to="/admin/about" class="submenu-item">
                   <Icon icon="mdi:information-outline" width="16" height="16" />
-                  Hakkında Yönetimi
+                  Über uns-Verwaltung
                 </RouterLink>
                 <RouterLink to="/admin/homepage-settings" class="submenu-item">
                   <Icon icon="mdi:home-outline" width="16" height="16" />
-                  Ana Sayfa Yönetimi
+                  Startseiten-Verwaltung
                 </RouterLink>
                 <RouterLink to="/admin/custom-pages" class="submenu-item">
                   <Icon icon="mdi:file-document-edit-outline" width="16" height="16" />
-                  Sayfa Yönetimi
+                  Seitenverwaltung
                 </RouterLink>
               </div>
             </div>
           </div>
         </div>
-        <button v-if="isAuthed" class="search-btn desktop-search-btn" @click="openSearchModal" title="Lead Ara">
+        <button v-if="isAuthed" class="search-btn desktop-search-btn" @click="openSearchModal" title="Lead suchen">
           <Icon icon="mdi:magnify" width="20" height="20" />
         </button>
         <div v-if="isAuthed" class="desktop-notification-wrapper">
@@ -668,7 +668,7 @@ function closeAdminCategory() {
 
       <!-- Mobile Action Buttons (Search, Notification, Hamburger) -->
       <div class="mobile-action-buttons">
-        <button v-if="isAuthed" class="search-btn mobile-search-btn" @click="openSearchModal" title="Lead Ara">
+        <button v-if="isAuthed" class="search-btn mobile-search-btn" @click="openSearchModal" title="Lead suchen">
           <Icon icon="mdi:magnify" width="20" height="20" />
         </button>
         <div v-if="isAuthed" class="mobile-notification-wrapper">
@@ -712,8 +712,8 @@ function closeAdminCategory() {
               </div>
             </div>
             <div class="user-info">
-              <div class="user-name">{{ currentUser?.firstName || currentUser?.username || 'Kullanıcı' }}</div>
-              <div class="user-role">{{ userType?.name || 'Kullanıcı' }}</div>
+              <div class="user-name">{{ currentUser?.firstName || currentUser?.username || 'Benutzer' }}</div>
+              <div class="user-role">{{ userType?.name || 'Benutzer' }}</div>
             </div>
             <Icon :icon="isMobileUserProfileOpen ? 'mdi:chevron-up' : 'mdi:chevron-down'" width="20" height="20" />
           </div>
@@ -725,33 +725,33 @@ function closeAdminCategory() {
             </RouterLink>
             <RouterLink to="/profile/notifications" @click="closeMobileMenu" class="mobile-user-menu-item">
               <Icon icon="mdi:bell-outline" width="18" height="18" />
-              <span>Bildirim Tercihleri</span>
+              <span>Benachrichtigungseinstellungen</span>
             </RouterLink>
             <RouterLink v-if="canAccessPurchased" to="/purchased-leads" @click="closeMobileMenu" class="mobile-user-menu-item">
               <Icon icon="mdi:shopping-outline" width="18" height="18" />
-              <span>Satın Aldıklarım</span>
+              <span>Meine Käufe</span>
             </RouterLink>
             <button class="mobile-user-menu-item logout-item" @click="logout">
               <Icon icon="mdi:logout-variant" width="18" height="18" />
-              <span>Çıkış Yap</span>
+              <span>Abmelden</span>
             </button>
           </div>
         </div>
         
         <RouterLink to="/" @click="closeMobileMenu" class="mobile-nav-link">
           <Icon icon="mdi:home-outline" width="20" height="20" />
-          <span>Anasayfa</span>
+          <span>Startseite</span>
         </RouterLink>
 
         <!-- Leads submenu in mobile -->
         <div v-if="isAuthed" class="mobile-nav-section">
           <div class="mobile-nav-section-header">
             <Icon icon="mdi:briefcase-outline" width="20" height="20" />
-            <span>Leadler</span>
+            <span>Leads</span>
           </div>
           <RouterLink to="/leads" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
             <Icon icon="mdi:gavel" width="18" height="18" />
-            <span>Açık Artırma</span>
+            <span>Auktion</span>
           </RouterLink>
           <RouterLink to="/sofort-kauf" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
             <Icon icon="mdi:flash" width="18" height="18" />
@@ -766,16 +766,16 @@ function closeAdminCategory() {
 
         <button v-if="isAuthed" @click="openSearchModal(); closeMobileMenu();" class="mobile-nav-link mobile-search-btn">
           <Icon icon="mdi:magnify" width="20" height="20" />
-          <span>Lead Ara</span>
+          <span>Lead suchen</span>
         </button>
 
         <RouterLink v-if="!isAuthed" to="/login" @click="closeMobileMenu" class="mobile-nav-link">
           <Icon icon="mdi:login-variant" width="20" height="20" />
-          <span>Giriş</span>
+          <span>Anmelden</span>
         </RouterLink>
         <RouterLink v-if="!isAuthed" to="/register" @click="closeMobileMenu" class="mobile-nav-link">
           <Icon icon="mdi:account-plus-outline" width="20" height="20" />
-          <span>Kayıt Ol</span>
+          <span>Registrieren</span>
         </RouterLink>
 
         <!-- Admin Section -->
@@ -784,33 +784,33 @@ function closeAdminCategory() {
           <div class="mobile-nav-section">
             <div class="mobile-nav-section-header" data-category="management" @click="toggleMobileAdminCategory('management')" style="cursor: pointer;">
               <Icon icon="mdi:view-dashboard-outline" width="20" height="20" />
-              <span>Yönetim</span>
+              <span>Verwaltung</span>
               <Icon :icon="mobileAdminCategoryStates.management ? 'mdi:chevron-up' : 'mdi:chevron-down'" width="20" height="20" class="category-chevron" />
             </div>
             <div v-if="mobileAdminCategoryStates.management">
               <RouterLink to="/admin/leads" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
                 <Icon icon="mdi:briefcase-outline" width="18" height="18" />
-                <span>Leadler</span>
+                <span>Leads</span>
               </RouterLink>
               <RouterLink to="/admin/users" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
                 <Icon icon="mdi:account-group-outline" width="18" height="18" />
-                <span>Kullanıcılar</span>
+                <span>Benutzer</span>
               </RouterLink>
               <RouterLink to="/admin/statistics" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
                 <Icon icon="mdi:chart-line-variant" width="18" height="18" />
-                <span>İstatistikler</span>
+                <span>Statistiken</span>
               </RouterLink>
               <RouterLink to="/admin/activity-log" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
                 <Icon icon="mdi:history" width="18" height="18" />
-                <span>Aktivite Geçmişi</span>
+                <span>Aktivittsverlauf</span>
               </RouterLink>
               <RouterLink to="/admin/balance" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
                 <Icon icon="mdi:wallet-outline" width="18" height="18" />
-                <span>Bakiye Yönetimi</span>
+                <span>Guthabenverwaltung</span>
               </RouterLink>
               <RouterLink to="/admin/pending-payments" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
                 <Icon icon="mdi:clock-alert-outline" width="18" height="18" />
-                <span>Bekleyen Ödemeler</span>
+                <span>Ausstehende Zahlungen</span>
               </RouterLink>
             </div>
           </div>
@@ -819,21 +819,21 @@ function closeAdminCategory() {
           <div class="mobile-nav-section">
             <div class="mobile-nav-section-header" data-category="settings" @click="toggleMobileAdminCategory('settings')" style="cursor: pointer;">
               <Icon icon="mdi:cog-outline" width="20" height="20" />
-              <span>Ayarlar</span>
+              <span>Einstellungen</span>
               <Icon :icon="mobileAdminCategoryStates.settings ? 'mdi:chevron-up' : 'mdi:chevron-down'" width="20" height="20" class="category-chevron" />
             </div>
             <div v-if="mobileAdminCategoryStates.settings">
               <RouterLink to="/admin/settings" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
                 <Icon icon="mdi:cog-outline" width="18" height="18" />
-                <span>Ayarlar</span>
+                <span>Einstellungen</span>
               </RouterLink>
               <RouterLink to="/admin/email-sms-settings" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
                 <Icon icon="mdi:email-outline" width="18" height="18" />
-                <span>Mail/SMS Ayarları</span>
+                <span>E-Mail/SMS-Einstellungen</span>
               </RouterLink>
               <RouterLink to="/admin/notification-settings" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
                 <Icon icon="mdi:bell-outline" width="18" height="18" />
-                <span>Bildirim Ayarları</span>
+                <span>Benachrichtigungseinstellungen</span>
               </RouterLink>
             </div>
           </div>
@@ -842,17 +842,17 @@ function closeAdminCategory() {
           <div class="mobile-nav-section">
             <div class="mobile-nav-section-header" data-category="permissions" @click="toggleMobileAdminCategory('permissions')" style="cursor: pointer;">
               <Icon icon="mdi:shield-outline" width="20" height="20" />
-              <span>Yetkiler</span>
+              <span>Berechtigungen</span>
               <Icon :icon="mobileAdminCategoryStates.permissions ? 'mdi:chevron-up' : 'mdi:chevron-down'" width="20" height="20" class="category-chevron" />
             </div>
             <div v-if="mobileAdminCategoryStates.permissions">
               <RouterLink to="/admin/user-types" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
                 <Icon icon="mdi:account-multiple-outline" width="18" height="18" />
-                <span>Kullanıcı Tipleri</span>
+                <span>Benutzertypen</span>
               </RouterLink>
               <RouterLink to="/admin/lead-type-permissions" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
                 <Icon icon="mdi:shield-check-outline" width="18" height="18" />
-                <span>Lead Tipi Yetkileri</span>
+                <span>Lead-Typ-Berechtigungen</span>
               </RouterLink>
             </div>
           </div>
@@ -861,25 +861,25 @@ function closeAdminCategory() {
           <div class="mobile-nav-section">
             <div class="mobile-nav-section-header" data-category="content" @click="toggleMobileAdminCategory('content')" style="cursor: pointer;">
               <Icon icon="mdi:file-document-outline" width="20" height="20" />
-              <span>İçerik Yönetimi</span>
+              <span>Inhaltsverwaltung</span>
               <Icon :icon="mobileAdminCategoryStates.content ? 'mdi:chevron-up' : 'mdi:chevron-down'" width="20" height="20" class="category-chevron" />
             </div>
             <div v-if="mobileAdminCategoryStates.content">
               <RouterLink to="/admin/faq" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
                 <Icon icon="mdi:help-circle-outline" width="18" height="18" />
-                <span>FAQ Yönetimi</span>
+                <span>FAQ-Verwaltung</span>
               </RouterLink>
               <RouterLink to="/admin/about" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
                 <Icon icon="mdi:information-outline" width="18" height="18" />
-                <span>Hakkında Yönetimi</span>
+                <span>Über uns-Verwaltung</span>
               </RouterLink>
               <RouterLink to="/admin/homepage-settings" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
                 <Icon icon="mdi:home-outline" width="18" height="18" />
-                <span>Ana Sayfa Yönetimi</span>
+                <span>Startseiten-Verwaltung</span>
               </RouterLink>
               <RouterLink to="/admin/custom-pages" @click="closeMobileMenu" class="mobile-nav-link mobile-nav-sublink">
                 <Icon icon="mdi:file-document-edit-outline" width="18" height="18" />
-                <span>Sayfa Yönetimi</span>
+                <span>Seitenverwaltung</span>
               </RouterLink>
             </div>
           </div>
@@ -887,7 +887,7 @@ function closeAdminCategory() {
       </div>
     </div>
 
-    <div v-if="isNavigating" class="nav-overlay"><div class="spinner" aria-label="Yükleniyor"></div></div>
+    <div v-if="isNavigating" class="nav-overlay"><div class="spinner" aria-label="Wird geladen"></div></div>
     
     <!-- Admin Sidebar Menu -->
     <div v-if="isAdminRoute && isAuthed && (userTypeId === 'ADMIN' || userTypeId === 'SUPERADMIN') && adminMenuStyle" class="admin-sidebar-container">
@@ -904,35 +904,35 @@ function closeAdminCategory() {
           <div class="admin-sidebar-section">
             <div class="admin-sidebar-section-title">
               <Icon icon="mdi:view-dashboard-outline" width="20" height="20" />
-              <span>Yönetim</span>
+              <span>Verwaltung</span>
             </div>
             <RouterLink to="/admin/leads" class="admin-sidebar-link" active-class="active">
               <Icon icon="mdi:briefcase-outline" width="18" height="18" />
-              <span>Leadler</span>
+              <span>Leads</span>
             </RouterLink>
             <RouterLink to="/admin/users" class="admin-sidebar-link" active-class="active">
               <Icon icon="mdi:account-group-outline" width="18" height="18" />
-              <span>Kullanıcılar</span>
+              <span>Benutzer</span>
             </RouterLink>
             <RouterLink to="/admin/statistics" class="admin-sidebar-link" active-class="active">
               <Icon icon="mdi:chart-line-variant" width="18" height="18" />
-              <span>İstatistikler</span>
+              <span>Statistiken</span>
             </RouterLink>
             <RouterLink to="/admin/activity-log" class="admin-sidebar-link" active-class="active">
               <Icon icon="mdi:history" width="18" height="18" />
-              <span>Aktivite Geçmişi</span>
+              <span>Aktivittsverlauf</span>
             </RouterLink>
             <RouterLink to="/admin/balance" class="admin-sidebar-link" active-class="active">
               <Icon icon="mdi:wallet-outline" width="18" height="18" />
-              <span>Bakiye Yönetimi</span>
+              <span>Guthabenverwaltung</span>
             </RouterLink>
             <RouterLink to="/admin/pending-payments" class="admin-sidebar-link" active-class="active">
               <Icon icon="mdi:clock-alert-outline" width="18" height="18" />
-              <span>Bekleyen Ödemeler</span>
+              <span>Ausstehende Zahlungen</span>
             </RouterLink>
             <RouterLink to="/admin/feedback" class="admin-sidebar-link" active-class="active">
               <Icon icon="mdi:comment-multiple-outline" width="18" height="18" />
-              <span>Geri Bildirimler</span>
+              <span>Rückmeldungen</span>
             </RouterLink>
           </div>
 
@@ -940,19 +940,19 @@ function closeAdminCategory() {
           <div class="admin-sidebar-section">
             <div class="admin-sidebar-section-title">
               <Icon icon="mdi:cog-outline" width="20" height="20" />
-              <span>Ayarlar</span>
+              <span>Einstellungen</span>
             </div>
             <RouterLink to="/admin/settings" class="admin-sidebar-link" active-class="active">
               <Icon icon="mdi:cog-outline" width="18" height="18" />
-              <span>Ayarlar</span>
+              <span>Einstellungen</span>
             </RouterLink>
             <RouterLink to="/admin/email-sms-settings" class="admin-sidebar-link" active-class="active">
               <Icon icon="mdi:email-outline" width="18" height="18" />
-              <span>Mail/SMS Ayarları</span>
+              <span>E-Mail/SMS-Einstellungen</span>
             </RouterLink>
             <RouterLink to="/admin/notification-settings" class="admin-sidebar-link" active-class="active">
               <Icon icon="mdi:bell-outline" width="18" height="18" />
-              <span>Bildirim Ayarları</span>
+              <span>Benachrichtigungseinstellungen</span>
             </RouterLink>
           </div>
 
@@ -960,15 +960,15 @@ function closeAdminCategory() {
           <div class="admin-sidebar-section">
             <div class="admin-sidebar-section-title">
               <Icon icon="mdi:shield-outline" width="20" height="20" />
-              <span>Yetkiler</span>
+              <span>Berechtigungen</span>
             </div>
             <RouterLink to="/admin/user-types" class="admin-sidebar-link" active-class="active">
               <Icon icon="mdi:account-multiple-outline" width="18" height="18" />
-              <span>Kullanıcı Tipleri</span>
+              <span>Benutzertypen</span>
             </RouterLink>
             <RouterLink to="/admin/lead-type-permissions" class="admin-sidebar-link" active-class="active">
               <Icon icon="mdi:shield-check-outline" width="18" height="18" />
-              <span>Lead Tipi Yetkileri</span>
+              <span>Lead-Typ-Berechtigungen</span>
             </RouterLink>
           </div>
 
@@ -976,23 +976,23 @@ function closeAdminCategory() {
           <div class="admin-sidebar-section">
             <div class="admin-sidebar-section-title">
               <Icon icon="mdi:file-document-outline" width="20" height="20" />
-              <span>İçerik Yönetimi</span>
+              <span>Inhaltsverwaltung</span>
             </div>
             <RouterLink to="/admin/faq" class="admin-sidebar-link" active-class="active">
               <Icon icon="mdi:help-circle-outline" width="18" height="18" />
-              <span>FAQ Yönetimi</span>
+              <span>FAQ-Verwaltung</span>
             </RouterLink>
             <RouterLink to="/admin/about" class="admin-sidebar-link" active-class="active">
               <Icon icon="mdi:information-outline" width="18" height="18" />
-              <span>Hakkında Yönetimi</span>
+              <span>Über uns-Verwaltung</span>
             </RouterLink>
             <RouterLink to="/admin/homepage-settings" class="admin-sidebar-link" active-class="active">
               <Icon icon="mdi:home-outline" width="18" height="18" />
-              <span>Ana Sayfa Yönetimi</span>
+              <span>Startseiten-Verwaltung</span>
             </RouterLink>
             <RouterLink to="/admin/custom-pages" class="admin-sidebar-link" active-class="active">
               <Icon icon="mdi:file-document-edit-outline" width="18" height="18" />
-              <span>Sayfa Yönetimi</span>
+              <span>Seitenverwaltung</span>
             </RouterLink>
           </div>
         </nav>
@@ -1045,7 +1045,7 @@ function closeAdminCategory() {
         </div>
 
         <div class="footer-column" v-if="servicesLinks.length > 0">
-          <h4>Hizmetler</h4>
+          <h4>Services</h4>
           <ul class="footer-links">
             <li v-for="(link, index) in servicesLinks" :key="index">
               <a :href="link.url">{{ link.text }}</a>
@@ -1054,7 +1054,7 @@ function closeAdminCategory() {
         </div>
 
         <div class="footer-column" v-if="supportLinks.length > 0">
-          <h4>Destek</h4>
+          <h4>Support</h4>
           <ul class="footer-links">
             <li v-for="(link, index) in supportLinks" :key="index">
               <a :href="link.url">{{ link.text }}</a>
@@ -1063,7 +1063,7 @@ function closeAdminCategory() {
         </div>
 
         <div class="footer-column" v-if="legalLinks.length > 0">
-          <h4>Yasal</h4>
+          <h4>Rechtliches</h4>
           <ul class="footer-links">
             <li v-for="(link, index) in legalLinks" :key="index">
               <a :href="link.url">{{ link.text }}</a>
@@ -1074,7 +1074,7 @@ function closeAdminCategory() {
 
       <div class="footer-bottom">
         <div class="footer-bottom-content">
-          <p>{{ footerNote || `© 2024 ${companyName}. Tüm hakları saklıdır.` }}</p>
+          <p>{{ footerNote || `© 2024 ${companyName}. Alle Rechte vorbehalten.` }}</p>
           <p v-if="tradeRegisterNumber">{{ tradeRegisterNumber }}</p>
         </div>
         <div v-if="socialMedia.facebook || socialMedia.twitter || socialMedia.linkedin || socialMedia.instagram" class="footer-social">

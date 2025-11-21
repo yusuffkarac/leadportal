@@ -49,7 +49,7 @@ async function loadInsuranceTypes() {
       }
     }
   } catch (e) {
-    console.error('Sigorta türleri yüklenemedi:', e)
+    console.error('Versicherungsarten konnten nicht geladen werden:', e)
     insuranceTypes.value = [
       { name: 'Hayvan', icon: 'fa-paw' },
       { name: 'Araba', icon: 'fa-car' },
@@ -67,7 +67,7 @@ async function save() {
     const start = new Date(lead.value.startsAt)
     const end = new Date(lead.value.endsAt)
     if (start >= end) {
-      err.value = 'Başlangıç tarihi bitiş tarihinden önce olmalıdır.'
+      err.value = 'Das Startdatum muss vor dem Enddatum liegen.'
       return
     }
   }
@@ -88,9 +88,9 @@ async function save() {
       isPremium: !!lead.value.isPremium
     }
     await axios.put(`/api/leads/${leadId}`, payload, { headers: authHeaders() })
-    ok.value = 'Kaydedildi'
+    ok.value = 'Gespeichert'
   } catch (e) {
-    err.value = 'Kaydedilemedi'
+    err.value = 'Konnte nicht gespeichert werden'
   }
 }
 
@@ -103,91 +103,91 @@ onMounted(() => {
 <template>
   <section v-if="lead" class="grid" style="grid-template-columns: 1fr 1fr; gap: 16px;">
     <div class="section">
-      <h2>Lead Düzenle</h2>
+      <h2>Lead bearbeiten</h2>
       <div class="stack">
-        <label>Başlık</label>
+        <label>Titel</label>
         <input class="input" v-model="lead.title" />
-        <label>Açıklama</label>
+        <label>Beschreibung</label>
         <textarea class="input" v-model="lead.description" rows="4" />
-        <label>Lead Detayları (Sadece Satın Alan Görür)</label>
-        <textarea class="input" v-model="lead.privateDetails" rows="6" placeholder="Satın alan kişinin göreceği detay bilgileri girin" />
+        <label>Lead-Details (Nur für Käufer sichtbar)</label>
+        <textarea class="input" v-model="lead.privateDetails" rows="6" placeholder="Geben Sie Detailinformationen ein, die der Käufer sehen wird" />
         <div class="row">
           <div class="stack" style="flex:1">
-            <label>Başlangıç</label>
+            <label>Startpreis</label>
             <input class="input" type="number" v-model.number="lead.startPrice" />
           </div>
           <div class="stack" style="flex:1">
-            <label>Min Artış</label>
+            <label>Mindesterhöhung</label>
             <input class="input" type="number" v-model.number="lead.minIncrement" />
           </div>
         </div>
         <div class="stack">
-          <label>Anında Satın Alma Fiyatı (Opsiyonel)</label>
-          <input class="input" type="number" v-model.number="lead.instantBuyPrice" placeholder="Boş bırakılabilir" />
-          <small style="color: var(--primary); font-size: 0.875rem;">Bu fiyatı ödeyen kişi açık artırmayı beklemeden hemen satın alabilir</small>
+          <label>Sofortkaufpreis (Optional)</label>
+          <input class="input" type="number" v-model.number="lead.instantBuyPrice" placeholder="Kann leer gelassen werden" />
+          <small style="color: var(--primary); font-size: 0.875rem;">Wer diesen Preis zahlt, kann sofort kaufen, ohne auf die Auktion zu warten</small>
         </div>
         <div class="stack">
-          <label>Sigorta Türü (Opsiyonel)</label>
+          <label>Versicherungstyp (Optional)</label>
           <select class="input" v-model="lead.insuranceType">
-            <option value="">Sigorta türü seçin</option>
+            <option value="">Versicherungstyp auswählen</option>
             <option v-for="type in insuranceTypes" :key="type.name" :value="type.name">{{ type.name }}</option>
           </select>
         </div>
-        <label>Başlangıç (Opsiyonel)</label>
+        <label>Startdatum (Optional)</label>
         <input class="input" type="datetime-local" v-model="lead.startsAt" />
-        <small style="color: var(--primary); font-size: 0.875rem;">Boş bırakırsanız lead hemen aktif olur. İleri tarih seçerseniz belirlenen zamanda aktif olur.</small>
-        <label>Bitiş</label>
+        <small style="color: var(--primary); font-size: 0.875rem;">Wenn leer gelassen, wird der Lead sofort aktiv. Wenn Sie ein zukünftiges Datum wählen, wird er zu diesem Zeitpunkt aktiv.</small>
+        <label>Enddatum</label>
         <input class="input" type="datetime-local" v-model="lead.endsAt" />
         <div class="row">
-          <label>Aktif mi?</label>
+          <label>Aktiv?</label>
           <input type="checkbox" v-model="lead.isActive" />
         </div>
         <div class="stack toggle-field">
-          <label>Vitrine Ekle</label>
+          <label>Zu Showcase hinzufügen</label>
           <div class="toggle-container">
             <label class="toggle-switch">
               <input type="checkbox" v-model="lead.isShowcase" />
               <span class="toggle-slider"></span>
             </label>
-            <span class="toggle-label">{{ lead.isShowcase ? 'Açık' : 'Kapalı' }}</span>
+            <span class="toggle-label">{{ lead.isShowcase ? 'Aktiv' : 'Inaktiv' }}</span>
           </div>
           <small class="toggle-help">
-            Vitrine alınan leadler ana sayfadaki vitrin bölümünde öne çıkarılır.
+            Leads im Showcase werden im Showcase-Bereich der Startseite hervorgehoben.
           </small>
         </div>
         <div class="stack toggle-field">
-          <label>Premium'a Ekle</label>
+          <label>Zu Premium hinzufügen</label>
           <div class="toggle-container">
             <label class="toggle-switch">
               <input type="checkbox" v-model="lead.isPremium" />
               <span class="toggle-slider"></span>
             </label>
-            <span class="toggle-label">{{ lead.isPremium ? 'Açık' : 'Kapalı' }}</span>
+            <span class="toggle-label">{{ lead.isPremium ? 'Aktiv' : 'Inaktiv' }}</span>
           </div>
           <small class="toggle-help">
-            Premium'a alınan leadler lead pazaryeri sayfasındaki premium bölümünde gösterilir.
+            Premium-Leads werden im Premium-Bereich der Marktplatzseite angezeigt.
           </small>
         </div>
         <div class="row">
-          <button class="btn" @click="save">Kaydet</button>
+          <button class="btn" @click="save">Speichern</button>
           <span v-if="ok" style="color:#16a34a">{{ ok }}</span>
           <span v-if="err" style="color:#ef4444">{{ err }}</span>
         </div>
       </div>
     </div>
     <div class="section">
-      <h3>Teklifler</h3>
-      <div v-if="!lead.bids?.length" class="muted">Teklif yok.</div>
+      <h3>Gebote</h3>
+      <div v-if="!lead.bids?.length" class="muted">Keine Gebote.</div>
       <div v-else class="stack">
         <div class="card" v-for="b in lead.bids" :key="b.id">
           <div class="row" style="justify-content:space-between">
             <strong>{{ b.amount }}</strong>
-            <span class="muted">{{ new Date(b.createdAt).toLocaleString() }}</span>
+            <span class="muted">{{ new Date(b.createdAt).toLocaleString('de-DE') }}</span>
           </div>
-          <div class="muted">{{ b.user?.email || 'Anonim' }}</div>
+          <div class="muted">{{ b.user?.email || 'Anonym' }}</div>
         </div>
       </div>
     </div>
   </section>
-  <section v-else class="muted">Yükleniyor...</section>
+  <section v-else class="muted">Wird geladen...</section>
 </template>

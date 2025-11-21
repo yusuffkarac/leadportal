@@ -13,11 +13,11 @@ const message = ref({ type: '', text: '' })
 const selectedCategory = ref('ALL')
 
 const categories = [
-  { value: 'ALL', label: 'Tümü', icon: 'mdi:view-grid' },
-  { value: 'BID', label: 'Teklif', icon: 'mdi:gavel' },
+  { value: 'ALL', label: 'Alle', icon: 'mdi:view-grid' },
+  { value: 'BID', label: 'Gebot', icon: 'mdi:gavel' },
   { value: 'LEAD', label: 'Lead', icon: 'mdi:briefcase-outline' },
-  { value: 'PAYMENT', label: 'Ödeme', icon: 'mdi:wallet-outline' },
-  { value: 'FEEDBACK', label: 'Geri Bildirim', icon: 'mdi:chat-bubble-outline' }
+  { value: 'PAYMENT', label: 'Zahlung', icon: 'mdi:wallet-outline' },
+  { value: 'FEEDBACK', label: 'Feedback', icon: 'mdi:chat-bubble-outline' }
 ]
 
 // Kategoriye göre filtrele
@@ -48,8 +48,8 @@ async function loadData() {
     permissions.value = permissionsResponse.data
 
   } catch (error) {
-    console.error('Veriler yüklenirken hata:', error)
-    showMessage('error', 'Veriler yüklenirken bir hata oluştu')
+    console.error('Fehler beim Laden der Daten:', error)
+    showMessage('error', 'Beim Laden der Daten ist ein Fehler aufgetreten')
   } finally {
     isLoading.value = false
   }
@@ -90,10 +90,10 @@ async function togglePermission(userTypeId, notificationTypeId) {
       })
     }
 
-    showMessage('success', 'İzin güncellendi')
+    showMessage('success', 'Berechtigung aktualisiert')
   } catch (error) {
-    console.error('İzin güncellenirken hata:', error)
-    showMessage('error', 'İzin güncellenirken bir hata oluştu')
+    console.error('Fehler beim Aktualisieren der Berechtigung:', error)
+    showMessage('error', 'Beim Aktualisieren der Berechtigung ist ein Fehler aufgetreten')
   } finally {
     isSaving.value = false
   }
@@ -130,10 +130,10 @@ async function toggleAllForUserType(userTypeId, enable) {
       }
     })
 
-    showMessage('success', 'Tüm izinler güncellendi')
+    showMessage('success', 'Alle Berechtigungen aktualisiert')
   } catch (error) {
-    console.error('İzinler güncellenirken hata:', error)
-    showMessage('error', 'İzinler güncellenirken bir hata oluştu')
+    console.error('Fehler beim Aktualisieren der Berechtigungen:', error)
+    showMessage('error', 'Beim Aktualisieren der Berechtigungen ist ein Fehler aufgetreten')
   } finally {
     isSaving.value = false
   }
@@ -170,10 +170,10 @@ async function toggleAllForNotificationType(notificationTypeId, enable) {
       }
     })
 
-    showMessage('success', 'Tüm izinler güncellendi')
+    showMessage('success', 'Alle Berechtigungen aktualisiert')
   } catch (error) {
-    console.error('İzinler güncellenirken hata:', error)
-    showMessage('error', 'İzinler güncellenirken bir hata oluştu')
+    console.error('Fehler beim Aktualisieren der Berechtigungen:', error)
+    showMessage('error', 'Beim Aktualisieren der Berechtigungen ist ein Fehler aufgetreten')
   } finally {
     isSaving.value = false
   }
@@ -204,7 +204,7 @@ async function getAllNotificationData() {
       permissions: permissionsResponse.data || []
     }
   } catch (err) {
-    console.error('Bildirim verileri alınırken hata:', err)
+    console.error('Fehler beim Abrufen der Benachrichtigungsdaten:', err)
     return {
       version: '1.0',
       exportDate: new Date().toISOString(),
@@ -218,7 +218,7 @@ async function getAllNotificationData() {
 async function setAllNotificationData(data) {
   try {
     if (!data || typeof data !== 'object') {
-      throw new Error('Geçersiz veri formatı')
+      throw new Error('Ungültiges Datenformat')
     }
 
     // Permissions'ı yükle
@@ -235,18 +235,18 @@ async function setAllNotificationData(data) {
     // Sayfayı yeniden yükle
     await loadData()
   } catch (err) {
-    console.error('Bildirim verileri yüklenirken hata:', err)
+    console.error('Fehler beim Laden der Benachrichtigungsdaten:', err)
     throw err
   }
 }
 
 function validateNotificationData(data) {
   if (!data || typeof data !== 'object') {
-    return 'Geçersiz veri formatı'
+    return 'Ungültiges Datenformat'
   }
   
   if (!data.version) {
-    return 'Eksik versiyon bilgisi'
+    return 'Fehlende Versionsinformation'
   }
   
   return true
@@ -276,9 +276,9 @@ onMounted(() => {
     <div class="header">
       <div class="section-header">
         <h1>
-          Bildirim Yönetimi
+          Benachrichtigungsverwaltung
         </h1>
-        <p>Kullanıcı rollerine göre bildirim izinlerini yönetin</p>
+        <p>Benachrichtigungsberechtigungen nach Benutzerrollen verwalten</p>
       </div>
       <div class="header-actions">
         <button 
@@ -291,7 +291,7 @@ onMounted(() => {
             <polyline points="7 10 12 15 17 10"/>
             <line x1="12" y1="15" x2="12" y2="3"/>
           </svg>
-          <span v-if="isExporting">Export ediliyor...</span>
+          <span v-if="isExporting">Wird exportiert...</span>
           <span v-else>Export</span>
         </button>
         <button 
@@ -304,7 +304,7 @@ onMounted(() => {
             <polyline points="17 8 12 3 7 8"/>
             <line x1="12" y1="3" x2="12" y2="15"/>
           </svg>
-          <span v-if="isImporting">Import ediliyor...</span>
+          <span v-if="isImporting">Wird importiert...</span>
           <span v-else>Import</span>
         </button>
       </div>
@@ -338,7 +338,7 @@ onMounted(() => {
     <!-- Loading State -->
     <div v-if="isLoading" class="loading-state">
       <div class="spinner"></div>
-      <p>Yükleniyor...</p>
+      <p>Wird geladen...</p>
     </div>
 
     <!-- Content -->
@@ -348,10 +348,10 @@ onMounted(() => {
       <div class="info-box">
         <Icon icon="mdi:information-outline" width="20" height="20" />
         <div>
-          <strong>Bildirim İzinleri Nasıl Çalışır?</strong>
+          <strong>Wie funktionieren Benachrichtigungsberechtigungen?</strong>
           <p>
-            Bu sayfada her kullanıcı rolü için hangi bildirimlerin gönderileceğini belirleyebilirsiniz.
-            Kullanıcılar kendi tercihlerinden bildirimleri kapatabilir, ancak burada kapalı olan bildirimleri alamazlar.
+            Auf dieser Seite können Sie festlegen, welche Benachrichtigungen für jede Benutzerrolle gesendet werden.
+            Benutzer können Benachrichtigungen in ihren eigenen Einstellungen deaktivieren, können aber keine Benachrichtigungen erhalten, die hier deaktiviert sind.
           </p>
         </div>
       </div>
@@ -362,7 +362,7 @@ onMounted(() => {
           <thead>
             <tr>
               <th class="notification-column">
-                <span>Bildirim Tipi</span>
+                <span>Benachrichtigungstyp</span>
               </th>
               <th v-for="userType in userTypes" :key="userType.id" class="user-type-column">
                 <div class="user-type-header">
@@ -371,7 +371,7 @@ onMounted(() => {
                     <button
                       @click="toggleAllForUserType(userType.id, true)"
                       class="mini-btn"
-                      title="Tümünü aç"
+                      title="Alle aktivieren"
                       :disabled="isSaving"
                     >
                       <Icon icon="mdi:check-all" width="14" height="14" />
@@ -379,7 +379,7 @@ onMounted(() => {
                     <button
                       @click="toggleAllForUserType(userType.id, false)"
                       class="mini-btn"
-                      title="Tümünü kapat"
+                      title="Alle deaktivieren"
                       :disabled="isSaving"
                     >
                       <Icon icon="mdi:close" width="14" height="14" />
@@ -405,7 +405,7 @@ onMounted(() => {
                     <button
                       @click="toggleAllForNotificationType(notifType.id, true)"
                       class="mini-btn"
-                      title="Tüm roller için aç"
+                      title="Für alle Rollen aktivieren"
                       :disabled="isSaving"
                     >
                       <Icon icon="mdi:check-all" width="14" height="14" />
@@ -413,7 +413,7 @@ onMounted(() => {
                     <button
                       @click="toggleAllForNotificationType(notifType.id, false)"
                       class="mini-btn"
-                      title="Tüm roller için kapat"
+                      title="Für alle Rollen deaktivieren"
                       :disabled="isSaving"
                     >
                       <Icon icon="mdi:close" width="14" height="14" />
