@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-settings-page">
+  <div class="admin-settings-page admin-page">
     <div class="page-content">
       <div class="page-header">
         <div class="header-content">

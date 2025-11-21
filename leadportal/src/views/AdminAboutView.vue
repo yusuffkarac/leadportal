@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-about-page">
+  <div class="admin-about-page admin-page">
     <div class="page-content">
       <div class="page-header">
         <h1>Über-Seiten-Verwaltung</h1>

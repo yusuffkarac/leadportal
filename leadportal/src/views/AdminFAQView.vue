@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-faq-page">
+  <div class="admin-faq-page admin-page">
     <div class="page-content">
       <div class="page-header">
         <h1>FAQ-Verwaltung</h1>
@@ -512,21 +512,7 @@ onMounted(() => {
   flex-shrink: 0;
 }
 
-.btn-outline {
-  background: #fff;
-  color: #111827;
-  border: 1px solid #d1d5db;
-}
-
-.btn-outline:hover:not(:disabled) {
-  background: #f9fafb;
-  border-color: #9ca3af;
-}
-
-.btn-outline:disabled {
-  opacity: .6;
-  cursor: not-allowed;
-}
+/* btn-outline stilleri artık main.css'te global olarak tanımlı */
 
 .filters {
   background: white;
@@ -768,42 +754,7 @@ onMounted(() => {
   margin-top: 24px;
 }
 
-/* Button Styles */
-.btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease;
-  text-decoration: none;
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-primary {
-  background: var(--text);
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: #1f2937;
-}
-
-.btn-secondary {
-  background: #f3f4f6;
-  color: #374151;
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: #e5e7eb;
-}
+/* Button Styles - Artık main.css'te global olarak tanımlı */
 
 .btn-danger {
   background: #dc2626;

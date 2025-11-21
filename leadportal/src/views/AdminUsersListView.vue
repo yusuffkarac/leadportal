@@ -135,7 +135,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="admin-users-list">
+  <div class="admin-users-list admin-page">
     <div class="page-header">
       <div class="header-left">
         <h1>Benutzerverwaltung</h1>

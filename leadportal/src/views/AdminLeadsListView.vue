@@ -713,7 +713,7 @@ watch(showMap, (newValue) => {
 </script>
 
 <template>
-  <section>
+  <section class="admin-page">
     <div class="page-content">
       <div class="page-header">
         <div class="section-header">

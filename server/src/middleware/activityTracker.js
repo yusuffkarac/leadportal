@@ -20,7 +20,12 @@ export const trackUserActivity = async (req, res, next) => {
     if (token) {
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
-        const userId = decoded.id
+        const userId = decoded?.id
+
+        // Eğer userId yoksa aktivite takibi yapma
+        if (!userId) {
+          return
+        }
 
         // Debounce kontrolü - aynı kullanıcı için sık güncelleme yapma
         const lastUpdate = activityCache.get(userId)

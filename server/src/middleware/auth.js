@@ -11,7 +11,17 @@ export const requireAdmin = async (req, res, next) => {
       return res.status(401).json({ message: 'Token gerekli' })
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    let decoded
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET)
+    } catch (jwtError) {
+      return res.status(401).json({ message: 'Geçersiz token' })
+    }
+    
+    if (!decoded || !decoded.id) {
+      return res.status(401).json({ message: 'Geçersiz token formatı' })
+    }
+    
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
       select: { userTypeId: true, isActive: true, lastActivity: true }
@@ -62,7 +72,17 @@ export const requireAuth = async (req, res, next) => {
       return res.status(401).json({ message: 'Token gerekli' })
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    let decoded
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET)
+    } catch (jwtError) {
+      return res.status(401).json({ message: 'Geçersiz token' })
+    }
+    
+    if (!decoded || !decoded.id) {
+      return res.status(401).json({ message: 'Geçersiz token formatı' })
+    }
+    
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
       select: { id: true, userTypeId: true, isActive: true, lastActivity: true }

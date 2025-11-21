@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-custom-pages-page">
+  <div class="admin-custom-pages-page admin-page">
     <div class="page-content">
       <div class="page-header">
         <div>
@@ -478,6 +478,10 @@ async function setAllPagesData(data) {
       throw new Error('Ungültiges Datenformat')
     }
 
+    // Mevcut sayfaları yükle (slug kontrolü için)
+    const existingPagesResponse = await axios.get('custom-pages')
+    const existingPages = existingPagesResponse.data || []
+
     // Seiten laden
     if (data.pages && Array.isArray(data.pages)) {
       for (const page of data.pages) {
@@ -489,11 +493,26 @@ async function setAllPagesData(data) {
           isActive: page.isActive !== undefined ? page.isActive : true
         }
 
-        if (page.id && !page.id.startsWith('new-')) {
-          // Aktuelle Seite aktualisieren
-          await axios.put(`custom-pages/${page.id}`, payload)
+        // Slug'a göre mevcut sayfayı bul
+        const existingPageBySlug = existingPages.find(p => p.slug === page.slug)
+        
+        if (existingPageBySlug) {
+          // Slug'a göre bulunan sayfayı güncelle
+          await axios.put(`custom-pages/${existingPageBySlug.id}`, payload)
+        } else if (page.id && !page.id.startsWith('new-')) {
+          // ID varsa ve slug'a göre bulunamadıysa, ID'ye göre dene
+          try {
+            await axios.put(`custom-pages/${page.id}`, payload)
+          } catch (updateError) {
+            // ID'ye göre de bulunamadıysa yeni sayfa oluştur
+            if (updateError.response?.status === 404) {
+              await axios.post('custom-pages', payload)
+            } else {
+              throw updateError
+            }
+          }
         } else {
-          // Neue Seite erstellen
+          // Yeni sayfa oluştur
           await axios.post('custom-pages', payload)
         }
       }
